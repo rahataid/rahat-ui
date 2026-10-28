@@ -1,4 +1,6 @@
 import React, { useMemo } from 'react';
+import { useTranslations } from 'next-intl';
+
 import {
   useGFHWaterLevels,
   PROJECT_SETTINGS_KEYS,
@@ -18,6 +20,7 @@ import GfhStationDetails from './gfhStationDetails';
 import { IRiverData } from './types';
 
 const GFHDetails = () => {
+  const t = useTranslations('AA_PROJECT');
   const params = useParams();
   const projectId = params.id as UUID;
 
@@ -49,7 +52,7 @@ const GFHDetails = () => {
         <div className="text-center ">
           <div className="flex items-center gap-1 text-gray-500 ">
             <CircleAlert />
-            <p className="text-gray-500 text-2xl">No data available</p>
+            <p className="text-gray-500 text-2xl">{t('NO_DATA_AVAILABLE')}</p>
           </div>
           <p className="text-gray-400 text-sm">
             River forecast data is currently unavailable

@@ -1,5 +1,6 @@
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useRetryJobMutation } from './queries/useQueueJobsQuery';
+import { useTranslations } from 'next-intl';
 
 type RetryButtonProps = {
   queueType: string;
@@ -7,6 +8,7 @@ type RetryButtonProps = {
 };
 
 const RetryButton: React.FC<RetryButtonProps> = ({ queueType, jobId }) => {
+  const t = useTranslations('QUEUES');
   const retryMutation = useRetryJobMutation(queueType);
 
   return (
@@ -15,7 +17,7 @@ const RetryButton: React.FC<RetryButtonProps> = ({ queueType, jobId }) => {
       onClick={() => retryMutation.mutate(jobId)}
       disabled={retryMutation.isPending}
     >
-      {retryMutation.isPending ? 'Retrying...' : 'Retry'}
+      {retryMutation.isPending ? t('RETRYING') : t('RETRY')}
     </Button>
   );
 };

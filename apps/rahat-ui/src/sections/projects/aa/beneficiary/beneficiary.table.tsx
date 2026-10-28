@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
 import {
   ColumnFiltersState,
@@ -41,6 +42,7 @@ import { useParams } from 'next/navigation';
 import { useProjectBeneficiaryTableColumns } from './use-table-column';
 import { useRouter } from 'next/navigation';
 import TableLoader from '../../../../components/table.loader';
+import { getColumnLabel } from 'apps/rahat-ui/src/utils/getColumnLabel';
 
 export type Transaction = {
   name: string;
@@ -51,6 +53,8 @@ export type Transaction = {
 };
 
 function BeneficiaryDetailTableView() {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const route = useRouter();
   const id = useParams();
   // TODO: Refactor it
@@ -114,7 +118,7 @@ function BeneficiaryDetailTableView() {
       <div className="p-2 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
-            placeholder="Filter name..."
+            placeholder={t('FILTER_NAME')}
             value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
               table.getColumn('name')?.setFilterValue(event.target.value)
@@ -125,11 +129,11 @@ function BeneficiaryDetailTableView() {
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
                 <Settings2 className="mr-2 h-4 w-5" />
-                View
+                {tg('VIEW')}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
+              <DropdownMenuLabel>{tg('TOGGLE_COLUMNS')}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               {table
                 .getAllColumns()
@@ -144,7 +148,7 @@ function BeneficiaryDetailTableView() {
                         column.toggleVisibility(!!value)
                       }
                     >
-                      {column.id}
+                      {getColumnLabel(column)}
                     </DropdownMenuCheckboxItem>
                   );
                 })}
@@ -198,7 +202,7 @@ function BeneficiaryDetailTableView() {
                       {projectBeneficiaries.isLoading ? (
                         <TableLoader />
                       ) : (
-                        'No data available.'
+                        t('NO_DATA_AVAILABLE')
                       )}
                     </TableCell>
                   </TableRow>

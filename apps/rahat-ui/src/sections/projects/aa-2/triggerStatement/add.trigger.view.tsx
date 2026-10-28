@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import {
   Back,
   DeleteButton,
@@ -33,7 +34,7 @@ import {
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { useRouter } from 'next/navigation';
-import { triggerStatementSchema } from './trigger.statement.schema';
+import { buildTriggerStatementSchema } from './trigger.statement.schema';
 import {
   buildSourceOptions,
   buildSubtypeOptions,
@@ -47,17 +48,29 @@ import {
   AlertTitle,
 } from '@rahat-ui/shadcn/src/components/ui/alert';
 import { AlertCircleIcon } from 'lucide-react';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
 
-export const AutomatedFormSchema = z.object({
-  title: z.string().min(2, { message: 'Please enter trigger title' }),
-  description: z.string().optional(),
-  source: z.string().min(1, { message: 'Please select data source' }),
-  isMandatory: z.boolean().optional(),
-  leadTime: z.string().optional(),
-  triggerStatement: triggerStatementSchema,
-});
+export function buildAutomatedFormSchema(t?: any) {
+  const _t = t || ((s: string) => {
+    const fallback: Record<string, string> = {
+      PLEASE_ENTER_TRIGGER_TITLE: 'Please enter trigger title',
+      PLEASE_SELECT_DATA_SOURCE: 'Please select data source',
+    };
+    return fallback[s] || s;
+  });
+  return z.object({
+    title: z.string().min(2, { message: _t('PLEASE_ENTER_TRIGGER_TITLE') }),
+    description: z.string().optional(),
+    source: z.string().min(1, { message: _t('PLEASE_SELECT_DATA_SOURCE') }),
+    isMandatory: z.boolean().optional(),
+    leadTime: z.string().optional(),
+  triggerStatement: buildTriggerStatementSchema(_t),
+  });
+}
+
+export const AutomatedFormSchema = buildAutomatedFormSchema();
 
 const componentMap = {
   manual: ManualTriggerAddForm,
@@ -67,6 +80,8 @@ const componentMap = {
 type TriggerTabKey = keyof typeof componentMap;
 
 export default function AddTriggerView() {
+  const formatDate = useDateFormat();
+  const t = useTranslations('AA_PROJECT');
   const [activeTab, setActiveTab] = React.useState<string>('');
   const [allTriggers, setAllTriggers] = React.useState<any[]>([]);
   const [open, setOpen] = React.useState<boolean>(false);
@@ -92,6 +107,7 @@ export default function AddTriggerView() {
   );
   const stationHeading = getStationTitle(
     projectInfo?.value?.project_type || '',
+    t,
   );
   const { data, isLoading: isTabLoading } = useTabConfiguration(
     projectId as UUID,
@@ -99,7 +115,7 @@ export default function AddTriggerView() {
   );
   const SOURCES =
     dataSourceTypes?.value || ({} as Record<string, SourceConfig>);
-  const sourceOptions = buildSourceOptions(SOURCES);
+  const sourceOptions = buildSourceOptions(SOURCES, t);
   const subtypeOptionsBySource = buildSubtypeOptions(SOURCES);
 
   const availableTabs = React.useMemo(() => {
@@ -121,7 +137,7 @@ export default function AddTriggerView() {
   const addTriggers = useCreateTriggerStatement();
 
   const ManualFormSchema = z.object({
-    title: z.string().min(2, { message: 'Please enter trigger title' }),
+    title: z.string().min(2, { message: t('PLEASE_ENTER_TRIGGER_TITLE') }),
     description: z.string().optional(),
     isMandatory: z.boolean().optional(),
     leadTime: z.string().optional(),
@@ -137,6 +153,7 @@ export default function AddTriggerView() {
     },
   });
 
+  const AutomatedFormSchema = buildAutomatedFormSchema(t);
   const automatedForm = useForm<z.infer<typeof AutomatedFormSchema>>({
     resolver: zodResolver(AutomatedFormSchema),
     defaultValues: {
@@ -290,32 +307,30 @@ export default function AddTriggerView() {
     <div className="p-4">
       <Back />
       <Heading
-        title="Add Trigger"
-        description="Fill the form below to create new trigger statement"
+        title={t('ADD_TRIGGER')}
+        description={t('FILL_THE_FORM_BELOW_TO_CREATE5')}
       />
       {isLoadingDataSourceTypes || isProjectInfoLoading || isTabLoading ? (
         <SpinnerLoader />
       ) : !dataSourceTypes ? (
         <Alert variant="destructive">
           <AlertCircleIcon />
-          <AlertTitle>Unable to load form.</AlertTitle>
+          <AlertTitle>{t('UNABLE_TO_LOAD_FORM')}</AlertTitle>
           <AlertDescription>
-            <p>Please verify if data source types are available.</p>
+            <p>{t('PLEASE_VERIFY_IF_DATA_SOURCE_TYPES')}</p>
             <ul className="list-inside list-disc text-sm">
-              <li>Check triggers settings &apos;DATASOURCETYPES&apos;</li>
+              <li>{t('CHECK_TRIGGER_SETTINGS_DATASOURCETYPES')}</li>
             </ul>
           </AlertDescription>
         </Alert>
       ) : !hasTabs ? (
         <Alert>
           <AlertCircleIcon />
-          <AlertTitle>No trigger types configured.</AlertTitle>
+          <AlertTitle>{t('NO_TRIGGER_TYPES_CONFIGURED')}</AlertTitle>
           <AlertDescription>
-            <p>
-              Please configure trigger types before creating trigger statements.
-            </p>
+            <p>{t('PLEASE_CONFIGURE_TRIGGER_TYPES')}</p>
             <ul className="list-inside list-disc text-sm">
-              <li>Check triggers settings &apos;TRIGGER_TAB&apos;</li>
+              <li>{t('CHECK_TRIGGER_SETTINGS_TRIGGER_TAB')}</li>
             </ul>
           </AlertDescription>
         </Alert>
@@ -323,22 +338,30 @@ export default function AddTriggerView() {
         <ScrollArea className="h-[calc(100vh-210px)] pr-3">
           <div className="border p-4 mb-4 rounded shadow">
             <Heading
-              title="Select Trigger Type"
+              title={t('SELECT_TRIGGER_TYPE')}
               titleStyle="text-xl/6 font-semibold"
-              description="Select trigger type and fill the details below"
+              description={t('SELECT_TRIGGER_TYPE_AND_FILL_THE')}
             />
 
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="border bg-secondary rounded mb-2">
-                {availableTabs.map((tab: any) => (
-                  <TabsTrigger
-                    key={tab.value}
-                    value={tab.value}
-                    className="w-full data-[state=active]:bg-white"
-                  >
-                    {tab.label}
-                  </TabsTrigger>
-                ))}
+                {availableTabs.map((tab: any) => {
+                  // Tab labels come from the backend, so punctuation has to be
+                  // folded out before they can be used as keys.
+                  const labelKey = tab.label
+                    ?.toUpperCase()
+                    .replace(/[^A-Z0-9]+/g, '_')
+                    .replace(/^_+|_+$/g, '');
+                  return (
+                    <TabsTrigger
+                      key={tab.value}
+                      value={tab.value}
+                      className="w-full data-[state=active]:bg-white"
+                    >
+                      {translateValue(t, labelKey, { fallback: tab.label })}
+                    </TabsTrigger>
+                  );
+                })}
               </TabsList>
               {availableTabs.map((tab: any) => {
                 const Component = tab.component;
@@ -379,7 +402,7 @@ export default function AddTriggerView() {
                   }
                 }}
               >
-                Clear
+                {t('CLEAR')}
               </Button>
               <ConfirmAddTrigger
                 open={open}
@@ -395,57 +418,57 @@ export default function AddTriggerView() {
             </div>
           </div>
           <div className="grid grid-cols-1 gap-2">
-            {allTriggers.map((t, i) => {
+            {allTriggers.map((trigger, i) => {
               return (
                 <div key={i} className="p-4 rounded border shadow">
                   <div className="flex justify-between items-center space-x-4 mb-2">
                     <div className="flex items-center space-x-4">
                       <Badge className="font-medium">
-                        {t.isMandatory ? 'Mandatory' : 'Optional'}
+                        {trigger.isMandatory ? t('MANDATORY') : t('OPTIONAL')}
                       </Badge>
                       <Badge className="font-medium">
-                        {t.type.charAt(0).toUpperCase() + t.type.slice(1)}
+                        {translateValue(t, trigger.type, { fallbackStyle: 'raw' })}
                       </Badge>
                     </div>
                     <div className="flex items-center space-x-2">
                       <EditButton
                         className="border-none bg-blue-50"
-                        description="This action will refill the form with the selected trigger's data for editing."
-                        onFallback={() => handleEdit(t)}
+                        description={t('THIS_ACTION_WILL_REFILL_FORM_WITH_TRIGGER_DATA')}
+                        onFallback={() => handleEdit(trigger)}
                       />
                       <DeleteButton
                         className="border-none bg-red-50"
-                        name="trigger"
-                        handleContinueClick={() => handleDelete(t)}
+                        name={t('TRIGGER')}
+                        handleContinueClick={() => handleDelete(trigger)}
                       />
                     </div>
                   </div>
-                  <p className="text-sm/6 font-medium mb-2">{t.title}</p>
+                  <p className="text-sm/6 font-medium mb-2">{trigger.title}</p>
                   <p className="text-muted-foreground text-sm/4">
-                    {t.riverBasin}
+                    {trigger.riverBasin}
 
-                    {t?.triggerStatement?.stationName && (
+                    {trigger?.triggerStatement?.stationName && (
                       <>
                         {SEP}
-                        {t.triggerStatement.stationName}
+                        {trigger.triggerStatement.stationName}
                       </>
                     )}
 
-                    {t?.triggerStatement?.source && (
+                    {trigger?.triggerStatement?.source && (
                       <>
                         {SEP}
-                        {sourceLabelMapper[t.triggerStatement.source] || ''} (
-                        {t.triggerStatement.expression})
+                        {sourceLabelMapper[trigger.triggerStatement.source] || ''} (
+                        {trigger.triggerStatement.expression})
                       </>
                     )}
 
-                    {t.time && (
+                    {trigger.time && (
                       <>
                         {SEP}
                         <span>
-                          {dateFormat(t.time, 'hh:mm a')}
+                          {formatDate(trigger.time, 'hh:mm a')}
                           <br />
-                          {dateFormat(t.time, 'MMMM dd, yyyy')}
+                          {formatDate(trigger.time, 'MMMM dd, yyyy')}
                         </span>
                       </>
                     )}

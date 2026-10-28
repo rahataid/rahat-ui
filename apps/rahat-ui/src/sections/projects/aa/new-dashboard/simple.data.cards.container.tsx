@@ -16,6 +16,8 @@ import {
   UsersRound,
 } from 'lucide-react';
 import { useQuery } from 'urql';
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from '../../../../utils/i18n/number';
 
 type IProps = {
   allStats: any;
@@ -50,6 +52,9 @@ export default function SimpleDataCardsContainer({
 }: IProps) {
 
   console.log(commsStats)
+  const formatNum = useNumberFormat();
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
 
   const contractSettings = useProjectSettingsStore(
     (s) => s.settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
@@ -73,14 +78,6 @@ export default function SimpleDataCardsContainer({
 
   const projectBalance = parsedProjectBudget - Number(totalDistributed);
 
-  const formatToEnglishNumberSystem = (number: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'decimal',
-      minimumFractionDigits: number % 1 === 0 ? 0 : 2, // No decimals if whole number,
-      maximumFractionDigits: 2,
-    }).format(number);
-  }
-
   const tempDashboardStats = allStats?.filter(
     (data: any) => data.name === 'TEMP_DASHBOARD_STATS',
   )[0]?.data;
@@ -95,34 +92,34 @@ export default function SimpleDataCardsContainer({
 
   const data = [
     {
-      title: 'Total Beneficiaries',
+      title: t('TOTAL_BENEFICIARIES'),
       Icon: UsersRound,
-      number: totalBeneficiaries ?? 0,
+      number: formatNum(totalBeneficiaries ?? 0),
     },
     {
-      title: 'Household Receiving Cash Support',
+      title: t('HOUSEHOLD_RECEIVING_CASH_SUPPORT'),
       Icon: Home,
-      number: tempDashboardStats ? tempDashboardStats.HOUSEHOLD_RECEIVING_CASH : totalHouseholdReceivingCashSupport ?? 0,
+      number: formatNum(tempDashboardStats ? tempDashboardStats.HOUSEHOLD_RECEIVING_CASH : totalHouseholdReceivingCashSupport ?? 0),
     },
     {
-      title: 'Budget',
+      title: t('BUDGET'),
       Icon: Coins,
-      number: `NRs. ${formatToEnglishNumberSystem(parsedProjectBudget) ?? 0}`,
+      number: `${t('RS')} ${formatNum(parsedProjectBudget) ?? 0}`,
     },
     {
-      title: 'Balance',
+      title: t('BALANCE'),
       Icon: Coins,
-      number: tempDashboardStats ? `NRs. ${formatToEnglishNumberSystem(tempDashboardStats.BALANCE)}` : `NRs. ${formatToEnglishNumberSystem(projectBalance) ?? 0}`,
+      number: tempDashboardStats ? `${t('RS')} ${formatNum(tempDashboardStats.BALANCE)}` : `${t('RS')} ${formatNum(projectBalance) ?? 0}`,
     },
     {
-      title: 'Fund Distributed',
+      title: t('FUND_DISTRIBUTED'),
       Icon: HandCoins,
-      number: tempDashboardStats ? `NRs. ${formatToEnglishNumberSystem(tempDashboardStats.FUND_DISTRIBUTED)}` : `NRs. ${formatToEnglishNumberSystem(totalDistributed) ?? 0}`,
+      number: tempDashboardStats ? `${t('RS')} ${formatNum(tempDashboardStats.FUND_DISTRIBUTED)}` : `${t('RS')} ${formatNum(totalDistributed) ?? 0}`,
     },
     {
-      title: 'Number of Communication Project',
+      title: t('NUMBER_OF_COMMUNICATION_PROJECT'),
       Icon: SmartphoneNfc,
-      number: commsStats?.totalCommsProject ?? 'N/A',
+      number: commsStats?.totalCommsProject != null ? formatNum(commsStats.totalCommsProject) : tg('N_A'),
     },
   ];
   return (

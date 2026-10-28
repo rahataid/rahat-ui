@@ -5,6 +5,7 @@ import { useRSQuery } from '@rumsan/react-query';
 import { getBeneficiaryCommsClient } from '@rahataid/community-tool-sdk/clients';
 import Swal from 'sweetalert2';
 import { Pagination } from '@rumsan/sdk/types';
+import { getTranslate } from '../translate';
 
 export const useListAllTransports = () => {
   const newCommunicationService = useCommunicationService();
@@ -36,7 +37,8 @@ export const useCreateBeneficiaryComms = () => {
     mutationFn: (payload: any) => commsClient.create(payload),
     mutationKey: [TAGS.CREATE_BENEFICIARY_COMMS],
     onSuccess: () => {
-      Swal.fire('Created Successfully', '', 'success');
+      const t = getTranslate();
+      Swal.fire(t('COMMS_CREATED_SUCCESSFULLY'), '', 'success');
       queryClient.invalidateQueries({
         queryKey: [TAGS.LIST_BENEFICIARIES_COMMS],
       });
@@ -78,7 +80,8 @@ export const useTriggerCommunication = (uuid: string) => {
     mutationFn: commsClient.triggerCommunication,
     mutationKey: [TAGS.TRIGGER_COMMUNICATION],
     onSuccess: () => {
-      Swal.fire(' Triggred', '', 'success');
+      const t = getTranslate();
+      Swal.fire(t('TRIGGERED_SUCCESSFULLY'), '', 'success');
 
       queryClient.invalidateQueries({
         queryKey: [TAGS.COMMS_LOGS_ID],

@@ -10,6 +10,7 @@ import {
 import { NavItem } from './nav-items.types';
 import { TabsList, TabsTrigger } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { useBeneficiaryGroupsStore } from 'libs/query/src/lib/beneficiary/beneficiary-groups.store';
+import { useTranslations } from 'next-intl';
 
 const tabs = [
   {
@@ -36,12 +37,14 @@ export const useBeneficiaryNavItems = () => {
     (state) => state?.meta?.total || 0,
   );
 
+  const t = useTranslations('GLOBAL');
+
   const menuItems: NavItem[] = [
     {
-      title: 'Beneficiaries',
+      title: t('BENEFICIARIES'),
       component: (
         <div className="flex justify-between items-center border-6 w-full">
-          <h1 className="font-semibold text-xl text-primary">Beneficiaries</h1>
+          <h1 className="font-semibold text-xl text-primary">{t('BENEFICIARIES')}</h1>
           {/* <TabsList defaultValue="list" className="border rounded">
             {tabs.map((tab) => (
               <TabsTrigger key={tab.value} value={tab.value}>
@@ -53,13 +56,13 @@ export const useBeneficiaryNavItems = () => {
       ),
       children: [
         {
-          title: 'Beneficiaries',
+          title: t('BENEFICIARIES'),
           icon: <KanbanSquare size={18} strokeWidth={1.5} />,
           path: '/beneficiary',
           subtitle: totalBeneficiaries,
         },
         {
-          title: 'Beneficiaries Groups',
+          title: t('BENEFICIARIES_GROUPS'),
           icon: <KanbanSquare size={18} strokeWidth={1.5} />,
           path: '/beneficiary/groups',
           subtitle: totalGroups,
@@ -72,15 +75,15 @@ export const useBeneficiaryNavItems = () => {
       ],
     },
     {
-      title: 'Actions',
+      title: t('ACTIONS') || 'Actions',
       children: [
         {
-          title: 'Add Beneficiaries',
+          title: t('ADD_BENEFICIARIES2') || 'Add Beneficiaries',
           path: '/beneficiary/add',
           icon: <Plus size={18} strokeWidth={1.5} />,
         },
         {
-          title: 'Import Beneficiaries',
+          title: t('IMPORT_BENEFICIARIES'),
           path: '/beneficiary/import',
           icon: <Import size={18} strokeWidth={1.5} />,
         },

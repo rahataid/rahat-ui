@@ -37,6 +37,8 @@ export type GctFundRecord = {
   createdAt?: string;
   updatedAt?: string;
   disbursedAt?: string;
+  payoutProcessorId?: string;
+  txHash?: string;
   groupCashTransfer?: {
     uuid: string;
     name: string;
@@ -45,29 +47,56 @@ export type GctFundRecord = {
     extras?: GctExtras;
   };
   disbursementInfo?: {
-  result?: {
-    offrampRequest?: {
-      transactionHash?: string;
-      paymentDetails?: {
-        creditorName?: string;
-        creditorAccount?: string;
-        creditorAgent?: string;
+    result?: {
+      offrampRequest?: {
+        id?: string;
+        status?: string;
+        createdAt?: string;
+        updatedAt?: string;
+        tokenAmount?: string;
+        fiatAmount?: number | null;
+        senderAddress?: string;
+        transactionHash?: string;
+        paymentProviderId?: string;
+        settlementDate?: string;
+        paymentDetails?: {
+          amount?: number;
+          endToEndId?: string;
+          creditorName?: string;
+          creditorAccount?: string;
+          creditorAgent?: string;
+          creditorBranch?: string;
+          debtorAccount?: string;
+          debtorName?: string;
+        };
+      };
+      transaction?: {
+        cipsBatchResponse?: {
+          id?: number;
+          batchId?: string;
+          debitStatus?: string;
+          responseCode?: string;
+          responseMessage?: string;
+        };
+        cipsTxnResponseList?: {
+          id?: number;
+          creditStatus?: string;
+          responseCode?: string;
+          instructionId?: string;
+          responseMessage?: string;
+        }[];
       };
     };
-    transaction?: {
-      cipsBatchResponse?: {
-        batchId?: string;
-      };
-      cipsTxnResponseList?: {
-        responseMessage?: string;
-      }[];
-    };
+    error?: string;
+    disbursedBy?: string;
   };
-  error?: string;
-};
 };
 
-export type GctRecordStatus = 'NOT_STARTED' | 'PENDING' | 'STARTED' | 'COMPLETED';
+export type GctRecordStatus =
+  | 'NOT_STARTED'
+  | 'PENDING'
+  | 'STARTED'
+  | 'COMPLETED';
 
 // ─── Status styling ───────────────────────────────────────────────────────────
 

@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { ChevronLeft, ChevronRight, LogOut } from 'lucide-react';
+import { ChevronsLeftRight, LogOut } from 'lucide-react';
 
 import {
   Sidebar,
@@ -14,6 +14,7 @@ import { NavMain } from './nav-main';
 import Image from 'next/image';
 import { NavItem } from '../sections/projects/components';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 
 type ProjectNavViewProps = {
@@ -23,27 +24,28 @@ type ProjectNavViewProps = {
 };
 
 function SidebarToggle() {
-  const { toggleSidebar, open } = useSidebar();
+  const t = useTranslations('AA_PROJECT');
+  const { toggleSidebar } = useSidebar();
   return (
     <button
       onClick={toggleSidebar}
-      className="absolute top-4 -right-3 z-30 bg-background border border-sidebar-border text-sidebar-foreground hover:text-sidebar-accent-foreground rounded-full p-1 transition-colors shadow-sm"
-      aria-label="Toggle Sidebar"
+      className="absolute top-4 -right-3 z-30 bg-background border border-sidebar-border text-sidebar-foreground hover:text-sidebar-accent-foreground rounded-sm  p-1 transition-colors shadow-sm"
+      aria-label={t('TOGGLE_SIDEBAR')}
     >
-      {open ? (
-        <ChevronLeft className="size-[clamp(12px,1.2vw,16px)]" />
-      ) : (
-        <ChevronRight className="size-[clamp(12px,1.2vw,16px)]" />
-      )}
+      <ChevronsLeftRight className="size-[clamp(10px,1.2vw,14px)]" />
     </button>
   );
 }
 
 export function ProjectSidebar(menuItems: ProjectNavViewProps) {
+  const t = useTranslations('AA_PROJECT');
   const router = useRouter();
   return (
     <Sidebar
       collapsible="icon"
+      // Lift the sidebar (and its protruding toggle) above the sticky
+      // project header (z-10) so the toggle is never painted over.
+      className="z-30"
       style={
         {
           '--sidebar-width': 'clamp(11rem, 15vw, 16rem)',
@@ -85,7 +87,7 @@ export function ProjectSidebar(menuItems: ProjectNavViewProps) {
         >
           <LogOut className="size-[clamp(16px,1.6vw,20px)]" />
           <span className="text-[clamp(11px,1vw,14px)] group-data-[collapsible=icon]:hidden">
-            Exit project
+            {t('EXIT_PROJECT')}
           </span>
         </div>
       </SidebarFooter>

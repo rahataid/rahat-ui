@@ -1,20 +1,29 @@
 'use client';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
-import { ColumnDef } from '@tanstack/react-table';
+import { ColumnDef, FilterFn } from '@tanstack/react-table';
 import { Edit2, Eye, Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { IconDialogComponent } from './component/iconDialog';
 import { useDeleteStakeholders } from '@rahat-ui/query';
 import { UUID } from 'crypto';
-import { RoleAuth, AARoles } from '@rahat-ui/auth';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
 
 const SupportAreaCell = ({ supportArea }: { supportArea: string[] }) => {
   const [showAll, setShowAll] = React.useState(false);
+  const t = useTranslations('AA_PROJECT');
+  const formatNum = useNumberFormat();
 
   if (!supportArea || supportArea.length === 0) return null;
 
@@ -35,11 +44,18 @@ const SupportAreaCell = ({ supportArea }: { supportArea: string[] }) => {
           }}
           className="text-[clamp(8px,0.6vw,10px)] text-primary hover:underline whitespace-nowrap"
         >
-          {showAll ? 'Show less' : `+${supportArea.length - 1} more`}
+          {showAll ? t('SHOW_LESS') : `+${formatNum(supportArea.length - 1)} ${t('MORE')}`}
         </button>
       )}
     </div>
   );
+};
+const supportAreaFilter: FilterFn<any> = (row, columnId, filterValue) => {
+  const search = String(filterValue ?? '').trim().toLowerCase();
+  if (!search) return true;
+  const value = row.getValue(columnId);
+  const text = Array.isArray(value) ? value.join(' ') : String(value ?? '');
+  return text.toLowerCase().includes(search);
 };
 
 export const useProjectStakeholdersTableColumns = (
@@ -47,6 +63,9 @@ export const useProjectStakeholdersTableColumns = (
 ) => {
   const router = useRouter();
   const { id } = useParams();
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
+  const formatPhone = usePhoneFormat();
   const removeStakeholder = useDeleteStakeholders();
 
   const handleDelete = async (uuid: string, stakeholderName: string) => {
@@ -70,7 +89,7 @@ export const useProjectStakeholdersTableColumns = (
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'name',
-      header: 'Name',
+      header: tg('NAME'),
       cell: ({ row }) => (
         <TruncatedCell
           text={row.getValue('name')}
@@ -81,35 +100,35 @@ export const useProjectStakeholdersTableColumns = (
     },
     {
       accessorKey: 'phone',
-      header: 'Phone number',
+      header: tg('PHONE_NUMBER'),
       cell: ({ row }) => (
-        <TruncatedCell text={row.getValue('phone')} maxLength={14} />
+        <TruncatedCell text={formatPhone(row.getValue('phone'))} maxLength={14} />
       ),
     },
     {
       accessorKey: 'email',
-      header: 'Email',
+      header: tg('EMAIL'),
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('email')} maxLength={10} />
       ),
     },
     {
       accessorKey: 'designation',
-      header: 'Designation',
+      header: t('DESIGNATION'),
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('designation')} maxLength={10} />
       ),
     },
     {
       accessorKey: 'organization',
-      header: 'Organization',
+      header: t('ORGANIZATION'),
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('organization')} maxLength={10} />
       ),
     },
     {
       accessorKey: 'supportArea',
-      header: 'Support Area',
+      header: t('SUPPORT_AREA'),
       cell: ({ row }) => (
         <SupportAreaCell supportArea={row.original?.supportArea ?? []} />
       ),
@@ -117,7 +136,7 @@ export const useProjectStakeholdersTableColumns = (
 
     {
       accessorKey: 'municipality',
-      header: 'Municipality',
+      header: t('MUNICIPALITY'),
       meta: { className: 'hidden xl:table-cell' },
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('municipality')} maxLength={10} />
@@ -126,23 +145,20 @@ export const useProjectStakeholdersTableColumns = (
 
     {
       id: 'actions',
-      header: 'Action',
+      header: tg('ACTIONS'),
       enableHiding: false,
       meta: { className: 'w-20 lg:w-28' },
       cell: ({ row }) => {
         return (
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-            hasContent={false}
-          >
-            <div className="flex items-center gap-2 [&_svg]:size-[clamp(14px,1.4vw,18px)]">
+          <div className="flex items-center gap-2 [&_svg]:size-[clamp(14px,1.4vw,18px)]">
+            <Can action={ACTIONS.UPDATE} subject={SUBJECTS.STAKEHOLDER}>
               <IconDialogComponent
                 Icon={Edit2}
                 buttonText=""
-                confirmButtonText="Edit"
-                dialogDescription="Are you sure you want to edit?"
-                dialogTitle="Edit"
-                tip="Edit"
+                confirmButtonText={tg('EDIT')}
+                dialogDescription={tg('ARE_YOU_SURE')}
+                dialogTitle={tg('EDIT')}
+                tip={tg('EDIT')}
                 handleClick={() =>
                   setTimeout(() => {
                     router.push(
@@ -152,31 +168,33 @@ export const useProjectStakeholdersTableColumns = (
                 }
                 variant="default"
               />
+            </Can>
+            <Can action={ACTIONS.DELETE} subject={SUBJECTS.STAKEHOLDER}>
               <IconDialogComponent
                 Icon={Trash2}
                 buttonText=""
-                confirmButtonText="Delete"
-                dialogDescription="Are you sure you want to delete?"
-                dialogTitle="Delete"
-                tip="Delete"
+                confirmButtonText={tg('DELETE')}
+                dialogDescription={tg('ARE_YOU_SURE')}
+                dialogTitle={tg('DELETE')}
+                tip={tg('DELETE')}
                 handleClick={() => {
                   handleDelete(row.original.uuid, row.original.name);
                 }}
                 variant="destructive"
                 color="red"
               />
-              <TooltipComponent
-                Icon={Eye}
-                tip="View Details"
-                iconStyle="hover:text-primary cursor-pointer"
-                handleOnClick={() =>
-                  router.push(
-                    `/projects/aa/${id}/stakeholders/${row.original.uuid}`,
-                  )
-                }
-              />
-            </div>
-          </RoleAuth>
+            </Can>
+            <TooltipComponent
+              Icon={Eye}
+              tip={tg('VIEW_DETAILS')}
+              iconStyle="hover:text-primary cursor-pointer"
+              handleOnClick={() =>
+                router.push(
+                  `/projects/aa/${id}/stakeholders/${row.original.uuid}`,
+                )
+              }
+            />
+          </div>
         );
       },
     },
@@ -186,34 +204,37 @@ export const useProjectStakeholdersTableColumns = (
 };
 
 export const useProjectStakeholdersGroupTableColumns = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
+  const formatPhone = usePhoneFormat();
   const router = useRouter();
   const { id, groupId } = useParams();
 
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'name',
-      header: 'Name',
+      header: tg('NAME'),
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('name')} maxLength={10} />
       ),
     },
     {
       accessorKey: 'phone',
-      header: 'Phone number',
+      header: tg('PHONE_NUMBER'),
       cell: ({ row }) => (
-        <TruncatedCell text={row.getValue('phone')} maxLength={14} />
+        <TruncatedCell text={formatPhone(row.getValue('phone'))} maxLength={14} />
       ),
     },
     {
       accessorKey: 'email',
-      header: 'Email',
+      header: tg('EMAIL'),
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('email')} maxLength={10} />
       ),
     },
     {
       accessorKey: 'designation',
-      header: 'Designation',
+      header: t('DESIGNATION'),
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('designation')} maxLength={14} />
       ),
@@ -221,21 +242,22 @@ export const useProjectStakeholdersGroupTableColumns = () => {
 
     {
       accessorKey: 'organization',
-      header: 'Organization',
+      header: t('ORGANIZATION'),
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('organization')} maxLength={10} />
       ),
     },
     {
       accessorKey: 'supportArea',
-      header: 'Support Area',
+      header: t('SUPPORT_AREA'),
+      filterFn: supportAreaFilter,
       cell: ({ row }) => (
         <SupportAreaCell supportArea={row.original?.supportArea ?? []} />
       ),
     },
     {
       accessorKey: 'municipality',
-      header: 'Municipality',
+      header: t('MUNICIPALITY'),
       meta: { className: 'hidden xl:table-cell' },
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('municipality')} maxLength={10} />
@@ -244,28 +266,23 @@ export const useProjectStakeholdersGroupTableColumns = () => {
 
     {
       id: 'actions',
-      header: 'Action',
+      header: tg('ACTIONS'),
       enableHiding: false,
       meta: { className: 'w-15 lg:w-20' },
       cell: ({ row }) => {
         return (
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-            hasContent={false}
-          >
-            <div className="flex items-center gap-2 [&_svg]:size-[clamp(14px,1.4vw,18px)]">
-              <TooltipComponent
-                Icon={Eye}
-                tip="View Details"
-                iconStyle="hover:text-primary cursor-pointer"
-                handleOnClick={() =>
-                  router.push(
-                    `/projects/aa/${id}/stakeholders/${row.original.uuid}?groupId=${groupId}`,
-                  )
-                }
-              />
-            </div>
-          </RoleAuth>
+          <div className="flex items-center gap-2 [&_svg]:size-[clamp(14px,1.4vw,18px)]">
+            <TooltipComponent
+              Icon={Eye}
+              tip={tg('VIEW_DETAILS')}
+              iconStyle="hover:text-primary cursor-pointer"
+              handleOnClick={() =>
+                router.push(
+                  `/projects/aa/${id}/stakeholders/${row.original.uuid}?groupId=${groupId}`,
+                )
+              }
+            />
+          </div>
         );
       },
     },
@@ -275,6 +292,9 @@ export const useProjectStakeholdersGroupTableColumns = () => {
 };
 
 export const useProjectSelectStakeholdersTableColumns = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
+  const formatPhone = usePhoneFormat();
   const columns: ColumnDef<any>[] = [
     {
       id: 'select',
@@ -304,21 +324,21 @@ export const useProjectSelectStakeholdersTableColumns = () => {
     },
     {
       accessorKey: 'name',
-      header: 'Name',
+      header: tg('NAME'),
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('name')} maxLength={10} />
       ),
     },
     {
       accessorKey: 'phone',
-      header: 'Phone number',
+      header: tg('PHONE_NUMBER'),
       cell: ({ row }) => (
-        <TruncatedCell text={row.getValue('phone')} maxLength={14} />
+        <TruncatedCell text={formatPhone(row.getValue('phone'))} maxLength={14} />
       ),
     },
     {
       accessorKey: 'email',
-      header: 'Email',
+      header: tg('EMAIL'),
       meta: { className: 'hidden xl:table-cell' },
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('email')} maxLength={14} />
@@ -326,7 +346,7 @@ export const useProjectSelectStakeholdersTableColumns = () => {
     },
     {
       accessorKey: 'designation',
-      header: 'Designation',
+      header: t('DESIGNATION'),
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('designation')} maxLength={10} />
       ),
@@ -334,14 +354,14 @@ export const useProjectSelectStakeholdersTableColumns = () => {
 
     {
       accessorKey: 'organization',
-      header: 'Organization',
+      header: t('ORGANIZATION'),
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('organization')} maxLength={10} />
       ),
     },
     {
       accessorKey: 'supportArea',
-      header: 'Support Area',
+      header: t('SUPPORT_AREA'),
       cell: ({ row }) => (
         <SupportAreaCell supportArea={row.original?.supportArea ?? []} />
       ),
@@ -349,7 +369,7 @@ export const useProjectSelectStakeholdersTableColumns = () => {
 
     {
       accessorKey: 'municipality',
-      header: 'Municipality',
+      header: t('MUNICIPALITY'),
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('municipality')} maxLength={14} />
       ),

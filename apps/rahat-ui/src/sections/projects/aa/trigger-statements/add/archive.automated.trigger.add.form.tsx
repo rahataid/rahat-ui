@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import { UseFormReturn } from 'react-hook-form';
 import {
@@ -38,6 +39,7 @@ type IProps = {
 };
 
 export default function AddAutomatedTriggerForm({ form }: IProps) {
+  const t = useTranslations('AA_PROJECT');
   const params = useParams();
   const projectId = params.id as UUID;
   const selectedPhase = JSON.parse(
@@ -60,7 +62,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
         <form>
           <div className="mt-4 grid gap-4">
             <FormItem className="w-full">
-              <FormLabel>Selected Phase</FormLabel>
+              <FormLabel>{t('SELECTED_PHASE')}</FormLabel>
               <FormControl>
                 <Input type="text" value={selectedPhase.name} disabled />
               </FormControl>
@@ -73,11 +75,11 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                 render={({ field }) => {
                   return (
                     <FormItem className="w-full">
-                      <FormLabel>Trigger Title</FormLabel>
+                      <FormLabel>{t('TRIGGER_TITLE')}</FormLabel>
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Enter Trigger Title"
+                          placeholder={t('ENTER_TRIGGER_TITLE')}
                           {...field}
                         />
                       </FormControl>
@@ -99,7 +101,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                         <FormLabel>Source</FormLabel>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select Source" />
+                            <SelectValue placeholder={t('SELECT_SOURCE')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -125,10 +127,10 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
-                        <FormLabel>River Basin</FormLabel>
+                        <FormLabel>{t('RIVER_BASIN')}</FormLabel>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select River Basin" />
+                            <SelectValue placeholder={t('SELECT_RIVER_BASIN')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -153,14 +155,14 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
               render={({ field }) => {
                 return (
                   <FormItem>
-                    <FormLabel>Threshold Level</FormLabel>
+                    <FormLabel>{t('THRESHOLD_LEVEL')}</FormLabel>
                     <FormControl>
                       <Input
                         type="text"
                         // inputMode="decimal"
                         // pattern="[0-9]*[.,]?[0-9]*"
                         // title="Please enter positive number"
-                        placeholder="Enter water Level"
+                        placeholder={t('ENTER_WATER_LEVEL2')}
                         {...field}
                       />
                     </FormControl>

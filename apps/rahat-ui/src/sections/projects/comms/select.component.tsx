@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import {
   Select,
   SelectContent,
@@ -11,6 +12,7 @@ type Iprops = {
   className?: string;
   name: string;
   options?: Array<string>;
+  optionLabels?: Record<string, string>;
   value?: string;
   onChange?: (value: string) => void;
 };
@@ -19,18 +21,20 @@ export default function SelectComponent({
   className = 'w-full',
   name,
   options,
+  optionLabels,
   value,
   onChange,
 }: Iprops) {
+  const t = useTranslations('GLOBAL');
   return (
     <Select value={value} onValueChange={onChange}>
       <SelectTrigger className={className}>
-        <SelectValue placeholder={`Select ${name}`} />
+        <SelectValue placeholder={t('SELECT_PLACEHOLDER', { name })} />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
           {options?.map((o: string) => (
-            <SelectItem value={o}>{o}</SelectItem>
+            <SelectItem key={o} value={o}>{optionLabels?.[o] ?? o}</SelectItem>
           ))}
         </SelectGroup>
       </SelectContent>

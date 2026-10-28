@@ -1,12 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { useState, useMemo } from 'react';
 import {
   ArrowRight,
   CloudDownload,
+  LoaderCircle,
   Mail,
   MessageSquare,
   Mic,
+  RefreshCcw,
 } from 'lucide-react';
 import {
   Card,
@@ -17,16 +20,21 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useRouter } from 'next/navigation';
 import {
+  useGetCommunicationLogs,
   useListSessionLogs,
   usePagination,
   useSessionBroadCastCount,
+  useSessionRetryFailed,
+  useSettingsStore,
 } from '@rahat-ui/query';
 import { BroadcastStatus } from '@rumsan/connect/src/types';
 import * as XLSX from 'xlsx';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
-import { formatEnumString } from 'apps/rahat-ui/src/utils/string';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import MessageWithToggle from '../../activities/components/messageWithToggle';
+import { downloadLogsCsv } from './comms.logs.export.utils';
+import { toast } from 'react-toastify';
+import { UUID } from 'crypto';
 
 interface BaseCommunication {
   groupId: string;
@@ -38,6 +46,8 @@ interface BaseCommunication {
   sessionStatus: string;
   sessionId: string;
   completedAt: string;
+  startedAt: string;
+  updatedAt: string;
 }
 
 interface EmailCommunication extends BaseCommunication {
@@ -64,29 +74,51 @@ export function CommunicationDetailCard({
   activityId,
   projectId,
 }: CommunicationCardProps) {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const { pagination, filters } = usePagination();
-  const { data: sessionLogs } = useListSessionLogs(
-    activityCommunication?.sessionId,
-    {
+  const { data: logs, isLoading } = useGetCommunicationLogs(
+    projectId as UUID,
+    activityCommunication?.communicationId,
+    activityId,
+  );
+  const { data: sessionLogs, isLoading: isLoadingSessionLogs } =
+    useListSessionLogs(activityCommunication?.sessionId, {
       ...pagination,
       ...filters,
-    },
-  );
+    });
   const router = useRouter();
   const count = useSessionBroadCastCount([activityCommunication?.sessionId]);
 
-  const [isPlaying, setIsPlaying] = useState(false);
+  const commsSettings = useSettingsStore((state) => state.commsSettings);
 
+  const downloadUrl = useMemo(
+    () =>
+      commsSettings?.URL
+        ? `${
+            commsSettings.URL
+          }/broadcasts/download?sessionId=${encodeURIComponent(
+            activityCommunication?.sessionId,
+          )}`
+        : null,
+    [commsSettings, activityCommunication?.sessionId],
+  );
+
+  const [isPlaying, setIsPlaying] = useState(false);
+  const formatDate = useDateFormat();
+  const [isExporting, setIsExporting] = useState(false);
   const getSessionStatusBadgeClass = (status?: string) => {
     switch (status) {
       case 'PENDING':
-        return 'text-red-400 bg-yellow-100';
+        return 'text-amber-800 bg-amber-100 border border-amber-200';
       case 'COMPLETED':
-        return 'text-green-700 bg-green-200';
+        return 'text-emerald-800 bg-emerald-100 border border-emerald-200';
       case 'FAILED':
-        return 'text-red-700 bg-red-200';
+        return 'text-rose-800 bg-rose-100 border border-rose-200';
+      case 'NEW':
+        return 'text-sky-800 bg-sky-100 border border-sky-200';
       default:
-        return 'bg-gray-200';
+        return 'text-slate-700 bg-slate-100 border border-slate-200';
     }
   };
 
@@ -105,7 +137,7 @@ export function CommunicationDetailCard({
 
   const onViewDetails = () => {
     router.push(
-      `/projects/aa/${projectId}/communication-logs/commsdetails/${activityCommunication?.communicationId}@${activityId}@${activityCommunication?.sessionId}`,
+      `/projects/aa/${projectId}/communication-logs/commsdetails/${activityCommunication?.communicationId}@${activityId}@${activityCommunication?.sessionId || ''}`,
     );
   };
 
@@ -129,6 +161,64 @@ export function CommunicationDetailCard({
 
   const hasNoFailedDeliveries = (count?.data?.data?.FAIL ?? 0) === 0;
 
+  const logsMeta = sessionLogs?.httpReponse?.data?.meta;
+
+  const hasNoLogsForExport = (logsMeta?.total ?? 0) === 0;
+
+  const retryFailed = useSessionRetryFailed();
+
+  const handleRetryFailed = async () => {
+    if (!activityCommunication?.sessionId) return;
+    await retryFailed.mutateAsync({
+      cuid: activityCommunication.sessionId,
+      includeFailed: true,
+    });
+  };
+
+  const onExportAllLogs = async () => {
+    if (!downloadUrl) {
+      return toast.error(
+        'Failed to load communication data. Please refresh and try again.',
+      );
+    }
+    setIsExporting(true);
+    try {
+      const meta = {
+        groupName: logs?.group?.name || 'N/A',
+        groupType: logs?.communicationDetail?.groupType || 'N/A',
+        transportName:
+          logs?.sessionDetails?.Transport?.name ||
+          activityCommunication?.transportName ||
+          'N/A',
+        communicationTitle:
+          logs?.communicationDetail?.communicationTitle ||
+          activityCommunication?.communicationTitle ||
+          'N/A',
+        message:
+          typeof logs?.communicationDetail?.message === 'string'
+            ? logs.communicationDetail.message
+            : undefined,
+        subject: logs?.communicationDetail?.subject,
+        sessionStartedAt: logs?.sessionDetails?.startedAt,
+        sessionEndedAt: logs?.sessionDetails?.endedAt,
+      };
+      const fileName = `${
+        activityCommunication?.communicationTitle || 'communication'
+      }_${new Date().toISOString().slice(0, 10)}`;
+      await downloadLogsCsv(downloadUrl, fileName, meta);
+      toast.success('Communication logs exported successfully!');
+    } catch (error) {
+      console.error('Error exporting logs:', error);
+      toast.error(
+        `Failed to export logs: ${
+          error instanceof Error ? error.message : 'Unknown error'
+        }`,
+      );
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
     <Card className="mb-4 rounded-sm">
       <CardContent className="pt-4 px-4 pb-4">
@@ -137,20 +227,24 @@ export function CommunicationDetailCard({
             {getIcon()}
           </div>
 
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 overflow-hidden">
             <div className="flex items-center gap-2 mb-1">
+              <div className="flex-1 min-w-0 overflow-hidden">
+                <TooltipWrapper
+                  tip={`${t('COMMUNICATION_TITLE')}: ${
+                    activityCommunication?.communicationTitle
+                  }`}
+                >
+                  <h3 className="font-medium text-gray-900 truncate">
+                    {activityCommunication?.communicationTitle}
+                  </h3>
+                </TooltipWrapper>
+              </div>
               <TooltipWrapper
-                tip={`Communication Title: ${activityCommunication?.communicationTitle}`}
-              >
-                <h3 className="font-medium text-gray-900 truncate">
-                  {activityCommunication?.communicationTitle}
-                </h3>
-              </TooltipWrapper>
-              <TooltipWrapper
-                tip={`Communication Status: ${
+                tip={`${t('COMMUNICATION_STATUS')}: ${
                   activityCommunication?.sessionStatus
-                    ? formatEnumString(activityCommunication.sessionStatus)
-                    : 'Unknown'
+                    ? tg(activityCommunication.sessionStatus as any)
+                    : t('UNKNOWN')
                 }`}
               >
                 <Badge
@@ -159,27 +253,37 @@ export function CommunicationDetailCard({
                   )}`}
                 >
                   {activityCommunication?.sessionStatus
-                    ? formatEnumString(activityCommunication.sessionStatus)
-                    : 'Unknown'}
+                    ? tg(activityCommunication.sessionStatus as any)
+                    : t('UNKNOWN')}
                 </Badge>
               </TooltipWrapper>
             </div>
 
             <div className="flex items-center gap-2 text-sm text-gray-500">
               <TooltipWrapper
-                tip={`Communication Channel: ${activityCommunication?.transportName}`}
+                tip={`${t('COMMUNICATION_CHANNEL')}: ${
+                  activityCommunication?.transportName
+                }`}
               >
-                <span>{activityCommunication?.transportName}</span>
+                <span>
+                  {activityCommunication?.transportName
+                    ? tg(activityCommunication.transportName as any)
+                    : t('UNKNOWN')}
+                </span>
               </TooltipWrapper>
               <span>•</span>
               <TooltipWrapper
-                tip={`Group Type: ${activityCommunication?.groupType}`}
+                tip={`${t('GROUP_TYPE')}: ${activityCommunication?.groupType}`}
               >
-                <span>{activityCommunication?.groupType}</span>
+                <span>
+                  {activityCommunication?.groupType
+                    ? tg(activityCommunication.groupType as any)
+                    : t('UNKNOWN')}
+                </span>
               </TooltipWrapper>
               <span>•</span>
               <TooltipWrapper
-                tip={`Group Name: ${activityCommunication?.groupName}`}
+                tip={`${t('GROUP_NAME')}: ${activityCommunication?.groupName}`}
               >
                 <span>{activityCommunication?.groupName}</span>
               </TooltipWrapper>
@@ -190,9 +294,11 @@ export function CommunicationDetailCard({
         {'subject' in activityCommunication &&
           activityCommunication?.subject && (
             <TooltipWrapper
-              tip={`Communication Subject: ${activityCommunication?.subject}`}
+              tip={`${t('COMMUNICATION_SUBJECT')}: ${
+                activityCommunication?.subject
+              }`}
             >
-              <h4 className="font-medium text-sm mt-3">
+              <h4 className="font-medium text-sm mt-3 truncate max-w-full">
                 {activityCommunication?.subject}
               </h4>
             </TooltipWrapper>
@@ -201,12 +307,13 @@ export function CommunicationDetailCard({
         {(activityCommunication?.transportName === 'EMAIL' ||
           activityCommunication?.transportName === 'SMS') && (
           <TooltipWrapper
-            tip={`Communication Message: ${activityCommunication?.message?.substring(
-              0,
-              50,
-            )}${activityCommunication?.message?.length > 50 ? '...' : ''}`}
+            tip={`${t(
+              'COMMUNICATION_MESSAGE',
+            )}: ${activityCommunication?.message?.substring(0, 50)}${
+              activityCommunication?.message?.length > 50 ? '...' : ''
+            }`}
           >
-            <div className="mt-2">
+            <div className="mt-2 overflow-hidden break-words">
               <MessageWithToggle
                 message={activityCommunication?.message ?? ''}
               />
@@ -217,7 +324,9 @@ export function CommunicationDetailCard({
         {activityCommunication?.transportName === 'VOICE' &&
           Object.keys(activityCommunication?.message).length !== 0 && (
             <TooltipWrapper
-              tip={`Voice File: ${activityCommunication?.message?.fileName}`}
+              tip={`${t('VOICE_FILE')}: ${
+                activityCommunication?.message?.fileName
+              }`}
             >
               <div className="bg-gray-50 p-3 rounded-sm mt-3">
                 <p className="text-center mb-2 text-sm font-medium">
@@ -234,38 +343,49 @@ export function CommunicationDetailCard({
             </TooltipWrapper>
           )}
 
-        {activityCommunication?.sessionStatus === 'COMPLETED' && (
-          <TooltipWrapper
-            tip={`Completed At: ${dateFormat(
-              activityCommunication.completedAt,
-            )}`}
-          >
-            <p className="mt-3 text-sm text-gray-500">
-              Completed at: {dateFormat(activityCommunication.completedAt)}
-            </p>
-          </TooltipWrapper>
-        )}
-
-        <CardFooter className="pt-4 px-0 pb-0 flex justify-between items-center">
-          {(() => {
-            const latestUpdatedAt = sessionLogs?.httpReponse?.data?.data?.reduce(
-              (latest: string | null, row: any) =>
-                !latest || new Date(row?.updatedAt) > new Date(latest)
-                  ? row?.updatedAt
-                  : latest,
-              null,
-            );
-            return latestUpdatedAt ? (
+        <CardFooter className="pt-4 px-0 pb-0 flex flex-wrap justify-between items-center gap-2">
+          <div className="flex flex-col gap-1">
+            {activityCommunication?.sessionStatus === 'COMPLETED' && (
               <p className="text-sm text-gray-500">
-                Updated At: {dateFormat(latestUpdatedAt)}
+                {t('COMPLETED_AT')}: {formatDate(activityCommunication.completedAt)}
               </p>
-            ) : (
-              <div />
-            );
-          })()}
-          <div className="flex gap-3">
+            )}
+            {(() => {
+              const latestUpdatedAt = sessionLogs?.httpReponse?.data?.data?.reduce(
+                (latest: string | null, row: any) =>
+                  !latest || new Date(row?.updatedAt) > new Date(latest)
+                    ? row?.updatedAt
+                    : latest,
+                null,
+              );
+              return latestUpdatedAt ? (
+                <p className="text-sm text-gray-500">
+                  {t('UPDATED_AT')}: {formatDate(latestUpdatedAt)}
+                </p>
+              ) : null;
+            })()}
+          </div>
+          <div className="flex gap-3 ml-auto">
+            {(count?.data?.data?.FAIL ?? 0) > 0 && (
+              <TooltipWrapper tip={tg('RETRY_VOICE_COMMUNICATION')}>
+                <Button
+                  variant="outline"
+                  className="gap-2"
+                  onClick={handleRetryFailed}
+                  disabled={retryFailed.isPending}
+                >
+                  {retryFailed.isPending ? (
+                    <LoaderCircle className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <RefreshCcw className="h-4 w-4" />
+                  )}
+                  {tg('RETRY')}
+                </Button>
+              </TooltipWrapper>
+            )}
+
             <TooltipWrapper
-              tip="No failed deliveries to export"
+              tip={t('NO_FAILED_DELIVERIES_TO_EXPORT')}
               disable={!hasNoFailedDeliveries}
             >
               <Button
@@ -274,8 +394,26 @@ export function CommunicationDetailCard({
                 onClick={onFailedExports}
                 disabled={hasNoFailedDeliveries}
               >
-                Failed Exports
+                {t('FAILED_EXPORTS')}
                 <CloudDownload className="h-4 w-4" />
+              </Button>
+            </TooltipWrapper>
+            <TooltipWrapper
+              tip={t('NO_COMMUNICATION_LOGS_AVAILABLE_TO_EXPORT')}
+              disable={!hasNoLogsForExport}
+            >
+              <Button
+                variant="outline"
+                className="gap-2"
+                onClick={onExportAllLogs}
+                disabled={isLoading || hasNoLogsForExport || isExporting}
+              >
+                {isExporting ? (
+                  <LoaderCircle className="h-4 w-4 animate-spin" />
+                ) : (
+                  <CloudDownload className="h-4 w-4" />
+                )}
+                {isExporting ? t('EXPORTING') : t('EXPORT_ALL_LOGS')}{' '}
               </Button>
             </TooltipWrapper>
             <Button
@@ -283,7 +421,7 @@ export function CommunicationDetailCard({
               className="flex-1 gap-2 text-blue-600 border-blue-200"
               onClick={onViewDetails}
             >
-              View Details
+              {t('VIEW_DETAILS')}
               <ArrowRight className="h-4 w-4" />
             </Button>
           </div>

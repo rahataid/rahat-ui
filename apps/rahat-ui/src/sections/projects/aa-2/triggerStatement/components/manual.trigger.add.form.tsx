@@ -1,4 +1,6 @@
+import * as React from 'react';
 import { UseFormReturn } from 'react-hook-form';
+import { useTranslations } from 'next-intl';
 import {
   Form,
   FormControl,
@@ -18,7 +20,8 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { DurationData } from '../../activities/add/add.activity.view';
-
+import { getLeadTimeParts } from '../utils';
+import { useState, useEffect } from 'react';
 type IProps = {
   form: UseFormReturn<{
     title: string;
@@ -35,13 +38,30 @@ export default function AddManualTriggerForm({
   phase,
   stationHeading,
 }: IProps) {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
+  const [leadTimeUnit, setLeadTimeUnit] = useState<'hours' | 'days'>(
+    () => getLeadTimeParts(form.getValues('leadTime')).unit,
+  );
+  const leadTimeValue = form.watch('leadTime');
+
+  useEffect(() => {
+    const parsed = getLeadTimeParts(leadTimeValue, leadTimeUnit);
+    if (
+      parsed.unit !== leadTimeUnit &&
+      /(hours|days)/i.test(leadTimeValue || '')
+    ) {
+      setLeadTimeUnit(parsed.unit);
+    }
+  }, [leadTimeValue, leadTimeUnit]);
+
   return (
     <>
       <Form {...form}>
         <form>
           <div className="mt-4 grid grid-cols-2 gap-4">
             <FormItem className="w-full">
-              <FormLabel>Phase</FormLabel>
+              <FormLabel>{t('PHASE')}</FormLabel>
               <FormControl>
                 <Input
                   className="bg-gray-300"
@@ -74,11 +94,11 @@ export default function AddManualTriggerForm({
                       phase?.isRequiredLeadTime ? 'w-full' : 'col-span-2 w-full'
                     }
                   >
-                    <FormLabel>Trigger Title</FormLabel>
+                    <FormLabel>{t('TRIGGER_TITLE')}</FormLabel>
                     <FormControl>
                       <Input
                         type="text"
-                        placeholder="Enter Trigger Title"
+                        placeholder={t('ENTER_TRIGGER_TITLE')}
                         {...field}
                       />
                     </FormControl>
@@ -92,34 +112,29 @@ export default function AddManualTriggerForm({
                 control={form.control}
                 name="leadTime"
                 render={({ field }) => {
-                  const raw = field.value?.trim() ?? '';
-                  const unitMatch = raw.match(/(hours|days)/i);
-                  const unit = unitMatch
-                    ? unitMatch[0].toLowerCase()
-                    : 'days';
-                  const lead = raw.replace(/\s*(hours|days)\s*/i, '') || '';
+                  const { lead, unit } = getLeadTimeParts(
+                    field.value,
+                    leadTimeUnit,
+                  );
                   return (
                     <FormItem className="w-full">
-                      <FormLabel>Lead Time</FormLabel>
+                      <FormLabel>{tg('LEAD_TIME')}</FormLabel>
                       <div className="grid grid-cols-4">
                         <Input
                           type="text"
-                          placeholder="Enter lead time"
+                          placeholder={tg('ENTER_LEAD_TIME')}
                           className="col-span-3 rounded-r-none"
                           value={lead}
                           onChange={(e) => {
                             const newLead = e.target.value;
-                            field.onChange(
-                              newLead ? `${newLead} ${unit}` : '',
-                            );
+                            field.onChange(newLead ? `${newLead} ${unit}` : '');
                           }}
                         />
                         <Select
                           value={unit}
                           onValueChange={(val) => {
-                            field.onChange(
-                              lead ? `${lead} ${val}` : '',
-                            );
+                            setLeadTimeUnit(val as 'hours' | 'days');
+                            field.onChange(`${lead} ${val}`);
                           }}
                         >
                           <FormControl>
@@ -130,7 +145,9 @@ export default function AddManualTriggerForm({
                           <SelectContent>
                             {DurationData.map((item) => (
                               <SelectItem key={item.value} value={item.value}>
-                                {item.label}
+                                {item.value === 'hours'
+                                  ? t('HOURS')
+                                  : t('DAYS')}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -148,10 +165,10 @@ export default function AddManualTriggerForm({
               render={({ field }) => {
                 return (
                   <FormItem className="col-span-2">
-                    <FormLabel>Trigger Description</FormLabel>
+                    <FormLabel>{t('TRIGGER_DESCRIPTION')}</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Write trigger description here"
+                        placeholder={t('WRITE_TRIGGER_DESCRIPTION_HERE')}
                         {...field}
                       />
                     </FormControl>
@@ -171,7 +188,7 @@ export default function AddManualTriggerForm({
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>
-                  <FormLabel className="ml-2">Optional</FormLabel>
+                  <FormLabel className="ml-2">{t('OPTIONAL')}</FormLabel>
                 </FormItem>
               )}
             />

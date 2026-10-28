@@ -14,6 +14,12 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { FileWarning } from 'lucide-react';
 import AddButton from '../../projects/components/add.btn';
+import { useTranslations } from 'next-intl';
+import { GlobalCan } from 'apps/rahat-ui/src/components/global-can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 
 type IProps = {
   table: Table<any>;
@@ -34,24 +40,28 @@ export default function MembersTable({
   isSearching,
   onSearch,
 }: IProps) {
+  const tAdd = useTranslations('GLOBAL');
+  const t = useTranslations('GLOBAL');
   return (
     <>
       <div className="p-4 border rounded-md mt-5">
         <div className="flex justify-between gap-2">
           <SearchInput
-            name="Beneficiaries"
+            name={t('BENEFICIARIES')}
             className="mb-2 w-full"
             value={searchValue}
             onSearch={(e) => onSearch(e.target.value)}
           />
           <ViewColumns table={table} />
           {groupedBeneficiaries?.length ? (
+            <GlobalCan action={ACTIONS.UPDATE} subject={SUBJECTS.BENEFICIARY}>
             <AddButton
               variant="outline"
               className="border-primary text-primary"
-              name="Beneficiary"
+              name={tAdd('BENEFICIARY')}
               path={`/beneficiaries/groups/${groupUUID}/select`}
             />
+            </GlobalCan>
           ) : null}
         </div>
         <div className="bg-card border rounded">
@@ -116,15 +126,20 @@ export default function MembersTable({
                             <FileWarning size={18} strokeWidth={1.5} />
                           </div>
                           <p className="font-medium text-lg">
-                            No beneficiary added
+                            {t('NO_BENEFICIARY_ADDED')}
                           </p>
                           <p className="text-muted-foreground text-base">
-                            Add beneficiary to the group to display data
+                            {t('ADD_BENEFICIARY_TO_GROUP') || 'Add beneficiary to the group to display data'}
                           </p>
+                          <GlobalCan
+                            action={ACTIONS.UPDATE}
+                            subject={SUBJECTS.BENEFICIARY}
+                          >
                           <AddButton
-                            name="Beneficiary"
+                            name={tAdd('BENEFICIARY')}
                             path={`/beneficiary/groups/${groupUUID}/select?member=true&name=${name}`}
                           />
+                          </GlobalCan>
                         </div>
                       )}
                     </TableCell>

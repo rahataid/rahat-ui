@@ -1,5 +1,6 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { cn } from './utils';
+import { useTranslations } from 'next-intl';
 import { Flag, ArrowDown, AlertTriangle } from 'lucide-react';
 import { GrievancePriority } from '@rahat-ui/query/lib/grievance/types/grievance';
 
@@ -29,27 +30,30 @@ const priorityIcons = {
   default: Flag,
 } as const;
 
-const priorityLabels = {
-  [GrievancePriority.LOW]: 'Low',
-  [GrievancePriority.MEDIUM]: 'Medium',
-  [GrievancePriority.HIGH]: 'High',
-  default: 'N/A',
-} as const;
+const priorityLabels: Record<string, string> = {
+  [GrievancePriority.LOW]: 'LOW',
+  [GrievancePriority.MEDIUM]: 'MEDIUM',
+  [GrievancePriority.HIGH]: 'HIGH',
+  default: 'N_A',
+};
 
 export function PriorityChip({
   priority,
   className,
   showIcon = true,
 }: PriorityChipProps) {
+  const t = useTranslations('AA_PROJECT');
+
   const colorClass =
     priority && priority in priorityColors
       ? priorityColors[priority as keyof typeof priorityColors]
       : priorityColors.default;
 
-  const displayText =
+  const labelKey =
     priority && priority in priorityLabels
       ? priorityLabels[priority as keyof typeof priorityLabels]
       : priorityLabels.default;
+  const displayText = t(labelKey);
 
   const IconComponent =
     priority && priority in priorityIcons

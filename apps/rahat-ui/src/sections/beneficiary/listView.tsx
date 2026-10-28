@@ -11,7 +11,11 @@ import {
 } from '@rahat-ui/shadcn/components/dropdown-menu';
 
 import { Input } from '@rahat-ui/shadcn/components/input';
+import { GlobalCan } from 'apps/rahat-ui/src/components/global-can';
 import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';import {
   TableBody,
   TableCell,
   Table as TableComponent,
@@ -27,6 +31,8 @@ import { DatePicker } from '../../components/datePicker';
 import FiltersTags from '../projects/components/filtersTags';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 type IProps = {
   table: Table<ListBeneficiary>;
@@ -52,6 +58,9 @@ export default function ListView({
   setFilters,
 }: IProps) {
   const router = useRouter();
+  const t = useTranslations('BENEFICIARY_LIST');
+  const g = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
 
   return (
     <>
@@ -72,49 +81,52 @@ export default function ListView({
       <div className="border rounded shadow p-3">
         <div className="flex space-x-2 items-center mb-2">
           <Input
-            placeholder="Search name..."
+            placeholder={t('SEARCH_NAME')}
             value={filters?.name ?? ''}
-            onChange={(e) =>
-              setFilters({
-                ...filters,
-                name: e.target.value,
-              })
+            onChange={(event) =>
+              setFilters?.({ ...filters, name: event.target.value })
             }
             className="rounded"
           />
 
           <DatePicker
-            placeholder="Pick Start Date"
+            placeholder={t('PICK_START_DATE')}
             handleDateChange={handleDateChange}
             type="start"
             selectedDate={filters?.startDate}
             maxDate={filters?.endDate}
           />
           <DatePicker
-            placeholder="Pick End Date"
+            placeholder={t('PICK_END_DATE')}
             handleDateChange={handleDateChange}
             type="end"
             selectedDate={filters?.endDate}
             minDate={filters?.startDate}
           />
 
-          <Button
-            variant={'default'}
-            type="button"
-            onClick={() => router.push(`/beneficiary/add`)}
-          >
-            <Plus size={18} className="mr-1" /> Create Beneficiary
-          </Button>
+          <GlobalCan action={ACTIONS.CREATE} subject={SUBJECTS.BENEFICIARY}>
+            <Button
+              variant={'default'}
+              type="button"
+              onClick={() => router.push(`/beneficiary/add`)}
+            >
+              <Plus size={18} className="mr-1" /> {t('CREATE_BENEFICIARY')}
+            </Button>
+          </GlobalCan>
           {Object.values(table.getState().rowSelection).filter(Boolean)
             .length ? (
+            <GlobalCan
+              action={ACTIONS.UPDATE}
+              subject={SUBJECTS.BENEFICIARY}
+            >
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button className="ml-2">
-                  {
+                  {formatNum(
                     Object.values(table.getState().rowSelection).filter(Boolean)
-                      .length
-                  }{' '}
-                  - Beneficiary Selected
+                      .length,
+                  )}{' '}
+                  - {t('BENEFICIARY_SELECTED')}
                   <ChevronDown className="ml-1" strokeWidth={1.5} />
                 </Button>
               </DropdownMenuTrigger>
@@ -123,16 +135,17 @@ export default function ListView({
                   onClick={projectModal.onTrue}
                   disabled={isBulkAssigning}
                 >
-                  Bulk Assign Project
+                  {t('BULK_ASSIGN_PROJECT')}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={groupModal.onTrue}
                   // disabled={isBulkAssigning}
                 >
-                  Create Group
+                  {g('CREATE_GROUP')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            </GlobalCan>
           ) : null}
         </div>
 
@@ -194,10 +207,10 @@ export default function ListView({
                         alt="no data"
                       />
                       <p className="text-medium text-base mb-1">
-                        No Data Available
+                        {g('NO_DATA_AVAILABLE')}
                       </p>
                       <p className="text-sm mb-4 text-gray-500">
-                        There are no beneficiaries to display at the moment
+                        {t('THERE_ARE_NO_BENEFICIARIES_TO_DISPLAY')}
                       </p>
                     </div>
                   </TableCell>

@@ -1,9 +1,6 @@
 'use client';
 
 import {
-  useAssignBenGroupToProject,
-  useProjectList,
-  useRemoveBeneficiaryGroup,
   useValidateBeneficaryBankAccount,
 } from '@rahat-ui/query';
 import {
@@ -15,18 +12,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@rahat-ui/shadcn/components/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/components/select';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ListBeneficiaryGroup } from '@rahat-ui/types';
 import { UUID } from 'crypto';
-import { useRouter } from 'next/navigation';
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 
 type ValidateModalType = {
   value: boolean;
@@ -45,10 +35,16 @@ export default function ValidateBenefBankAccountByGroupUuid({
   beneficiaryGroupDetail,
   onConfirm,
 }: IProps) {
+  const t = useTranslations('BENEFICIARY_GROUP_DETAIL');
+  const tg = useTranslations('GLOBAL');
   const validateBenefGroup = useValidateBeneficaryBankAccount();
   const handleValidateBankAccount = async () => {
     onConfirm?.();
-    await validateBenefGroup.mutateAsync(beneficiaryGroupDetail.uuid as UUID);
+    await validateBenefGroup.mutateAsync({
+      uuid: beneficiaryGroupDetail.uuid as UUID,
+      successMessage: tg('ACCOUNTS_CHECK_IN_PROGRESS'),
+      errorMessage: tg('ERROR_WHILE_VALIDATING_BENEFICIARY'),
+    });
   };
 
   React.useEffect(() => {
@@ -65,20 +61,19 @@ export default function ValidateBenefBankAccountByGroupUuid({
         <DialogHeader>
           <DialogTitle>
             {beneficiaryGroupDetail?.groupPurpose === 'MOBILE_MONEY'
-              ? 'Validate Beneficiary Phone Number'
-              : 'Validate Beneficiary Bank Account'}
+              ? t('VALIDATE_BENEFICIARY_PHONE_NUMBER')
+              : t('VALIDATE_BENEFICIARY_BANK_ACCOUNT')}
           </DialogTitle>
           <DialogDescription>
-            This will validate the beneficiary{' '}
             {beneficiaryGroupDetail?.groupPurpose === 'MOBILE_MONEY'
-              ? 'phone number'
-              : 'bank account'}
+              ? t('THIS_WILL_VALIDATE_THE_BENEFICIARY_PHONE')
+              : t('THIS_WILL_VALIDATE_THE_BENEFICIARY_BANK')}
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="sm:justify-end">
           <DialogClose asChild>
             <Button type="button" variant="outline">
-              Cancel
+              {tg('CANCEL')}
             </Button>
           </DialogClose>
           <Button
@@ -86,7 +81,7 @@ export default function ValidateBenefBankAccountByGroupUuid({
             type="button"
             variant="default"
           >
-            Confirm
+            {tg('CONFIRM')}
           </Button>
         </DialogFooter>
       </DialogContent>

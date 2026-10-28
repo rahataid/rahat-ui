@@ -15,12 +15,14 @@ import {
 } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 import { isEmpty } from 'lodash';
+import { useTranslations } from 'next-intl';
 import { useEffect, useMemo } from 'react';
 import { MS_CAM_ACTIONS, PROJECT_SETTINGS_KEYS, TAGS } from '../../config';
-import { useSwal } from '../../swal';
 import { api } from '../../utils/api';
+import { resolveBackendErrorMessage } from '../../utils/i18n/backend-error';
 import { useProjectSettingsStore, useProjectStore } from './project.store';
-import Swal from 'sweetalert2';
+import { toast } from 'react-toastify';
+import { showToast } from '../../utils/custom-toast';
 
 const createProject = async (payload: CreateProjectPayload) => {
   const res = await api.post('/projects', payload);
@@ -79,14 +81,8 @@ export const useGeneralAction = <T = any>() => {
 export const useAssignBenToProject = () => {
   const q = useProjectAction();
   const { queryClient, rumsanService } = useRSQuery();
+  const tg = useTranslations('GLOBAL');
 
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
   return useMutation({
     mutationFn: async ({
       beneficiaryUUID,
@@ -107,19 +103,16 @@ export const useAssignBenToProject = () => {
     },
     onSuccess: () => {
       q.reset();
-      toast.fire({
-        title: 'Beneficiary Assigned Successfully',
-        icon: 'success',
-      });
+      toast.success(tg('BENEFICIARY_ASSIGNED_SUCCESSFULLY'));
       queryClient.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARY] });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const errorMessage = error?.response?.data?.message || tg('ERROR');
       q.reset();
-      toast.fire({
-        title: 'Error while updating Beneficiary',
-        icon: 'error',
-        text: errorMessage,
+      showToast({
+        type: 'error',
+        title: tg('ERROR_WHILE_UPDATING_BENEFICIARY'),
+        description: errorMessage,
       });
     },
   });
@@ -128,13 +121,8 @@ export const useAssignBenToProject = () => {
 export const useAssignBenGroupToProject = () => {
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+  const tg = useTranslations('GLOBAL');
+
   return useMutation({
     mutationFn: async ({
       beneficiaryGroupUUID,
@@ -167,18 +155,15 @@ export const useAssignBenGroupToProject = () => {
         }),
       ]);
 
-      toast.fire({
-        title: 'Beneficiary group assigned Successfully',
-        icon: 'success',
-      });
+      toast.success(tg('BENEFICIARY_GROUP_ASSIGNED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const errorMessage = error?.response?.data?.message || tg('ERROR');
       q.reset();
-      toast.fire({
-        title: 'Error while assigning beneficiary group',
-        icon: 'error',
-        text: errorMessage,
+      showToast({
+        type: 'error',
+        title: tg('ERROR_WHILE_ASSIGNING_BENEFICIARY_GROUP'),
+        description: errorMessage,
       });
     },
   });
@@ -186,13 +171,8 @@ export const useAssignBenGroupToProject = () => {
 
 export const useBulkAssignBenToProject = () => {
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+  const tg = useTranslations('GLOBAL');
+
   return useMutation({
     mutationFn: async ({
       beneficiaryUUIDs,
@@ -216,18 +196,15 @@ export const useBulkAssignBenToProject = () => {
     },
     onSuccess: () => {
       q.reset();
-      toast.fire({
-        title: 'Beneficiary Assigned Successfully',
-        icon: 'success',
-      });
+      toast.success(tg('BENEFICIARY_ASSIGNED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const errorMessage = error?.response?.data?.message || tg('ERROR');
       q.reset();
-      toast.fire({
-        title: 'Error while updating Beneficiary',
-        icon: 'error',
-        text: errorMessage,
+      showToast({
+        type: 'error',
+        title: tg('ERROR_WHILE_UPDATING_BENEFICIARY'),
+        description: errorMessage,
       });
     },
   });
@@ -236,13 +213,9 @@ export const useBulkAssignBenToProject = () => {
 export const useAssignVendorToProject = () => {
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+  const tg = useTranslations('GLOBAL');
+  const tb = useTranslations();
+
   return useMutation({
     mutationFn: async ({
       vendorUUID,
@@ -250,6 +223,8 @@ export const useAssignVendorToProject = () => {
     }: {
       projectUUID: UUID;
       vendorUUID: UUID;
+      successMessage?: string;
+      errorMessage?: string;
     }) => {
       return q.mutateAsync({
         uuid: projectUUID,
@@ -261,21 +236,27 @@ export const useAssignVendorToProject = () => {
         },
       });
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables: any) => {
       q.reset();
-      toast.fire({
-        title: 'Vendor Assigned Successfully',
-        icon: 'success',
-      });
+      toast.success(
+        variables?.successMessage || tg('VENDOR_ASSIGNED_SUCCESSFULLY'),
+      );
       queryClient.invalidateQueries({ queryKey: [TAGS.GET_VENDORS] });
     },
-    onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+    onError: (error: any, variables: any) => {
+      const rawMessage = error?.response?.data?.message || tg('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['VENDORS'],
+        rawMessage,
+      );
       q.reset();
-      toast.fire({
-        title: 'Error while updating Vendor',
-        icon: 'error',
-        text: errorMessage,
+      showToast({
+        type: 'error',
+        title: variables?.errorMessage || tg('ERROR_WHILE_UPDATING_VENDOR'),
+        description: errorMessage,
       });
     },
   });
@@ -662,20 +643,20 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
         ...query.data,
         data: query.data?.data?.length
           ? query.data.data.map((row: any) => ({
-            ...row,
-            uuid: row?.uuid?.toString(),
-            walletAddress: row?.walletAddress?.toString(),
-            voucherClaimStatus: row?.claimStatus,
-            name: row?.piiData?.name || '',
-            email: row?.piiData?.email || '',
-            gender: row?.projectData?.gender?.toString() || '',
-            phone: row?.piiData?.phone || 'N/A',
-            type: row?.type?.toString() || 'N/A',
-            phoneStatus: row?.projectData?.phoneStatus || '',
-            bankedStatus: row?.projectData?.bankedStatus || '',
-            internetStatus: row?.projectData?.internetStatus || '',
-            benTokens: row?.benTokens || 'N/A',
-          }))
+              ...row,
+              uuid: row?.uuid?.toString(),
+              walletAddress: row?.walletAddress?.toString(),
+              voucherClaimStatus: row?.claimStatus,
+              name: row?.piiData?.name || '',
+              email: row?.piiData?.email || '',
+              gender: row?.projectData?.gender?.toString() || '',
+              phone: row?.piiData?.phone || 'N/A',
+              type: row?.type?.toString() || 'N/A',
+              phoneStatus: row?.projectData?.phoneStatus || '',
+              bankedStatus: row?.projectData?.bankedStatus || '',
+              internetStatus: row?.projectData?.internetStatus || '',
+              benTokens: row?.benTokens || 'N/A',
+            }))
           : [],
       };
     }, [query.data]),
@@ -836,19 +817,10 @@ export const useListELRedemption = (
 
 export const useUpdateElRedemption = () => {
   const projectAction = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+
   return useMutation({
     onSuccess: () => {
-      toast.fire({
-        title: 'Redemption Successful.',
-        icon: 'success',
-      });
+      toast.success('Redemption Successful.');
     },
     mutationFn: async ({
       projectUUID,
@@ -874,29 +846,21 @@ export const useUpdateElRedemption = () => {
 export const useProjectEdit = () => {
   const { queryClient, rumsanService } = useRSQuery();
   // const projectClient = getProjectClient(rumsanService.client);
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+  const tp = useTranslations('PROJECTS_LIST');
+
   return useMutation(
     {
       onSuccess: () => {
-        toast.fire({
-          title: 'Project edited successfully',
-          icon: 'success',
-        });
+        toast.success(tp('PROJECT_EDITED_SUCCESSFULLY'));
         queryClient.invalidateQueries({
           queryKey: [TAGS.GET_PROJECT_DETAILS],
         });
+        queryClient.invalidateQueries({
+          queryKey: [TAGS.GET_ALL_PROJECTS],
+        });
       },
       onError: () => {
-        toast.fire({
-          title: 'Error while editing project.',
-          icon: 'error',
-        });
+        toast.error(tp('ERROR_WHILE_EDITING_PROJECT'));
       },
       mutationKey: ['projectEdit'],
       mutationFn: async ({ uuid, data }: { uuid: UUID; data: any }) => {
@@ -909,30 +873,25 @@ export const useProjectEdit = () => {
 };
 export const useProjectClose = () => {
   const { queryClient, rumsanService } = useRSQuery();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+  const tp = useTranslations('PROJECTS_LIST');
+
   return useMutation(
     {
       onSuccess: () => {
-        toast.fire({
-          title: 'Project closed successfully',
-          icon: 'success',
-        });
+        toast.success(tp('PROJECT_CLOSED_SUCCESSFULLY'));
         queryClient.invalidateQueries({ queryKey: [TAGS.GET_ALL_PROJECTS] });
       },
       onError: () => {
-        toast.fire({
-          title: 'Error while closing project.',
-          icon: 'error',
-        });
+        toast.error(tp('ERROR_WHILE_CLOSING_PROJECT'));
       },
       mutationKey: ['projectClose'],
-      mutationFn: async ({ uuid, data }: { uuid: UUID; data: { status: string } }) => {
+      mutationFn: async ({
+        uuid,
+        data,
+      }: {
+        uuid: UUID;
+        data: { status: string };
+      }) => {
         const res = await rumsanService.client.patch(
           `/projects/${uuid}/status`,
           data,
@@ -1494,11 +1453,7 @@ export const useCambodiaTriggerComms = () => {
       return mutate;
     },
     onSuccess: () => {
-      Swal.fire(
-        'Your message is scheduled and will be delivered shortly',
-        '',
-        'success',
-      );
+      toast.success('Your message is scheduled and will be delivered shortly');
       qc.invalidateQueries({
         queryKey: [MS_CAM_ACTIONS.CAMBODIA.COMMUNICATION.LIST],
       });

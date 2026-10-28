@@ -1,5 +1,8 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import React, { useMemo, useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
@@ -78,6 +81,9 @@ export function formatLabel(value: string) {
 }
 
 export default function InkindAllocationList() {
+  const tv = useTranslations('AA_PROJECT_WITH_GNOSIS');
+  const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const { id } = useParams();
   const projectUUID = id as UUID;
   const router = useRouter();
@@ -142,23 +148,26 @@ export default function InkindAllocationList() {
     () => [
       {
         accessorKey: 'inkindName',
-        header: 'Inkind Name',
+        header: tv('INKIND_NAME'),
         cell: ({ row }) => (
-          <TruncatedCell text={row.original.inkindName} maxLength={20} />
+          <TruncatedCell text={row.original.inkindName} truncateByWidth />
         ),
       },
       {
         accessorKey: 'groupName',
-        header: 'Beneficiary Group',
+        header: tv('BENEFICIARY_GROUP'),
+        meta: { className: 'w-[20%]' },
+
         cell: ({ row }) => (
-          <TruncatedCell text={row.original.groupName} maxLength={20} />
+          <TruncatedCell text={row.original.groupName} truncateByWidth />
         ),
       },
       ...(modeTab === 'OFFLINE'
         ? [
             {
               accessorKey: 'vendor',
-              header: 'Vendor',
+              header: tv('VENDOR'),
+              meta: { className: 'w-[15%]' },
               cell: ({ row }: { row: { original: AllocationRow } }) => (
                 <span>{row.original.vendor ?? 'N/A'}</span>
               ),
@@ -167,16 +176,18 @@ export default function InkindAllocationList() {
         : []),
       {
         accessorKey: 'inkindType',
-        header: 'Inkind Type',
+        header: tv('INKIND_TYPE'),
+        meta: { className: 'w-[12%]' },
         cell: ({ row }) => (
           <Badge className="bg-gray-200 text-gray-600">
-            {formatLabel(row.original.inkindType)}
+            {translateValue(tg, row.original.inkindType)}
           </Badge>
         ),
       },
       {
         id: 'status',
-        header: 'Status',
+        header: tg('STATUS'),
+        meta: { className: 'w-[12%]' },
         cell: ({ row }) => {
           const isWalkIn = row.original.inkindType === 'WALK_IN';
           const status = isWalkIn
@@ -189,23 +200,30 @@ export default function InkindAllocationList() {
                 row.original.quantityAllocated,
                 row.original.quantityRedeemed,
               );
-          return <Badge className={STATUS_STYLE[status]}>{status}</Badge>;
+          return (
+            <Badge className={STATUS_STYLE[status]}>
+              {tv(status.replace(/\s+/g, '_').toUpperCase())}
+            </Badge>
+          );
         },
       },
       {
         accessorKey: 'quantityRedeemed',
-        header: 'Total Redeemed',
+        header: tv('TOTAL_REDEEMED'),
+        meta: { className: 'w-[15%]' },
         cell: ({ row }) => {
           const isWalkIn = row.original.inkindType === 'WALK_IN';
           return (
             <span className="font-semibold">
-              {row.original.quantityRedeemed}{' '}
+              {formatNum(row.original.quantityRedeemed)}{' '}
               <span className="text-xs font-normal">
                 /{' '}
-                {isWalkIn
-                  ? row.original.inkindAvailableStock +
-                    row.original.quantityRedeemed
-                  : row.original.beneficiaryCount}
+                {formatNum(
+                  isWalkIn
+                    ? row.original.inkindAvailableStock +
+                        row.original.quantityRedeemed
+                    : row.original.beneficiaryCount,
+                )}
               </span>
             </span>
           );
@@ -214,8 +232,9 @@ export default function InkindAllocationList() {
 
       {
         id: 'actions',
-        header: 'Actions',
+        header: tg('ACTIONS'),
         enableHiding: false,
+        meta: { className: 'w-[80px]' },
         cell: ({ row }) => {
           const r = row.original;
           const params = new URLSearchParams({
@@ -234,7 +253,7 @@ export default function InkindAllocationList() {
           return (
             <TooltipComponent
               Icon={Eye}
-              tip="View Details"
+              tip={tg('VIEW_DETAILS')}
               iconStyle="hover:text-primary cursor-pointer"
               handleOnClick={() =>
                 router.push(
@@ -263,13 +282,13 @@ export default function InkindAllocationList() {
   return (
     <div>
       <Heading
-        title="Allocation List"
+        title={tv('ALLOCATION_LIST')}
         titleStyle="font-medium text-lg"
-        description="Inkind items assigned to beneficiary groups"
+        description={tv('INKIND_ITEMS_ASSIGNED_TO_BENEFICIARY_GROUPS')}
       />
       <div className="flex border-b mb-4">
         {(['ONLINE', 'OFFLINE'] as ModeTab[]).map((tab) => {
-          const label = tab === 'ONLINE' ? 'Online' : 'Offline';
+          const label = tab === 'ONLINE' ? tv('ONLINE') : tv('OFFLINE');
           const isActive = modeTab === tab;
           return (
             <button
@@ -287,7 +306,7 @@ export default function InkindAllocationList() {
               {label}
               {isActive && (
                 <Badge className="h-5 min-w-[20px] justify-center text-white px-2 py-0 bg-[#297AD6]">
-                  {meta?.total ?? rows.length}
+                  {formatNum(meta?.total ?? rows.length)}
                 </Badge>
               )}
             </button>
@@ -297,7 +316,7 @@ export default function InkindAllocationList() {
       <div className="flex items-center gap-2 mb-2">
         <SearchInput
           className="flex-1"
-          name="Inkind Name"
+          name={tv('INKIND_NAME')}
           value={search}
           onSearch={(e) => {
             setSearch(e.target.value);
@@ -307,9 +326,7 @@ export default function InkindAllocationList() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="h-9 gap-1 shrink-0">
-              {typeFilter
-                ? INKIND_TYPE_LABELS[typeFilter as InkindType]
-                : 'All Types'}
+              {typeFilter ? tg(typeFilter as InkindType) : tv('ALL_TYPES')}
               <ChevronDown className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -320,7 +337,7 @@ export default function InkindAllocationList() {
                 setPagination({ ...pagination, page: 1 });
               }}
             >
-              All Types
+              {tv('ALL_TYPES')}
             </DropdownMenuItem>
             {INKIND_TYPES.map((t) => (
               <DropdownMenuItem
@@ -330,7 +347,7 @@ export default function InkindAllocationList() {
                   setPagination({ ...pagination, page: 1 });
                 }}
               >
-                {INKIND_TYPE_LABELS[t]}
+                {tg(t)}
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>

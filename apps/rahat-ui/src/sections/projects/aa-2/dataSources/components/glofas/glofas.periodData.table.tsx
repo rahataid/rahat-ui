@@ -1,6 +1,10 @@
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { getCellColor } from './utils/getPeriodDataCellColor';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
+
 interface IGlofasPeriodDataTableProps {
   headerData: string[];
   bodyData: string[][];
@@ -12,6 +16,9 @@ const GlofasPeriodDataTable = ({
   bodyData,
   title,
 }: IGlofasPeriodDataTableProps) => {
+  const t = useTranslations('AA_PROJECT');
+  const formatDate = useDateFormat();
+  const formatDigits = useLabelDigits();
   if (!headerData && !bodyData) {
     return;
   }
@@ -30,7 +37,9 @@ const GlofasPeriodDataTable = ({
                   className="p-2 border border-gray-300 bg-gray-100 text-center text-xs font-semibold text-gray-600"
                   key={index}
                 >
-                  {header}
+                  {index === 0
+                    ? translateValue(t, header, { fallbackStyle: 'raw' })
+                    : formatDigits(header)}
                 </th>
               ))}
             </tr>
@@ -45,7 +54,7 @@ const GlofasPeriodDataTable = ({
                         className={`p-2 border border-gray-200 text-center text-sm text-gray-700`}
                         key={cellIndex}
                       >
-                        {dateFormat(cell, 'MMM dd, yyyy')}
+                        {formatDate(cell, 'MMM dd')}
                       </td>
                     );
                   }

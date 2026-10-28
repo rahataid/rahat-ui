@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { memo, useCallback, useEffect, useState } from 'react';
 
 import {
@@ -36,12 +37,18 @@ import { CloudDownload } from 'lucide-react';
 import StakeGoldersGroups from './StakeholderGroups';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import { getPaginationFromLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage';
-import { RoleAuth, AARoles } from '@rahat-ui/auth';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { ConflictDialog } from './component/conflict-dialog';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 
 function StakeholdersView() {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const router = useRouter();
   const params = useParams();
 
@@ -81,7 +88,7 @@ function StakeholdersView() {
     setPagination(prevPagination);
   }, [showStoredPagination]);
 
-  const { data: stakeholdersData } = useStakeholders(projectId, {
+  const { data: stakeholdersData, isLoading } = useStakeholders(projectId, {
     ...pagination,
     ...debounceSearch,
   });
@@ -128,13 +135,13 @@ function StakeholdersView() {
         <Heading
           title={
             activeTab === 'stakeholders'
-              ? 'Stakeholders'
-              : 'Stakeholders Groups'
+              ? t('STAKEHOLDERS')
+              : t('STAKEHOLDERS_GROUPS')
           }
           description={
             activeTab === 'stakeholders'
-              ? 'Track all the stakeholders in the project'
-              : 'Track all stakeholder groups in the project'
+              ? t('TRACK_ALL_THE_STAKEHOLDERS_IN_THE')
+              : t('TRACK_ALL_STAKEHOLDER_GROUPS_IN_THE')
           }
         />
       </div>
@@ -147,23 +154,20 @@ function StakeholdersView() {
               className="data-[state=active]:bg-white text-[clamp(11px,1vw,14px)] h-[clamp(23px,3vw,28px)] "
               value="stakeholders"
             >
-              Stakeholders
+              {t('STAKEHOLDERS')}
             </TabsTrigger>
             <TabsTrigger
               id="stakeholdersGroup"
               className="data-[state=active]:bg-white text-[clamp(11px,1vw,14px)] h-[clamp(23px,3vw,28px)] ]"
               value="stakeholdersGroup"
             >
-              Stakeholders Groups
+              {t('STAKEHOLDERS_GROUPS')}
             </TabsTrigger>
           </TabsList>
 
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-            hasContent={false}
-          >
+          <Can action={ACTIONS.CREATE} subject={SUBJECTS.STAKEHOLDER}>
             <IconLabelBtn
-              name="Import Stakeholders"
+              name={t('IMPORT_STAKEHOLDERS')}
               Icon={CloudDownload}
               handleClick={() =>
                 router.replace(`/projects/aa/${projectId}/stakeholders/import`)
@@ -171,7 +175,7 @@ function StakeholdersView() {
               variant="outline"
               className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
             />
-          </RoleAuth>
+          </Can>
         </div>
 
         <TabsContent value="stakeholders">
@@ -181,46 +185,51 @@ function StakeholdersView() {
                 <SearchInput
                   className="flex-1 min-w-[120px]"
                   inputClassName="h-[clamp(28px,3vw,36px)]"
-                  name="name"
+                  name={tg('NAME')}
                   onSearch={(e) => handleSearch(e, 'name')}
                   value={filters?.name || ''}
                 />
                 <SearchInput
+                  className="flex-1 min-w-[120px]"
+                  inputClassName="h-[clamp(28px,3vw,36px)]"
+                  name={tg('PHONE')}
+                  onSearch={(e) => handleSearch(e, 'phone')}
+                  value={filters?.phone || ''}
+                />
+                <SearchInput
                   className="hidden xl:block flex-1 min-w-[120px]"
                   inputClassName="h-[clamp(28px,3vw,36px)]"
-                  name="municipality"
+                  name={tg('MUNICIPALITY')}
                   onSearch={(e) => handleSearch(e, 'municipality')}
                   value={filters?.municipality || ''}
                 />
                 <SearchInput
                   className="flex-1 min-w-[120px]"
                   inputClassName="h-[clamp(28px,3vw,36px)]"
-                  name="organization"
+                  name={tg('ORGANIZATION')}
                   onSearch={(e) => handleSearch(e, 'organization')}
                   value={filters?.organization || ''}
                 />
                 <SearchInput
                   className="flex-1 min-w-[120px]"
                   inputClassName="h-[clamp(28px,3vw,36px)]"
-                  name="support area"
+                  name={tg('SUPPORT_AREA')}
                   onSearch={(e) => handleSearch(e, 'supportArea')}
                   value={filters?.supportArea || ''}
                 />
-                <RoleAuth
-                  roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-                  hasContent={false}
-                >
+                <Can action={ACTIONS.CREATE} subject={SUBJECTS.STAKEHOLDER}>
                   <AddButton
                     path={`/projects/aa/${projectId}/stakeholders/add`}
-                    name="Stakeholder"
+                    name={t('STAKEHOLDER')}
                     className='h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]'
                   />
-                </RoleAuth>
+                </Can>
               </div>
               <DemoTable
                 table={table}
-                message="No Stakeholders Available"
+                message={t('NO_STAKEHOLDERS_AVAILABLE')}
                 tableHeight="h-[max(50vh,calc(90vh-230px))]"
+                loading={isLoading && !stakeholders.length}
               />
 
               <CustomPagination

@@ -12,9 +12,12 @@ import {
 import { useProjectAction } from '../../projects';
 import { useStakeholdersStore } from './stakeholders.store';
 import { UUID } from 'crypto';
-import { useSwal } from 'libs/query/src/swal';
+import { toast } from 'react-toastify';
+import { showToast } from 'libs/query/src/utils/custom-toast';
 import { useRSQuery } from '@rumsan/react-query';
 import { TAGS } from 'libs/query/src/config';
+import { useTranslations } from 'next-intl';
+import { resolveBackendErrorMessage } from '../../../utils/i18n/backend-error';
 
 interface IStakeholdersUpdatePayload {
   uuid: string;
@@ -32,6 +35,7 @@ type StakeholderArgs = {
   stakeholderPayload: any;
 };
 export const useStakeholders = (uuid: UUID, payload: any) => {
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const { setStakeholders, setStakeholdersMeta } = useStakeholdersStore(
     (state) => ({
@@ -75,16 +79,10 @@ export const useCreateStakeholders = <
     'mutationFn'
   >,
 ): UseMutationResult<TData, TError, StakeholderArgs, TContext> => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const qc = useQueryClient();
-  const alert = useSwal();
-
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
 
   const mutationResults = useMutation<TData, TError, StakeholderArgs, TContext>(
     {
@@ -101,19 +99,24 @@ export const useCreateStakeholders = <
         q.reset();
         options?.onSuccess?.(data, variables, ctx);
         qc.invalidateQueries({ queryKey: ['stakeholders'] });
-        toast.fire({
-          title: 'Stakeholder added successfully',
-          icon: 'success',
-        });
+        toast.success(t('STAKEHOLDER_ADDED_SUCCESSFULLY'));
       },
       onError: (error, variables, ctx) => {
         q.reset();
         options?.onError?.(error, variables, ctx);
-        const errorMessage = (error as any)?.response?.data?.message || 'Error';
-        toast.fire({
-          title: 'Error while adding stakeholder.',
-          icon: 'error',
-          text: errorMessage,
+        const rawMessage =
+          (error as any)?.response?.data?.message || t('ERROR');
+        const errorMessage = resolveBackendErrorMessage(
+          tb,
+          (error as any)?.response?.data?.code,
+          (error as any)?.response?.data?.params,
+          ['STAKEHOLDERS_GROUPS'],
+          rawMessage,
+        );
+        showToast({
+          type: 'error',
+          title: t('ERROR_WHILE_ADDING_STAKEHOLDER'),
+          description: errorMessage,
         });
       },
       ...options,
@@ -131,15 +134,10 @@ export const useCreateStakeholders = <
 };
 
 export const useUpdateStakeholders = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -159,33 +157,32 @@ export const useUpdateStakeholders = () => {
     onSuccess: () => {
       q.reset();
       qc.invalidateQueries({ queryKey: ['stakeholders'] });
-      toast.fire({
-        title: 'Stakeholder updated successfully',
-        icon: 'success',
-      });
+      toast.success(t('STAKEHOLDER_UPDATED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['STAKEHOLDERS_GROUPS'],
+        rawMessage,
+      );
       q.reset();
-      toast.fire({
-        title: 'Error while updating stakeholder.',
-        icon: 'error',
-        text: errorMessage,
+      showToast({
+        type: 'error',
+        title: t('ERROR_WHILE_UPDATING_STAKEHOLDER'),
+        description: errorMessage,
       });
     },
   });
 };
 
 export const useDeleteStakeholders = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -212,18 +209,22 @@ export const useDeleteStakeholders = () => {
       }
       // Only show success toast and invalidate queries if truly successful
       qc.invalidateQueries({ queryKey: ['stakeholders'] });
-      toast.fire({
-        title: 'Stakeholder removed successfully',
-        icon: 'success',
-      });
+      toast.success(t('STAKEHOLDER_REMOVED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['STAKEHOLDERS_GROUPS'],
+        rawMessage,
+      );
       q.reset();
-      toast.fire({
-        title: 'Error while removing stakeholder.',
-        icon: 'error',
-        text: errorMessage,
+      showToast({
+        type: 'error',
+        title: t('ERROR_WHILE_REMOVING_STAKEHOLDER'),
+        description: errorMessage,
       });
     },
   });
@@ -253,6 +254,7 @@ export const useStakeholderDetails = (
 };
 
 export const useValidateStakeholders = () => {
+  const t = useTranslations('AA_PROJECT');
   const { rumsanService } = useRSQuery();
 
   return useMutation({
@@ -283,15 +285,10 @@ export const useValidateStakeholders = () => {
 };
 
 export const useUploadStakeholders = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tRoot = useTranslations();
   const queryClient = useQueryClient();
   const { rumsanService } = useRSQuery();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-right',
-    showConfirmButton: false,
-    timer: 3000,
-  });
 
   return useMutation({
     mutationFn: async ({
@@ -300,12 +297,14 @@ export const useUploadStakeholders = () => {
       projectId,
       isGroupCreate,
       groupName,
+      groupUuid,
     }: {
       selectedFile: File;
       doctype: string;
       projectId?: UUID;
       isGroupCreate?: boolean;
       groupName?: string;
+      groupUuid?: string;
     }) => {
       const formData = new FormData();
       formData.append('file', selectedFile);
@@ -316,6 +315,7 @@ export const useUploadStakeholders = () => {
         JSON.stringify({
           isGroupCreate: isGroupCreate || false,
           ...(groupName && { groupName }),
+          ...(groupUuid && { groupUuid }),
         }),
       );
 
@@ -331,8 +331,15 @@ export const useUploadStakeholders = () => {
     },
     onError: (error: any) => {
       console.error('Upload error', error);
-      const message: string =
+      const rawMessage: string =
         error?.response?.data?.message || error?.message || '';
+      const message: string = resolveBackendErrorMessage(
+        tRoot,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['STAKEHOLDERS_GROUPS'],
+        rawMessage,
+      );
 
       const phoneMatch =
         message.match(/Phone\(s\):\s*([^|]+)/i) ||
@@ -342,26 +349,70 @@ export const useUploadStakeholders = () => {
       const errorLines: string[] = [];
 
       if (phoneMatch) {
-        errorLines.push('• Duplicate phone numbers found.');
+        errorLines.push(t('DUPLICATE_PHONE_NUMBERS_FOUND_BULLET'));
       }
 
       if (emailMatch) {
-        errorLines.push('• Duplicate emails found.');
+        errorLines.push(t('DUPLICATE_EMAILS_FOUND_BULLET'));
       }
 
       if (errorLines.length > 0) {
-        toast.fire({
-          icon: 'error',
-          title: 'Unique constraint violation',
-          text: errorLines.join('\n'),
+        showToast({
+          type: 'error',
+          title: t('UNIQUE_CONSTRAINT_VIOLATION'),
+          description: errorLines.join('\n'),
         });
       } else {
-        toast.fire({
-          icon: 'error',
-          title: 'Something went wrong',
-          text: message,
+        showToast({
+          type: 'error',
+          title: t('SOMETHING_WENT_WRONG'),
+          description: message,
         });
       }
+    },
+  });
+};
+
+export type ExportStakeholdersGroupArgs = {
+  groupUuid: string;
+};
+
+export const useExportStakeholdersGroup = (projectUuid: UUID) => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
+  const q = useProjectAction();
+
+  return useMutation({
+    mutationFn: async (
+      args: string | ExportStakeholdersGroupArgs,
+    ): Promise<Array<Record<string, any>>> => {
+      const groupUuid = typeof args === 'string' ? args : args.groupUuid;
+      const mutate = await q.mutateAsync({
+        uuid: projectUuid,
+        data: {
+          action: 'aaProject.stakeholders.exportGroup',
+          payload: {
+            groupUuid,
+          },
+        },
+      });
+      const data = mutate.data as unknown;
+      // Backend returns an array; normalize in case of wrapper shape.
+      if (Array.isArray(data)) return data;
+      if (Array.isArray((data as any)?.data)) return (data as any).data;
+      return [];
+    },
+    onError: (error: any) => {
+      const rawMessage: string =
+        error?.response?.data?.message || t('FAILED_TO_EXPORT_EXCEL');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['STAKEHOLDERS_GROUPS'],
+        rawMessage,
+      );
+      toast.error(errorMessage);
     },
   });
 };

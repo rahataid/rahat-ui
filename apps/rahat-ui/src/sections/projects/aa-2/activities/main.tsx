@@ -1,6 +1,12 @@
 'use client';
+import { useTranslations } from 'next-intl';
 import { useActivities, usePhases } from '@rahat-ui/query';
-import { Heading, IconLabelBtn, NoResult, SpinnerLoader } from 'apps/rahat-ui/src/common';
+import {
+  Heading,
+  IconLabelBtn,
+  NoResult,
+  SpinnerLoader,
+} from 'apps/rahat-ui/src/common';
 import { generateExcel } from 'apps/rahat-ui/src/utils';
 import { IActivitiesItem } from 'apps/rahat-ui/src/types/activities';
 import { UUID } from 'crypto';
@@ -8,17 +14,24 @@ import { CloudDownloadIcon, Plus } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import PhaseContent from './components/phase-content';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { useSidebar } from '@rahat-ui/shadcn/src/components/ui/sidebar';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 
 export default function ActivitiesView() {
+  const t = useTranslations('AA_PROJECT');
   const { id: projectID } = useParams();
   const { state } = useSidebar();
   const router = useRouter();
+  const formatDate = useDateFormat();
   const { activitiesData, isLoading } = useActivities(projectID as UUID, {
     perPage: 9999,
   });
@@ -53,9 +66,7 @@ export default function ActivitiesView() {
     (phase: string) => {
       const isCurrentlyPinned = pinnedPhases.includes(phase);
       if (!isCurrentlyPinned && pinnedPhases.length >= 3) {
-        toast.error(
-          'You can only pin up to 3 cards at a time. Please unpin another card before pinning this one.',
-        );
+        toast.error(t('PIN_LIMIT_MESSAGE'));
         return;
       }
       const next = isCurrentlyPinned
@@ -76,8 +87,8 @@ export default function ActivitiesView() {
     [projectID, pinnedPhases],
   );
 
-  const uniquePhaseNames = Array.from(
-    new Set(phases.map((phase: any) => phase.name)),
+  const uniquePhaseNames: string[] = Array.from(
+    new Set<string>(phases.map((phase: any) => phase.name)),
   );
 
   const PHASE_DESCRIPTIONS: Record<string, string> = Object.fromEntries(
@@ -100,7 +111,6 @@ export default function ActivitiesView() {
     return Array.from(phaseSet);
   }, [activitiesData]);
 
-
   const sortedPhases = useMemo(() => {
     const pinned = pinnedPhases.filter((p) => uniquePhases.includes(p));
     const unpinned = uniquePhases.filter((p) => !pinnedPhases.includes(p));
@@ -121,16 +131,13 @@ export default function ActivitiesView() {
 
   const handleDownloadReport = () => {
     if (!activitiesData?.length) {
-      return toast.error('No data to download.');
+      return toast.error(t('NO_DATA_TO_DOWNLOAD'));
     }
     const mappedData =
       activitiesData?.map((item: IActivitiesItem) => {
         let timeStamp;
         if (item?.completedAt) {
-          const d = new Date(item.completedAt);
-          const localeDate = d.toLocaleDateString();
-          const localeTime = d.toLocaleTimeString();
-          timeStamp = `${localeDate} ${localeTime}`;
+          timeStamp = formatDate(item.completedAt);
         }
         // leadTime is stored server-side as "<value> <unit>" (e.g. "3 days"),
         // split back into two columns to match the bulk-upload sheet format.
@@ -175,38 +182,32 @@ export default function ActivitiesView() {
         <div className="w-full">
           <div className="pr-52">
             <Heading
-              title="Activities"
-              description="Track all the activities reports here"
+          title={t('ACTIVITIES')}
+          description={t('TRACK_ALL_THE_ACTIVITIES_REPORTS_HERE')}
             />
           </div>
           <div className="fixed top-[72px] right-6 z-40 flex gap-2">
-            <RoleAuth
-              roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-              hasContent={false}
-            >
+            <Can action={ACTIONS.READ} subject={SUBJECTS.ACTIVITY}>
               <TooltipWrapper
                 tip={
                   !hasActivities
-                    ? 'Create an activity before downloading the report.'
+                    ? t('CREATE_ACTIVITY_BEFORE_DOWNLOAD')
                     : ''
                 }
               >
                 <IconLabelBtn
                   Icon={CloudDownloadIcon}
                   handleClick={handleDownloadReport}
-                  name="Download Report"
+                  name={t('DOWNLOAD_REPORT')}
                   variant="outline"
                   disabled={!hasActivities}
                 />
               </TooltipWrapper>
-            </RoleAuth>
-            <RoleAuth
-              roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-              hasContent={false}
-            >
+            </Can>
+            <Can action={ACTIONS.CREATE} subject={SUBJECTS.ACTIVITY}>
               <TooltipWrapper
                 tip={
-                  !hasPhases ? 'Create a phase before adding activities.' : ''
+                  !hasPhases ? t('CREATE_PHASE_BEFORE_ACTIVITIES') : ''
                 }
               >
                 <IconLabelBtn
@@ -216,17 +217,17 @@ export default function ActivitiesView() {
                       `/projects/aa/${projectID}/activities/add?nav=mainPage`,
                     )
                   }
-                  name="Add Activity"
+                  name={t('ADD_ACTIVITY')}
                   variant="default"
                   disabled={!hasPhases}
                 />
               </TooltipWrapper>
-            </RoleAuth>
+            </Can>
           </div>
         </div>
         {!hasPhases ? (
           <div className="w-full flex items-center justify-center h-[calc(100vh-180px)]">
-            <NoResult message="No phases available. Create a phase to add activities." />
+            <NoResult message={t('NO_PHASES_AVAILABLE')} />
           </div>
         ) : (
           <div
@@ -253,10 +254,7 @@ export default function ActivitiesView() {
               </div>
             ))}
             {sortedPhases.length === 2 && (
-              <RoleAuth
-                roles={[AARoles.ADMIN, AARoles.Municipality]}
-                hasContent={false}
-              >
+              <Can action={ACTIONS.CREATE} subject={SUBJECTS.PHASE}>
                 <div className="min-w-[320px]">
                   <Card className="flex flex-col rounded-xl h-[calc(100vh-180px)] w-full items-center justify-center border-dashed border-2 border-blue-300 bg-gray-50">
                     <CardContent className="flex flex-col items-center justify-center gap-4 p-6 text-center">
@@ -273,16 +271,16 @@ export default function ActivitiesView() {
                           </div>
                         </Button>
                         <p className="text-base font-medium text-blue-500 ">
-                          Add Phase
+                          {t('ADD_PHASE')}
                         </p>
                         <p className="text-sm text-blue-400">
-                          Click here to add new phase
+                          {t('CLICK_HERE_TO_ADD_NEW_PHASE')}
                         </p>
                       </div>
                     </CardContent>
                   </Card>
                 </div>
-              </RoleAuth>
+              </Can>
             )}
           </div>
         )}

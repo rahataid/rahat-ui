@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
   TableBody,
@@ -13,7 +14,6 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { User } from '@rumsan/sdk/types';
 import { Table, flexRender } from '@tanstack/react-table';
 import { useRouter } from 'next/navigation';
-import AddButton from '../projects/components/add.btn';
 import ViewColumns from '../projects/components/view.columns';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Plus } from 'lucide-react';
@@ -23,6 +23,8 @@ type IProps = {
 };
 
 export default function UsersTable({ table }: IProps) {
+  const t = useTranslations('USERS_LIST');
+  const tg = useTranslations('GLOBAL');
   const router = useRouter();
 
   return (
@@ -30,7 +32,7 @@ export default function UsersTable({ table }: IProps) {
       <div className="p-4 border rounded-sm ">
         <div className="flex items-center space-x-2 mb-2">
           <Input
-            placeholder="Search User..."
+            placeholder={t('SEARCH_USER')}
             value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
               table.getColumn('name')?.setFilterValue(event.target.value)
@@ -43,7 +45,7 @@ export default function UsersTable({ table }: IProps) {
             type="button"
             onClick={() => router.push('/users/add')}
           >
-            <Plus size={18} className="mr-1" /> Create User
+            <Plus size={18} className="mr-1" /> {t('CREATE_USER')}
           </Button>
         </div>
         <div>
@@ -90,7 +92,7 @@ export default function UsersTable({ table }: IProps) {
                       colSpan={table.getAllColumns().length}
                       className="h-24 text-center"
                     >
-                      No results.
+                      {tg('NO_RESULTS')}
                     </TableCell>
                   </TableRow>
                 )}

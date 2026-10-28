@@ -10,6 +10,7 @@ import {
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { useParams, useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { Back, Heading } from '../../../../common';
 import { OverviewCard, ProfileCard, TransactionCard } from './components';
 import VendorsBeneficiaryList from './tables/beneficiary.table';
@@ -28,19 +29,19 @@ import { UUID } from 'crypto';
 import { useMemo } from 'react';
 import { InkindRedemptionList } from './tabs/inkind.redemption.list';
 
-const TabsTriggerStats = [
-  { title: 'Vendor Overview', value: 'vendorOverview', module: 'all' },
-  { title: 'Transaction History', value: 'transactionHistory', module: 'fund' },
-  { title: 'Beneficiary List', value: 'beneficiaryList', module: 'fund' },
-  { title: 'Redemption Request', value: 'redemptionRequest', module: 'fund' },
+const TabsTriggerStats = (t: any) => [
+  { title: t('VENDOR_OVERVIEW'), value: 'vendorOverview', module: 'all' },
+  { title: t('TRANSACTION_HISTORY'), value: 'transactionHistory', module: 'fund' },
+  { title: t('BENEFICIARY_LIST'), value: 'beneficiaryList', module: 'fund' },
+  { title: t('REDEMPTION_REQUEST'), value: 'redemptionRequest', module: 'fund' },
   {
-    title: 'In-Kind Beneficiary List',
+    title: t('IN_KIND_BENEFICIARY_LIST'),
     value: 'inKindBeneficiaryList',
     module: 'inkind',
   },
-  { title: 'In-Kind Logs', value: 'inKindLogs', module: 'inkind' },
+  { title: t('IN_KIND_LOGS'), value: 'inKindLogs', module: 'inkind' },
   {
-    title: 'Inkind Redemption List',
+    title: t('INKIND_REDEMPTION_LIST'),
     value: 'inkindRedemptionList',
     module: 'inkind',
   },
@@ -48,6 +49,7 @@ const TabsTriggerStats = [
 
 export default function Detail() {
   const { id, vendorId }: { id: UUID; vendorId: UUID } = useParams();
+  const t = useTranslations('AA_PROJECT');
   const { activeTab, setActiveTab } = useActiveTabDynamicKey(
     'tab',
     'vendorOverview',
@@ -74,7 +76,7 @@ export default function Detail() {
 
   // Filter tabs based on enabled modules
   const visibleTabs = useMemo(() => {
-    return TabsTriggerStats.filter((tab) => {
+    return TabsTriggerStats(t).filter((tab) => {
       if (tab.module === 'all') return true;
       if (tab.module === 'fund') return hasFundManagement;
       if (tab.module === 'inkind') return hasInkindManagement;
@@ -87,7 +89,8 @@ export default function Detail() {
     visibleTabs.some((tab) => tab.value === tabValue);
 
   const { data: vendorsDetail } = useGetVendor(vendorId as UUID);
-  const vendor = vendorsDetail?.data?.find((v: any) => v.projectId === id);
+  // useGetVendor normalizes the response into a flat user object (name, wallet, phone, ...)
+  const vendor = vendorsDetail?.data;
 
   const { data, isLoading } = useGetVendorStellarStats({
     projectUUID: id,
@@ -122,8 +125,8 @@ export default function Detail() {
     <div className="p-4">
       <Back path={navRoute} />
       <Heading
-        title="Vendor Details"
-        description={`Detailed view of the selected vendor (${vendor?.User?.name})`}
+        title={t('VENDOR_DETAILS')}
+        description={t('VENDOR_DETAIL_DESC', { name: vendor?.name })}
       />
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="border bg-secondary rounded">
@@ -140,7 +143,7 @@ export default function Detail() {
 
         <TabsContent value="vendorOverview">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-            <ProfileCard data={vendor?.User} />
+            <ProfileCard data={vendor} />
             <OverviewCard
               data={data?.data}
               loading={isLoading}

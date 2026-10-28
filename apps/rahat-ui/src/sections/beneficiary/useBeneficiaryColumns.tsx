@@ -4,7 +4,14 @@ import { useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useSecondPanel } from '../../providers/second-panel-provider';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
-import { Eye, Copy, CopyCheck, TriangleAlertIcon } from 'lucide-react';
+import {
+  Eye,
+  Copy,
+  CopyCheck,
+  TriangleAlertIcon,
+  LandmarkIcon,
+  Phone,
+} from 'lucide-react';
 import BeneficiaryDetail from './beneficiaryDetail';
 import {
   Tooltip,
@@ -16,8 +23,25 @@ import { ListBeneficiary } from '@rahat-ui/types';
 import { useSearchParams } from 'next/navigation';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { GroupPurpose } from '../../constants/beneficiary.const';
+import { useTranslations } from 'next-intl';
 
-export const useBeneficiaryTableColumns = () => {
+type ValidationStatus = 'VALID' | 'INVALID' | 'NOT_VALIDATED';
+
+const getValidationStatus = (row: any): ValidationStatus => {
+  const extras = row?.extras ?? {};
+  const isValid =
+    row?.groupPurpose === GroupPurpose.MOBILE_MONEY
+      ? extras.validPhoneNumber
+      : extras.validBankAccount;
+  if (isValid === true) return 'VALID';
+  if (isValid === false || extras.error) return 'INVALID';
+  return 'NOT_VALIDATED';
+};
+
+export const useBeneficiaryTableColumns = ({
+  showValidationStatus = false,
+}: { showValidationStatus?: boolean } = {}) => {
+  const t = useTranslations('GLOBAL');
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
   const [walletAddressCopied, setWalletAddressCopied] = useState<string>();
 
@@ -36,6 +60,64 @@ export const useBeneficiaryTableColumns = () => {
         closeSecondPanel={closeSecondPanel}
       />,
     );
+  };
+
+  const validationStatusColumn: ColumnDef<ListBeneficiary> = {
+    id: 'validationStatus',
+    header: t('VALIDATION_STATUS'),
+    cell: ({ row }) => {
+      const original = row.original as any;
+      const isMobileMoney =
+        original?.groupPurpose === GroupPurpose.MOBILE_MONEY;
+      const Icon = isMobileMoney ? Phone : LandmarkIcon;
+      const status = getValidationStatus(original);
+
+      const statusConfig = {
+        VALID: {
+          className: 'bg-green-50 text-green-600',
+          label: isMobileMoney
+            ? t('PHONE_NUMBER_VERIFIED')
+            : t('BANK_ACCOUNT_VERIFIED'),
+        },
+        INVALID: {
+          className: 'bg-red-50 text-red-500',
+          label: isMobileMoney
+            ? t('PHONE_NUMBER_VALIDATION_FAILED')
+            : t('BANK_ACCOUNT_VALIDATION_FAILED'),
+        },
+        NOT_VALIDATED: {
+          className: 'bg-gray-100 text-gray-400',
+          label: t('NOT_VALIDATED'),
+        },
+      }[status];
+
+      return (
+        <TooltipProvider delayDuration={100}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span
+                className={`inline-flex items-center justify-center rounded-full p-1.5 ${statusConfig.className}`}
+                aria-label={statusConfig.label}
+              >
+                <Icon className="h-4 w-4" />
+              </span>
+            </TooltipTrigger>
+            <TooltipContent
+              side="bottom"
+              className="max-w-80 rounded-sm break-words"
+            >
+              <p className="text-xs font-medium">{statusConfig.label}</p>
+              {status === 'INVALID' && (
+                <p className="text-xs text-gray-500 mt-1">
+                  {original?.error ?? t('SOMETHING_WENT_WRONG')}
+                </p>
+              )}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    },
+    enableSorting: false,
   };
 
   const columns: ColumnDef<ListBeneficiary>[] = [
@@ -67,7 +149,7 @@ export const useBeneficiaryTableColumns = () => {
     },
     {
       accessorKey: 'name',
-      header: 'Name',
+      header: t('NAME'),
       cell: ({ row }) => {
         // const piiData = row.getValue('piiData') as any;
         return (
@@ -82,7 +164,7 @@ export const useBeneficiaryTableColumns = () => {
     },
     {
       accessorKey: 'walletAddress',
-      header: 'Wallet Address',
+      header: t('WALLET_ADDRESS'),
       cell: ({ row }) => (
         <TooltipProvider delayDuration={100}>
           <Tooltip>
@@ -106,8 +188,8 @@ export const useBeneficiaryTableColumns = () => {
               <p className="text-xs font-medium">
                 {walletAddressCopied &&
                 walletAddressCopied === row?.original?.uuid
-                  ? 'copied'
-                  : 'click to copy'}
+                  ? t('COPIED')
+                  : t('CLICK_TO_COPY')}
               </p>
             </TooltipContent>
           </Tooltip>
@@ -116,27 +198,40 @@ export const useBeneficiaryTableColumns = () => {
     },
     {
       accessorKey: 'gender',
-      header: 'Gender',
-      cell: ({ row }) => <div>{row.getValue('gender')}</div>,
+      header: t('GENDER'),
+      cell: ({ row }) => {
+        const gender = row.getValue('gender') as string;
+        return <div>{gender ? t(gender) : ''}</div>;
+      },
     },
     {
       accessorKey: 'internetStatus',
-      header: 'Internet Access',
-      cell: ({ row }) => <div>{row.getValue('internetStatus')}</div>,
+      header: t('INTERNET_ACCESS'),
+      cell: ({ row }) => {
+        const internetStatus = row.getValue('internetStatus') as string;
+        return <div>{internetStatus ? t(internetStatus) : ''}</div>;
+      },
     },
     {
       accessorKey: 'phoneStatus',
-      header: 'Phone Type',
-      cell: ({ row }) => <div>{row.getValue('phoneStatus')}</div>,
+      header: t('PHONE_TYPE'),
+      cell: ({ row }) => {
+        const phoneStatus = row.getValue('phoneStatus') as string;
+        return <div>{phoneStatus ? t(phoneStatus) : ''}</div>;
+      },
     },
     {
       accessorKey: 'bankedStatus',
-      header: 'Banking Status',
-      cell: ({ row }) => <div>{row.getValue('bankedStatus')}</div>,
+      header: t('BANKING_STATUS'),
+      cell: ({ row }) => {
+        const bankedStatus = row.getValue('bankedStatus') as string;
+        return <div>{bankedStatus ? t(bankedStatus) : ''}</div>;
+      },
     },
+    ...(showValidationStatus ? [validationStatusColumn] : []),
     {
       id: 'actions',
-      header: 'Actions',
+      header: t('ACTIONS'),
       enableHiding: false,
       cell: ({ row }) => {
         return (
@@ -148,7 +243,7 @@ export const useBeneficiaryTableColumns = () => {
               onClick={() => openSplitDetailView(row.original)}
             />
 
-            {!row?.original?.isGroupValidForAA && (
+            {!showValidationStatus && !row?.original?.isGroupValidForAA && (
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild className="hover:cursor-pointer py-0">
@@ -174,14 +269,14 @@ export const useBeneficiaryTableColumns = () => {
                       <span className="font-semibold text-sm/6">
                         {row?.original?.groupPurpose ===
                           GroupPurpose.BANK_TRANSFER &&
-                          'Bank Account Validation Failed'}
+                          t('BANK_ACCOUNT_VALIDATION_FAILED')}
                         {row?.original?.groupPurpose ===
                           GroupPurpose.MOBILE_MONEY &&
-                          'Phone Number Validation Failed'}
+                          t('PHONE_NUMBER_VALIDATION_FAILED')}
                       </span>
                     </div>
                     <p className="text-gray-500 text-sm mt-1 break-words">
-                      {row.original.error ?? 'Something went wrong!!'}
+                      {row.original.error ?? t('SOMETHING_WENT_WRONG')}
                     </p>
                   </TooltipContent>
                 </Tooltip>

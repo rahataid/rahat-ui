@@ -1,13 +1,18 @@
 import { BarChart, ChartDonut } from '@rahat-ui/shadcn/src/components/charts';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
+import { useChartNumberOptions } from 'apps/rahat-ui/src/utils/i18n/number';
 import PieChartCard from '../../components/pie.chart.card';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { useTranslations } from 'next-intl';
 
 type IProps = {
   allStats: any;
 };
 
 export default function ChartsContainer({ allStats = [] }: IProps) {
+  const t = useTranslations('AA_PROJECT');
+  const { formatNum, chartOptions: chartAxOptions } = useChartNumberOptions();
+
   const genderStats = allStats?.filter(
     (data: any) => data.name === 'BENEFICIARY_GENDER',
   )[0]?.data;
@@ -34,17 +39,17 @@ export default function ChartsContainer({ allStats = [] }: IProps) {
 
   const pieChartData = [
     {
-      title: 'Household Phone Availability',
+      title: t('HOUSEHOLD_PHONE_AVAILABILITY'),
       series: phoneStatusStats,
       colors: ['#5258E0', '#E0CA52'],
     },
     {
-      title: 'Household Bank Status',
+      title: t('HOUSEHOLD_BANK_STATUS'),
       series: bankStatusStats,
       colors: ['#4CAF50', '#E0CA52'],
     },
     {
-      title: 'Type of Phone',
+      title: t('TYPE_OF_PHONE'),
       series: phoneTypeStats,
       colors: ['#5258E0', '#4CAF50'],
     },
@@ -56,7 +61,7 @@ export default function ChartsContainer({ allStats = [] }: IProps) {
         {genderStats && (
           <div className="rounded-sm bg-card p-4 shadow-md">
             <h1 className="text-md font-medium mb-4">
-              Cash Supported Households by Gender
+              {t('CASH_SUPPORTED_HOUSEHOLDS_BY_GENDER')}
             </h1>
             <div className="flex justify-center">
               <ChartDonut
@@ -65,6 +70,7 @@ export default function ChartsContainer({ allStats = [] }: IProps) {
                 donutSize="70%"
                 width={360}
                 height={290}
+                options={chartAxOptions}
               />
             </div>
           </div>
@@ -74,9 +80,9 @@ export default function ChartsContainer({ allStats = [] }: IProps) {
         {/* Bar Chart : Vulnerability Status Start  */}
         <div className="rounded-sm bg-card shadow-md">
           <div className="p-4">
-            <h1 className="text-md font-medium mb-1">Vulnerability Status</h1>
+            <h1 className="text-md font-medium mb-1">{t('VULNERABILITY_STATUS')}</h1>
             <p className="text-primary font-semibold text-2xl">
-              {vulnerableStatusStats?.length ?? '0'}
+              {formatNum(vulnerableStatusStats?.length ?? 0)}
             </p>
           </div>
           <Separator />
@@ -89,6 +95,7 @@ export default function ChartsContainer({ allStats = [] }: IProps) {
               xaxisLabels={false}
               barHeight={30}
               height={280}
+              options={chartAxOptions}
             />
           </div>
         </div>
@@ -99,10 +106,10 @@ export default function ChartsContainer({ allStats = [] }: IProps) {
           <div className="rounded-sm bg-card shadow-md">
             <div className="p-4">
               <h1 className="text-md font-medium mb-1">
-                Beneficiary Associated Bank
+                {t('BENEFICIARY_ASSOCIATED_BANK')}
               </h1>
               <p className="text-primary font-semibold text-2xl">
-                {countByBankStats?.length}
+                {formatNum(countByBankStats?.length ?? 0)}
               </p>
             </div>
             <Separator />
@@ -118,6 +125,7 @@ export default function ChartsContainer({ allStats = [] }: IProps) {
                   barHeight={15}
                   width={450}
                   height={countByBankStats?.length > 10 ? 500 : 265}
+                  options={chartAxOptions}
                 />
               </div>
             </ScrollArea>
@@ -134,6 +142,7 @@ export default function ChartsContainer({ allStats = [] }: IProps) {
                 title={chart.title}
                 series={chart.series}
                 colors={chart.colors}
+                options={chartAxOptions}
               />
             ),
         )}

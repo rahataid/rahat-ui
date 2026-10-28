@@ -8,6 +8,8 @@ export enum PayoutTransactionStatus {
   FIAT_TRANSACTION_FAILED = 'FIAT_TRANSACTION_FAILED',
   COMPLETED = 'COMPLETED',
   FAILED = 'FAILED',
+  CANCELLED = 'CANCELLED',
+  PARTIALLY_COMPLETED = 'PARTIALLY_COMPLETED',
 }
 
 export const PayoutTransactionFailedStatuses = [
@@ -31,7 +33,7 @@ export const getStatusBg = (status: string) => {
   }
 
   if (normalizedStatus === 'DELAYED') {
-    return 'bg-gray-200';
+    return 'bg-red-200';
   }
 
   return 'bg-red-200';
@@ -40,6 +42,9 @@ export const getStatusBg = (status: string) => {
 export const isCompleteBgStatus = (status: string) => {
   if (status === 'COMPLETED') {
     return 'text-green-500 bg-green-100';
+  }
+  if (status === 'PARTIALLY_COMPLETED') {
+    return 'text-green-400 bg-green-50';
   }
   if (status === 'FAILED') {
     return 'text-red-500 bg-red-100';
@@ -63,6 +68,12 @@ export const transactionBgStatus = (
     case PayoutTransactionStatus.FIAT_TRANSACTION_COMPLETED:
     case PayoutTransactionStatus.COMPLETED:
       return 'text-green-500 bg-green-100';
+
+    case PayoutTransactionStatus.PARTIALLY_COMPLETED:
+      return 'text-green-400 bg-green-50';
+
+    case PayoutTransactionStatus.CANCELLED:
+      return 'text-red-400 bg-red-50';
 
     case PayoutTransactionStatus.TOKEN_TRANSACTION_FAILED:
     case PayoutTransactionStatus.FIAT_TRANSACTION_FAILED:

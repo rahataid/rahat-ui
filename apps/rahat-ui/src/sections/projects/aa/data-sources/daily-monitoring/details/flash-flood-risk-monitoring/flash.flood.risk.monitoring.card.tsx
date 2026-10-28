@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import DataSourceCard from '../data.source.card';
 import FieldCard from '../field.card';
@@ -9,10 +10,11 @@ type IProps = {
 };
 
 export default function FlashFloodRiskMonitoringCard({ data }: IProps) {
+  const t = useTranslations('AA_PROJECT');
   const renderFieldCardContainer = React.useCallback((data: any) => {
     const sanitizedData = React.useMemo(() => {
-      return [{ label: 'Status', value: data.status }];
-    }, [data]);
+      return [{ label: t('STATUS'), value: data.status }];
+    }, [data, t]);
     return (
       <div className="grid grid-cols-4">
         {sanitizedData?.map((d: any) => (

@@ -82,6 +82,9 @@ type CountrySelectProps = {
   value: RPNInput.Country;
   onChange: (value: RPNInput.Country) => void;
   options: CountrySelectOption[];
+  /** Defaults kept as the original hardcoded English text so existing callers see no change. */
+  searchPlaceholder?: string;
+  noCountryFoundText?: string;
 };
 
 const allowedCountries = ['NP', 'KE', 'MW', 'PK', 'KH', 'SG'];
@@ -91,6 +94,8 @@ const CountrySelect = ({
   value,
   onChange,
   options,
+  searchPlaceholder = 'Search country...',
+  noCountryFoundText = 'No country found.',
 }: CountrySelectProps) => {
   const handleSelect = React.useCallback(
     (country: RPNInput.Country) => {
@@ -126,8 +131,8 @@ const CountrySelect = ({
       <PopoverContent className="p-0 w-[300px]">
         <Command>
           <CommandList>
-            <CommandInput placeholder="Search country..." />
-            <CommandEmpty>No country found.</CommandEmpty>
+            <CommandInput placeholder={searchPlaceholder} />
+            <CommandEmpty>{noCountryFoundText}</CommandEmpty>
             <CommandGroup>
               {filteredOptions.map((option) => {
                 return (

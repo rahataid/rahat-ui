@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { User } from '@rumsan/sdk/types';
@@ -14,10 +15,14 @@ import {
   TooltipContent,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import UsersDetailSplitView from './users.detail.split.view';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 export const useUserTableColumns = () => {
+  const tg = useTranslations('GLOBAL');
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
   const [walletAddressCopied, setWalletAddressCopied] = useState<number>();
+  const formatPhone = usePhoneFormat();
 
   const clickToCopy = (walletAddress: string, index: number) => {
     navigator.clipboard.writeText(walletAddress);
@@ -36,24 +41,42 @@ export const useUserTableColumns = () => {
   const columns: ColumnDef<User>[] = [
     {
       accessorKey: 'name',
-      header: 'Name',
+      header: tg('NAME'),
       cell: ({ row }) => (
         <div
           className="cursor-pointer"
           onClick={() => openSplitDetailView(row.original)}
         >
-          {row.getValue('name') ?? 'N/A'}
+          {row.getValue('name') ?? tg('N_A')}
         </div>
       ),
     },
     {
       accessorKey: 'email',
-      header: 'Email',
-      cell: ({ row }) => <div>{row.getValue('email') ?? 'N/A'}</div>,
+      header: tg('EMAIL'),
+      cell: ({ row }) => <div>{row.getValue('email') ?? tg('N_A')}</div>,
+    },
+    {
+      accessorKey: 'gender',
+      header: tg('GENDER'),
+      cell: ({ row }) => (
+        <div>
+          {translateValue(tg, row.getValue('gender') as string, {
+            fallbackStyle: 'raw',
+          }) || tg('N_A')}
+        </div>
+      ),
+    },
+    {
+      accessorKey: 'phone',
+      header: tg('PHONE'),
+      cell: ({ row }) => (
+        <div>{formatPhone(row.getValue('phone') as string) || tg('N_A')}</div>
+      ),
     },
     {
       accessorKey: 'wallet',
-      header: 'Wallet Address',
+      header: tg('WALLET_ADDRESS'),
       cell: ({ row }) => {
         const walletAddress = row.getValue('wallet') as string;
         return (
@@ -75,14 +98,14 @@ export const useUserTableColumns = () => {
                     />
                   )
                 ) : (
-                  'N/A'
+                  tg('N_A')
                 )}
               </TooltipTrigger>
               <TooltipContent className="bg-secondary" side="bottom">
                 <p className="text-xs font-medium">
                   {walletAddressCopied === row.index
-                    ? 'copied'
-                    : 'click to copy'}
+                    ? tg('COPIED')
+                    : tg('CLICK_TO_COPY')}
                 </p>
               </TooltipContent>
             </Tooltip>
@@ -92,7 +115,7 @@ export const useUserTableColumns = () => {
     },
     {
       id: 'actions',
-      header: 'Actions',
+      header: tg('ACTIONS'),
       enableHiding: false,
       cell: ({ row }) => {
         return (

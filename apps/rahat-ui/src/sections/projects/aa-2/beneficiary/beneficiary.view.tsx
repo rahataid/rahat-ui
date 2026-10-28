@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { memo, useState } from 'react';
 
@@ -14,7 +15,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 
 import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
 import {
@@ -29,12 +30,18 @@ import {
   SearchInput,
 } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
+import { CloudDownload } from 'lucide-react';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import BeneficiaryGroups from './BeneficiaryGroups';
 import { useProjectBeneficiaryTableColumns } from './columns';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import BeneficiaryTable from './beneficiary.table';
+import CvaProjectGuard from './cva-project.guard';
 function BeneficiaryView() {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const { id } = useParams();
+  const router = useRouter();
   const uuid = id as UUID;
   const { activeTab, setActiveTab } = useActiveTab('beneficiary');
 
@@ -42,44 +49,48 @@ function BeneficiaryView() {
     <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
       <TabsContent value="beneficiary">
         <div>
-          <h1 className="font-bold text-2xl text-label pl-4">Beneficiary</h1>
+          <h1 className="font-bold text-2xl text-label pl-4">
+            {tg('BENEFICIARY')}
+          </h1>
         </div>
       </TabsContent>
       <TabsContent value="beneficiaryGroups">
         <div>
           <h1 className="font-bold text-2xl text-label pl-4">
-            Beneficiary Groups
+            {t('BENEFICIARY_GROUPS')}
           </h1>
         </div>
       </TabsContent>
       <p className="text-muted-foreground text-left pl-4 mb-0 pb-0">
-        Track all the beneficiaries in the project
+        {t('TRACK_ALL_THE_BENEFICIARIES_IN_THE')}
       </p>
 
       <div className="flex justify-between items-center p-4">
         <TabsList className="border bg-secondary rounded">
           <TabsTrigger
             id="beneficiary"
-            className="w-full data-[state=active]:bg-white"
+            className="w-full data-[state=active]:bg-primary data-[state=active]:text-white "
             value="beneficiary"
           >
-            Beneficiary
+            {tg('BENEFICIARY')}
           </TabsTrigger>
           <TabsTrigger
             id="beneficiaryGroups"
-            className="w-full data-[state=active]:bg-white"
+            className="w-full data-[state=active]:bg-primary data-[state=active]:text-white"
             value="beneficiaryGroups"
           >
-            Beneficiary Groups
+            {t('BENEFICIARY_GROUPS')}
           </TabsTrigger>
         </TabsList>
 
-        {/* <Button
-          variant="outline"
-          onClick={() => router.push('/beneficiary/import')}
-        >
-          <CloudDownload className="mr-1" /> Import beneficiaries
-        </Button> */}
+        <CvaProjectGuard>
+          <Button
+            variant="outline"
+            onClick={() => router.push(`/projects/aa/${id}/beneficiary/import`)}
+          >
+            <CloudDownload className="mr-1" /> {tg('IMPORT_BENEFICIARIES')}
+          </Button>
+        </CvaProjectGuard>
       </div>
       <TabsContent value="beneficiary">
         <div className="px-4">
@@ -87,7 +98,7 @@ function BeneficiaryView() {
             <div className="flex mb-2 gap-2">
               <SearchInput
                 className="w-full"
-                name="walletAddress"
+                name={tg('WALLET_ADDRESS')}
                 onSearch={(e) => handleSearch(e, 'search')}
                 value={filters?.search || ''}
               />

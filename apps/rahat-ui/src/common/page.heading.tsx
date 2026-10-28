@@ -4,7 +4,8 @@ import { ChevronLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 import { RefreshCw } from 'lucide-react';
-import { dateFormat } from '../utils/dateFormate';
+import { useTranslations } from 'next-intl';
+import { useDateFormat } from '../utils/i18n/date';
 
 interface IProps {
   title: string;
@@ -15,6 +16,9 @@ interface IProps {
   badgeClassName?: string;
   backBtn?: boolean;
   path?: string;
+  isShowStats?: boolean;
+  totalBeneficiaries?: number;
+  totalSuccessAmount?: number;
 }
 
 export function Heading({
@@ -26,8 +30,13 @@ export function Heading({
   badgeClassName,
   backBtn = false,
   path,
+  isShowStats = false,
+  totalBeneficiaries,
+  totalSuccessAmount,
 }: IProps) {
   const router = useRouter();
+  const tg = useTranslations('GLOBAL');
+  const dateFormat = useDateFormat();
 
   const handleBack = () => {
     if (path) {
@@ -55,6 +64,13 @@ export function Heading({
         )}
         {title}
         {status && <Badge className={badgeClassName}>{status}</Badge>}
+        {/* {isShowStats &&
+          totalSuccessAmount != null &&
+          totalBeneficiaries != null && (
+            <span className="text-[clamp(11px,1vw,14px)] text-muted-foreground">
+              {totalSuccessAmount}/{totalBeneficiaries} Beneficiaries
+            </span>
+          )} */}
       </div>
       <p className="text-[clamp(11px,1vw,14px)] leading-4 text-muted-foreground">
         {description}
@@ -63,7 +79,9 @@ export function Heading({
       {updatedAt && (
         <div className="flex items-center gap-1 text-xs text-green-500 mt-1 whitespace-nowrap">
           <RefreshCw size={12} />
-          <span>Last Synced at: {dateFormat(updatedAt)}</span>
+          <span>
+            {tg('LAST_SYNCED_AT')} {dateFormat(updatedAt)}
+          </span>
         </div>
       )}
     </div>

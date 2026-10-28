@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 import {
   useDeleteStakeholdersGroups,
+  useExportStakeholdersGroup,
   useSingleStakeholdersGroup,
 } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -21,19 +22,35 @@ import {
   SearchInput,
 } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
-import { RefreshCw } from 'lucide-react';
+import { CloudDownload, RefreshCw } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/components/tooltip';
 import { useParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useProjectStakeholdersGroupTableColumns } from './columns';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 import { ConflictDialog } from './component/conflict-dialog';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { exportToExcel } from 'apps/rahat-ui/src/utils/exportToExcle';
 
 const StakeholdersGroupsDetails = () => {
+  const formatNum = useNumberFormat();
+  const tGlobal = useTranslations('GLOBAL');
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
   const groupId = params.groupId as UUID;
+  const t = useTranslations('AA_PROJECT');
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [conflictActivities, setConflictActivities] = useState<string[]>([]);
   const conflictDialogOpen = useBoolean();
@@ -45,6 +62,19 @@ const StakeholdersGroupsDetails = () => {
   );
   const { mutateAsync: deleteGroup, isPending: isDeleting } =
     useDeleteStakeholdersGroups();
+  const { mutate: exportGroup, isPending: isExporting } =
+    useExportStakeholdersGroup(projectId);
+
+  const handleExport = () => {
+    if (isExporting) return;
+    if (!groupDetails?.stakeholders?.length) return;
+    exportGroup(groupId, {
+      onSuccess: (rows) => {
+        const list = Array.isArray(rows) ? rows : [];
+        exportToExcel(list, `stakeholders-${groupDetails?.name ?? groupId}`);
+      },
+    });
+  };
 
   const table = useReactTable({
     data: groupDetails?.stakeholders || [],
@@ -61,6 +91,14 @@ const StakeholdersGroupsDetails = () => {
       // rowSelection: selectedListItems,
     },
   });
+
+  const [searchValues, setSearchValues] = useState<Record<string, string>>({});
+  const handleColumnSearch =
+    (columnId: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+      const raw = event.target.value;
+      setSearchValues((prev) => ({ ...prev, [columnId]: raw }));
+      table.getColumn(columnId)?.setFilterValue(raw.trim());
+    };
 
   const handleDeleteClick = async () => {
     const response = await deleteGroup({
@@ -83,6 +121,8 @@ const StakeholdersGroupsDetails = () => {
     }
   };
 
+  const hasStakeholders = !!groupDetails?.stakeholders?.length;
+
   return (
     <div className="p-4 flex flex-col h-[calc(100vh-65px)] overflow-hidden">
       {isDeleting && (
@@ -101,22 +141,54 @@ const StakeholdersGroupsDetails = () => {
       <div className="flex justify-between items-center">
         <HeaderWithBack
           title={groupDetails?.name}
-          subtitle="Detailed view of the selected stakeholders group"
+          subtitle={t('DETAILED_VIEW_OF_THE_SELECTED_STAKEHOLDERS')}
           path={`/projects/aa/${projectId}/stakeholders?tab=stakeholdersGroup`}
         />
         <div className="flex gap-2">
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-            hasContent={false}
-          >
+          <Can action={ACTIONS.READ} subject={SUBJECTS.STAKEHOLDER}>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span
+                    className={
+                      hasStakeholders
+                        ? 'inline-flex'
+                        : 'inline-flex cursor-not-allowed'
+                    }
+                  >
+                    <Button
+                      variant="outline"
+                      type="button"
+                      onClick={handleExport}
+                      disabled={isExporting || isLoading || !hasStakeholders}
+                      className="rounded-sm flex gap-1 items-center p-[clamp(4px,0.8vw,8px)] h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)] [&_svg]:size-[clamp(14px,1.4vw,18px)]"
+                    >
+                      <CloudDownload size={18} className="mr-1" />{' '}
+                      {isExporting
+                        ? t('GENERATING')
+                        : t('DOWNLOAD_STAKEHOLDERS')}
+                    </Button>
+                  </span>
+                </TooltipTrigger>
+                {!hasStakeholders && !isLoading && (
+                  <TooltipContent className="bg-secondary">
+                    <p className="text-xs font-medium">
+                      {t('NO_STAKEHOLDERS_TO_DOWNLOAD')}
+                    </p>
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            </TooltipProvider>
+          </Can>
+          <Can action={ACTIONS.DELETE} subject={SUBJECTS.STAKEHOLDER}>
             <DeleteButton
-              name="stakeholders group"
+              name={t('STAKEHOLDER')}
               handleContinueClick={handleDeleteClick}
               className="rounded-sm w-full flex gap-1 items-center p-[clamp(4px,0.8vw,8px)] h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)] [&_svg]:size-[clamp(14px,1.4vw,18px)]"
-              label="Delete Group"
+              label={t('DELETE_GROUP')}
               disabled={isDeleting}
             />
-          </RoleAuth>
+          </Can>
         </div>
       </div>
       <div className="p-3 md:p-2 rounded-sm border flex flex-col flex-1 min-h-0 overflow-hidden">
@@ -124,56 +196,40 @@ const StakeholdersGroupsDetails = () => {
           <SearchInput
             className="w-full"
             inputClassName="h-[clamp(28px,3vw,36px)]"
-            name="stakeholders name"
-            value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-            onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
-              table.getColumn('name')?.setFilterValue(event.target.value)
-            }
+            name={tGlobal('STAKEHOLDER_NAME')}
+            value={searchValues.name ?? ''}
+            onSearch={handleColumnSearch('name')}
           />
           <SearchInput
             className="w-full"
             inputClassName="h-[clamp(28px,3vw,36px)]"
-            name="organization"
-            value={
-              (table.getColumn('organization')?.getFilterValue() as string) ??
-              ''
-            }
-            onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
-              table
-                .getColumn('organization')
-                ?.setFilterValue(event.target.value)
-            }
+            name={tGlobal('PHONE')}
+            value={searchValues.phone ?? ''}
+            onSearch={handleColumnSearch('phone')}
+          />
+          <SearchInput
+            className="w-full"
+            inputClassName="h-[clamp(28px,3vw,36px)]"
+            name={tGlobal('ORGANIZATION')}
+            value={searchValues.organization ?? ''}
+            onSearch={handleColumnSearch('organization')}
           />
           <SearchInput
             className="w-full hidden xl:block "
-            name="municipality"
-            value={
-              (table.getColumn('municipality')?.getFilterValue() as string) ??
-              ''
-            }
-            onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
-              table
-                .getColumn('municipality')
-                ?.setFilterValue(event.target.value)
-            }
+            name={tGlobal('MUNICIPALITY')}
+            value={searchValues.municipality ?? ''}
+            onSearch={handleColumnSearch('municipality')}
           />
 
           <SearchInput
             className="w-full"
             inputClassName="h-[clamp(28px,3vw,36px)]"
-            name="supportArea"
-            value={
-              (table.getColumn('supportArea')?.getFilterValue() as string) ?? ''
-            }
-            onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
-              table.getColumn('supportArea')?.setFilterValue(event.target.value)
-            }
+            name={tGlobal('SUPPORT_AREA')}
+            value={searchValues.supportArea ?? ''}
+            onSearch={handleColumnSearch('supportArea')}
           />
 
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-            hasContent={false}
-          >
+          <Can action={ACTIONS.UPDATE} subject={SUBJECTS.STAKEHOLDER}>
             <Button
               variant="default"
               type="button"
@@ -184,9 +240,10 @@ const StakeholdersGroupsDetails = () => {
               }
               className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
             >
-              <RefreshCw size={18} className="mr-1" /> Update StakeHolder Group
+              <RefreshCw size={18} className="mr-1" />{' '}
+              {t('UPDATE_STAKEHOLDER_GROUP')}
             </Button>
-          </RoleAuth>
+          </Can>
         </div>
 
         <DemoTable
@@ -197,7 +254,8 @@ const StakeholdersGroupsDetails = () => {
 
         <div className="border-t flex items-center justify-between px-4 pt-2 [&>div]:border-0 [&>div]:pt-0 [&>div]:px-0">
           <p className="text-[clamp(11px,1vw,14px)] text-muted-foreground shrink-0">
-            Total Stakeholders : {groupDetails?.stakeholders?.length || 0}
+            {t('TOTAL_STAKEHOLDERS')} :{' '}
+            {formatNum(groupDetails?.stakeholders?.length ?? 0)}
           </p>
           <ClientSidePagination table={table} />
         </div>

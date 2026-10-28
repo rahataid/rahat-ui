@@ -4,6 +4,7 @@ import Back from '../../../../components/back';
 import EditButton from '../../../../../../components/edit.btn';
 import DeleteButton from '../../../../../../components/delete.btn';
 import DetailsHeadCard from '../../../../components/details.head.card';
+import { useTranslations } from 'next-intl';
 import { User, Waves } from 'lucide-react';
 import { UUID } from 'crypto';
 import { useRemoveMonitoring, useSingleMonitoring } from '@rahat-ui/query';
@@ -21,6 +22,8 @@ import AccumulatedCard from './ncmrwf/ncmrwf.accumulated.card';
 import FlashFloodRiskMonitoringCard from './flash-flood-risk-monitoring/flash.flood.risk.monitoring.card';
 
 export default function DailyMonitoringDetailView() {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
@@ -124,21 +127,21 @@ export default function DailyMonitoringDetailView() {
       <div className="mb-4 flex justify-between items-center">
         <div className="flex gap-4 items-center">
           <Back path={dailyMonitoringListPath.concat('?backFromDetail=true')} />
-          <h1 className="font-semibold text-xl">Bulletin Details</h1>
+          <h1 className="font-semibold text-xl">{t('BULLETIN_DETAILS')}</h1>
         </div>
         <div className="flex gap-4 items-center">
           <EditButton path={dailyMonitoringEditPath} />
-          <DeleteButton name="project" handleContinueClick={onDelete} />
+          <DeleteButton name={t('PROJECT')} handleContinueClick={onDelete} />
         </div>
       </div>
       <div className="grid grid-cols-2 gap-4 mb-4">
         <DetailsHeadCard
-          title="Created By"
+          title={tg('CREATED_BY')}
           icon={<User size={20} />}
           content={latestDataDetails?.dataEntryBy || '-'}
         />
         <DetailsHeadCard
-          title="River Basin"
+          title={t('RIVER_BASIN')}
           icon={<Waves size={20} />}
           content={latestDataDetails?.location || '-'}
         />
@@ -182,14 +185,14 @@ export default function DailyMonitoringDetailView() {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="DHM">
-            {DHM_data?.length ? <DHMCard data={DHM_data} /> : 'No Data'}
+            {DHM_data?.length ? <DHMCard data={DHM_data} /> : tg('NO_DATA')}
           </TabsContent>
 
           <TabsContent value="GLOFAS">
             {GLOFAS_data?.length ? (
               <GLOFASCard data={GLOFAS_data} />
             ) : (
-              'No Data'
+              tg('NO_DATA')
             )}
           </TabsContent>
 
@@ -199,7 +202,7 @@ export default function DailyMonitoringDetailView() {
                 data={NCMRWF_Deterministic_Probabilistic_data}
               />
             ) : (
-              'No Data'
+              tg('NO_DATA')
             )}
           </TabsContent>
 
@@ -207,7 +210,7 @@ export default function DailyMonitoringDetailView() {
             {NCMRWF_Accumulated_data?.length ? (
               <AccumulatedCard data={NCMRWF_Accumulated_data} />
             ) : (
-              'No Data'
+              tg('NO_DATA')
             )}
           </TabsContent>
 
@@ -217,7 +220,7 @@ export default function DailyMonitoringDetailView() {
                 data={Flash_Flood_Risk_Monitoring_data}
               />
             ) : (
-              'No Data'
+              tg('NO_DATA')
             )}
           </TabsContent>
         </Tabs>

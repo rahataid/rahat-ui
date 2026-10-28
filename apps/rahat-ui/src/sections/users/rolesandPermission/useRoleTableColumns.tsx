@@ -1,42 +1,41 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import { Role } from '@rumsan/sdk/types';
 import RoleDetail from './roleDetail';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 
 export const useRoleTableColumns = () => {
+  const tg = useTranslations('GLOBAL');
+  const t = useTranslations('USERS_ROLES_PERMISSIONS');
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
+  const formatDate = useDateFormat();
 
   const columns: ColumnDef<Role>[] = [
     {
       accessorKey: 'name',
-      header: 'Name',
+      header: tg('NAME'),
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },
     {
       accessorKey: 'isSystem',
-      header: 'Is System',
-      cell: ({ row }) => <Badge>{row.original.isSystem ? 'Yes' : 'No'}</Badge>,
+      header: t('IS_SYSTEM'),
+      cell: ({ row }) => <Badge>{row.original.isSystem ? tg('YES') : tg('NO')}</Badge>,
     },
     {
       accessorKey: 'createdAt',
-      header: 'Created At',
-      cell: ({ row }) => {
-        const changedDate = new Date(row.getValue('createdAt') as Date);
-        const formattedDate = changedDate.toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        });
-        return <div>{formattedDate}</div>;
-      },
+      header: tg('CREATED_AT'),
+      cell: ({ row }) => (
+        <div>{formatDate(row.getValue('createdAt'), 'PPP')}</div>
+      ),
     },
     {
       id: 'actions',
-      header: 'Action',
+      header: tg('ACTION'),
       enableHiding: false,
       cell: ({ row }) => {
         return (

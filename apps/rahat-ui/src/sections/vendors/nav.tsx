@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
 import { useUserStore } from '@rumsan/react-query';
 import { Eye } from 'lucide-react';
@@ -13,6 +14,7 @@ import { useBoolean } from '../../hooks/use-boolean';
 // };
 
 export default function Nav() {
+  const g = useTranslations('GLOBAL');
   const totalUser = useUserStore.getState().totalUser;
   const projectAssignModal = useBoolean();
   const projectConfirmModal = useBoolean();
@@ -38,7 +40,7 @@ export default function Nav() {
     <>
       <div className="bg-card border-b">
         <div className="flex justify-between items-center p-4">
-          <h1 className="font-semibold text-xl text-primary">Vendors</h1>
+          <h1 className="font-semibold text-xl text-primary">{g('VENDORS')}</h1>
         </div>
       </div>
       <ScrollArea className="h-auto mb-2 bg-card">
@@ -50,7 +52,7 @@ export default function Nav() {
             >
               <div className="flex items-center gap-3">
                 <Eye size={18} strokeWidth={1.5} />
-                <p>Vendors </p>
+                <p>{g('VENDORS')}</p>
               </div>
               <p></p>
             </div>

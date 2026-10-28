@@ -1,4 +1,8 @@
 import { HealthCacheData } from '@rahat-ui/query';
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
+
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import {
@@ -7,7 +11,7 @@ import {
   HoverCardTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/hover-card';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { CheckCircle, Info, X } from 'lucide-react';
 import { getDynamicColors } from './utils/getDynamicColor';
 
@@ -16,6 +20,10 @@ export function SystemHealthCard({
   last_updated,
   sources,
 }: HealthCacheData) {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
   const statusColors: any = {
     HEALTHY: 'bg-green-50 text-green-700',
     UNHEALTHY: 'bg-red-50 text-red-700',
@@ -41,10 +49,10 @@ export function SystemHealthCard({
       <CardContent className="flex flex-col space-y-3 p-4">
         <div className="flex flex-col w-full p-3 pt-0 gap-2">
           <div className="flex flex-row items-center gap-3">
-            <span className="text-sm font-medium">Overall system health:</span>
+            <span className="text-sm font-medium">{t('OVERALL_SYSTEM_HEALTH')}</span>
 
             <Badge variant="outline" className={statusColors[overall_status]}>
-              {overall_status}
+              {translateValue(t, overall_status, { fallbackStyle: 'raw' })}
             </Badge>
 
             <HoverCard>
@@ -58,40 +66,38 @@ export function SystemHealthCard({
                 <div className="flex gap-2 flex-col">
                   <div>
                     <h4 className="text-sm font-medium mb-2">
-                      Overall Status Rules
+                      {t('OVERALL_STATUS_RULES')}
                     </h4>
                     <ul className="space-y-1 text-xs">
                       <li>
-                        <span className=" text-green-600">HEALTHY:</span> All
-                        sources are UP
+                        <span className=" text-green-600">{t('HEALTHY')}:</span>{' '}
+                        {t('HEALTH_RULE_HEALTHY')}
                       </li>
                       <li>
-                        <span className=" text-yellow-600">DEGRADED:</span> Some
-                        sources are DOWN/DEGRADED but core functionality
-                        available
+                        <span className=" text-yellow-600">{t('DEGRADED')}:</span>{' '}
+                        {t('HEALTH_RULE_DEGRADED')}
                       </li>
                       <li>
-                        <span className=" text-red-600">UNHEALTHY:</span>
-                        Critical sources are DOWN
+                        <span className=" text-red-600">{t('UNHEALTHY')}:</span>{' '}
+                        {t('HEALTH_RULE_UNHEALTHY')}
                       </li>
                     </ul>
                   </div>
                   <Separator />
                   <div>
-                    <h4 className="text-sm font-medium mb-1">Validity Rules</h4>
+                    <h4 className="text-sm font-medium mb-1">{t('VALIDITY_RULES')}</h4>
                     <ul className="space-y-1 text-xs">
                       <li>
-                        <span className=" text-green-600">VALID:</span> Data
-                        updated within expected interval (&lt;=15 mins)
+                        <span className=" text-green-600">{t('VALID')}:</span>{' '}
+                        {t('VALIDITY_RULE_VALID')}
                       </li>
                       <li>
-                        <span className=" text-yellow-600">STALE:</span> Data
-                        are older than expected but within tolerance (15–30
-                        mins)
+                        <span className=" text-yellow-600">{t('STALE')}:</span>{' '}
+                        {t('VALIDITY_RULE_STALE')}
                       </li>
                       <li>
-                        <span className=" text-red-600">EXPIRED:</span> Data too
-                        old to be reliable (&gt;30 mins)
+                        <span className=" text-red-600">{t('EXPIRED')}:</span>{' '}
+                        {t('VALIDITY_RULE_EXPIRED')}
                       </li>
                     </ul>
                   </div>
@@ -104,21 +110,24 @@ export function SystemHealthCard({
               <span className="flex items-center  text-xs text-green-500">
                 {' '}
                 <CheckCircle size={13} className="pr-1 w-4 h-4" />
-                {calcHEALTHY}/{sources?.length} sources HEALTHY
+                {t('SOURCES_HEALTHY_RATIO', {
+                  count: formatNum(calcHEALTHY),
+                  total: formatNum(sources?.length ?? 0),
+                })}
               </span>
               <span className="flex items-center  text-xs text-red-500">
                 <X size={13} className="pr-1 w-4 h-4" />
-                {calcUNHEALTHY} sources UNHEALTHY
+                {t('SOURCES_UNHEALTHY_COUNT', { count: formatNum(calcUNHEALTHY) })}
               </span>
 
               <span className="flex items-center  text-xs text-red-500">
                 <X size={13} className="pr-1 w-4 h-4" />
-                {calcDEGRADED} sources DEGRADED
+                {t('SOURCES_DEGRADED_COUNT', { count: formatNum(calcDEGRADED) })}
               </span>
             </div>
 
             <span className="text-xs text-gray-500 ml-auto">
-              Last Updated: {dateFormat(last_updated)}
+              {tg('LAST_UPDATED')}: {formatDate(last_updated)}
             </span>
           </div>
         </div>

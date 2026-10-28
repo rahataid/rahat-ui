@@ -7,6 +7,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 import { usePagination, useRahatSettingList } from '@rahat-ui/query';
@@ -35,6 +36,8 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Settings2 } from 'lucide-react';
 
 export default function ListSetting() {
+  const t = useTranslations('SETTINGS_LIST');
+  const g = useTranslations('GLOBAL');
   const columns = useSettingTableColumns();
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -116,7 +119,7 @@ export default function ListSetting() {
     <div className="w-full mt-1 p-1 bg-secondary">
       <div className="flex items-center mb-2">
         <Input
-          placeholder="Search by name..."
+          placeholder={t('SEARCH_BY_NAME')}
           name="name"
           value={
             (table.getColumn('name')?.getFilterValue() as string) ??
@@ -129,7 +132,7 @@ export default function ListSetting() {
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
               <Settings2 className="mr-2 h-4 w-5" />
-              Filters
+              {t('FILTERS')}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -138,15 +141,15 @@ export default function ListSetting() {
               value={flag}
               onValueChange={handleSwitchChange}
             >
-              <DropdownMenuRadioItem value="all">All</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="all">{g('ALL')}</DropdownMenuRadioItem>
               <DropdownMenuRadioItem value="private">
-                Private
+                {g('PRIVATE')}
               </DropdownMenuRadioItem>
               <DropdownMenuRadioItem value="public">
-                Public
+                {t('PUBLIC')}
               </DropdownMenuRadioItem>
               <DropdownMenuRadioItem value="read">
-                ReadOnly
+                {g('READONLY')}
               </DropdownMenuRadioItem>
             </DropdownMenuRadioGroup>
           </DropdownMenuContent>
@@ -197,7 +200,7 @@ export default function ListSetting() {
                     colSpan={table.getAllColumns().length}
                     className="h-24 text-center"
                   >
-                    No results.
+                    {g('NO_RESULTS')}
                   </TableCell>
                 </TableRow>
               )}

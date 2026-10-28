@@ -22,10 +22,15 @@ import {
   REVERSE_SOURCE_MAPPING,
   GLOFAS_LEGACY_MAPPING,
 } from './utils';
-import { triggerStatementSchema } from './trigger.statement.schema';
+import {
+  buildEditAutomatedFormSchema,
+  buildManualFormSchema,
+} from './trigger.statement.schema';
 import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
+import { useTranslations } from 'next-intl';
 
 export default function EditTrigger() {
+  const t = useTranslations('AA_PROJECT');
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
@@ -42,25 +47,21 @@ export default function EditTrigger() {
   const { data: projectInfo } = useProjectInfo(projectId as UUID);
   const stationHeading = getStationTitle(
     projectInfo?.value?.project_type || '',
+    t,
   );
 
   const { data: dataSourceTypes, isLoading: isLoadingDataSourceTypes } =
     useGetDataSourceTypes(projectId);
   const SOURCES =
     dataSourceTypes?.value || ({} as Record<string, SourceConfig>);
-  const sourceOptions = buildSourceOptions(SOURCES);
+  const sourceOptions = buildSourceOptions(SOURCES, t);
   const subTypeOptions = buildSubtypeOptions(SOURCES);
 
   const triggerType = trigger?.source === 'MANUAL' ? 'manual' : 'automated';
 
   const updateTrigger = useUpdateTriggerStatement();
 
-  const ManualFormSchema = z.object({
-    title: z.string().min(2, { message: 'Please enter trigger title' }),
-    isMandatory: z.boolean().optional(),
-    description: z.string().optional(),
-    leadTime: z.string().optional(),
-  });
+  const ManualFormSchema = buildManualFormSchema(t);
 
   const manualForm = useForm<z.infer<typeof ManualFormSchema>>({
     resolver: zodResolver(ManualFormSchema),
@@ -72,169 +73,10 @@ export default function EditTrigger() {
     },
   });
 
-  const AutomatedFormSchema = z
-    .object({
-      title: z.string().min(2, { message: 'Please enter trigger title' }),
-      description: z.string().optional(),
-      source: z.string().min(1, { message: 'Please select data source' }),
-      isMandatory: z.boolean().optional(),
-      leadTime: z.string().optional(),
-      triggerStatement: triggerStatementSchema,
-      minLeadTimeDays: z.string().optional(),
-      maxLeadTimeDays: z.string().optional(),
-      probability: z.string().optional(),
-      warningLevel: z.string().optional(),
-      dangerLevel: z.string().optional(),
-      forecast: z.string().optional(),
-      daysToConsiderPrior: z.string().optional(),
-      forecastStatus: z.string().optional(),
-    })
-    .superRefine((data, ctx) => {
-      if (data.source === 'DHM' && trigger?.phase?.name === 'ACTIVATION') {
-        if (!data.dangerLevel || data.dangerLevel.trim() === '') {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['dangerLevel'],
-            message: 'Danger Level is required',
-          });
-        } else if (
-          isNaN(Number(data.dangerLevel)) ||
-          Number(data.dangerLevel) <= 0
-        ) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['dangerLevel'],
-            message: 'Danger Level must be a positive number',
-          });
-        }
-      }
-      if (data.source === 'DHM' && trigger?.phase?.name === 'READINESS') {
-        if (!data.warningLevel || data.warningLevel.trim() === '') {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['warningLevel'],
-            message: 'Warning Level is required',
-          });
-        } else if (
-          isNaN(Number(data.warningLevel)) ||
-          Number(data.warningLevel) <= 0
-        ) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['warningLevel'],
-            message: 'Warning Level must be a positive number',
-          });
-        }
-      }
-
-      if (
-        data.source === 'DAILY_MONITORING' &&
-        (trigger?.phase?.name === 'ACTIVATION' ||
-          trigger?.phase?.name === 'READINESS')
-      ) {
-        if (!data.forecast || data.forecast.toString().trim() === '') {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['forecast'],
-            message: 'Forecast is required',
-          });
-        }
-
-        if (
-          !data.daysToConsiderPrior ||
-          data.daysToConsiderPrior.toString().trim() === ''
-        ) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['daysToConsiderPrior'],
-            message: 'Days To Consider Prior is required',
-          });
-        } else if (
-          isNaN(Number(data.daysToConsiderPrior)) ||
-          Number(data.daysToConsiderPrior) <= 0
-        ) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['daysToConsiderPrior'],
-            message: 'Days To Consider Prior must be a positive number',
-          });
-        }
-
-        if (
-          !data.forecastStatus ||
-          data.forecastStatus.toString().trim() === ''
-        ) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['forecastStatus'],
-            message: 'forecast Status is required',
-          });
-        }
-      }
-
-      if (
-        data.source === 'GLOFAS' &&
-        (trigger?.phase?.name === 'ACTIVATION' ||
-          trigger?.phase?.name === 'READINESS')
-      ) {
-        if (
-          !data.maxLeadTimeDays ||
-          data.maxLeadTimeDays.toString().trim() === ''
-        ) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['maxLeadTimeDays'],
-            message: 'Max Lead TimeDays is required',
-          });
-        } else if (
-          isNaN(Number(data.maxLeadTimeDays)) ||
-          Number(data.maxLeadTimeDays) <= 0
-        ) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['maxLeadTimeDays'],
-            message: 'Max Lead Time Days must be a positive number',
-          });
-        }
-
-        if (
-          !data.minLeadTimeDays ||
-          data.minLeadTimeDays.toString().trim() === ''
-        ) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['minLeadTimeDays'],
-            message: 'Min Lead Time Days is required',
-          });
-        } else if (
-          isNaN(Number(data.minLeadTimeDays)) ||
-          Number(data.minLeadTimeDays) <= 0
-        ) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['minLeadTimeDays'],
-            message: 'Min Lead Time Days must be a positive number',
-          });
-        }
-
-        if (!data.probability || data.probability.toString().trim() === '') {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['probability'],
-            message: 'Forecast probability is required',
-          });
-        } else if (
-          isNaN(Number(data.probability)) ||
-          Number(data.probability) <= 0
-        ) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['probability'],
-            message: 'Forecast probability must be a positive number',
-          });
-        }
-      }
-    });
+  const AutomatedFormSchema = buildEditAutomatedFormSchema(
+    t,
+    trigger?.phase?.name,
+  );
 
   const automatedForm = useForm<z.infer<typeof AutomatedFormSchema>>({
     resolver: zodResolver(AutomatedFormSchema),
@@ -389,7 +231,9 @@ export default function EditTrigger() {
       <div className={'p-4'}>
         <Back />
         <Heading
-          title={`Edit ${capitalizeFirstLetter(triggerType || '')} Trigger`}
+          title={t('EDIT_TRIGGER', {
+            type: capitalizeFirstLetter(triggerType || ''),
+          })}
           description=""
         />
         <div className="px-4 pb-4 border rounded shadow">
@@ -426,7 +270,7 @@ export default function EditTrigger() {
               className="w-40 mr-2"
               onClick={handleReset}
             >
-              Reset
+              {t('RESET')}
             </Button>
             <Button
               type="submit"
@@ -434,7 +278,7 @@ export default function EditTrigger() {
               onClick={handleEditTriggers}
               disabled={updateTrigger?.isPending}
             >
-              Update
+              {t('UPDATE')}
             </Button>
           </div>
         </div>

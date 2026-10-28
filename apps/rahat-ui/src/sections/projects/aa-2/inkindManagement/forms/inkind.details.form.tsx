@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Button } from 'libs/shadcn/src/components/ui/button';
@@ -21,7 +22,7 @@ import {
   SelectValue,
 } from 'libs/shadcn/src/components/ui/select';
 import {
-  InkindDetailsSchema,
+  buildInkindDetailsSchema,
   InkindDetailsValues,
   INKIND_TYPES,
   INKIND_TYPE_LABELS,
@@ -29,6 +30,10 @@ import {
   DESCRIPTION_MAX,
 } from '../schemas/inkind.validation';
 import type { InkindFormData } from '../schemas/inkind.validation';
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 
 const DEFAULT_VALUES: InkindDetailsValues = {
   name: '',
@@ -48,6 +53,15 @@ export default function InkindDetailsForm({
   onNext,
   existingNames = [],
 }: Props) {
+  const tg = useTranslations('AA_PROJECT_WITH_GNOSIS');
+  const tglob = useTranslations('GLOBAL');
+  const tAA = useTranslations('AA_PROJECT');
+  const formatDigits = useLabelDigits();
+  const formatNum = useNumberFormat();
+  const InkindDetailsSchema = useMemo(
+    () => buildInkindDetailsSchema(tAA),
+    [tAA],
+  );
   const form = useForm<InkindDetailsValues>({
     resolver: zodResolver(InkindDetailsSchema),
     defaultValues: {
@@ -70,7 +84,7 @@ export default function InkindDetailsForm({
     );
     if (duplicate) {
       setError('name', {
-        message: 'An inkind item with this name already exists.',
+        message: tg('AN_INKIND_ITEM_WITH_THIS_NAME_ALREADY_EXISTS'),
       });
       return;
     }
@@ -81,14 +95,14 @@ export default function InkindDetailsForm({
     <Form {...form}>
       <form onSubmit={handleSubmit(handleNext)}>
         <div className="border rounded-sm p-4 flex flex-col space-y-4">
-          <p className="text-base font-semibold">Create Inkind</p>
+          <p className="text-base font-semibold">{tg('CREATE_INKIND')}</p>
           <FormField
             control={control}
             name="name"
             render={({ field }) => (
               <FormItem>
                 <div className="flex items-center justify-between">
-                  <FormLabel>Inkind Name</FormLabel>
+                  <FormLabel>{tg('INKIND_NAME')}</FormLabel>
                   <span
                     className={`text-xs ${
                       (nameValue?.length ?? 0) >= NAME_MAX
@@ -96,12 +110,12 @@ export default function InkindDetailsForm({
                         : 'text-muted-foreground'
                     }`}
                   >
-                    {nameValue?.length ?? 0}/{NAME_MAX}
+                    {formatNum(nameValue?.length ?? 0)}/{formatNum(NAME_MAX)}
                   </span>
                 </div>
                 <FormControl>
                   <Input
-                    placeholder="e.g. Rice (50kg bags)"
+                    placeholder={tg('E_G_RICE50KG_BAGS')}
                     maxLength={NAME_MAX}
                     {...field}
                   />
@@ -117,7 +131,7 @@ export default function InkindDetailsForm({
             render={({ field }) => (
               <FormItem>
                 <div className="flex items-center justify-between">
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>{tglob('DESCRIPTION')}</FormLabel>
                   <span
                     className={`text-xs ${
                       (descriptionValue?.length ?? 0) >= DESCRIPTION_MAX
@@ -125,12 +139,13 @@ export default function InkindDetailsForm({
                         : 'text-muted-foreground'
                     }`}
                   >
-                    {descriptionValue?.length ?? 0}/{DESCRIPTION_MAX}
+                    {formatNum(descriptionValue?.length ?? 0)}/
+                    {formatNum(DESCRIPTION_MAX)}
                   </span>
                 </div>
                 <FormControl>
                   <Textarea
-                    placeholder="Briefly describe this in-kind item..."
+                    placeholder={tg('BRIEFLY_DESCRIBE_THIS_IN_KIND_ITEM')}
                     className="resize-none"
                     rows={3}
                     maxLength={DESCRIPTION_MAX}
@@ -147,17 +162,17 @@ export default function InkindDetailsForm({
             name="type"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Inkind Type</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select type" />
+                  <FormLabel>{tg('INKIND_TYPE')}</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder={tg('SELECT_TYPE')} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
                     {INKIND_TYPES.map((t) => (
                       <SelectItem key={t} value={t}>
-                        {INKIND_TYPE_LABELS[t]}
+                        {tglob(t)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -172,15 +187,18 @@ export default function InkindDetailsForm({
             name="quantity"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Inkind Quantity (optional)</FormLabel>
+                <FormLabel>{tg('INKIND_QUANTITY_OPTIONAL')}</FormLabel>
                 <FormControl>
                   <Input
                     type="text"
-                    placeholder="Enter quantity"
+                    placeholder={tg('ENTER_QUANTITY')}
                     {...field}
-                    value={field.value ?? ''}
+                    value={formatDigits(field.value ?? '')}
                     onChange={(e) => {
-                      const val = e.target.value.replace(/\D/g, '');
+                      const val = toAsciiDigits(e.target.value).replace(
+                        /\D/g,
+                        '',
+                      );
                       field.onChange(val);
                     }}
                   />
@@ -196,12 +214,12 @@ export default function InkindDetailsForm({
                 type="button"
                 variant="outline"
                 onClick={() => reset(DEFAULT_VALUES)}
-                className="px-10 rounded-sm w-40"
+                 className="px-10 rounded-sm w-40"
               >
-                Clear
+                {tg('CLEAR')}
               </Button>
               <Button type="submit" className="px-10 rounded-sm w-40">
-                Confirm
+                {tg('CONFIRM')}
               </Button>
             </div>
           </div>

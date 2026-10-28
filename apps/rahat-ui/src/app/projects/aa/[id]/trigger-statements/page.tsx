@@ -1,6 +1,11 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
+import ProjectPermissionGuard from 'apps/rahat-ui/src/guards/project-permission-guard';
 
 const TriggerStatementPage = dynamic(
   () =>
@@ -13,5 +18,9 @@ const TriggerStatementPage = dynamic(
 );
 
 export default function Page() {
-  return <TriggerStatementPage />;
+  return (
+    <ProjectPermissionGuard action={ACTIONS.READ} subject={SUBJECTS.TRIGGER}>
+      <TriggerStatementPage />
+    </ProjectPermissionGuard>
+  );
 }

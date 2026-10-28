@@ -5,7 +5,9 @@ import { X, Bell } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react';
 import { Notification } from '@rahat-ui/types';
+import { useTranslations } from 'next-intl';
 import NotificationItems from '../sections/notifications/notificationItems';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 interface NotificationPanelProps {
   isOpen: boolean;
@@ -24,6 +26,8 @@ export default function NotificationPanel({
   lengthOfNotification = 0,
   isLoading = false,
 }: NotificationPanelProps) {
+  const t = useTranslations('NOTIFICATIONS');
+  const formatNum = useNumberFormat();
   const displayedNotifications = notifications.slice(0, 4);
 
   if (!isOpen) return null;
@@ -34,10 +38,10 @@ export default function NotificationPanel({
         {/* Header */}
         <div className="flex items-center justify-between p-2">
           <div className="flex items-center gap-2">
-            <h2 className="text-lg font-semibold">Notifications</h2>
+            <h2 className="text-lg font-semibold">{t('NOTIFICATIONS')}</h2>
             {lengthOfNotification > 0 && (
               <span className="bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                {lengthOfNotification}
+                {formatNum(lengthOfNotification)}
               </span>
             )}
           </div>
@@ -53,7 +57,7 @@ export default function NotificationPanel({
         <div className="pt-2 pr-4 pb-2 pl-4">
           {isLoading ? (
             <div className="flex flex-col items-center justify-center min-h-[200px]">
-              <p className="text-sm text-gray-500">Loading notifications...</p>
+              <p className="text-sm text-gray-500">{t('LOADING_NOTIFICATIONS')}</p>
             </div>
           ) : notifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center min-h-[200px]">
@@ -62,11 +66,10 @@ export default function NotificationPanel({
                 <span className="absolute w-10 h-0.5 bg-gray-400 transform rotate-45 origin-center"></span>
               </div>
               <h3 className="text-lg font-medium text-gray-900 mb-2">
-                It&#39;s quiet now
+                {t('ITS_QUIET_NOW')}
               </h3>
               <p className="text-sm text-gray-500 max-w-xs text-center">
-                Your notifications will appear here once there&#39;s something
-                new to review
+                {t('YOUR_NOTIFICATIONS_WILL_APPEAR_HERE_ONCE')}
               </p>
             </div>
           ) : (
@@ -90,7 +93,7 @@ export default function NotificationPanel({
                   variant="ghost"
                   className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 text-sm"
                 >
-                  See all notifications →
+                  {t('SEE_ALL_NOTIFICATIONS')}
                 </Button>
               </Link>
             </div>

@@ -1,6 +1,7 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { useTranslations, useLocale } from 'next-intl';
+
 import { Heading } from 'apps/rahat-ui/src/common';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import {
   Calendar,
   TriangleAlert,
@@ -9,43 +10,62 @@ import {
 } from 'lucide-react';
 import React from 'react';
 import { formateDateFromText } from './utils/formateDataFormTextData';
+import { useNumberFormat, useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 
 type IProps = {
   glofas: Record<string, any>;
 };
 
 export default function GlofasInfoCard({ glofas }: IProps) {
+  const t = useTranslations('AA_PROJECT');
+  const locale = useLocale();
+  const formatNum = useNumberFormat();
+  const formatDigits = useLabelDigits();
+  const formatDate = useDateFormat();
   const maxProbability = glofas?.info?.pointForecastData?.maxProbability?.data;
   const maxProbabilityDisplay =
     maxProbability == null ? 'N/A' : maxProbability === '' ? '0' : maxProbability;
+
+  // Backend sends this as an opaque "<number> years" string (e.g. "20 years")
+  // rather than a numeric field, so the unit word is localized by pattern-matching
+  // rather than via a structured value.
+  const formatReturnPeriod = (value: string | undefined | null) => {
+    if (!value) return 'N/A';
+    const match = String(value).match(/^(\d+)\s*years?$/i);
+    if (!match) return value;
+    return `${formatDigits(match[1])} ${t('YEARS')}`;
+  };
 
   const cardData = React.useMemo(
     () => [
       {
         icon: Calendar,
-        label: 'Forecast Date',
-        value: dateFormat(glofas?.info?.forecastDate, 'MMMM d, yyyy'),
+        label: t('FORECAST_DATE'),
+        value: formatDate(glofas?.info?.forecastDate, 'MMMM d, yyyy'),
       },
       {
         icon: Calendar,
-        label: 'Return Period',
-        value: glofas?.info?.returnPeriod || 'N/A',
+        label: t('RETURN_PERIOD'),
+        value: formatReturnPeriod(glofas?.info?.returnPeriod),
       },
       {
         icon: ChartNoAxesColumn,
-        label: 'Discharge Tendency',
+        label: t('DISCHARGE_TENDENCY'),
+        isImage: true,
         value: glofas?.info?.pointForecastData?.dischargeTendencyImage?.data,
       },
       {
         icon: ChartLine,
-        label: 'Peak Forecasted',
+        label: t('PEAK_FORECASTED'),
         value: formateDateFromText(
           glofas?.info?.pointForecastData?.peakForecasted?.data,
+          locale,
         ),
       },
       {
         icon: TriangleAlert,
-        label: 'Alert Level',
+        label: t('ALERT_LEVEL'),
         value: glofas?.info?.pointForecastData?.alertLevel?.data,
       },
     ],
@@ -63,7 +83,7 @@ export default function GlofasInfoCard({ glofas }: IProps) {
               updatedAt={glofas?.updatedAt}
             />
             <div>
-              <Badge className="font-light">Steady</Badge>
+              <Badge className="font-light">{t('STEADY')}</Badge>
             </div>
           </div>
           <div className="grid grid-cols-5 gap-2">
@@ -76,14 +96,14 @@ export default function GlofasInfoCard({ glofas }: IProps) {
                   </div>
                   <div>
                     <p className="text-sm/6 font-medium mb-1">{d.label}</p>
-                    {d.label === 'Discharge Tendency' ? (
+                    {d.isImage ? (
                       <img
                         src={d.value}
-                        alt="Discharge Tendency"
+                        alt={t('DISCHARGE_TENDENCY')}
                         className="w-4 h-4 object-cover"
                       />
                     ) : (
-                      <p className="text-sm/4 text-gray-600">{d.value}</p>
+                      <p className="text-sm/4 text-gray-600">{formatNum(d.value)}</p>
                     )}
                   </div>
                 </div>
@@ -93,19 +113,23 @@ export default function GlofasInfoCard({ glofas }: IProps) {
         </div>
         <div className="p-4 rounded-sm border shadow min-w-max">
           <div className="text-center">
-            <p className="font-semibold text-xl/10">Maximum Probability</p>
+            <p className="font-semibold text-xl/10">{t('MAXIMUM_PROBABILITY')}</p>
             <p className="text-xs/4">
-              Max Probability Step:{' '}
-              {glofas?.info?.pointForecastData?.maxProbabilityStep?.data ||
-                'N/A'}
+              {t('MAX_PROBABILITY_STEP')}{' '}
+              {formatDate(
+                glofas?.info?.pointForecastData?.maxProbabilityStep?.data,
+                'MMMM d, yyyy',
+              ) || 'N/A'}
             </p>
           </div>
 
           <div className="pt-2 text-center">
             <div className="text-primary font-semibold">
-              {maxProbabilityDisplay} %
+              {formatDigits(maxProbabilityDisplay)} %
             </div>
-            <div className="text-sm">{glofas?.info?.returnPeriod}</div>
+            <div className="text-sm">
+              {formatReturnPeriod(glofas?.info?.returnPeriod)}
+            </div>
           </div>
         </div>
       </div>

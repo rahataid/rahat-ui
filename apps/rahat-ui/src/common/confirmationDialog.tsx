@@ -9,6 +9,8 @@ import {
   DialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { useTranslations } from 'next-intl';
+import { Loader2 } from 'lucide-react';
 
 type ConfirmationDialogProps = {
   isConfirmationDialogOpen: boolean;
@@ -17,20 +19,29 @@ type ConfirmationDialogProps = {
   dialogTitle?: string;
   dialogMessage?: string;
   children?: React.ReactNode;
+  isDestructive?: boolean;
+  isPending?: boolean;
+  confirmLabel?: string;
 };
 const ConfirmationDialog = ({
   isConfirmationDialogOpen,
   onCancel,
   onConfirm,
-  dialogTitle = 'Confirm Action',
-  dialogMessage = 'This action cannot be undone. Are you sure you want to perform this action?',
+  dialogTitle,
+  dialogMessage,
   children,
+  isDestructive,
+  isPending,
+  confirmLabel,
 }: ConfirmationDialogProps) => {
+  const t = useTranslations('CONFIRMATION_ALERT_DIALOGS');
+  const tg = useTranslations('GLOBAL');
+
   return (
     <Dialog
       open={isConfirmationDialogOpen}
       onOpenChange={(nextOpen) => {
-        if (!nextOpen) onCancel();
+        if (!nextOpen && !isPending) onCancel();
       }}
     >
       <DialogContent
@@ -40,8 +51,8 @@ const ConfirmationDialog = ({
         }}
       >
         <DialogHeader className="!text-center">
-          <DialogTitle>{dialogTitle}</DialogTitle>
-          <DialogDescription>{children || dialogMessage}</DialogDescription>
+          <DialogTitle>{dialogTitle || t('CONFIRM_ACTION')}</DialogTitle>
+          <DialogDescription>{children || dialogMessage || t('THIS_ACTION_CANNOT_BE_UNDONE_ARE')}</DialogDescription>
         </DialogHeader>
 
         <DialogFooter className="flex justify-between">
@@ -49,18 +60,28 @@ const ConfirmationDialog = ({
             <Button
               type="button"
               onClick={onCancel}
+              disabled={isPending}
               className="w-full rounded-sm"
               variant="outline"
             >
-              Cancel
+              {tg('CANCEL')}
             </Button>
           </DialogClose>
           <Button
-            type="submit"
+            type="button"
+            variant={isDestructive ? 'destructive' : 'default'}
             onClick={onConfirm}
+            disabled={isPending}
             className="w-full rounded-sm"
           >
-            Confirm
+            {isPending ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {confirmLabel ?? t('CONFIRM_ACTION')}
+              </>
+            ) : (
+              confirmLabel ?? t('CONFIRM_ACTION')
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

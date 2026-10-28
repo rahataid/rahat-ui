@@ -11,31 +11,50 @@ import {
   CardContent,
   CardHeader,
 } from '@rahat-ui/shadcn/src/components/ui/card';
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import DisburseButton from './components/disburse.button';
 
 export default function FundManagementDetail() {
   const { id: projectID, fundId } = useParams();
+  const t = useTranslations('AA_PROJECT');
+  const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
+  const tg = useTranslations('GLOBAL');
+  const fundStatusLabel = (status?: string) => {
+    if (!status) return status;
+    const map: Record<string, string> = {
+      NOT_DISBURSED: t('NOT_DISBURSED'),
+      DISBURSED: tv('DISBURSED'),
+      STARTED: tv('STARTED'),
+      FAILED: tg('FAILED'),
+      ERROR: tg('ERROR'),
+    };
+    return map[status] ?? status.replace(/_/g, ' ');
+  };
 
   const { data, isLoading } = useSingleGroupReservedFunds(
     projectID as UUID,
     fundId,
   );
 
+  const formatNum = useNumberFormat();
+
   const FMTokensData = [
     {
-      name: 'Tokens',
+      name: t('TOKENS'),
       amount: data?.numberOfTokens ?? 'N/A',
     },
     {
-      name: 'Total Beneficiaries',
+      name: t('TOTAL_BENEFICIARIES'),
       amount: data?.groupedBeneficiaries?.length ?? 0,
     },
     {
-      name: 'Created By',
+      name: t('CREATED_BY'),
       amount: data?.createdBy ?? 'N/A',
     },
     {
-      name: '1 Token Value',
-      amount: `Rs. ${ONE_TOKEN_VALUE}`,
+      name: t('N1_TOKEN_VALUE'),
+      amount: `${t('RS')} ${formatNum(ONE_TOKEN_VALUE)}`,
     },
   ];
 
@@ -45,8 +64,8 @@ export default function FundManagementDetail() {
         <HeaderWithBack
           path={`/projects/aa/${projectID}/fund-management?tab=fundManagementList`}
           title={isLoading ? <Skeleton className="h-7 w-56" /> : data?.title}
-          subtitle="Detailed view of reserved fund"
-          status={isLoading ? undefined : data?.status?.replace(/_/g, ' ')}
+          subtitle={t('DETAILED_VIEW_OF_RESERVED_FUND')}
+          status={isLoading ? undefined : fundStatusLabel(data?.status)}
           badgeClassName={
             data?.status === 'DISBURSED'
               ? 'bg-green-100 text-green-500'
@@ -57,6 +76,9 @@ export default function FundManagementDetail() {
               : 'bg-gray-200'
           }
         />
+        {!isLoading && (
+          <DisburseButton groupUuid={data?.groupId} status={data?.status} />
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
@@ -68,7 +90,7 @@ export default function FundManagementDetail() {
               <DataCard
                 key={item.name}
                 title={item.name}
-                number={item.amount}
+                number={formatNum(item.amount)}
                 className="border-solid rounded-md"
                 iconStyle="bg-white text-secondary-muted"
               />

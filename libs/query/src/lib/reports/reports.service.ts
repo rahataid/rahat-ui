@@ -1,6 +1,8 @@
 import { useRSQuery } from '@rumsan/react-query';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { UUID } from 'crypto';
+import { useTranslations } from 'next-intl';
+import { toast } from 'react-toastify';
 
 export const useGetDataSource = () => {
   const { rumsanService } = useRSQuery();
@@ -38,5 +40,27 @@ export const useGetStatsCore = () => {
       return res.data.data;
     },
     staleTime: 60 * 60 * 1000, // 1 hour
+  });
+};
+
+export const useSyncCoreStats = () => {
+  const { rumsanService } = useRSQuery();
+  const qc = useQueryClient();
+  const t = useTranslations('AA_PROJECT');
+
+  return useMutation({
+    mutationFn: async () => {
+      const res = await rumsanService.client.post(
+        `/beneficiaries/stats/refresh`,
+      );
+      return res.data.data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['coreStats'] });
+      toast.success(t('STATS_DATA_SYNCED_SUCCESSFULLY'));
+    },
+    onError: () => {
+      toast.error(t('FAILED_TO_SYNC_STATS_DATA'));
+    },
   });
 };

@@ -1,9 +1,13 @@
 'use client';
+import { useTranslations } from 'next-intl';
 import {
+  useCompletePayout,
   useGetPayoutLogs,
   usePagination,
   usePayoutExportLogs,
+  usePayoutExportPdfFile,
   useSinglePayout,
+  useTriggerForOnePayoutFailed,
   useTriggerForPayoutFailed,
   useTriggerPayout,
 } from '@rahat-ui/query';
@@ -21,7 +25,6 @@ import {
   TableLoader,
 } from 'apps/rahat-ui/src/common';
 
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   DropdownMenu,
@@ -36,6 +39,7 @@ import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { UUID } from 'crypto';
 import {
   ChevronDown,
+  CircleCheckBig,
   CloudDownload,
   CloudUpload,
   Landmark,
@@ -43,20 +47,37 @@ import {
   Smartphone,
 } from 'lucide-react';
 import PayoutConfirmationDialog from './payoutTriggerConfirmationModel';
+import OtpConfirmDialog from './otpConfirmDialog';
 import useBeneficiaryGroupDetailsLogColumns from './useBeneficiaryGroupDetailsLogColumns';
 import * as XLSX from 'xlsx';
 import { ONE_TOKEN_VALUE } from 'apps/rahat-ui/src/constants/aa.constants';
 import { getPayoutTransactionStatusOptions } from './utils';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 // TODO: remove this table if used nowhgere
 // import BeneficiariesGroupTable from './beneficiariesGroupTable';
 
 export default function BeneficiaryGroupTransactionDetailsList() {
+  const t = useTranslations('AA_PROJECT');
+  const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
+  const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
   const params = useParams();
   const projectId = params.id as UUID;
   const payoutId = params.detailID as UUID;
   const searchParams = useSearchParams();
   const navigation = searchParams.get('from');
+  const cancelConfirmDialog = useBoolean(false);
+
   const router = useRouter();
   const {
     pagination,
@@ -85,19 +106,37 @@ export default function BeneficiaryGroupTransactionDetailsList() {
   );
 
   const triggerForPayoutFailed = useTriggerForPayoutFailed();
+  const triggerForOnePayoutFailed = useTriggerForOnePayoutFailed();
   const triggerPayout = useTriggerPayout();
-  const columns = useBeneficiaryGroupDetailsLogColumns(payout?.type);
+  const cancelPayout = useCompletePayout();
+  const retryOtpDialog = useBoolean(false);
+  const [retryMode, setRetryMode] = React.useState<'bulk' | 'single'>('bulk');
+  const [singleRetryUuid, setSingleRetryUuid] = React.useState<UUID | null>(
+    null,
+  );
+  const columns = useBeneficiaryGroupDetailsLogColumns(
+    payout?.type,
+    (uuid: UUID) => {
+      setSingleRetryUuid(uuid);
+      setRetryMode('single');
+      retryOtpDialog.onTrue();
+    },
+  );
   const { data: exportPayoutLogs } = usePayoutExportLogs({
     projectUUID: projectId,
     payoutUUID: payoutId,
   });
+  // PDF is generated server-side: the API renders the payout logs PDF
+  // (with photo evidence) and returns it as base64 for download.
+  const exportPdfFile = usePayoutExportPdfFile();
+  const pdfDownloading = exportPdfFile.isPending;
 
   const handleDownload = () => {
     const correctedLogs = (exportPayoutLogs || []).map(
       (row: Record<string, unknown>) => {
         return {
           ...row,
-          'Updated At': dateFormat(row['Updated At'] as string),
+          'Updated At': formatDate(row['Updated At'] as string),
         };
       },
     );
@@ -107,6 +146,38 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     XLSX.writeFile(workbook, 'payout-logs.xlsx');
   };
 
+  const handleDownloadPdf = async () => {
+    const file = await exportPdfFile.mutateAsync({
+      projectUUID: projectId,
+      payoutUUID: payoutId,
+      transactionType: debounsSearch?.transactionType || undefined,
+      transactionStatus: debounsSearch?.transactionStatus || undefined,
+      search: debounsSearch?.search || undefined,
+      sort: 'updatedAt',
+      order: 'desc',
+    });
+    const bytes = Uint8Array.from(atob(file.base64), (c) => c.charCodeAt(0));
+    const blob = new Blob([bytes], {
+      type: file.mimeType || 'application/pdf',
+    });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = file.filename || `payout-logs-${payoutId}.pdf`;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
+  };
+  const handleCompletePayout = () => {
+    cancelPayout.mutateAsync({
+      projectUUID: projectId,
+      payload: {
+        uuid: payoutId,
+      },
+    });
+    cancelConfirmDialog.onFalse();
+  };
   const table = useReactTable({
     manualPagination: true,
     data: payoutlogs?.data || [],
@@ -130,14 +201,34 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     });
   };
 
-  const handleTriggerPayoutFailed = React.useCallback(async () => {
-    triggerForPayoutFailed.mutateAsync({
-      projectUUID: projectId,
-      payload: {
-        payoutUUID: payoutId,
-      },
-    });
-  }, [triggerForPayoutFailed]);
+  const handleConfirmRetryOtp = React.useCallback(
+    async (otp: string) => {
+      if (retryMode === 'single' && singleRetryUuid) {
+        return triggerForOnePayoutFailed.mutateAsync({
+          projectUUID: projectId,
+          payload: {
+            beneficiaryRedeemUuid: singleRetryUuid,
+            otp,
+          },
+        });
+      }
+      return triggerForPayoutFailed.mutateAsync({
+        projectUUID: projectId,
+        payload: {
+          payoutUUID: payoutId,
+          otp,
+        },
+      });
+    },
+    [
+      retryMode,
+      singleRetryUuid,
+      triggerForOnePayoutFailed,
+      triggerForPayoutFailed,
+      projectId,
+      payoutId,
+    ],
+  );
 
   const handleTriggerPayout = React.useCallback(
     async (otp: string) => {
@@ -154,34 +245,41 @@ export default function BeneficiaryGroupTransactionDetailsList() {
 
   const payoutStats = [
     {
-      label: 'Actual Budget',
-      smallNumber: `Rs. ${
-        payout?.beneficiaryGroupToken?.numberOfTokens * ONE_TOKEN_VALUE
-      }`,
+      label: tv('ACTUAL_BUDGET'),
+      smallNumber: `${t('RS')} ${formatNum(
+        payout?.beneficiaryGroupToken?.numberOfTokens * ONE_TOKEN_VALUE,
+      )}`,
       infoIcon: true,
-      infoToolTip: `Total allocated budget for this beneficiary ${"group's"} payout`,
+      infoToolTip: tv('ACTUAL_BUDGET_TOOLTIP'),
     },
     {
-      label: 'Amount Disbursed',
-      smallNumber: `Rs. ${payout?.totalSuccessAmount}`,
+      label: tv('AMOUNT_DISBURSED'),
+      smallNumber: `${t('RS')} ${formatNum(payout?.totalSuccessAmount ?? 0)}`,
       infoIcon: true,
-      infoToolTip: 'Total amount disbursed in this payout',
+      infoToolTip: tv('AMOUNT_DISBURSED_TOOLTIP'),
     },
     {
-      label: 'Payout Type',
+      label: tv('PAYOUT_TYPE'),
       infoIcon: true,
-      infoToolTip: 'Type of Payout',
-      smallNumber: payout?.type === 'VENDOR' ? 'CVA' : payout?.type,
+      infoToolTip: tv('PAYOUT_TYPE_TOOLTIP'),
+      smallNumber: translateValue(
+        tg,
+        payout?.type === 'VENDOR' ? 'CVA' : payout?.type,
+        { fallbackStyle: 'raw' },
+      ),
       badge: true,
     },
     {
-      label: 'Payout Method',
+      label: tv('PAYOUT_METHOD'),
       infoIcon: true,
-      infoToolTip: 'Payment Method',
-      smallNumber:
+      infoToolTip: tv('PAYOUT_METHOD_TOOLTIP'),
+      smallNumber: translateValue(
+        tg,
         payout?.type === 'VENDOR'
           ? payout?.mode
           : payout?.extras?.paymentProviderName,
+        { fallbackStyle: 'raw' },
+      ),
       badge: true,
     },
   ];
@@ -193,6 +291,12 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     },
     [filters],
   );
+
+  const cancelDialog = () => {
+    cancelConfirmDialog.onFalse();
+  };
+  const text = t('CANNOT_MARK_AS_COMPLETE_AS_FUND_IS_NOT_DISBURSED');
+
   return isLoading ? (
     <TableLoader />
   ) : (
@@ -210,53 +314,125 @@ export default function BeneficiaryGroupTransactionDetailsList() {
           <div>
             <Heading
               title={`${payout?.beneficiaryGroupToken?.beneficiaryGroup?.name}`}
-              description="List of all the payout transaction logs of selected group"
-              status={payout?.status
-                .toLowerCase()
+              description={tv('LIST_OF_ALL_THE_PAYOUT_TRANSACTION')}
+              status={translateValue(tg, payout?.status, {
+                fallbackStyle: 'raw',
+              })
+                ?.toLowerCase()
                 .replace(/_/g, ' ')
                 .replace(/^./, (char: string) => char.toUpperCase())}
               badgeClassName={isCompleteBgStatus(payout?.status)}
+              totalBeneficiaries={
+                payout?.beneficiaryGroupToken?.beneficiaryGroup?._count
+                  ?.beneficiaries
+              }
+              totalSuccessAmount={payout?.totalSuccessAmount}
+              isShowStats={true}
             />
           </div>
           {
             <div className="flex gap-2">
+              <Can action={ACTIONS.UPDATE} subject={SUBJECTS.PAYOUT}>
+                <TooltipWrapper
+                  tip={`${
+                    payout?.status === 'COMPLETED'
+                      ? t('PAYOUT_ALREADY_COMPLETED')
+                      : !payout?.beneficiaryGroupToken?.isDisbursed
+                      ? t('CANNOT_MARK_AS_COMPLETE_AS_FUND_IS_NOT_DISBURSED')
+                      : t('MARK_AS_COMPLETED_TOOLTIP')
+                  }`}
+                >
+                  <Button
+                    className={`gap-2 text-sm `}
+                    onClick={() => cancelConfirmDialog.onTrue()}
+                    disabled={
+                      cancelPayout.isPending ||
+                      payout?.status === 'COMPLETED' ||
+                      !payout?.beneficiaryGroupToken?.isDisbursed
+                    }
+                    variant={'default'}
+                  >
+                    <CircleCheckBig className={'w-4 h-4'} />
+                    {t('MARK_AS_COMPLETED')}
+                  </Button>
+                </TooltipWrapper>
+              </Can>
+
               <PayoutConfirmationDialog
                 projectId={projectId}
                 onConfirm={handleTriggerPayout}
                 payoutData={payout}
               />
+              <OtpConfirmDialog
+                projectId={projectId}
+                open={retryOtpDialog.value}
+                onOpenChange={(open) =>
+                  open ? retryOtpDialog.onTrue() : retryOtpDialog.onFalse()
+                }
+                title={
+                  retryMode === 'single'
+                    ? tg('RETRY')
+                    : tv('RETRY_FAILED_REQUESTS')
+                }
+                description={tv('PLEASE_ENTER_DIGIT_PIN', { length: 4 })}
+                summary={
+                  retryMode === 'single' ? (
+                    <div className="flex justify-between gap-2">
+                      <span className="font-medium">
+                        {tv('BENEFICIARY_WALLET_ADDRESS')}
+                      </span>
+                      <span className="truncate max-w-52">
+                        {payoutlogs?.data?.find(
+                          (row: any) => row.uuid === singleRetryUuid,
+                        )?.beneficiaryWalletAddress ?? singleRetryUuid}
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="flex justify-between">
+                      <span className="font-medium">
+                        {tv('FAILED_TRANSACTIONS')}
+                      </span>
+                      <span>
+                        {formatNum(payout?.totalFailedPayoutRequests ?? 0)}
+                      </span>
+                    </div>
+                  )
+                }
+                confirmLabel={tg('RETRY')}
+                onConfirm={handleConfirmRetryOtp}
+              />
               {payout?.type === 'FSP' && (
-                <RoleAuth
-                  roles={[AARoles.ADMIN, AARoles.Municipality]}
-                  hasContent={false}
-                >
+                <Can action={ACTIONS.ACTIVATE} subject={SUBJECTS.PAYOUT}>
                   <Button
                     className={`gap-2 text-sm ${
                       payout?.hasFailedPayoutRequests === false && 'hidden'
                     }`}
-                    onClick={handleTriggerPayoutFailed}
-                    disabled={triggerForPayoutFailed.isPending}
+                    onClick={() => {
+                      setRetryMode('bulk');
+                      retryOtpDialog.onTrue();
+                    }}
+                    disabled={
+                      triggerForPayoutFailed.isPending ||
+                      payout?.status === 'COMPLETED'
+                    }
                   >
                     <RotateCcw
                       className={`${
                         triggerForPayoutFailed.isPending ? 'animate-spin' : ''
                       } w-4 h-4`}
                     />
-                    Retry Failed Requests
+                    {tv('RETRY_FAILED_REQUESTS')}
                   </Button>
-                </RoleAuth>
+                </Can>
               )}
 
               {payout?.type === 'FSP' &&
                 (payout?.extras?.paymentProviderName ===
                   'Manual Bank Transfer' ||
                   payout?.extras?.paymentProviderName === 'Manual') && (
-                  <RoleAuth
-                    roles={[AARoles.ADMIN, AARoles.Municipality]}
-                    hasContent={false}
-                  >
+                  <Can action={ACTIONS.UPDATE} subject={SUBJECTS.PAYOUT}>
                     <TooltipWrapper
-                      tip="Payout cannot be verified because funds have not been disbursed to the beneficiary group."
+                      tip={tv('PAYOUT_CANNOT_BE_VERIFIED')}
                       disable={payout?.beneficiaryGroupToken?.isDisbursed}
                     >
                       <DropdownMenu>
@@ -266,13 +442,14 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                               payout?.status === 'COMPLETED' && 'hidden'
                             } `}
                             disabled={
-                              !payout?.beneficiaryGroupToken?.isDisbursed
+                              !payout?.beneficiaryGroupToken?.isDisbursed ||
+                              payout?.status === 'COMPLETED'
                             }
                             variant={'outline'}
                           >
                             <span className="flex items-center gap-2">
                               <CloudUpload className="w-4 h-4" />
-                              Verify Manual Payout
+                              {tv('VERIFY_MANUAL_PAYOUT')}
                             </span>
                             <ChevronDown className="w-4 h-4" />
                           </Button>
@@ -287,7 +464,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                             }
                           >
                             <Landmark className="w-4 h-4" />
-                            Bank Account
+                            {tv('BANK_ACCOUNT')}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             className="gap-2"
@@ -298,13 +475,30 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                             }
                           >
                             <Smartphone className="w-4 h-4" />
-                            Phone Number
+                            {tg('PHONE_NUMBER')}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TooltipWrapper>
-                  </RoleAuth>
+                  </Can>
                 )}
+              {payout?.type === 'VENDOR' && (
+                <Button
+                  className={`gap-2 text-sm ${
+                    payoutlogs?.data?.length === 0 && 'hidden'
+                  }`}
+                  onClick={handleDownloadPdf}
+                  disabled={pdfDownloading}
+                  variant={'outline'}
+                >
+                  <CloudDownload
+                    className={`w-4 h-4 ${
+                      pdfDownloading ? 'animate-spin' : ''
+                    }`}
+                  />
+                  {tv('DOWNLOAD_PAYOUT_PDF')}
+                </Button>
+              )}
               <Button
                 className={`gap-2 text-sm ${
                   payoutlogs?.data?.length === 0 && 'hidden'
@@ -313,7 +507,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                 variant={'outline'}
               >
                 <CloudDownload className={`w-4 h-4`} />
-                Download Payout Logs
+                {tv('DOWNLOAD_PAYOUT_LOGS')}
               </Button>
             </div>
           }
@@ -340,9 +534,9 @@ export default function BeneficiaryGroupTransactionDetailsList() {
 
           {payout?.type === 'VENDOR' && payout?.mode === 'OFFLINE' && (
             <DataCard
-              title="Vendor"
+              title={tv('VENDOR')}
               infoIcon={true}
-              infoTooltip="This shows the vendor name"
+              infoTooltip={tv('VENDOR_TOOLTIP')}
               smallNumber={payout?.extras?.vendorName}
               className="rounded-sm h-[80px] pt-10 pb-8"
               badge
@@ -350,38 +544,62 @@ export default function BeneficiaryGroupTransactionDetailsList() {
           )}
         </div>
 
-        <div className="grid lg:grid-cols-4 gap-4 pt-2">
+        <div
+          className={`grid ${
+            payout?.groupGap  || payout?.type === 'VENDOR'
+              ? 'lg:grid-cols-5'
+              : 'lg:grid-cols-4'
+          } gap-4 pt-2`}
+        >
           <DataCard
-            title="Total no. of Beneficiaries"
-            smallNumber={
+            title={tv('TOTAL_NO_OF_BENEFICIARIES')}
+            smallNumber={formatNum(
               payout?.beneficiaryGroupToken?.beneficiaryGroup?._count
-                ?.beneficiaries ?? 0
-            }
+                ?.beneficiaries ?? 0,
+            )}
             className="rounded-sm h-[80px] pt-10 pb-8 "
             infoIcon={true}
-            infoTooltip="Total number of beneficiaries in the group"
+            infoTooltip={tv('TOTAL_NO_OF_BENEFICIARIES_TOOLTIP')}
           />
           <DataCard
-            title="Successful Transactions"
-            smallNumber={payout?.totalSuccessRequests}
+            title={tv('SUCCESSFUL_TRANSACTIONS')}
+            smallNumber={formatNum(payout?.totalSuccessRequests ?? 0)}
             className="rounded-sm h-[80px] pt-10 pb-8 "
             infoIcon={true}
-            infoTooltip="Total number of Successful Transactions"
+            infoTooltip={tv('SUCCESSFUL_TRANSACTIONS_TOOLTIP')}
           />
           <DataCard
-            title="Failed Transactions"
-            smallNumber={payout?.totalFailedPayoutRequests}
+            title={tv('FAILED_TRANSACTIONS')}
+            smallNumber={formatNum(payout?.totalFailedPayoutRequests ?? 0)}
             className="rounded-sm h-[80px] pt-10 pb-8 "
             infoIcon={true}
-            infoTooltip="Total number of Failed Transactions"
+            infoTooltip={tv('FAILED_TRANSACTIONS_TOOLTIP')}
           />
           <DataCard
-            title="Payout Gap"
-            smallNumber={payout?.payoutGap}
+            title={tv('PAYOUT_GAP')}
+            smallNumber={formatNum(payout?.payoutGap ?? 0)}
             className="rounded-sm h-[80px] pt-10 pb-8 "
             infoIcon={true}
-            infoTooltip="Gap between Activation phsae triggerd and payout disbursed"
+            infoTooltip={tv('PAYOUT_GAP_TOOLTIP')}
           />
+          {payout?.groupGap && (
+            <DataCard
+              title={tv('GROUP_GAP')}
+              smallNumber={formatNum(payout?.groupGap ?? 0)}
+              className="rounded-sm h-[80px] pt-10 pb-8 "
+              infoIcon={true}
+              infoTooltip={tv('GROUP_GAP_TOOLTIP')}
+            />
+          )}
+          {payout?.type === 'VENDOR' && (
+            <DataCard
+              title={tv('TOTAL_SKIP_OTP')}
+              smallNumber={formatNum(payout?.totalSkipOtp ?? 0)}
+              className="rounded-sm h-[80px] pt-10 pb-8 "
+              infoIcon={true}
+              infoTooltip={tv('TOTAL_SKIP_OTP_TOOLTIP')}
+            />
+          )}
         </div>
       </div>
 
@@ -389,7 +607,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
         <div className="flex gap-2">
           <SearchInput
             className="w-full flex-[4]"
-            name="beneficiary wallet address"
+            name={tv('SEARCH_BENEFICIARY_WALLET')}
             onSearch={(e) => handleSearch(e, 'search')}
             value={filters?.search || ''}
           />
@@ -397,13 +615,19 @@ export default function BeneficiaryGroupTransactionDetailsList() {
           {payout?.type === 'FSP' &&
             payout?.extras?.paymentProviderType !== 'manual_bank_transfer' && (
               <SelectComponent
-                name="Transaction Type"
+                name={tv('TRANSACTION_TYPE')}
                 options={[
                   'ALL',
                   'TOKEN_TRANSFER',
                   'FIAT_TRANSFER',
                   'VENDOR_REIMBURSEMENT',
                 ]}
+                labels={{
+                  ALL: tg('ALL'),
+                  TOKEN_TRANSFER: tg('TOKEN_TRANSFER'),
+                  FIAT_TRANSFER: tg('FIAT_TRANSFER'),
+                  VENDOR_REIMBURSEMENT: tg('VENDOR_REIMBURSEMENT'),
+                }}
                 onChange={(value) =>
                   handleFilterChange({
                     target: { name: 'transactionType', value },
@@ -415,13 +639,25 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             )}
 
           <SelectComponent
-            name="Status"
+            name={tg('STATUS')}
             options={
               getPayoutTransactionStatusOptions(
                 payout?.type,
                 payout?.extras?.paymentProviderType,
               ) as string[]
             }
+            labels={{
+              ALL: tg('ALL'),
+              PENDING: tg('PENDING'),
+              COMPLETED: tg('COMPLETED'),
+              FAILED: tg('FAILED'),
+              FIAT_TRANSACTION_INITIATED: tg('FIAT_TRANSACTION_INITIATED'),
+              FIAT_TRANSACTION_COMPLETED: tg('FIAT_TRANSACTION_COMPLETED'),
+              FIAT_TRANSACTION_FAILED: tg('FIAT_TRANSACTION_FAILED'),
+              TOKEN_TRANSACTION_INITIATED: tg('TOKEN_TRANSACTION_INITIATED'),
+              TOKEN_TRANSACTION_COMPLETED: tg('TOKEN_TRANSACTION_COMPLETED'),
+              TOKEN_TRANSACTION_FAILED: tg('TOKEN_TRANSACTION_FAILED'),
+            }}
             onChange={(value) =>
               handleFilterChange({
                 target: { name: 'transactionStatus', value },
@@ -431,7 +667,12 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             className="flex-[1]"
           />
         </div>
-        <DemoTable table={table} loading={payoutLogsLoading} />
+        {/* offset =navbar + back + heading + 2 stat rows + filters + pagination; retune if header changes */}
+        <DemoTable
+          table={table}
+          loading={payoutLogsLoading}
+          tableHeight="h-[max(280px,calc(100vh-600px))]"
+        />
 
         <CustomPagination
           currentPage={pagination.page}
@@ -447,6 +688,14 @@ export default function BeneficiaryGroupTransactionDetailsList() {
           }
           perPage={pagination?.perPage}
           total={payoutlogs?.response?.meta?.total || 0}
+          pageSizes={['10', '20', '50', '100', '250', '500', '1000']}
+        />
+        <ConfirmationDialog
+          isConfirmationDialogOpen={cancelConfirmDialog.value}
+          onCancel={cancelDialog}
+          onConfirm={handleCompletePayout}
+          dialogTitle={t('MARK_AS_COMPLETED')}
+          dialogMessage={t('COMPLETE_PAYOUT_ALERT_DESCRIPTION')}
         />
       </div>
     </div>

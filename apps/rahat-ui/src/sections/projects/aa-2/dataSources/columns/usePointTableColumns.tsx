@@ -1,32 +1,42 @@
 import React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { convertToLocalTimeOrMillisecond } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { useTranslations } from 'next-intl';
 
 interface UsePointTableColumnsProps {
   unit?: string;
 }
 
 export const usePointTableColumns = ({ unit }: UsePointTableColumnsProps) => {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'datetime',
-      header: 'Date',
+      header: tg('DATE'),
       cell: ({ row }) => {
         const dateTime = row.getValue('datetime') as string;
-        const { formatted } = convertToLocalTimeOrMillisecond(
+        const result = convertToLocalTimeOrMillisecond(
           dateTime,
           'eee, MMMM d, yyyy, h:mm:ss',
-        ) as { formatted: string; timestamp: number };
+        ) as { formatted: string; timestamp: number } | '';
+        if (!result) return <div></div>;
 
-        return <div>{formatted}</div>;
+        return (
+          <div>{formatDate(result.timestamp, 'eee, MMMM d, yyyy, h:mm:ss')}</div>
+        );
       },
     },
     {
       accessorKey: 'value',
-      header: 'Point',
+      header: t('POINT'),
       cell: ({ row }) => (
         <div>
-          {row.getValue('value')} {unit}
+          {formatNum(row.getValue('value'))} {unit}
         </div>
       ),
     },

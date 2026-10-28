@@ -3,10 +3,14 @@ import { useRSQuery } from '@rumsan/react-query';
 import { Pagination } from '@rumsan/sdk/types';
 import { useMutation, useQuery, UseQueryResult } from '@tanstack/react-query';
 import { UUID } from 'crypto';
+import { useTranslations } from 'next-intl';
 import Swal from 'sweetalert2';
+import { resolveBackendErrorMessage } from '../../utils/i18n/backend-error';
+
 export const useCreateAuthApp = () => {
   const { queryClient, rumsanService } = useRSQuery();
   const appClient = getAppClient(rumsanService.client);
+  const t = useTranslations();
   return useMutation(
     {
       mutationKey: ['CREATE_AUTH_APP'],
@@ -20,15 +24,24 @@ export const useCreateAuthApp = () => {
             },
           ],
         });
-        Swal.fire('Auth App Create Sucessfully', '', 'success');
+        Swal.fire(t('GLOBAL.AUTH_APP_CREATED_SUCCESSFULLY' as never), '', 'success');
       },
       onError: (error: any) => {
-        const errorMessage = error.response.data.message.includes(
+        const code = error?.response?.data?.code;
+        const name = error?.response?.data?.name;
+        const rawMessage = error.response.data.message.includes(
           'Unique constraint',
         )
-          ? 'Public Key already exist'
+          ? t('GLOBAL.PUBLIC_KEY_ALREADY_EXISTS' as never)
           : error.response.data.message;
-        Swal.fire('Error', errorMessage, 'error');
+        const errorMessage = resolveBackendErrorMessage(
+          t,
+          code || name,
+          error?.response?.data?.params,
+          ['USERS'],
+          rawMessage,
+        );
+        Swal.fire(t('GLOBAL.ERROR' as never), errorMessage, 'error');
       },
     },
     queryClient,
@@ -64,6 +77,7 @@ export const useGetAuthApp = (uuid: UUID): UseQueryResult<any, Error> => {
 export const useUpdateAuthApp = () => {
   const { queryClient, rumsanService } = useRSQuery();
   const appClient = getAppClient(rumsanService.client);
+  const t = useTranslations();
   return useMutation(
     {
       mutationKey: ['UPDATE_AUTH_APP'],
@@ -80,11 +94,16 @@ export const useUpdateAuthApp = () => {
         Swal.fire('Auth App Update Sucessfully', '', 'success');
       },
       onError: (error: any) => {
-        Swal.fire(
-          'Error',
+        const code = error?.response?.data?.code;
+        const name = error?.response?.data?.name;
+        const errorMessage = resolveBackendErrorMessage(
+          t,
+          code || name,
+          error?.response?.data?.params,
+          ['USERS'],
           error.response.data.message || 'Encounter error on Updating Data',
-          'error',
         );
+        Swal.fire('Error', errorMessage, 'error');
       },
     },
     queryClient,
@@ -94,6 +113,7 @@ export const useUpdateAuthApp = () => {
 export const usesoftDeleteAuthApp = () => {
   const { queryClient, rumsanService } = useRSQuery();
   const appClient = getAppClient(rumsanService.client);
+  const t = useTranslations();
   return useMutation(
     {
       mutationKey: ['DELETE_AUTH_APP'],
@@ -110,11 +130,16 @@ export const usesoftDeleteAuthApp = () => {
         Swal.fire('Auth App Delete Sucessfully', '', 'success');
       },
       onError: (error: any) => {
-        Swal.fire(
-          'Error',
+        const code = error?.response?.data?.code;
+        const name = error?.response?.data?.name;
+        const errorMessage = resolveBackendErrorMessage(
+          t,
+          code || name,
+          error?.response?.data?.params,
+          ['USERS'],
           error.response.data.message || 'Encounter error on Deleting Data',
-          'error',
         );
+        Swal.fire('Error', errorMessage, 'error');
       },
     },
     queryClient,

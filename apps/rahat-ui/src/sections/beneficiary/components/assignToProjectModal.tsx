@@ -21,6 +21,7 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { UUID } from 'crypto';
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 
 type ProjectModalType = {
   value: boolean;
@@ -37,7 +38,8 @@ export default function AssignToProjectModal({
   beneficiaryDetail,
   projectModal,
 }: IProps) {
-  // console.log("beneficiary detail", beneficiaryDetail)
+  const t = useTranslations('BENEFICIARY_DETAIL');
+  const tg = useTranslations('GLOBAL');
 
   const assignBeneficiary = useAssignBenToProject();
   const projectsList = useProjectList({ page: 1, perPage: 100 });
@@ -49,7 +51,7 @@ export default function AssignToProjectModal({
   };
 
   const handleAssignProject = async () => {
-    if (!selectedProject) return alert('Please select a project');
+    if (!selectedProject) return alert(tg('PLEASE_SELECT_PROJECT'));
     await assignBeneficiary.mutateAsync({
       beneficiaryUUID: beneficiaryDetail?.uuid,
       projectUUID: selectedProject,
@@ -80,16 +82,16 @@ export default function AssignToProjectModal({
     <Dialog open={projectModal.value} onOpenChange={projectModal.onToggle}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Assign Project</DialogTitle>
+          <DialogTitle>{t('ASSIGN_TO_PROJECT')}</DialogTitle>
           <DialogDescription>
-            Select a project to assign the selected beneficiary
+            {t('SELECT_A_PROJECT_TO_ASSIGN_THE')}
           </DialogDescription>
         </DialogHeader>
         <div>
-          <Label>Project</Label>
+          <Label>{t('PROJECT')}</Label>
           <Select onValueChange={handleProjectChange}>
             <SelectTrigger className="mt-2">
-              <SelectValue placeholder="Projects" />
+              <SelectValue placeholder={tg('PROJECTS')} />
             </SelectTrigger>
             <SelectContent>
               {projectsList.data?.data.length &&
@@ -112,7 +114,7 @@ export default function AssignToProjectModal({
         <DialogFooter>
           <DialogClose asChild>
             <Button className="w-full" type="button" variant="secondary">
-              Close
+              {tg('CLOSE')}
             </Button>
           </DialogClose>
           <Button
@@ -120,7 +122,7 @@ export default function AssignToProjectModal({
             type="button"
             className="w-full"
           >
-            Confirm
+            {tg('CONFIRM')}
           </Button>
         </DialogFooter>
       </DialogContent>

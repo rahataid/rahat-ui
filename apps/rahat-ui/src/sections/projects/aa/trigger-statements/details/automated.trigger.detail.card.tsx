@@ -1,28 +1,31 @@
+import { useTranslations } from 'next-intl';
+
 export default function AutomatedTriggerDetailCard({ triggerDetail }: any) {
+  const t = useTranslations('AA_PROJECT');
   const triggerDetailData = [
     {
-      title: 'River Basin',
+      title: t('RIVER_BASIN'),
       content: <p>{triggerDetail?.location}</p>,
     },
     {
-      title: 'Minimum Lead Time',
+      title: t('MINIMUM_LEAD_TIME'),
       content: (
         <p>{`${triggerDetail?.triggerStatement?.minLeadTimeDays} days`}</p>
       ),
     },
     {
-      title: 'Maximum Lead Time',
+      title: t('MAXIMUM_LEAD_TIME'),
       content: (
         <p>{`${triggerDetail?.triggerStatement?.maxLeadTimeDays} days`}</p>
       ),
     },
     {
-      title: 'Trigger Type',
+      title: t('TRIGGER_TYPE'),
       content: (
         <p>
           {triggerDetail?.dataSource === 'MANUAL'
-            ? 'Manual Trigger'
-            : 'Automated Trigger'}
+            ? t('MANUAL_TRIGGER')
+            : t('AUTOMATED_TRIGGER')}
         </p>
       ),
     },
@@ -30,7 +33,7 @@ export default function AutomatedTriggerDetailCard({ triggerDetail }: any) {
 
   return (
     <div className="bg-card p-4 rounded">
-      <h1 className="font-semibold text-lg">Trigger Details</h1>
+      <h1 className="font-semibold text-lg">{t('TRIGGER_DETAILS')}</h1>
       <div>
         {triggerDetailData.map((item) => (
           <div key={item.title} className="mt-4">

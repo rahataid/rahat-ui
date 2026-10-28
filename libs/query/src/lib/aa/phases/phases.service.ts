@@ -2,28 +2,25 @@
 import { UUID } from 'crypto';
 import { useProjectAction, useProjectSettingsStore } from '../../projects';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useSwal } from 'libs/query/src/swal';
 import { usePhasesStore } from './phases.store';
 import React, { useEffect } from 'react';
 import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
 import { PHASE_QUERY_KEYS } from '../trigger-statements/trigger-statements.constants';
+import { useTranslations } from 'next-intl';
+import { resolveBackendErrorMessage } from '../../../utils/i18n/backend-error';
+import { toast } from 'react-toastify';
+import { showToast } from 'libs/query/src/utils/custom-toast';
 
 export const useSinglePhase = (
   uuid: UUID,
   phaseId: UUID,
   options?: { enabled?: boolean },
 ) => {
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
   const { setThreshhold } = usePhasesStore((state) => ({
     setThreshhold: state.setThreshold,
   }));
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
 
   const query = useQuery({
     queryKey: [PHASE_QUERY_KEYS.PHASE, uuid, phaseId],
@@ -41,10 +38,10 @@ export const useSinglePhase = (
         });
         return mutate.data;
       } catch (error: any) {
-        toast.fire({
-          title: 'Error while fetching phase details',
-          icon: 'error',
-          text: error.message,
+        showToast({
+          type: 'error',
+          title: t('ERROR_WHILE_FETCHING_PHASE_DETAILS'),
+          description: error.message,
         });
       }
     },
@@ -61,15 +58,11 @@ export const useSinglePhase = (
 };
 
 export const useRevertPhase = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const qc = useQueryClient();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 2000,
-  });
+
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -94,18 +87,22 @@ export const useRevertPhase = () => {
       qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.PHASES] });
       qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.TRIGGER_STATEMENT] });
       qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.PHASE_HISTORY] });
-      toast.fire({
-        title: 'Phase reverted successfully.',
-        icon: 'success',
-      });
+      toast.success(t('PHASE_REVERTED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['TRIGGER_STATEMENTS_PHASES'],
+        rawMessage,
+      );
       q.reset();
-      toast.fire({
-        title: 'Error while reverting phase.',
-        icon: 'error',
-        text: errorMessage,
+      showToast({
+        type: 'error',
+        title: t('ERROR_WHILE_REVERTING_PHASE'),
+        description: errorMessage,
       });
     },
   });
@@ -175,14 +172,10 @@ export const usePhases = (uuid: UUID) => {
 };
 
 export const useConfigureThreshold = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 2000,
-  });
+
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -206,18 +199,22 @@ export const useConfigureThreshold = () => {
     onSuccess: () => {
       q.reset();
 
-      toast.fire({
-        title: 'Threshold configure successfully.',
-        icon: 'success',
-      });
+      toast.success(t('THRESHOLD_CONFIGURE_SUCCESSFULLY'));
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['TRIGGER_STATEMENTS_PHASES'],
+        rawMessage,
+      );
       q.reset();
-      toast.fire({
-        title: 'Error while configuring  threshold.',
-        icon: 'error',
-        text: errorMessage,
+      showToast({
+        type: 'error',
+        title: t('ERROR_WHILE_CONFIGURING_THRESHOLD'),
+        description: errorMessage,
       });
     },
   });

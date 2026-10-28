@@ -4,7 +4,6 @@ import { useAAStationsStore } from './trigger-statements.store';
 import { useProjectAction } from '../../projects/projects.service';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import React, { useEffect } from 'react';
-import { useSwal } from '../../../swal';
 import { useProjectSettingsStore } from '../../projects';
 import { MS_TRIGGERS_KEYS, PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
 import { useSettingsStore } from '../../settings';
@@ -12,16 +11,16 @@ import {
   FORECAST_QUERY_KEYS,
   PHASE_QUERY_KEYS,
 } from './trigger-statements.constants';
-
+import { useTranslations } from 'next-intl';
+import { resolveBackendErrorMessage } from '../../../utils/i18n/backend-error';
+import { toast } from 'react-toastify';
+import { showToast } from 'libs/query/src/utils/custom-toast';
 export const useCreateTriggerStatement = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+  const qc = useQueryClient();
+
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -40,33 +39,34 @@ export const useCreateTriggerStatement = () => {
     },
     onSuccess: () => {
       q.reset();
-      toast.fire({
-        title: 'Trigger statement added successfully.',
-        icon: 'success',
-      });
+      qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.PHASES] });
+      qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.TRIGGER_STATEMENT] });
+      toast.success(t('TRIGGER_STATEMENT_ADDED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['TRIGGER_STATEMENTS_PHASES'],
+        rawMessage,
+      );
       q.reset();
-      toast.fire({
-        title: 'Error.',
-        icon: 'error',
-        text: errorMessage,
+      showToast({
+        type: 'error',
+        title: t('ERROR_WHILE_ADDING_TRIGGER_STATEMENT'),
+        description: errorMessage,
       });
     },
   });
 };
 
 export const useCreatePhase = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const qc = useQueryClient();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
 
   return useMutation({
     mutationFn: async ({
@@ -88,33 +88,32 @@ export const useCreatePhase = () => {
       q.reset();
       qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.PHASES] });
       qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.TRIGGER_STATEMENT] });
-      toast.fire({
-        title: 'Phase added successfully.',
-        icon: 'success',
-      });
+      toast.success(t('PHASE_ADDED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['TRIGGER_STATEMENTS_PHASES'],
+        rawMessage,
+      );
       q.reset();
-      toast.fire({
-        title: 'Error while adding phase.',
-        icon: 'error',
-        text: errorMessage,
+      showToast({
+        type: 'error',
+        title: t('ERROR_WHILE_ADDING_PHASE'),
+        description: errorMessage,
       });
     },
   });
 };
 
 export const useUpdatePhase = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const qc = useQueryClient();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
 
   return useMutation({
     mutationFn: async ({
@@ -137,33 +136,32 @@ export const useUpdatePhase = () => {
       qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.PHASE] });
       qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.PHASES] });
       qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.TRIGGER_STATEMENT] });
-      toast.fire({
-        title: 'Phase updated successfully.',
-        icon: 'success',
-      });
+      toast.success(t('PHASE_UPDATED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['TRIGGER_STATEMENTS_PHASES'],
+        rawMessage,
+      );
       q.reset();
-      toast.fire({
-        title: 'Error while updating phase.',
-        icon: 'error',
-        text: errorMessage,
+      showToast({
+        type: 'error',
+        title: t('ERROR_WHILE_UPDATING_PHASE'),
+        description: errorMessage,
       });
     },
   });
 };
 
 export const useConfigureExtendedLogic = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const qc = useQueryClient();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
 
   return useMutation({
     mutationFn: async ({
@@ -193,33 +191,32 @@ export const useConfigureExtendedLogic = () => {
       qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.PHASE] });
       qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.PHASES] });
       qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.TRIGGER_STATEMENT] });
-      toast.fire({
-        title: 'Extended trigger logic configured successfully.',
-        icon: 'success',
-      });
+      toast.success(t('EXTENDED_TRIGGER_LOGIC_CONFIGURED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['TRIGGER_STATEMENTS_PHASES'],
+        rawMessage,
+      );
       q.reset();
-      toast.fire({
-        title: 'Error while configuring extended trigger logic.',
-        icon: 'error',
-        text: errorMessage,
+      showToast({
+        type: 'error',
+        title: t('ERROR_WHILE_CONFIGURING_EXTENDED_TRIGGER_LOGIC'),
+        description: errorMessage,
       });
     },
   });
 };
 
 export const useDeletePhase = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const qc = useQueryClient();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
 
   return useMutation({
     mutationFn: async ({
@@ -244,32 +241,33 @@ export const useDeletePhase = () => {
       qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.PHASE] });
       qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.PHASES] });
       qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.TRIGGER_STATEMENT] });
-      toast.fire({
-        title: 'Phase deleted successfully.',
-        icon: 'success',
-      });
+      toast.success(t('PHASE_DELETED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['TRIGGER_STATEMENTS_PHASES'],
+        rawMessage,
+      );
       q.reset();
-      toast.fire({
-        title: 'Error while deleting phase.',
-        icon: 'error',
-        text: errorMessage,
+      showToast({
+        type: 'error',
+        title: t('ERROR_WHILE_DELETING_PHASE'),
+        description: errorMessage,
       });
     },
   });
 };
 
 export const useAddTriggerStatementToPhase = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+  const qc = useQueryClient();
+
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -288,33 +286,35 @@ export const useAddTriggerStatementToPhase = () => {
     },
     onSuccess: () => {
       q.reset();
-      toast.fire({
-        title: 'Trigger statement added successfully.',
-        icon: 'success',
-      });
+      qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.PHASES] });
+      qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.TRIGGER_STATEMENT] });
+      toast.success(t('TRIGGER_STATEMENT_ADDED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['TRIGGER_STATEMENTS_PHASES'],
+        rawMessage,
+      );
       q.reset();
-      toast.fire({
-        title: 'Error.',
-        icon: 'error',
-        text: errorMessage,
+      showToast({
+        type: 'error',
+        title: t('ERROR_WHILE_ADDING_TRIGGER_STATEMENT'),
+        description: errorMessage,
       });
     },
   });
 };
 
 export const useDeleteTriggerStatement = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -336,19 +336,24 @@ export const useDeleteTriggerStatement = () => {
 
     onSuccess: () => {
       q.reset();
+      qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.PHASES] });
       qc.invalidateQueries({ queryKey: [PHASE_QUERY_KEYS.TRIGGER_STATEMENT] });
-      toast.fire({
-        title: 'Trigger statement removed successfully.',
-        icon: 'success',
-      });
+      toast.success(t('TRIGGER_STATEMENT_REMOVED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['TRIGGER_STATEMENTS_PHASES'],
+        rawMessage,
+      );
       q.reset();
-      toast.fire({
-        title: 'Error while removing trigger statement.',
-        icon: 'error',
-        text: errorMessage,
+      showToast({
+        type: 'error',
+        title: t('ERROR_WHILE_REMOVING_TRIGGER_STATEMENT'),
+        description: errorMessage,
       });
     },
   });
@@ -478,16 +483,11 @@ export const useDhmRainfallLevels = (uuid: UUID, payload: any) => {
 };
 
 export const useSyncForecastData = (uuid: UUID) => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const qc = useQueryClient();
 
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
   return useMutation({
     mutationFn: async ({ projectUUID }: { projectUUID: UUID }) => {
       return Promise.race([
@@ -499,15 +499,13 @@ export const useSyncForecastData = (uuid: UUID) => {
           },
         }),
         new Promise<never>((_, reject) =>
-          setTimeout(
-            () =>
-              reject(
-                new Error(
-                  'The sync is taking longer than expected. Please check again in a few moments.',
-                ),
-              ),
-            60000,
-          ),
+          setTimeout(() => {
+            const timeoutError = new Error(
+              'The sync is taking longer than expected. Please check again in a few moments.',
+            );
+            timeoutError.name = 'ForecastSyncTimeoutError';
+            reject(timeoutError);
+          }, 60000),
         ),
       ]);
     },
@@ -518,32 +516,33 @@ export const useSyncForecastData = (uuid: UUID) => {
           queryKey: [key, uuid],
         });
       });
-      toast.fire({
-        title: 'Forecast data synced successfully.',
-        icon: 'success',
-      });
+      toast.success(t('FORECAST_DATA_SYNCED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage =
+        error?.name === 'ForecastSyncTimeoutError'
+          ? t('FORECAST_SYNC_TIMEOUT')
+          : resolveBackendErrorMessage(
+              tb,
+              error?.response?.data?.code,
+              error?.response?.data?.params,
+              ['TRIGGER_STATEMENTS_PHASES'],
+              rawMessage,
+            );
       q.reset();
-      toast.fire({
-        title: 'Error while syncing forecast data.',
-        icon: 'error',
-        text: errorMessage,
+      showToast({
+        type: 'error',
+        title: t('ERROR_WHILE_SYNCING_FORECAST_DATA'),
+        description: errorMessage,
       });
     },
   });
 };
 
 export const useDhmTemperatureLevels = (uuid: UUID, payload: any) => {
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
 
   return useQuery({
     queryKey: [
@@ -565,11 +564,12 @@ export const useDhmTemperatureLevels = (uuid: UUID, payload: any) => {
         return mutate.data;
       } catch (error: any) {
         const errorMessage =
-          error?.response?.data?.message || 'Failed to fetch temperature data';
-        toast.fire({
-          title: 'Error loading temperature data',
-          text: errorMessage,
-          icon: 'error',
+          error?.response?.data?.message ||
+          t('FAILED_TO_FETCH_TEMPERATURE_DATA');
+        showToast({
+          type: 'error',
+          title: t('ERROR_LOADING_TEMPERATURE_DATA'),
+          description: errorMessage,
         });
         throw error;
       }
@@ -579,14 +579,8 @@ export const useDhmTemperatureLevels = (uuid: UUID, payload: any) => {
 };
 
 export const useDhmHumidityLevels = (uuid: UUID, payload: any) => {
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
 
   return useQuery({
     queryKey: [
@@ -608,12 +602,13 @@ export const useDhmHumidityLevels = (uuid: UUID, payload: any) => {
         return mutate.data;
       } catch (error: any) {
         const errorMessage =
-          error?.response?.data?.message || 'Failed to fetch humidity data';
-        toast.fire({
-          title: 'Error loading humidity data',
-          text: errorMessage,
-          icon: 'error',
+          error?.response?.data?.message || t('FAILED_TO_FETCH_HUMIDITY_DATA');
+        showToast({
+          type: 'error',
+          title: t('ERROR_LOADING_HUMIDITY_DATA'),
+          description: errorMessage,
         });
+
         throw error;
       }
     },
@@ -693,14 +688,8 @@ export const useDhmSingleSeriesHumidityLevels = (uuid: UUID) => {
 };
 
 export const useAllGlofasProbFlood = (uuid: UUID, payload: any) => {
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
 
   const query = useQuery({
     queryKey: [FORECAST_QUERY_KEYS.GLOFAS_PROB_FLOOD_ALL, uuid],
@@ -715,10 +704,10 @@ export const useAllGlofasProbFlood = (uuid: UUID, payload: any) => {
         });
         return mutate.data;
       } catch (error: any) {
-        toast.fire({
-          title: 'Error loading Glofas details',
-          text: 'Failed to fetch Glofas details',
-          icon: 'error',
+        showToast({
+          type: 'error',
+          title: t('ERROR_LOADING_GLOFAS_DETAILS'),
+          description: t('FAILED_TO_FETCH_GLOFAS_DETAILS'),
         });
       }
     },
@@ -729,14 +718,8 @@ export const useAllGlofasProbFlood = (uuid: UUID, payload: any) => {
 };
 
 export const useGlofasProbFloodDetails = (uuid: UUID, payload: any) => {
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
 
   const query = useQuery({
     queryKey: [
@@ -755,10 +738,10 @@ export const useGlofasProbFloodDetails = (uuid: UUID, payload: any) => {
         });
         return mutate.data;
       } catch (error: any) {
-        toast.fire({
-          title: 'Error loading Glofas details',
-          text: 'Failed to fetch Glofas details',
-          icon: 'error',
+        showToast({
+          type: 'error',
+          title: t('ERROR_LOADING_GLOFAS_DETAILS'),
+          description: t('FAILED_TO_FETCH_GLOFAS_DETAILS'),
         });
       }
     },
@@ -769,14 +752,8 @@ export const useGlofasProbFloodDetails = (uuid: UUID, payload: any) => {
 };
 
 export const useGFHWaterLevels = (uuid: UUID, payload: any) => {
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
 
   const query = useQuery({
     queryKey: [FORECAST_QUERY_KEYS.GFH_WATER_LEVELS, uuid],
@@ -792,11 +769,12 @@ export const useGFHWaterLevels = (uuid: UUID, payload: any) => {
         return mutate.data;
       } catch (error: any) {
         const errorMessage =
-          error?.response?.data?.message || 'Failed to fetch GFH water levels';
-        toast.fire({
-          title: 'Error loading GFH water levels',
-          text: errorMessage,
-          icon: 'error',
+          error?.response?.data?.message ||
+          t('FAILED_TO_FETCH_GFH_WATER_LEVELS');
+        showToast({
+          type: 'error',
+          title: t('ERROR_LOADING_GFH_WATER_LEVELS'),
+          description: errorMessage,
         });
         throw error;
       }
@@ -853,14 +831,8 @@ export const useSingleTriggerStatement = (
   triggerId: string | string[] | number,
   version?: boolean,
 ) => {
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
 
   const action = version ? 'ms.revertPhase.getOne' : 'ms.triggers.getOne';
   const payload = version
@@ -885,14 +857,20 @@ export const useSingleTriggerStatement = (
       } catch (error: any) {
         const errorMessage =
           error?.response?.data?.message ||
-          `Failed to fetch ${
-            version ? 'version' : 'trigger statement'
-          } details`;
+          t(
+            version
+              ? 'FAILED_TO_FETCH_VERSION_DETAILS'
+              : 'FAILED_TO_FETCH_TRIGGER_STATEMENT_DETAILS',
+          );
 
-        toast.fire({
-          title: `Error loading ${version ? 'version' : 'trigger statement'}`,
-          text: errorMessage,
-          icon: 'error',
+        showToast({
+          type: 'error',
+          title: t(
+            version
+              ? 'ERROR_LOADING_VERSION'
+              : 'ERROR_LOADING_TRIGGER_STATEMENT',
+          ),
+          description: errorMessage,
         });
         throw error;
       }
@@ -902,15 +880,11 @@ export const useSingleTriggerStatement = (
 };
 
 export const useActivateTrigger = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const qc = useQueryClient();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+
   const chainSettings = useSettingsStore((state) => state.projectChainSettings);
 
   return useMutation({
@@ -938,39 +912,39 @@ export const useActivateTrigger = () => {
       qc.invalidateQueries({
         queryKey: ['triggerStatement', variables.projectUUID],
       });
-      toast.fire({
-        title: 'Trigger activated.',
-        text: 'Successfully activated trigger. You can view details of this from trigger details page.',
-        timer: 10000,
-        icon: 'success',
-        width: '500px',
-        showCloseButton: true,
-        closeButtonHtml:
-          '<span style="color: #ef4444; font-size: 20px; font-weight: bold; position: absolute; top: 10px; right: 15px; cursor: pointer;">&times;</span>',
+      showToast({
+        type: 'success',
+        title: t('TRIGGER_ACTIVATED'),
+        description: t(
+          'SUCCESSFULLY_ACTIVATED_TRIGGER_YOU_CAN_VIEW_DETAILS_OF_THIS',
+        ),
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['TRIGGER_STATEMENTS_PHASES'],
+        rawMessage,
+      );
       q.reset();
-      toast.fire({
-        title: 'Trigger activation failed.',
-        icon: 'error',
-        text: errorMessage,
+      showToast({
+        type: 'error',
+        title: t('TRIGGER_ACTIVATION_FAILED'),
+        description: errorMessage,
       });
     },
   });
 };
 
 export const useUpdateTriggerStatement = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -991,18 +965,22 @@ export const useUpdateTriggerStatement = () => {
       q.reset();
       qc.invalidateQueries({ queryKey: ['triggerStatements'] });
       qc.invalidateQueries({ queryKey: ['triggerStatement'] });
-      toast.fire({
-        title: 'Trigger updated successfully',
-        icon: 'success',
-      });
+      toast.success(t('TRIGGER_UPDATED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['TRIGGER_STATEMENTS_PHASES'],
+        rawMessage,
+      );
       q.reset();
-      toast.fire({
-        title: 'Error while updating trigger.',
-        icon: 'error',
-        text: errorMessage,
+      showToast({
+        type: 'error',
+        title: t('ERROR_WHILE_UPDATING_TRIGGER'),
+        description: errorMessage,
       });
     },
   });
@@ -1057,13 +1035,7 @@ export const useGetSeriesByDataSource = (
   type: string,
   levelType: string,
 ) => {
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+  const t = useTranslations('AA_PROJECT');
 
   const q = useProjectAction([MS_TRIGGERS_KEYS.SERIES]);
   const { settings } = useProjectSettingsStore((state) => ({
@@ -1093,10 +1065,10 @@ export const useGetSeriesByDataSource = (
         });
         return mutate.data;
       } catch (error: any) {
-        toast.fire({
-          title: 'Error loading series',
-          text: 'Failed to fetch series for the selected source',
-          icon: 'error',
+        showToast({
+          type: 'error',
+          title: t('ERROR_LOADING_SERIES'),
+          description: t('FAILED_TO_FETCH_SERIES_FOR_THE_SELECTED_SOURCE'),
         });
       }
     },

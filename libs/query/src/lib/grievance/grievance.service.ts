@@ -2,10 +2,13 @@
 import { useRSQuery } from '@rumsan/react-query';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useMemo, useCallback, useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { useProjectAction } from '../projects';
 import { GetGrievanceList, GrievanceFormData } from './types/grievance';
 import { UUID } from 'crypto';
-import { useSwal } from '../../swal';
+import { resolveBeneficiaryErrorMessage } from '../../utils/i18n/backend-error';
+import { toast } from 'react-toastify';
+import { showToast } from '../../utils/custom-toast';
 
 const MS_ACTIONS = {
   GRIEVANCES: {
@@ -51,7 +54,11 @@ export const useGrievanceList = (payload: GetGrievanceList) => {
 
   const query = useQuery(
     {
-      queryKey: [MS_ACTIONS.GRIEVANCES.LIST_BY_PROJECT, projectUUID, debouncedPayload],
+      queryKey: [
+        MS_ACTIONS.GRIEVANCES.LIST_BY_PROJECT,
+        projectUUID,
+        debouncedPayload,
+      ],
       enabled: !!debouncedPayload, // Only run query when we have a debounced payload
       refetchOnMount: true,
       refetchOnWindowFocus: true,
@@ -97,13 +104,9 @@ export const useGrievanceList = (payload: GetGrievanceList) => {
 };
 
 export const useGrievanceAdd = () => {
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
+
   const q = useProjectAction<GrievanceFormData>();
   const { queryClient } = useRSQuery();
 
@@ -138,18 +141,21 @@ export const useGrievanceAdd = () => {
           queryKey: [MS_ACTIONS.GRIEVANCES.LIST_BY_PROJECT, 'download'],
         });
         console.log('Download cache invalidated and refetched after add');
-        toast.fire({
-          title: 'Grievance added successfully.',
-          icon: 'success',
-        });
+        toast.success(t('GRIEVANCE_ADDED_SUCCESSFULLY'));
       },
       onError: (error: any) => {
-        console.log('error', error);
-        const errorMessage = error?.response?.data?.message || 'Error';
-        toast.fire({
-          title: 'Error while adding grievance.',
-          icon: 'error',
-          text: errorMessage,
+        const rawMessage = error?.response?.data?.message || t('ERROR');
+        const errorMessage = resolveBeneficiaryErrorMessage(
+          tb,
+          error?.response?.data?.code,
+          error?.response?.data?.params,
+          ['GRIEVANCES'],
+          rawMessage,
+        );
+        showToast({
+          type: 'error',
+          title: t('ERROR_WHILE_ADDING_GRIEVANCE'),
+          description: errorMessage,
         });
       },
     },
@@ -189,13 +195,9 @@ export const useGrievanceDetails = ({
 };
 
 export const useGrievanceEdit = () => {
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
+
   const q = useProjectAction<GrievanceFormData & { uuid: string }>();
   const { queryClient } = useRSQuery();
 
@@ -229,18 +231,21 @@ export const useGrievanceEdit = () => {
         queryClient.refetchQueries({
           queryKey: [MS_ACTIONS.GRIEVANCES.LIST_BY_PROJECT, 'download'],
         });
-        toast.fire({
-          title: 'Grievance updated successfully.',
-          icon: 'success',
-        });
+        toast.success(t('GRIEVANCE_UPDATED_SUCCESSFULLY'));
       },
       onError: (error: any) => {
-        console.log('error', error);
-        const errorMessage = error?.response?.data?.message || 'Error';
-        toast.fire({
-          title: 'Error while updating grievance.',
-          icon: 'error',
-          text: errorMessage,
+        const rawMessage = error?.response?.data?.message || t('ERROR');
+        const errorMessage = resolveBeneficiaryErrorMessage(
+          tb,
+          error?.response?.data?.code,
+          error?.response?.data?.params,
+          ['GRIEVANCES'],
+          rawMessage,
+        );
+        showToast({
+          type: 'error',
+          title: t('ERROR_WHILE_UPDATING_GRIEVANCE'),
+          description: errorMessage,
         });
       },
     },
@@ -251,13 +256,9 @@ export const useGrievanceEdit = () => {
 };
 
 export const useGrievanceEditStatus = () => {
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
+
   const q = useProjectAction<{ uuid: string; status: string }>();
   const { queryClient } = useRSQuery();
 
@@ -291,18 +292,21 @@ export const useGrievanceEditStatus = () => {
         queryClient.refetchQueries({
           queryKey: [MS_ACTIONS.GRIEVANCES.LIST_BY_PROJECT, 'download'],
         });
-        toast.fire({
-          title: 'Grievance status updated successfully.',
-          icon: 'success',
-        });
+        toast.success(t('GRIEVANCE_STATUS_UPDATED_SUCCESSFULLY'));
       },
       onError: (error: any) => {
-        console.log('error', error);
-        const errorMessage = error?.response?.data?.message || 'Error';
-        toast.fire({
-          title: 'Error while updating grievance status.',
-          icon: 'error',
-          text: errorMessage,
+        const rawMessage = error?.response?.data?.message || t('ERROR');
+        const errorMessage = resolveBeneficiaryErrorMessage(
+          tb,
+          error?.response?.data?.code,
+          error?.response?.data?.params,
+          ['GRIEVANCES'],
+          rawMessage,
+        );
+        showToast({
+          type: 'error',
+          title: t('ERROR_WHILE_UPDATING_GRIEVANCE_STATUS'),
+          description: errorMessage,
         });
       },
     },
@@ -374,13 +378,8 @@ export const useGrievanceListForDownload = (projectUUID: UUID) => {
 };
 
 export const useGetOverviewStats = (projectUUID: UUID) => {
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+  const t = useTranslations('AA_PROJECT');
+
   const q = useProjectAction<{
     totalGrievances: number;
     grievanceType: {
@@ -410,11 +409,11 @@ export const useGetOverviewStats = (projectUUID: UUID) => {
         });
       } catch (error: any) {
         console.log('error', error);
-        const errorMessage = error?.response?.data?.message || 'Error';
-        toast.fire({
-          title: 'Error while fetching overview stats.',
-          icon: 'error',
-          text: errorMessage,
+        const errorMessage = error?.response?.data?.message || t('ERROR');
+        showToast({
+          type: 'error',
+          title: t('ERROR_WHILE_FETCHING_OVERVIEW_STATS'),
+          description: errorMessage,
         });
         throw error;
       }

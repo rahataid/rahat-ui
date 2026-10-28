@@ -19,7 +19,7 @@ import { RumsanService } from '@rumsan/sdk';
 import { useQueryClient } from '@tanstack/react-query';
 import Image from 'next/image';
 import { createContext, useContext, useEffect, useMemo } from 'react';
-import { useError } from '../utils/useErrors';
+import { useError } from '../utils/i18n/useErrors';
 import { useNewCommunicationQuery } from '@rahat-ui/query';
 import { getClient } from '@rumsan/connect/src/clients';
 import { isEmpty } from 'lodash';

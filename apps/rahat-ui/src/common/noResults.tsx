@@ -1,6 +1,6 @@
-'use-client';
+'use client';
 import React from 'react';
-
+import { useTranslations } from 'next-intl';
 import { Search } from 'lucide-react';
 import { cn } from '@rahat-ui/shadcn/src';
 
@@ -10,6 +10,7 @@ interface Iprops {
   className?: string;
 }
 export function NoResult({ message, size = 'large', className }: Iprops) {
+  const t = useTranslations('GLOBAL');
   return (
     <div
       className={cn(
@@ -27,7 +28,7 @@ export function NoResult({ message, size = 'large', className }: Iprops) {
           size === 'small' ? 'text-base font-medium' : 'text-lg font-semibold'
         }`}
       >
-        {message ? message : 'No results found'}
+        {message ? message : t('NO_RESULTS')}
       </p>
     </div>
   );

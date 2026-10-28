@@ -41,6 +41,13 @@ import {
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { useActiveTab } from '../../utils/useActivetab';
+import { useTranslations } from 'next-intl';
+import { GlobalCan } from 'apps/rahat-ui/src/components/global-can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
+import { resolveBeneficiaryErrorMessage } from '@rahat-ui/query/utils/i18n/backend-error';
 import { useDebounce } from '../../utils/useDebouncehooks';
 
 function BeneficiaryView() {
@@ -56,6 +63,10 @@ function BeneficiaryView() {
     setFilters,
     filters,
   } = usePagination();
+  const t = useTranslations('BENEFICIARY_LIST');
+  const tg = useTranslations('GLOBAL');
+  const tbd = useTranslations('BENEFICIARY_GROUP_DETAIL');
+  const tRoot = useTranslations();
 
   useEffect(() => {
     setPagination({ page: 1, perPage: 10, order: 'desc', sort: 'createdAt' });
@@ -64,9 +75,18 @@ function BeneficiaryView() {
   useBeneficiaryGroupsList({ ...pagination });
   const debouncedFilters = useDebounce(filters, 500);
 
+  // Trim string filters so leading/trailing spaces never reach the API.
+  // Trimming happens here (not in the input) so typing spaces still works.
+  const trimmedFilters = Object.fromEntries(
+    Object.entries(debouncedFilters).map(([key, value]) => [
+      key,
+      typeof value === 'string' ? value.trim() : value,
+    ]),
+  );
+
   const { data } = useBeneficiaryList({
     ...pagination,
-    ...debouncedFilters,
+    ...trimmedFilters,
   });
   const createBeneficiaryGroup = useCreateBeneficiaryGroup();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -123,9 +143,7 @@ function BeneficiaryView() {
       .map((ben: any) => ben.uuid);
 
     if (!benNotAssignedToTheProject)
-      return alert(
-        'All selected beneficiaries are already assigned to the project',
-      );
+      return alert(t('ALL_SELECTED_BENEFICIARIES_ALREADY_ASSIGNED'));
 
     await bulkAssign.mutateAsync({
       projectUUID: selectedProject as UUID,
@@ -145,14 +163,21 @@ function BeneficiaryView() {
       };
       const result = await createBeneficiaryGroup.mutateAsync(payload);
       if (result) {
-        toast.success('Beneficiary group added successfully!');
+        toast.success(tbd('BENEFICIARY_GROUP_ADDED_SUCCESSFULLY'));
         router.push('/beneficiary');
         table.resetRowSelection(true);
       }
     } catch (e: any) {
-      toast.error(
-        e?.response?.data?.message || 'Failed to add beneficiary group!',
+      const rawMessage =
+        e?.response?.data?.message || tbd('FAILED_TO_ADD_BENEFICIARY_GROUP');
+      const errorMessage = resolveBeneficiaryErrorMessage(
+        tRoot,
+        e?.response?.data?.code || e?.response?.data?.name,
+        e?.response?.data?.params,
+        ['BENEFICIARY_IMPORT_COMMUNITY_BENEFICIARY', 'COMMUNICATIONS_CAMPAIGNS'],
+        rawMessage,
       );
+      toast.error(errorMessage);
     }
   };
   const { activeTab, setActiveTab } = useActiveTab('beneficiary');
@@ -169,14 +194,14 @@ function BeneficiaryView() {
       <TabsContent value="beneficiary">
         <div>
           <h1 className="font-semibold text-2xl text-label pl-4">
-            Beneficiary
+            {tg('BENEFICIARY')}
           </h1>
         </div>
       </TabsContent>
       <TabsContent value="beneficiaryGroups">
         <div>
           <h1 className="font-semibold text-2xl text-label pl-4">
-            Beneficiary Groups
+            {t('BENEFICIARY_GROUPS')}
           </h1>
         </div>
       </TabsContent>
@@ -187,21 +212,22 @@ function BeneficiaryView() {
             className="w-full data-[state=active]:bg-white"
             value="beneficiary"
           >
-            Beneficiary
+            {tg('BENEFICIARY')}
           </TabsTrigger>
           <TabsTrigger
             id="beneficiaryGroups"
             className="w-full data-[state=active]:bg-white"
             value="beneficiaryGroups"
           >
-            Beneficiary Groups
+            {t('BENEFICIARY_GROUPS')}
           </TabsTrigger>
         </TabsList>
+        <GlobalCan action={ACTIONS.CREATE} subject={SUBJECTS.BENEFICIARY}>
         <DropdownMenu>
           <DropdownMenuTrigger asChild className="space-x-2">
             <Button variant="outline">
               <CloudDownload className="mr-1" />
-              Import beneficiaries
+              {t('IMPORT_BENEFICIARIES')}
               <ChevronDownIcon
                 className="-me-1 opacity-60"
                 size={16}
@@ -213,15 +239,16 @@ function BeneficiaryView() {
             <DropdownMenuItem
               onClick={() => router.push('/import-beneficiary')}
             >
-              Import from Community Tool
+              {t('IMPORT_FROM_COMMUNITY_TOOL')}
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => router.push('/beneficiary-import')}
+              onClick={() => router.push('/beneficiary/import')}
             >
-              Import from Excel Sheet
+              {t('IMPORT_FROM_EXCEL_SHEET')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        </GlobalCan>
       </div>
       <TabsContent value="beneficiary">
         <div className="p-4">

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import {
   ColumnDef,
@@ -43,6 +44,8 @@ export function UsersRoleTable({
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
+  const tg = useTranslations('GLOBAL');
+  const td = useTranslations('USERS_DETAIL');
   const [rowSelection, setRowSelection] = React.useState({});
   const removeUserRole = useUserRolesRemove();
   const { data } = useUserRoleList(uuid);
@@ -75,7 +78,7 @@ export function UsersRoleTable({
             (table.getIsSomePageRowsSelected() && 'indeterminate')
           }
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
+          aria-label={tg('SELECT_ALL')}
         />
       ),
       cell: ({ row }) => (
@@ -84,7 +87,7 @@ export function UsersRoleTable({
           onCheckedChange={(value) => {
             row.toggleSelected(!!value);
           }}
-          aria-label="Select row"
+          aria-label={tg('SELECT_ROW')}
         />
       ),
       enableSorting: false,
@@ -92,7 +95,7 @@ export function UsersRoleTable({
     },
     {
       accessorKey: 'name',
-      header: 'Role',
+      header: td('ROLE'),
       cell: ({ row }) => (
         <div className="capitalize">{row.getValue('name')}</div>
       ),
@@ -188,7 +191,7 @@ export function UsersRoleTable({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  {tg('NO_RESULTS')}
                 </TableCell>
               </TableRow>
             )}

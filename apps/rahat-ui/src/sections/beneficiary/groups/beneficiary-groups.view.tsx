@@ -1,11 +1,12 @@
 'use client';
-import React, { memo, useEffect } from 'react';
+import React, { memo, useEffect, useRef } from 'react';
 
 import { useBeneficiaryGroupsList, usePagination } from '@rahat-ui/query';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
-import { LandmarkIcon, Phone, Plus, Users } from 'lucide-react';
+import { LandmarkIcon, Loader2, Phone, Plus, Users } from 'lucide-react';
 import SearchInput from '../../projects/components/search.input';
-import AddButton from '../../projects/components/add.btn';
+import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -15,44 +16,84 @@ import { ListBeneficiaryGroup } from '@rahat-ui/types';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
 import { TruncatedCell } from '../../projects/aa-2/stakeholders/component/TruncatedCell';
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { GlobalCan } from 'apps/rahat-ui/src/components/global-can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 
 function BeneficiaryGroupsView() {
   const router = useRouter();
-  const [searchTerm, setSearchTerm] = React.useState<string>('');
+  const t = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const [selectedGroup, setSelectedGroup] =
     React.useState<ListBeneficiaryGroup>([]);
-  const {
-    pagination,
-    selectedListItems,
-    setSelectedListItems,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-    setPagination,
-    setFilters,
-    filters,
-  } = usePagination();
+  const { filters, setFilters } = usePagination();
+  const [limit, setLimit] = React.useState(20);
+  const [visibleLimit, setVisibleLimit] = React.useState(20);
+  const [allGroups, setAllGroups] = React.useState<any[]>([]);
+  const [total, setTotal] = React.useState(0);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const debouncedFilters = useDebounce(filters, 500);
 
-  useEffect(() => {
-    setPagination({ page: 1, perPage: 100, order: 'desc', sort: 'createdAt' });
-  }, []);
+  const trimmedFilters = Object.fromEntries(
+    Object.entries(debouncedFilters).map(([key, value]) => [
+      key,
+      typeof value === 'string' ? value.trim() : value,
+    ]),
+  );
 
   const data = useBeneficiaryGroupsList({
-    ...pagination,
-    ...filters,
+    page: 1,
+    perPage: limit,
+    order: 'desc',
+    sort: 'createdAt',
+    ...trimmedFilters,
   });
 
-  const groups = data?.data || [];
+  const isLoading =
+    allGroups.length === 0 && (data?.isLoading || data?.isFetching);
+  const hasMore = visibleLimit < total;
 
-  const filteredGroups = React.useMemo(() => {
-    return groups.filter((group) =>
-      group.name?.toLowerCase().includes(searchTerm.toLowerCase()),
-    );
-  }, [groups, searchTerm]);
+  useEffect(() => {
+    if (!data?.data) return;
+    setAllGroups(data.data);
+    if (data?.meta?.total != null) setTotal(data.meta.total);
+  }, [data.dataUpdatedAt]);
 
-  const handleSearch = React.useCallback((value: string) => {
-    setSearchTerm(value);
-  }, []);
+  // Prefetch the next batch as soon as the current fetch lands, staying one batch ahead.
+  useEffect(() => {
+    if (data.isFetching) return;
+    if (allGroups.length < limit) return;
+    if (limit >= total) return;
+    if (limit >= visibleLimit + 9) return;
+    setLimit((l) => l + 9);
+  }, [data.isFetching, allGroups, limit, visibleLimit, total]);
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel || !hasMore) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (!entries[0].isIntersecting) return;
+      setVisibleLimit((v) => Math.min(v + 12, Math.max(allGroups.length, v)));
+    });
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasMore, allGroups.length]);
+
+  const visibleGroups = React.useMemo(
+    () => allGroups.slice(0, visibleLimit),
+    [allGroups, visibleLimit],
+  );
+
+  const handleSearch = React.useCallback(
+    (value: string) => {
+      setFilters({ ...filters, groupName: value });
+    },
+    [filters, setFilters],
+  );
 
   const projectModal = useBoolean();
 
@@ -75,30 +116,37 @@ function BeneficiaryGroupsView() {
         <div className="flex justify-between space-x-2 items-center mb-4">
           <SearchInput
             className="w-full"
-            name="group"
+            name={t('GROUP')}
+            value={filters.groupName ?? ''}
             onSearch={(e) => handleSearch(e.target.value)}
           />
-          <Button
-            variant={'default'}
-            type="button"
-            onClick={() => router.push(`/beneficiary/groups/add`)}
-          >
-            <Plus size={18} className="mr-1" /> Create Group
-          </Button>
+          <GlobalCan action={ACTIONS.CREATE} subject={SUBJECTS.BENEFICIARY}>
+            <Button
+              variant={'default'}
+              type="button"
+              onClick={() => router.push(`/beneficiary/groups/add`)}
+            >
+              <Plus size={18} className="mr-1" /> {t('CREATE_GROUP')}
+            </Button>
+          </GlobalCan>
         </div>
         <ScrollArea className="h-[calc(100vh-300px)]">
-          {filteredGroups.length > 0 ? (
+          {isLoading ? (
+            <div className="flex justify-center py-10">
+              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            </div>
+          ) : visibleGroups.length > 0 ? (
             <div className="grid grid-cols-4 gap-4">
-              {filteredGroups?.map((i: any, index: number) => {
+              {visibleGroups?.map((i: any, index: number) => {
                 const isAssignedToProject = i?.beneficiaryGroupProject?.length;
-
+                const totalBeneficiaries = i?._count?.groupedBeneficiaries;
                 return (
                   <div
                     key={index}
                     className="rounded-sm border shadow p-4 flex flex-col cursor-pointer"
                     onClick={() => {
                       router.push(
-                        `/beneficiary/groups/${i?.uuid}?isAssignedToProject=${isAssignedToProject}&isGroupValidForAA=${i?.isGroupValidForAA}&fromTab=beneficiaryGroups`,
+                        `/beneficiary/groups/${i?.uuid}?isAssignedToProject=${isAssignedToProject}&isGroupValidForAA=${i?.isGroupValidForAA}&fromTab=beneficiaryGroups&totalBeneficiaries=${totalBeneficiaries}`,
                       );
                     }}
                   >
@@ -130,13 +178,18 @@ function BeneficiaryGroupsView() {
                         <div className="flex items-center gap-2">
                           <div className="flex gap-2 items-center text-[#667085]">
                             <Users size={18} strokeWidth={2} />
-                            {i?._count?.groupedBeneficiaries || 0} beneficiaries
+                            {formatNum(
+                              i?._count?.groupedBeneficiaries || 0,
+                            )}{' '}
+                            {t('BENEFICIARIES').toLowerCase()}
                           </div>
                           {i?.groupPurpose && (
                             <Badge className="text-gray-700 font-normal text-xs">
-                              {capitalizeFirstLetter(
-                                i?.groupPurpose?.split('_')[0] || '',
-                              )}
+                              {translateValue(t, i.groupPurpose, {
+                                fallback: capitalizeFirstLetter(
+                                  i?.groupPurpose?.split('_')[0] || '',
+                                ),
+                              })}
                             </Badge>
                           )}
                         </div>
@@ -144,7 +197,7 @@ function BeneficiaryGroupsView() {
 
                       <div className="mb-3">
                         <p className="text-sm/6 text-[#505868] mb-2">
-                          Projects Involved
+                          {t('PROJECTS_INVOLVED')}
                         </p>
                         <div className="flex gap-1 flex-wrap">
                           {i?.beneficiaryGroupProject?.length > 0 ? (
@@ -160,34 +213,45 @@ function BeneficiaryGroupsView() {
                             })
                           ) : (
                             <p className="text-sm/6 italic text-[#505868]">
-                              No Projects Assigned
+                              {t('NO_PROJECTS_ASSIGNED')}
                             </p>
                           )}
                         </div>
                       </div>
                     </div>
 
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      className="w-full mx-auto"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleAssignModalClick(i);
-                      }}
-                      disabled={!i?._count?.groupedBeneficiaries}
+                    <GlobalCan
+                      action={ACTIONS.MANAGE}
+                      subject={SUBJECTS.BENEFICIARY}
                     >
-                      <Plus className="mr-1" size={18} strokeWidth={1.5} />
-                      Assign Project
-                    </Button>
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        className="w-full mx-auto"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAssignModalClick(i);
+                        }}
+                        disabled={!i?._count?.groupedBeneficiaries}
+                      >
+                        <Plus className="mr-1" size={18} strokeWidth={1.5} />
+                        {t('ASSIGN_PROJECT')}
+                      </Button>
+                    </GlobalCan>
                   </div>
                 );
               })}
             </div>
           ) : (
             <p className="text-center mt-10 text-muted-foreground">
-              No result.
+              {t('NO_RESULT')}
             </p>
+          )}
+          {hasMore && <div ref={sentinelRef} className="h-1" />}
+          {hasMore && (
+            <div className="flex justify-center py-4">
+              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+            </div>
           )}
         </ScrollArea>
       </div>

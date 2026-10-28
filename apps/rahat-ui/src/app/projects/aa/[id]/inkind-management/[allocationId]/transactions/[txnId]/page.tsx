@@ -1,9 +1,18 @@
 'use client';
 
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
+import ProjectPermissionGuard from 'apps/rahat-ui/src/guards/project-permission-guard';
 import { InkindTransactionDetail } from 'apps/rahat-ui/src/sections/projects/aa-2/inkindManagement/components';
 
 const Page = () => {
-  return <InkindTransactionDetail />;
+  return (
+    <ProjectPermissionGuard action={ACTIONS.READ} subject={SUBJECTS.INKIND}>
+      <InkindTransactionDetail />
+    </ProjectPermissionGuard>
+  );
 };
 
 export default Page;

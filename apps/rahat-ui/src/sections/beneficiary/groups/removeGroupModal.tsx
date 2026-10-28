@@ -26,6 +26,7 @@ import { ListBeneficiaryGroup } from '@rahat-ui/types';
 import { UUID } from 'crypto';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 
 type RemoveModalType = {
   value: boolean;
@@ -44,9 +45,14 @@ export default function RemoveBenfGroupModal({
 }: IProps) {
   const removeBenfGroup = useRemoveBeneficiaryGroup();
   const router = useRouter();
+  const t = useTranslations('GLOBAL');
   const handleRemoveBenfGroup = async () => {
     try {
-      await removeBenfGroup.mutateAsync(beneficiaryGroupDetail.uuid as UUID);
+      await removeBenfGroup.mutateAsync({
+        uuid: beneficiaryGroupDetail.uuid as UUID,
+        successMessage: t('BENEFICIARY_GROUP_REMOVED_SUCCESSFULLY'),
+        errorMessage: t('ERROR_WHILE_REMOVING_BENEFICIARY_GROUP'),
+      });
       router.push('/beneficiary?tab=beneficiaryGroups');
     } catch (err) {
       console.log(err);
@@ -68,15 +74,15 @@ export default function RemoveBenfGroupModal({
         }}
       >
         <DialogHeader>
-          <DialogTitle>Archive Beneficiary Group</DialogTitle>
+          <DialogTitle>{t('ARCHIVE_BENEFICIARY_GROUP')}</DialogTitle>
           <DialogDescription>
-            This action cannot be undone. Are you sure?
+            {t('THIS_ACTION_CANNOT_BE_UNDONE')} {t('ARE_YOU_SURE')}
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="sm:justify-end">
           <DialogClose asChild>
             <Button type="button" variant="outline">
-              Cancel
+              {t('CANCEL')}
             </Button>
           </DialogClose>
           <Button
@@ -84,7 +90,7 @@ export default function RemoveBenfGroupModal({
             type="button"
             variant="default"
           >
-            Confirm
+            {t('CONFIRM')}
           </Button>
         </DialogFooter>
       </DialogContent>

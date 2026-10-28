@@ -1,8 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
+
 import type { GroupedLayers, WeatherLayer } from '../utils/weather-layers';
 import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 import {
   Tabs,
@@ -44,6 +47,8 @@ export function LayerSelector({
   onShowLayerChange,
   isLoading,
 }: LayerSelectorProps) {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const categories = Object.keys(groupedLayers);
   const [selectedCategory, setSelectedCategory] = useState(
     categories[0] || 'DHM-WRF',
@@ -89,7 +94,7 @@ export function LayerSelector({
           </Card>
         ) : categories.length === 0 ? (
           <Card className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 rounded-lg shadow-lg p-4">
-            <p className="text-xs text-muted-foreground">No layers available</p>
+            <p className="text-xs text-muted-foreground">{t('NO_LAYERS_AVAILABLE')}</p>
           </Card>
         ) : (
           <div className="flex flex-col gap-2 items-end">
@@ -115,12 +120,12 @@ export function LayerSelector({
                 >
                   <span className="flex items-center gap-2">
                     {/* <Icon className="h-5 w-5" /> */}
-                    {layer.name}
+                    {translateValue(tg, layer.name)}
                   </span>
                   <span className="-mr-2 w-[36px] h-[36px] rounded-full overflow-hidden border-2 border-white shadow-md inline-flex flex-shrink-0">
                     <img
                       src={getLayerImageSrc(layer.icon)}
-                      alt={layer.name}
+                      alt={translateValue(tg, layer.name)}
                       className="w-full h-full object-cover"
                     />
                   </span>

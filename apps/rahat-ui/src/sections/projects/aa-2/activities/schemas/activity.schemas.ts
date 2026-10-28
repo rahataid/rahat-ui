@@ -1,60 +1,69 @@
 import { z } from 'zod';
 import { Transport } from '@rumsan/connect/src/types';
 
+type Translator = (key: string, values?: Record<string, any>) => string;
+
 const activityDocumentSchema = z.object({
   mediaURL: z.string(),
   fileName: z.string(),
 });
 
-export const activityFormSchema = z.object({
-  title: z.string().min(2, { message: 'Title must be at least 4 character' }),
-  responsibility: z.string().min(2, { message: 'Please enter responsibility' }),
-  responsibleStation: z
-    .string()
-    .min(2, { message: 'Please enter responsible station' }),
-  phaseId: z.string().min(1, { message: 'Please select phase' }),
-  categoryId: z.string().min(1, { message: 'Please select category' }),
-  leadTime: z.string().optional(),
-  description: z
-    .string()
-    .optional()
-    .refine((val) => !val || val.length > 4, {
-      message: 'Must be at least 5 characters',
-    }),
-  isTemplate: z.boolean().optional(),
-  isAutomated: z.boolean().optional(),
-  activityDocuments: z.array(activityDocumentSchema).optional(),
-});
+export const buildActivityFormSchema = (t: Translator) =>
+  z.object({
+    title: z.string().min(2, { message: t('TITLE_MUST_BE_AT_LEAST_4_CHARACTER') }),
+    responsibility: z.string().min(2, { message: t('PLEASE_ENTER_RESPONSIBILITY') }),
+    responsibleStation: z
+      .string()
+      .min(2, { message: t('PLEASE_ENTER_RESPONSIBLE_STATION') }),
+    phaseId: z.string().min(1, { message: t('PLEASE_SELECT_PHASE') }),
+    categoryId: z.string().min(1, { message: t('PLEASE_SELECT_CATEGORY') }),
+    leadTime: z.string().optional(),
+    description: z
+      .string()
+      .optional()
+      .refine((val) => !val || val.length > 4, {
+        message: t('MUST_BE_AT_LEAST_5_CHARACTERS'),
+      }),
+    isTemplate: z.boolean().optional(),
+    isAutomated: z.boolean().optional(),
+    activityDocuments: z.array(activityDocumentSchema).optional(),
+  });
 
 
-const baseCommunicationFormSchema = z.object({
-  communicationTitle: z
-    .string()
-    .min(1, { message: 'Communication title is required' })
-    .min(2, {
-      message: 'Communication title must be at least 2 characters',
-    }),
-  groupType: z.string().min(1, { message: 'Please select group at least one' }),
-  groupId: z
-    .array(z.string())
-    .min(1, { message: 'Please select group at least one' }),
-  transportId: z
-    .string()
-    .min(1, { message: 'Please select communication type' }),
-  message: z.string().optional(),
-  subject: z.string().optional(),
-  audioURL: z
-    .object({
-      mediaURL: z.string().optional(),
-      fileName: z.string().optional(),
-    })
-    .optional(),
-  sessionId: z.string().optional(),
-  communicationId: z.string().optional(),
-});
+const buildBaseCommunicationFormSchema = (t: Translator) =>
+  z.object({
+    communicationTitle: z
+      .string()
+      .min(1, { message: t('COMMUNICATION_TITLE_IS_REQUIRED') })
+      .min(2, {
+        message: t('COMMUNICATION_TITLE_MIN_2_CHARACTERS'),
+      }),
+    groupType: z
+      .string()
+      .min(1, { message: t('PLEASE_SELECT_GROUP_AT_LEAST_ONE') }),
+    groupId: z
+      .array(z.string())
+      .min(1, { message: t('PLEASE_SELECT_GROUP_AT_LEAST_ONE') }),
+    transportId: z
+      .string()
+      .min(1, { message: t('PLEASE_SELECT_COMMUNICATION_TYPE') }),
+    message: z.string().optional(),
+    subject: z.string().optional(),
+    audioURL: z
+      .object({
+        mediaURL: z.string().optional(),
+        fileName: z.string().optional(),
+      })
+      .optional(),
+    sessionId: z.string().optional(),
+    communicationId: z.string().optional(),
+  });
 
-export const createCommunicationFormSchema = (appTransports?: Transport[]) => {
-  return baseCommunicationFormSchema.superRefine((data, ctx) => {
+export const createCommunicationFormSchema = (
+  t: Translator,
+  appTransports?: Transport[],
+) => {
+  return buildBaseCommunicationFormSchema(t).superRefine((data, ctx) => {
     // Skip validation if transportId is not provided
     if (!data.transportId) {
       return;
@@ -82,7 +91,7 @@ export const createCommunicationFormSchema = (appTransports?: Transport[]) => {
       if (!data.message || data.message.trim() === '') {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'Message is required',
+          message: t('MESSAGE_IS_REQUIRED'),
           path: ['message'],
         });
       }
@@ -93,7 +102,7 @@ export const createCommunicationFormSchema = (appTransports?: Transport[]) => {
       if (!data.subject || data.subject.trim() === '') {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'Subject is required for email',
+          message: t('SUBJECT_IS_REQUIRED_FOR_EMAIL'),
           path: ['subject'],
         });
       }
@@ -104,7 +113,7 @@ export const createCommunicationFormSchema = (appTransports?: Transport[]) => {
       if (!data.audioURL?.mediaURL || data.audioURL.mediaURL.trim() === '') {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'Audio is required for voice',
+          message: t('AUDIO_IS_REQUIRED_FOR_VOICE'),
           path: ['audioURL'],
         });
       }

@@ -1,5 +1,7 @@
 import { DataCard, Heading } from 'apps/rahat-ui/src/common';
+import { useTranslations } from 'next-intl';
 import React from 'react';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 type Props = {
   data: {
     benefStats: any[];
@@ -11,7 +13,8 @@ const CommunicationAnalytics = ({
   triggeersStats,
   projectId,
 }: any) => {
-  // console.log(triggeersStats);
+  const t = useTranslations('AA_PROJECT');
+  const formatNum = useNumberFormat();
   const getTriggerDataByName = (name: string) =>
     triggeersStats.find((item) => item.name.includes(name))?.data;
 
@@ -35,7 +38,7 @@ const CommunicationAnalytics = ({
     const beneficiaries = commsStats?.beneficiary || {};
 
     const stakeholderStats = {
-      category: 'Stakeholders',
+      category: t('STAKEHOLDERS'),
       totalCommunicationSent: stakeholdersCountsSession,
       numberOfStakeholders: benefStats?.find(
         (stat) => stat.name === 'STAKEHOLDERS_TOTAL',
@@ -46,7 +49,7 @@ const CommunicationAnalytics = ({
     };
 
     const beneficiaryStats = {
-      category: 'Beneficiaries',
+      category: t('BENEFICIARIES'),
       totalCommunicationSent: benefCountsSession,
       avcSuccessfullySent: beneficiaries?.VOICE?.SUCCESS || 0,
       smsSuccessfullyDelivered:
@@ -59,25 +62,35 @@ const CommunicationAnalytics = ({
     return [stakeholderStats, beneficiaryStats];
   };
 
+  const labelMap: Record<string, string> = {
+    numberOfStakeholders: t('NUMBER_OF_STAKEHOLDERS'),
+    avcSuccessfullySent: t('AVC_SUCCESSFULLY_SENT'),
+    smsSuccessfullySent: t('SMS_SUCCESSFULLY_SENT'),
+    deliveryFailures: t('DELIVERY_FAILURES'),
+    smsSuccessfullyDelivered: t('SMS_SUCCESSFULLY_DELIVERED'),
+    smsAndAvcDeliveryFailures: t('SMS_AND_AVC_DELIVERY_FAILURES'),
+    uniqueAvcRecipients: t('UNIQUE_AVC_RECIPIENTS'),
+  };
+
   const communicationData = formatCommsStats();
   return (
     <>
       <div className="flex flex-col mt-4">
         <Heading
-          title="Communications & Outreach"
+          title={t('COMMUNICATIONS_OUTREACH')}
           titleStyle="text-lg"
-          description="Reach and effectiveness of communication channels"
+          description={t('REACH_AND_EFFECTIVENESS_OF_COMMUNICATION_CHANNELS')}
         />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 ">
           <DataCard
-            title="Activities with Communication"
+            title={t('ACTIVITIES_WITH_COMMUNICATION')}
             className="rounded-sm"
-            number={activitiesWithComm.toString()}
+            number={formatNum(activitiesWithComm)}
           />
           <DataCard
-            title="Activities Automated"
+            title={t('ACTIVITIES_AUTOMATED')}
             className="rounded-sm"
-            number={activitiesAutomated.toString()}
+            number={formatNum(activitiesAutomated)}
           />
 
           {communicationData.map((item, idx) => (
@@ -86,13 +99,13 @@ const CommunicationAnalytics = ({
               key={item.category}
             >
               <h3 className="text-sm font-semibold text-gray-700">
-                Total Communication Sent
+                {t('TOTAL_COMMUNICATION_SENT')}
               </h3>
               <h4 className="text-md font-medium text-gray-500 mt-1">
                 {item.category}
               </h4>
               <div className="text-3xl font-bold text-primary my-3">
-                {item.totalCommunicationSent}
+                {formatNum(item.totalCommunicationSent)}
               </div>
 
               <div className="grid grid-cols-2 gap-y-3 gap-x-4 mt-4">
@@ -101,20 +114,18 @@ const CommunicationAnalytics = ({
                     return null;
 
                   const label =
-                    key === 'smsAndAvcDeliveryFailures'
-                      ? 'SMS & AVC Delivery Failures'
-                      : key
-                          .replace(/([A-Z])/g, ' $1')
-                          .replace(/^./, (str) => str.toUpperCase())
-                          .replace(/\bSms\b/gi, 'SMS')
-                          .replace(/\bAvc\b/gi, 'AVC');
+                    labelMap[key] ||
+                    key
+                      .replace(/([A-Z])/g, ' $1')
+                      .replace(/^./, (str) => str.toUpperCase())
+                      .replace(/\bSms\b/gi, 'SMS')
+                      .replace(/\bAvc\b/gi, 'AVC');
 
                   return (
                     <div key={key} className="flex flex-col">
                       <span className="text-sm text-gray-500">{label}</span>
                       <span className="font-semibold text-gray-800">
-                        {/* {value.toLocaleString()} */}
-                        {value}
+                        {formatNum(value as number)}
                       </span>
                     </div>
                   );

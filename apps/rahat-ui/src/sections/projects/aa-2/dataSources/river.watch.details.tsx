@@ -1,4 +1,6 @@
 import { Back, Heading, TableLoader } from 'apps/rahat-ui/src/common';
+import { useTranslations } from 'next-intl';
+
 import { Info, WaterLevelView } from './components';
 import RiverWatchMap from './components/dhm/river.watch.map';
 import { useParams } from 'next/navigation';
@@ -9,6 +11,7 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { format } from 'date-fns';
 
 export default function RiverWatchDetails() {
+  const t = useTranslations('AA_PROJECT');
   const { id: projectId, riverWatchId: seriesId } = useParams() as {
     id: UUID;
     riverWatchId: string;
@@ -36,8 +39,8 @@ export default function RiverWatchDetails() {
     <div className="p-4">
       <Back />
       <Heading
-        title="River Watch"
-        description="Detailed view of the selected station"
+        title={t('RIVER_WATCH')}
+        description={t('DETAILED_VIEW_OF_THE_SELECTED_STATION')}
       />
       <ScrollArea className="h-[calc(100vh-205px)]">
         {isLoading ? (

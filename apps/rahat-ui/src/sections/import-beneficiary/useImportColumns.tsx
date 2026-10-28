@@ -25,8 +25,14 @@ import {
 } from '@rahat-ui/query';
 import { toast } from 'react-toastify';
 import { Button } from '@rahat-ui/shadcn/components/button';
+import { useTranslations } from 'next-intl';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
 function ImportActionCell({ row }: { row: any }) {
+  const t = useTranslations('IMPORT_BENEFICIARY_LIST');
+  const tg = useTranslations('GLOBAL');
   const status = row.getValue('status') as string;
   const uuid = row.original.uuid;
   const groupName = row.getValue('groupName') as string;
@@ -38,9 +44,9 @@ function ImportActionCell({ row }: { row: any }) {
   const handleStartImport = async () => {
     try {
       await startImport.mutateAsync(uuid);
-      toast.success('Import has started. Please reload the page to check the status.');
+      toast.success(t('IMPORT_HAS_STARTED'));
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || 'Failed to start import');
+      toast.error(err?.response?.data?.message || t('FAILED_TO_START_IMPORT'));
     }
   };
 
@@ -48,7 +54,7 @@ function ImportActionCell({ row }: { row: any }) {
     try {
       await downloadErrors(uuid, groupName);
     } catch {
-      toast.error('Failed to download errors');
+      toast.error(t('FAILED_TO_DOWNLOAD_ERRORS'));
     }
   };
 
@@ -71,40 +77,37 @@ function ImportActionCell({ row }: { row: any }) {
                 </AlertDialogTrigger>
               </TooltipTrigger>
               <TooltipContent className="bg-secondary">
-                <p className="text-xs font-medium">Start Import</p>
+                <p className="text-xs font-medium">{t('START_IMPORT')}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Confirm Import</AlertDialogTitle>
+              <AlertDialogTitle>{t('CONFIRM_IMPORT')}</AlertDialogTitle>
               <AlertDialogDescription>
-                Review the details below before starting the import.
+                {t('REVIEW_THE_DETAILS_BELOW_BEFORE_STARTING')}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <div className="rounded-md border p-3 space-y-2 text-sm my-2">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Group Name</span>
+                <span className="text-muted-foreground">{tg('GROUP_NAME')}</span>
                 <span className="font-medium">{groupName}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Beneficiaries to Import</span>
+                <span className="text-muted-foreground">{t('BENEFICIARIES_TO_IMPORT')}</span>
                 <span className="font-medium">{beneficiaryCount}</span>
               </div>
             </div>
             <div className="flex gap-2 rounded-md border border-yellow-300 bg-yellow-50 p-3 text-sm text-yellow-800">
               <AlertCircle size={16} className="mt-0.5 shrink-0 text-yellow-600" />
               <p>
-                If this group is assigned to any project, the beneficiaries will be
-                automatically synced to those projects after import. Any existing beneficiary
-                records in those projects will be updated with the latest imported data.
-                Please ensure the imported data is accurate before proceeding.
+                {t('IF_THIS_GROUP_IS_ASSIGNED_TO')}
               </p>
             </div>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogCancel>{tg('CANCEL')}</AlertDialogCancel>
               <AlertDialogAction onClick={handleStartImport}>
-                Start Import
+                {t('START_IMPORT')}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
@@ -125,7 +128,7 @@ function ImportActionCell({ row }: { row: any }) {
               </Button>
             </TooltipTrigger>
             <TooltipContent className="bg-secondary">
-              <p className="text-xs font-medium">Download Error Report</p>
+              <p className="text-xs font-medium">{t('DOWNLOAD_ERROR_REPORT')}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -141,7 +144,7 @@ function ImportActionCell({ row }: { row: any }) {
             </Link>
           </TooltipTrigger>
           <TooltipContent className="bg-secondary">
-            <p className="text-xs font-medium">View Details</p>
+            <p className="text-xs font-medium">{tg('VIEW_DETAILS')}</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
@@ -150,6 +153,7 @@ function ImportActionCell({ row }: { row: any }) {
 }
 
 function StatusCell({ row }: { row: any }) {
+  const tg = useTranslations('GLOBAL');
   const status = row.getValue('status') as string;
 
   return (
@@ -164,50 +168,50 @@ function StatusCell({ row }: { row: any }) {
               : 'bg-blue-100 text-blue-800'
       }`}
     >
-      {status}
+      {translateValue(tg, status, { fallbackStyle: 'raw' })}
       </div>
   );
 }
 
+function CreatedAtCell({ row }: { row: any }) {
+  const formatDate = useDateFormat();
+  return <div>{formatDate(row.getValue('createdAt'), 'MMM d, yyyy, h:mm a')}</div>;
+}
+
+function BeneficiaryCountCell({ row }: { row: any }) {
+  const formatNum = useNumberFormat();
+  return <div>{formatNum(row.getValue('beneficiaryCount'))}</div>;
+}
+
 export const useImportListTableColumns = () => {
+  const t = useTranslations('IMPORT_BENEFICIARY_LIST');
+  const tg = useTranslations('GLOBAL');
   const columns: ColumnDef<Import>[] = [
     {
-      header: 'Group Name',
+      header: tg('GROUP_NAME'),
       accessorKey: 'groupName',
       cell: ({ row }) => <div>{row.getValue('groupName')}</div>,
     },
     {
-      header: 'Beneficiary Count',
+      header: t('BENEFICIARY_COUNT'),
       accessorKey: 'beneficiaryCount',
-      cell: ({ row }) => <div>{row.getValue('beneficiaryCount')}</div>,
+      cell: ({ row }) => <BeneficiaryCountCell row={row} />,
     },
     {
-      header: 'Status',
+      header: tg('STATUS'),
       accessorKey: 'status',
       cell: ({ row }) => <StatusCell row={row} />,
     },
     {
-      header: 'Created At',
+      header: tg('CREATED_AT'),
       accessorKey: 'createdAt',
-      cell: ({ row }) => {
-        const createdAt = row.getValue('createdAt');
-        const formatDate = new Intl.DateTimeFormat('en-US', {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: true,
-          timeZone: 'Asia/Kathmandu',
-        }).format(new Date(createdAt as string));
-        return <div>{formatDate}</div>;
-      },
+      cell: ({ row }) => <CreatedAtCell row={row} />,
     },
     {
       id: 'actions',
       enableHiding: false,
       accessorKey: 'uuid',
-      header: 'Actions',
+      header: tg('ACTIONS'),
       cell: ({ row }) => <ImportActionCell row={row} />,
     },
   ];

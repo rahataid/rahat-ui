@@ -24,6 +24,8 @@ import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 import useBeneficiaryTableColumn from './useBeneficiaryTableColumns';
+import { useTranslations } from 'next-intl';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 
 type IProps = {
   groupUUID: UUID;
@@ -38,6 +40,9 @@ export default function EditBeneficiaryGroups({
   groupedBeneficiaries,
   isGroupAssignedToProject,
 }: IProps) {
+  const t = useTranslations('BENEFICIARY_GROUP_DETAIL');
+  const tg = useTranslations('GLOBAL');
+  const formatDigits = useLabelDigits();
   const { closeSecondPanel } = useSecondPanel();
 
   const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
@@ -79,8 +84,9 @@ export default function EditBeneficiaryGroups({
     },
   });
 
+  const tc = useTranslations('BENEFICIARY_GROUP_CREATE');
   const FormSchema = z.object({
-    name: z.string().min(2, { message: 'Please enter group name.' }),
+    name: z.string().min(2, { message: tc('GROUP_NAME_REQUIRED') }),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -98,7 +104,13 @@ export default function EditBeneficiaryGroups({
     const members = table
       .getSelectedRowModel()
       .rows?.map((data) => ({ uuid: data?.original?.uuid }));
-    const payload = { uuid: groupUUID, ...data, beneficiaries: members };
+    const payload = {
+      uuid: groupUUID,
+      ...data,
+      beneficiaries: members,
+      successMessage: tg('BENEFICIARY_GROUP_UPDATED_SUCCESSFULLY'),
+      errorMessage: tg('ERROR_WHILE_UPDATING_BENEFICIARY_GROUP'),
+    };
     try {
       await updateBeneficiaryGroup.mutateAsync(payload);
     } catch (e) {
@@ -114,7 +126,7 @@ export default function EditBeneficiaryGroups({
       <form onSubmit={form.handleSubmit(handleUpdateBeneficiaryGroup)}>
         <div className="p-4 h-[calc(100vh-310px)] bg-card">
           <h1 className="text-lg font-semibold mb-6">
-            Edit : {isGroupAssignedToProject ? 'Members' : 'Beneficiary Group'}
+            {isGroupAssignedToProject ? t('EDIT_MEMBERS') : t('EDIT_BENEFICIARY_GROUP')}
           </h1>
           <div className="shadow-md p-4 rounded-sm">
             <div className="grid gap-4">
@@ -127,7 +139,7 @@ export default function EditBeneficiaryGroups({
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Group name"
+                          placeholder={t('GROUP_NAME')}
                           disabled={isGroupAssignedToProject}
                           {...field}
                         />
@@ -141,11 +153,11 @@ export default function EditBeneficiaryGroups({
                 <div className="flex gap-4">
                   {table.getSelectedRowModel().rows.length ? (
                     <Badge className="rounded h-10 px-4 py-2 w-max">
-                      {table.getSelectedRowModel().rows.length} - member
-                      selected
+                      {formatDigits(table.getSelectedRowModel().rows.length)} -{' '}
+                      {t('MEMBER_SELECTED')}
                     </Badge>
                   ) : null}
-                  <Button type="submit">Update Beneficiary Group</Button>
+                  <Button type="submit">{t('UPDATE_BENEFICIARY_GROUP')}</Button>
                 </div>
               </div>
             </div>

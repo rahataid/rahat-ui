@@ -1,4 +1,5 @@
 'use client';
+import { useTranslations } from 'next-intl';
 
 import { UseFormReturn } from 'react-hook-form';
 import {
@@ -27,6 +28,9 @@ import {
 import { cn } from 'libs/shadcn/src';
 import { Check, ChevronDown } from 'lucide-react';
 import { Tag } from 'emblor';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
+import { usePhoneCountrySelectProps } from 'apps/rahat-ui/src/utils/i18n/phone';
 import GctSupportAreaInput from './gct.support-area-input';
 import { GctGroupValues } from '../types/gct.schemas';
 import { CIPS_BANKS } from '../types/cips-banks';
@@ -41,18 +45,22 @@ function Req() {
 
 export function SectionCard({
   title,
+  titleKey,
   action,
   children,
 }: {
-  title: string;
+  title?: string;
+  titleKey?: string;
   action?: React.ReactNode;
   children: React.ReactNode;
 }) {
+  const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
+
   return (
     <div className="p-4 rounded-sm border bg-card space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-          {title}
+          {titleKey ? t(titleKey) : title}
         </h3>
         {action}
       </div>
@@ -76,17 +84,21 @@ export function BasicInfoSection({
   shouldDirty,
   onUnsavedChange,
 }: BasicInfoSectionProps) {
+  const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
+  const tGlobal = useTranslations('GLOBAL');
+  const formatDigits = useLabelDigits();
+  const phoneCountrySelectProps = usePhoneCountrySelectProps();
   return (
-    <SectionCard title="Basic Info">
+    <SectionCard titleKey="BASIC_INFO">
       <div className="grid grid-cols-3 gap-4">
         <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
             <FormItem>
-              <Label>GCT Group Name <Req /></Label>
+              <Label>{t('GCT_GROUP_NAME')} <Req /></Label>
               <FormControl>
-                <Input placeholder="Enter GCT Group Name" {...field} />
+                <Input placeholder={t('ENTER_GCT_GROUP_NAME')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -97,9 +109,14 @@ export function BasicInfoSection({
           name="phone"
           render={({ field }) => (
             <FormItem>
-              <Label>Phone Number <Req /></Label>
+              <Label>{tGlobal('PHONE_NUMBER')} <Req /></Label>
               <FormControl>
-                <PhoneInput defaultCountry="NP" placeholder="+977" {...field} />
+                <PhoneInput
+                  defaultCountry="NP"
+                  placeholder="+977"
+                  {...field}
+                  {...phoneCountrySelectProps}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -110,9 +127,9 @@ export function BasicInfoSection({
           name="email"
           render={({ field }) => (
             <FormItem>
-              <Label>Email (Optional)</Label>
+              <Label>{t('EMAIL_OPTIONAL')}</Label>
               <FormControl>
-                <Input type="text" placeholder="Enter email address" {...field} />
+                <Input type="text" placeholder={t('ENTER_EMAIL_ADDRESS')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -126,9 +143,9 @@ export function BasicInfoSection({
           name="district"
           render={({ field }) => (
             <FormItem>
-              <Label>District <Req /></Label>
+              <Label>{t('DISTRICT')} <Req /></Label>
               <FormControl>
-                <Input placeholder="Enter district" {...field} />
+                <Input placeholder={t('ENTER_DISTRICT')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -139,9 +156,14 @@ export function BasicInfoSection({
           name="ward"
           render={({ field }) => (
             <FormItem>
-              <Label>Ward (Community) <Req /></Label>
+              <Label>{tGlobal('WARD_COMMUNITY')} <Req /></Label>
               <FormControl>
-                <Input placeholder="Enter Ward and community" {...field} />
+                <Input
+                  placeholder={t('ENTER_WARD_AND_COMMUNITY')}
+                  {...field}
+                  value={formatDigits(field.value)}
+                  onChange={(e) => field.onChange(toAsciiDigits(e.target.value))}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -152,9 +174,9 @@ export function BasicInfoSection({
           name="municipality"
           render={({ field }) => (
             <FormItem>
-              <Label>Municipality <Req /></Label>
+              <Label>{tGlobal('MUNICIPALITY')} <Req /></Label>
               <FormControl>
-                <Input placeholder="Enter municipality" {...field} />
+                <Input placeholder={t('ENTER_MUNICIPALITY')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -179,15 +201,17 @@ interface BankDetailsSectionProps {
 }
 
 export function BankDetailsSection({ form }: BankDetailsSectionProps) {
+  const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
+  const formatDigits = useLabelDigits();
   return (
-    <SectionCard title="Bank Details">
+    <SectionCard titleKey="BANK_DETAILS">
       <div className="grid grid-cols-2 gap-4">
         <FormField
           control={form.control}
           name="bankCode"
           render={({ field }) => (
             <FormItem className="flex flex-col space-y-3">
-              <Label className="mt-1">Bank Name <Req /></Label>
+              <Label className="mt-1">{t('BANK_NAME')} <Req /></Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
@@ -198,16 +222,16 @@ export function BankDetailsSection({ form }: BankDetailsSectionProps) {
                     >
                       {field.value
                         ? CIPS_BANKS.find((b) => b.bankId === field.value)?.bankName
-                        : 'Select a bank'}
+                        : t('SELECT_A_BANK')}
                       <ChevronDown className="opacity-50" />
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
                 <PopoverContent className="p-0 w-[--radix-popover-trigger-width]">
                   <Command>
-                    <CommandInput placeholder="Search bank..." className="h-9" />
+                    <CommandInput placeholder={t('SEARCH_BANK')} className="h-9" />
                     <CommandList>
-                      <CommandEmpty>No bank found.</CommandEmpty>
+                      <CommandEmpty>{t('NO_BANK_FOUND')}</CommandEmpty>
                       <CommandGroup>
                         {CIPS_BANKS.map((b) => (
                           <CommandItem
@@ -236,9 +260,9 @@ export function BankDetailsSection({ form }: BankDetailsSectionProps) {
           name="bankBranchName"
           render={({ field }) => (
             <FormItem>
-              <Label>Bank Branch Name <Req /></Label>
+              <Label>{t('BANK_BRANCH_NAME')} <Req /></Label>
               <FormControl>
-                <Input placeholder="Enter Bank's Branch Name" {...field} />
+                <Input placeholder={t('ENTER_BANK_BRANCH_NAME')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -249,9 +273,9 @@ export function BankDetailsSection({ form }: BankDetailsSectionProps) {
           name="accountName"
           render={({ field }) => (
             <FormItem>
-              <Label>Bank Account Holder Name <Req /></Label>
+              <Label>{t('ACCOUNT_HOLDER_NAME')} <Req /></Label>
               <FormControl>
-                <Input placeholder="Enter Bank Account Holder Name" {...field} />
+                <Input placeholder={t('ENTER_BANK_ACCOUNT_HOLDER_NAME')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -262,9 +286,14 @@ export function BankDetailsSection({ form }: BankDetailsSectionProps) {
           name="accountNumber"
           render={({ field }) => (
             <FormItem>
-              <Label>Bank Account Number <Req /></Label>
+              <Label>{t('ACCOUNT_NUMBER')} <Req /></Label>
               <FormControl>
-                <Input placeholder="Enter Bank Account Number" {...field} />
+                <Input
+                  placeholder={t('ENTER_BANK_ACCOUNT_NUMBER')}
+                  {...field}
+                  value={formatDigits(field.value)}
+                  onChange={(e) => field.onChange(toAsciiDigits(e.target.value))}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

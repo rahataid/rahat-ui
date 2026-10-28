@@ -2,6 +2,7 @@
 
 import { useGrievanceEditStatus, useGrievanceDetails } from '@rahat-ui/query';
 import { GrievanceStatus } from '@rahat-ui/query/lib/grievance/types/grievance';
+import { useTranslations } from 'next-intl';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
@@ -13,7 +14,9 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
 import { grievanceStatus } from 'apps/rahat-ui/src/constants/aa.grievances.constants';
-import { formatDateFull } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
+import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
 import { UUID } from 'crypto';
 import { Expand, Pencil, X } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
@@ -51,6 +54,17 @@ type IProps = {
 export default function GrievanceDetailSplitView({
   grievance: initialGrievance,
 }: IProps) {
+  const formatDate = useDateFormat();
+  const formatDigits = useLabelDigits();
+  const formatPhone = usePhoneFormat();
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
+  const labelMap: Record<string, string> = {
+    'New': t('NEW'),
+    'Under Review': t('UNDER_REVIEW'),
+    'Resolved': t('RESOLVED'),
+    'Closed': t('CLOSED'),
+  };
   const router = useRouter();
   const { id: projectId } = useParams() as { id: UUID };
   const searchParams = useSearchParams();
@@ -131,18 +145,18 @@ export default function GrievanceDetailSplitView({
           <TooltipComponent
             handleOnClick={handleEdit}
             Icon={Pencil}
-            tip="Edit"
-          />
+              tip={t('EDIT')}
+            />
+            <TooltipComponent
+              handleOnClick={handleViewFull}
+              Icon={Expand}
+              tip={tg('EXPAND')}
+            />
+          </div>
           <TooltipComponent
-            handleOnClick={handleViewFull}
-            Icon={Expand}
-            tip="Expand"
-          />
-        </div>
-        <TooltipComponent
-          handleOnClick={closeSecondPanel}
-          Icon={X}
-          tip="Close"
+            handleOnClick={closeSecondPanel}
+            Icon={X}
+            tip={t('CLOSE')}
         />
       </div>
 
@@ -155,17 +169,17 @@ export default function GrievanceDetailSplitView({
             <div className="flex flex-col gap-[4px]">
               <div className="font-inter font-semibold text-[18px] leading-[100%] tracking-[-0.02em] text-[#3D3D5A]">
                 <TooltipText
-                  title={grievance?.title || 'N/A'}
-                  content={grievance?.title || 'N/A'}
+                  title={grievance?.title || tg('N_A')}
+                  content={grievance?.title || tg('N_A')}
                   titleClassName="line-clamp-1 !w-auto whitespace-normal hover:cursor-pointer"
                 />
               </div>
               <div className="font-inter font-normal text-[14px] leading-[24px] tracking-[0]  text-[#667085]">
                 <div className="flex items-center gap-1">
-                  <span>Reported By:</span>
+                  <span>{t('REPORTED_BY')}:</span>
                   <TooltipText
-                    title={grievance?.reportedBy || 'N/A'}
-                    content={grievance?.reportedBy || 'N/A'}
+                    title={grievance?.reportedBy || tg('N_A')}
+                    content={grievance?.reportedBy || tg('N_A')}
                     titleClassName="inline-block max-w-[200px] line-clamp-1 !w-auto whitespace-normal hover:cursor-pointer"
                   />
                 </div>
@@ -173,7 +187,7 @@ export default function GrievanceDetailSplitView({
             </div>
             <div className="flex items-center space-x-2 w-full">
               <label className="font-inter font-normal text-[14px] leading-[24px] tracking-[0] text-[#667085]">
-                Status
+                {t('STATUS')}
               </label>
               <Select
                 value={currentStatus}
@@ -186,7 +200,7 @@ export default function GrievanceDetailSplitView({
                 <SelectContent>
                   {grievanceStatus.map((status) => (
                     <SelectItem key={status.value} value={status.value}>
-                      {status.label}
+                      {labelMap[status.label] || status.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -200,13 +214,13 @@ export default function GrievanceDetailSplitView({
           <div className="flex flex-col gap-[8px] py-[24px] px-[24px]">
             <div className="flex justify-between">
               <span className="font-inter font-medium text-[14px] leading-[24px] tracking-[0] text-[#3D3D51]">
-                Reporter Contact
+                {t('REPORTER_CONTACT')}
               </span>
               <span className="font-inter font-normal text-[14px] leading-[24px] tracking-[0] text-right text-[#334155]">
                 <TooltipText
                   side="bottom"
-                  title={grievance?.reporterContact || 'N/A'}
-                  content={grievance?.reporterContact || 'N/A'}
+                  title={formatPhone(grievance?.reporterContact) || tg('N_A')}
+                  content={formatPhone(grievance?.reporterContact) || tg('N_A')}
                   contentClassName="w-68"
                 />
               </span>
@@ -214,21 +228,21 @@ export default function GrievanceDetailSplitView({
 
             <div className="flex justify-between">
               <span className="font-inter font-medium text-[14px] leading-[24px] tracking-[0] text-[#3D3D51]">
-                Grievance ID
+                {t('GRIEVANCE_ID')}
               </span>
               <span className="font-inter font-normal text-[14px] leading-[24px] tracking-[0] text-right text-[#334155]">
                 <TooltipText
                   side="bottom"
                   contentClassName="w-68"
-                  title={grievance?.id || 'N/A'}
-                  content={grievance?.id || 'N/A'}
+                  title={formatDigits(grievance?.id) || tg('N_A')}
+                  content={formatDigits(grievance?.id) || tg('N_A')}
                 />
               </span>
             </div>
 
             <div className="flex justify-between">
               <span className="font-inter font-medium text-[14px] leading-[24px] tracking-[0] text-[#3D3D51]">
-                Grievance Type
+                {t('GRIEVANCE_TYPE')}
               </span>
               <TypeChip
                 type={grievance?.type || 'NON_TECHNICAL'}
@@ -238,7 +252,7 @@ export default function GrievanceDetailSplitView({
 
             <div className="flex justify-between">
               <span className="font-inter font-medium text-[14px] leading-[24px] tracking-[0] text-[#3D3D51]">
-                Priority
+                {t('PRIORITY')}
               </span>
               <PriorityChip
                 priority={grievance?.priority || 'MEDIUM'}
@@ -248,62 +262,62 @@ export default function GrievanceDetailSplitView({
 
             <div className="flex justify-between">
               <span className="font-inter font-medium text-[14px] leading-[24px] tracking-[0] text-[#3D3D51]">
-                Created by
+                {t('CREATED_BY')}
               </span>
               <span className="font-inter font-normal text-[14px] leading-[24px] tracking-[0] text-right text-[#334155]">
                 <TooltipText
                   side="bottom"
                   contentClassName="w-68"
-                  title={grievance?.createdByUser?.name || 'N/A'}
-                  content={grievance?.createdByUser?.name || 'N/A'}
+                  title={grievance?.createdByUser?.name || tg('N_A')}
+                  content={grievance?.createdByUser?.name || tg('N_A')}
                 />
               </span>
             </div>
 
             <div className="flex justify-between">
               <span className="font-inter font-medium text-[14px] leading-[24px] tracking-[0] text-[#3D3D51]">
-                Created at
+                {t('CREATED_AT')}
               </span>
               <span className="font-inter font-normal text-[14px] leading-[24px] tracking-[0] text-right text-[#334155]">
                 {grievance?.createdAt
-                  ? formatDateFull(grievance?.createdAt)
-                  : 'N/A'}
+                  ? formatDate(grievance?.createdAt, 'MMM d, yyyy, h:mm a')
+                  : tg('N_A')}
               </span>
             </div>
 
             <div className="flex justify-between">
               <span className="font-inter font-medium text-[14px] leading-[24px] tracking-[0] text-[#3D3D51]">
                 {grievance?.status === GrievanceStatus.CLOSED
-                  ? 'Closed at'
-                  : 'Updated at'}
+                  ? t('CLOSED_AT')
+                  : t('UPDATED_AT')}
               </span>
               <span className="font-inter font-normal text-[14px] leading-[24px] tracking-[0] text-right text-[#334155]">
                 {grievance?.status === GrievanceStatus.CLOSED
                   ? grievance?.closedAt
-                    ? formatDateFull(grievance?.closedAt)
-                    : 'N/A'
+                    ? formatDate(grievance?.closedAt, 'MMM d, yyyy, h:mm a')
+                    : tg('N_A')
                   : grievance?.updatedAt
-                  ? formatDateFull(grievance?.updatedAt)
-                  : 'N/A'}
+                  ? formatDate(grievance?.updatedAt, 'MMM d, yyyy, h:mm a')
+                  : tg('N_A')}
               </span>
             </div>
 
             {/* Description */}
             <div className="font-inter font-medium text-[14px] leading-[24px] tracking-[0] text-[#3D3D51]">
-              Description
+              {t('DESCRIPTION')}
             </div>
             <div className="font-inter font-normal text-[14px] leading-[24px] tracking-[0] text-[#334155] break-words">
               <TooltipText
                 contentClassName="w-68"
-                title={grievance?.description || 'N/A'}
-                content={grievance?.description || 'N/A'}
+                title={grievance?.description || tg('N_A')}
+                content={grievance?.description || tg('N_A')}
                 titleClassName="line-clamp-2 !w-auto whitespace-normal hover:cursor-pointer"
               />
             </div>
 
             {/* Tags */}
             <div className="font-inter font-medium text-[14px] leading-[24px] tracking-[0] text-[#3D3D51]">
-              Tags
+              {t('TAGS')}
             </div>
             <div className="flex flex-wrap gap-2">
               {grievance?.tags && grievance.tags.length > 0 ? (
@@ -314,7 +328,7 @@ export default function GrievanceDetailSplitView({
                 ))
               ) : (
                 <span className="text-sm text-muted-foreground">
-                  No tags assigned
+                  {t('NO_TAGS_ASSIGNED')}
                 </span>
               )}
             </div>

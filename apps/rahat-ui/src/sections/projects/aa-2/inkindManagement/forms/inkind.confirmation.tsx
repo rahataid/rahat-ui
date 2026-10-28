@@ -8,6 +8,8 @@ import { UUID } from 'crypto';
 import type { InkindDetailsValues } from '../schemas/inkind.validation';
 import { INKIND_TYPE_LABELS } from '../schemas/inkind.validation';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 interface Props {
   formData: InkindDetailsValues;
@@ -18,6 +20,9 @@ export default function InkindConfirmation({
   formData,
   onSuccess,
 }: Props) {
+  const tg = useTranslations('AA_PROJECT_WITH_GNOSIS');
+  const tglob = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const { id } = useParams();
   const router = useRouter();
   const projectUUID = id as UUID;
@@ -41,29 +46,29 @@ export default function InkindConfirmation({
     <div className="p-2">
       <div className="flex gap-3 mb-3">
         <div className="w-full p-3 rounded-md bg-gray-50">
-          <p className="font-semibold text-sm mb-2">Inkind Details</p>
+          <p className="font-semibold text-sm mb-2">{tg('INKIND_DETAILS')}</p>
           <div className="flex flex-col space-y-3">
             <div>
-              <p className="text-sm text-muted-foreground">Inkind Name</p>
+              <p className="text-sm text-muted-foreground">{tg('INKIND_NAME')}</p>
               <TruncatedCell text={formData.name} maxLength={30} className='text-lg font-semibold text-primary'/>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Description</p>
+              <p className="text-sm text-muted-foreground">{tglob('DESCRIPTION')}</p>
               <TruncatedCell text={formData.description} maxLength={50} className='text-lg font-semibold text-primary'/>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Type</p>
+              <p className="text-sm text-muted-foreground">{tglob('TYPE')}</p>
               <div className="mt-1 w-fit">
                 <p className="text-lg font-semibold text-primary">
-                  {INKIND_TYPE_LABELS[formData.type]}
+                  {tglob(formData.type)}
                 </p>
               </div>
             </div>
             {formData.quantity && (
               <div>
-                <p className="text-sm text-muted-foreground">Quantity</p>
+                <p className="text-sm text-muted-foreground">{tg('QUANTITY')}</p>
                 <p className="text-lg font-semibold text-primary">
-                  {formData.quantity}
+                  {formatNum(formData.quantity)}
                 </p>
               </div>
             )}
@@ -78,7 +83,7 @@ export default function InkindConfirmation({
           onClick={() => router.push(`/projects/aa/${id}/inkind-management?tab=inkindList`)}
           disabled={createInkind.isPending}
         >
-          Cancel
+          {tglob('CANCEL')}
         </Button>
         <Button
           className="px-10"
@@ -88,10 +93,10 @@ export default function InkindConfirmation({
           {createInkind.isPending ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Creating...
+              {tg('CREATING')}
             </>
           ) : (
-            'Create Inkind'
+            tg('CREATE_INKIND')
           )}
         </Button>
       </div>

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -48,6 +49,9 @@ export default function UpdateActivityStatusDialog({
   triggerTitle = '',
   iconStyle,
 }: IProps) {
+  const t = useTranslations('AA_PROJECT');
+  // Activity status slugs live in GLOBAL, not AA_PROJECT.
+  const tg = useTranslations('GLOBAL');
   const router = useRouter();
   const params = useParams();
 
@@ -70,12 +74,12 @@ export default function UpdateActivityStatusDialog({
   const updateStatus = useUpdateActivityStatus();
 
   const FormSchema = z.object({
-    status: z.string().min(1, { message: 'Please select status' }),
+    status: z.string().min(1, { message: t('PLEASE_SELECT_STATUS') }),
     notes: z
       .string()
       .optional()
       .refine((val) => !val || val?.length > 4, {
-        message: 'Must be at least 5 characters',
+        message: t('MUST_BE_AT_LEAST_5_CHARACTERS'),
       }),
     activityDocuments: z
       .array(
@@ -104,9 +108,9 @@ export default function UpdateActivityStatusDialog({
     if (file) {
       const isDuplicateFile = documents?.some((d) => d?.name === file?.name);
       if (isDuplicateFile) {
-        return toast.error('Cannot upload duplicate files.');
+        return toast.error(t('CANNOT_UPLOAD_DUPLICATE_FILES'));
       }
-      if (!validateFile(file)) {
+      if (!validateFile(file, t)) {
         return;
       }
 
@@ -172,7 +176,7 @@ export default function UpdateActivityStatusDialog({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleDialogSubmit)}>
             <DialogHeader>
-              <DialogTitle>Update Status</DialogTitle>
+              <DialogTitle>{t('UPDATE_STATUS')}</DialogTitle>
             </DialogHeader>
             <div className="mt-4 grid gap-4">
               <FormField
@@ -180,7 +184,7 @@ export default function UpdateActivityStatusDialog({
                 name="status"
                 render={({ field }) => (
                   <FormItem className="space-y-3">
-                    <FormLabel>Status:</FormLabel>
+                    <FormLabel>{t('STATUS')}:</FormLabel>
                     <FormControl>
                       <RadioGroup
                         onValueChange={field.onChange}
@@ -196,7 +200,7 @@ export default function UpdateActivityStatusDialog({
                               <RadioGroupItem value={status} />
                             </FormControl>
                             <FormLabel className="font-normal">
-                              {status}
+                              {tg(status)}
                             </FormLabel>
                           </FormItem>
                         ))}
@@ -212,9 +216,9 @@ export default function UpdateActivityStatusDialog({
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Add note</FormLabel>
+                      <FormLabel>{t('ADD_NOTE')}</FormLabel>
                       <FormControl>
-                        <Textarea placeholder="Write note" {...field} />
+                        <Textarea placeholder={t('WRITE_NOTE')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

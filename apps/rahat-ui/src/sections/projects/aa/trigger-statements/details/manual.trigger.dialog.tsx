@@ -23,11 +23,13 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { X, CloudUpload, Check, LoaderCircle } from 'lucide-react';
 import { useUploadFile, useActivateTrigger } from '@rahat-ui/query';
+import { useTranslations } from 'next-intl';
 import { UUID } from 'crypto';
 import { validateFile } from '../../file.validation';
 import { toast } from 'react-toastify';
 
 export default function ManualTriggerDialog() {
+  const t = useTranslations('AA_PROJECT');
   const { id: projectID, triggerID } = useParams();
   const router = useRouter();
   const uploadFile = useUploadFile();
@@ -46,7 +48,7 @@ export default function ManualTriggerDialog() {
       .string()
       .optional()
       .refine((val) => !val || val?.length > 4, {
-        message: 'Must be at least 5 characters',
+        message: t('MUST_BE_AT_LEAST_5_CHARACTERS'),
       }),
     triggerDocuments: z
       .array(
@@ -73,9 +75,9 @@ export default function ManualTriggerDialog() {
     if (file) {
       const isDuplicateFile = documents?.some((d) => d?.name === file?.name);
       if (isDuplicateFile) {
-        return toast.error('Cannot upload duplicate files.');
+        return toast.error(t('CANNOT_UPLOAD_DUPLICATE_FILES'));
       }
-      if (!validateFile(file)) {
+      if (!validateFile(file, t)) {
         return;
       }
 
@@ -124,7 +126,7 @@ export default function ManualTriggerDialog() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleTriggerSubmit)}>
             <DialogHeader>
-              <DialogTitle>Trigger</DialogTitle>
+              <DialogTitle>{t('TRIGGER')}</DialogTitle>
             </DialogHeader>
             <div className="mt-4 grid gap-4">
               <FormField
@@ -133,9 +135,9 @@ export default function ManualTriggerDialog() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Add note</FormLabel>
+                      <FormLabel>{t('ADD_NOTE')}</FormLabel>
                       <FormControl>
-                        <Textarea placeholder="Write note" {...field} />
+                        <Textarea placeholder={t('WRITE_NOTE')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

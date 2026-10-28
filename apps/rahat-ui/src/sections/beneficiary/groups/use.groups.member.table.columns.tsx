@@ -5,8 +5,10 @@ import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import { Eye } from 'lucide-react';
 import { ListBeneficiary } from '@rahat-ui/types';
+import { useTranslations } from 'next-intl';
 
 export const useGroupsMemberTableColumns = () => {
+  const t = useTranslations('GLOBAL');
   const columns: ColumnDef<ListBeneficiary>[] = [
     {
       id: 'select',
@@ -17,7 +19,7 @@ export const useGroupsMemberTableColumns = () => {
             (table.getIsSomePageRowsSelected() && 'indeterminate')
           }
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
+          aria-label={t('SELECT_ALL')}
         />
       ),
       cell: ({ row }) => {
@@ -26,7 +28,7 @@ export const useGroupsMemberTableColumns = () => {
             checked={row.getIsSelected()}
             disabled={!row.getCanSelect()}
             onCheckedChange={(value) => row.toggleSelected(!!value)}
-            aria-label="Select row"
+            aria-label={t('SELECT_ROW')}
           />
         );
       },
@@ -35,36 +37,36 @@ export const useGroupsMemberTableColumns = () => {
     },
     {
       accessorKey: 'name',
-      header: 'Name',
+      header: t('NAME'),
       cell: ({ row }) => {
         row.getValue('name');
       },
     },
     {
       accessorKey: 'walletAddress',
-      header: 'Wallet Address',
+      header: t('WALLET_ADDRESS'),
       cell: ({ row }) => (
         <p>{truncateEthAddress(row.getValue('walletAddress'))}</p>
       ),
     },
     {
       accessorKey: 'gender',
-      header: 'Gender',
+      header: t('GENDER'),
       cell: ({ row }) => <div>{row.getValue('gender')}</div>,
     },
     {
       accessorKey: 'internetStatus',
-      header: 'Internet Access',
+      header: t('INTERNET_ACCESS'),
       cell: ({ row }) => <div>{row.getValue('internetStatus')}</div>,
     },
     {
       accessorKey: 'bankedStatus',
-      header: 'Banking Status',
+      header: t('BANKING_STATUS'),
       cell: ({ row }) => <div>{row.getValue('bankedStatus')}</div>,
     },
     {
       accessorKey: 'phoneStatus',
-      header: 'Phone Type',
+      header: t('PHONE_STATUS'),
       cell: ({ row }) => <div>{row.getValue('phoneStatus')}</div>,
     },
 

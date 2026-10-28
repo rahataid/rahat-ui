@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -40,6 +41,8 @@ export default function ActivateTriggerDialog({
   version,
   notes,
 }: IProps) {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const uploadFile = useUploadFile();
   const activateTrigger = useActivateTrigger();
   const [showModal, setShowModal] = React.useState<boolean>(false);
@@ -56,7 +59,7 @@ export default function ActivateTriggerDialog({
       .string()
       .optional()
       .refine((val) => !val || val?.length > 4, {
-        message: 'Must be at least 5 characters',
+        message: t('MUST_BE_AT_LEAST_5_CHARACTERS'),
       }),
     triggerDocuments: z
       .array(
@@ -86,11 +89,11 @@ export default function ActivateTriggerDialog({
       for (const file of filesArray) {
         const isDuplicateFile = documents?.some((d) => d?.name === file?.name);
         if (isDuplicateFile) {
-          toast.error(`Cannot upload duplicate file: ${file.name}`);
+          toast.error(t('CANNOT_UPLOAD_DUPLICATE_FILE', { name: file.name }));
           continue;
         }
 
-        if (!validateFile(file)) {
+        if (!validateFile(file, t)) {
           continue;
         }
 
@@ -105,7 +108,7 @@ export default function ActivateTriggerDialog({
         } catch (error) {
           // Remove the document from the list if upload fails
           setDocuments((prev) => prev.filter((doc) => doc.name !== file.name));
-          toast.error(`Failed to upload ${file.name}`);
+          toast.error(t('FAILED_TO_UPLOAD', { name: file.name }));
         }
       }
 
@@ -142,16 +145,16 @@ export default function ActivateTriggerDialog({
           className={`px-8 ${version && 'hidden'}`}
           onClick={() => setShowModal(true)}
         >
-          Trigger
+          {tg('TRIGGER')}
         </Button>
       </DialogTrigger>
       <DialogContent className="rounded-xl">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleTriggerSubmit)}>
             <DialogHeader>
-              <DialogTitle className="text-center">Confirm Trigger</DialogTitle>
+              <DialogTitle className="text-center">{t('CONFIRM_TRIGGER')}</DialogTitle>
               <DialogDescription className="text-center">
-                Fill out the details below and press confirm to trigger
+                {t('FILL_OUT_DETAILS_TO_TRIGGER')}
               </DialogDescription>
             </DialogHeader>
             <div className="mt-4 grid gap-4">
@@ -161,11 +164,11 @@ export default function ActivateTriggerDialog({
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Trigger Notes</FormLabel>
+                      <FormLabel>{t('TRIGGER_NOTES')}</FormLabel>
                       <FormControl>
                         <Textarea
                           className="rounded"
-                          placeholder="Write trigger notes here"
+                          placeholder={t('WRITE_TRIGGER_NOTES_HERE')}
                           {...field}
                         />
                       </FormControl>
@@ -188,7 +191,7 @@ export default function ActivateTriggerDialog({
                               className="text-primary"
                             />
                             <p className="text-sm font-medium text-primary">
-                              Choose file to upload.
+                              {t('CHOOSE_FILE_TO_UPLOAD')}
                             </p>
                           </div>
                           <Input
@@ -201,8 +204,7 @@ export default function ActivateTriggerDialog({
                       </FormControl>
                       <FormMessage />
                       <p className="text-xs text-muted-foreground font-medium">
-                        *Files must be JPEG, PNG, BMP, PDF, XLSX, DOC, DOCX or
-                        CSV under 5 MB.
+                        {t('FILES_MUST_BE_UNDER_5MB')}
                       </p>
                       {documents?.map((file) => (
                         <div
@@ -251,14 +253,14 @@ export default function ActivateTriggerDialog({
                   className="w-full"
                   onClick={() => setShowModal(!showModal)}
                 >
-                  Cancel
+                  {tg('CANCEL')}
                 </Button>
                 <Button
                   type="submit"
                   className="w-full"
                   disabled={uploadFile?.isPending || activateTrigger?.isPending}
                 >
-                  Confirm
+                  {tg('CONFIRM')}
                 </Button>
               </div>
             </div>

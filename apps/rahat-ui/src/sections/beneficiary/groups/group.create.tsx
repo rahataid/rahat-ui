@@ -15,16 +15,21 @@ import HeaderWithBack from '../../projects/components/header.with.back';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useCreateBeneficiaryGroup } from '@rahat-ui/query';
 import { toast } from 'react-toastify';
+import { useTranslations } from 'next-intl';
+import { resolveBeneficiaryErrorMessage } from '@rahat-ui/query/utils/i18n/backend-error';
 
 export default function GroupCreateView() {
   const router = useRouter();
   const createBeneficiaryGroup = useCreateBeneficiaryGroup();
+  const t = useTranslations('GLOBAL');
+  const tb = useTranslations('BENEFICIARY_GROUP_CREATE');
+  const tRoot = useTranslations();
 
   const FormSchema = z.object({
     name: z
       .string()
-      .min(2, { message: 'Name must be at least 2 characters' })
-      .max(50, { message: 'Name must be 50 characters or less' })
+      .min(2, { message: tb('NAME_MIN_LENGTH') })
+      .max(50, { message: tb('NAME_MAX_LENGTH') })
       .trim(),
   });
 
@@ -44,13 +49,19 @@ export default function GroupCreateView() {
       };
       const result = await createBeneficiaryGroup.mutateAsync(payload);
       if (result) {
-        toast.success('Beneficiary group added successfully!');
+        toast.success(tb('BENEFICIARY_GROUP_ADDED'));
         router.push('/beneficiary?tab=beneficiaryGroups');
       }
     } catch (e: any) {
-      toast.error(
-        e?.response?.data?.message || 'Failed to add beneficiary group!',
+      const rawMessage = e?.response?.data?.message || tb('FAILED_TO_ADD_GROUP');
+      const errorMessage = resolveBeneficiaryErrorMessage(
+        tRoot,
+        e?.response?.data?.code || e?.response?.data?.name,
+        e?.response?.data?.params,
+        ['BENEFICIARY_IMPORT_COMMUNITY_BENEFICIARY', 'COMMUNICATIONS_CAMPAIGNS'],
+        rawMessage,
       );
+      toast.error(errorMessage);
     }
   };
 
@@ -59,8 +70,8 @@ export default function GroupCreateView() {
       <form onSubmit={form.handleSubmit(handleCreateGroup)}>
         <div className="p-4 h-[calc(100vh-115px)]">
           <HeaderWithBack
-            title="Create Group"
-            subtitle="Create a new beneficiary group"
+            title={t('CREATE_GROUP')}
+            subtitle={tb('CREATE_A_NEW_BENEFICIARY_GROUP')}
             path="/beneficiary?tab=beneficiaryGroups"
           />
           <div className="shadow-md p-4 rounded-sm bg-card">
@@ -71,11 +82,11 @@ export default function GroupCreateView() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Group Name</FormLabel>
+                      <FormLabel>{t('GROUP_NAME')}</FormLabel>
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Enter group name"
+                          placeholder={tb('ENTER_GROUP_NAME')}
                           {...field}
                         />
                       </FormControl>
@@ -93,7 +104,7 @@ export default function GroupCreateView() {
             variant="secondary"
             onClick={() => form.reset()}
           >
-            Clear
+            {t('CLEAR')}
           </Button>
           {/* {addGroup.isPending ? (
             <Button disabled>
@@ -102,7 +113,7 @@ export default function GroupCreateView() {
             </Button>
           ) : 
           ( */}
-          <Button className="px-10">Create</Button>
+          <Button className="px-10">{t('CREATE')}</Button>
           {/* )} */}
         </div>
       </form>

@@ -7,9 +7,14 @@ import FundManagementForm from './components/fund.management.form';
 import { FUND_MANAGEMENT_TABS } from './consts/conts';
 import type { PayoutFormData } from './components/assign.payout.form';
 import { useFundAssignmentStore } from '@rahat-ui/query';
+import { useTranslations } from 'next-intl';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 
 export default function AssignFundsView() {
   // Router goes here
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('AA_PROJECT_WITH_GNOSIS');
+  const formatDigits = useLabelDigits();
   const id = useParams().id;
   const router = useRouter();
 
@@ -55,7 +60,7 @@ export default function AssignFundsView() {
           className="flex items-center gap-0 text-muted-foreground hover:text-foreground transition-colors"
         >
           <ChevronLeft className="h-5 w-5" />
-          <p className="ml-0 mb-0">Back</p>
+          <p className="ml-0 mb-0">{t('BACK')}</p>
         </button>
       </div>
       <nav className="flex items-start w-full mb-2 px-4">
@@ -102,7 +107,7 @@ export default function AssignFundsView() {
                       : 'text-muted-foreground'
                   }`}
                 >
-                  Step {index + 1}
+                  {tg('STEP', { index: formatDigits(index + 1) })}
                 </span>
                 <span
                   className={`text-md mt-0.5 text-center transition-colors ${
@@ -113,7 +118,7 @@ export default function AssignFundsView() {
                       : 'text-muted-foreground'
                   }`}
                 >
-                  {tab.title}
+                  {t(tab.titleKey)}
                 </span>
               </div>
             </div>

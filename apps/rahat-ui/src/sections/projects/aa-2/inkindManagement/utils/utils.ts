@@ -39,34 +39,34 @@ export function hasInkindData(summaryData: any) {
 }
 export const MOVEMENT_CONFIG: Record<
   string,
-  { label: string; color: string; bgColor: string; Icon: React.ElementType }
+  { labelKey: string; color: string; bgColor: string; Icon: React.ElementType }
 > = {
   ADD: {
-    label: 'Inkind Added',
+    labelKey: 'INKIND_ADDED',
     color: 'text-green-600',
     bgColor: 'bg-green-100',
     Icon: ArrowUp,
   },
   REMOVE: {
-    label: 'Inkind Removed',
+    labelKey: 'INKIND_REMOVED',
     color: 'text-red-600',
     bgColor: 'bg-red-100',
     Icon: ArrowDown,
   },
   LOCK: {
-    label: 'Assigned to group',
+    labelKey: 'ASSIGNED_TO_GROUP',
     color: 'text-yellow-600',
     bgColor: 'bg-yellow-100',
     Icon: Archive,
   },
   UNLOCK: {
-    label: 'Inkind Unlocked',
+    labelKey: 'INKIND_UNLOCKED',
     color: 'text-blue-600',
     bgColor: 'bg-blue-100',
     Icon: ArchiveRestore,
   },
   REDEEM: {
-    label: 'Distributed',
+    labelKey: 'DISTRIBUTED',
     color: 'text-purple-600',
     bgColor: 'bg-purple-100',
     Icon: ShoppingBag,

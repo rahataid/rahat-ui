@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,7 +11,7 @@ import { Form } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { HeaderWithBack } from 'apps/rahat-ui/src/common';
 import { useCreateGroupCashTransfer, useValidateBankAccount } from '@rahat-ui/query';
-import { GctGroupSchema, GctGroupValues, applyDuplicateErrors } from './types/gct.schemas';
+import { buildGctGroupSchema, GctGroupValues, applyDuplicateErrors } from './types/gct.schemas';
 import { BasicInfoSection, BankDetailsSection } from './components/gct.form-sections';
 
 const DEFAULT_VALUES: GctGroupValues = {
@@ -29,6 +30,8 @@ const DEFAULT_VALUES: GctGroupValues = {
 };
 
 export default function AddGct() {
+  const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
+  const tGlobal = useTranslations('GLOBAL');
   const { id } = useParams();
   const router = useRouter();
   const projectUUID = id as UUID;
@@ -40,6 +43,7 @@ export default function AddGct() {
   const createGct = useCreateGroupCashTransfer(projectUUID);
   const validateBank = useValidateBankAccount(projectUUID);
 
+  const GctGroupSchema = buildGctGroupSchema(t);
   const form = useForm<GctGroupValues>({
     resolver: zodResolver(GctGroupSchema),
     defaultValues: DEFAULT_VALUES,
@@ -90,7 +94,7 @@ export default function AddGct() {
     } catch (error: any) {
       const msg: string = error?.response?.data?.message || error?.message || '';
       applyDuplicateErrors(msg, (field, err) =>
-        form.setError(field as keyof GctGroupValues, err),
+        form.setError(field as keyof GctGroupValues, err), t,
       );
     }
   };
@@ -100,8 +104,8 @@ export default function AddGct() {
   return (
     <div className="p-4">
       <HeaderWithBack
-        title="Create GCT Group"
-        subtitle="Fill the form below to create new Group for Group Cash Transfer"
+        title={t('CREATE_GCT_GROUP')}
+        subtitle={t('FILL_THE_FORM_BELOW_TO_CREATE')}
         path={`/projects/aa/${id}/group-cash-transfer`}
       />
 
@@ -122,7 +126,7 @@ export default function AddGct() {
               onClick={() => { form.reset(DEFAULT_VALUES); setClearKey((k) => k + 1); }}
               disabled={isPending}
             >
-              Clear
+              {t('CLEAR')}
             </Button>
             <Button
               type="submit"
@@ -132,15 +136,15 @@ export default function AddGct() {
               {validating ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Validating bank account...
+                  {t('VALIDATING_BANK_ACCOUNT')}
                 </>
               ) : createGct.isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating...
+                  {t('CREATING')}
                 </>
               ) : (
-                'Create'
+                tGlobal('CREATE')
               )}
             </Button>
           </div>

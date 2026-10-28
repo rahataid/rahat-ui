@@ -1,51 +1,64 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+import { useParams, useSearchParams } from 'next/navigation';
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import AASettingsView from './settings.view';
 import AACategoriesView from './categories/categories.view';
 import AAProjectPhasesView from './aa.phases';
-import { useSearchParams } from 'next/navigation';
+import ProjectHealthView from './project-health/project-health.view';
+import BeneficiaryQrConfigView from './beneficiary-qr/beneficiary-qr.view';
 
 export default function AAProjectSettingsView() {
+  const t = useTranslations('AA_PROJECT');
+  const params = useParams();
   const searchParams = useSearchParams();
-  const tab = searchParams.get('tab') || 'settings';
+  const tab = searchParams.get('tab') || 'categories';
 
   return (
     <div className="p-4">
-      <Tabs defaultValue={tab || 'settings'}>
-        <TabsList className="border bg-secondary rounded">
-          <TabsTrigger
-            className="w-full data-[state=active]:bg-white"
-            value="settings"
-          >
-            Settings
-          </TabsTrigger>
+      <Tabs defaultValue={tab || 'categories'}>
+        <TabsList className="border bg-secondary rounded mb-4">
           <TabsTrigger
             className="w-full data-[state=active]:bg-white"
             value="categories"
           >
-            Categories
+            {t('CATEGORIES')}
           </TabsTrigger>
           <TabsTrigger
             className="w-full data-[state=active]:bg-white"
             value="phases"
           >
-            Phases
+            {t('PHASES')}
+          </TabsTrigger>
+          <TabsTrigger
+            className="w-full data-[state=active]:bg-white"
+            value="health"
+          >
+            {t('HEALTH')}
+          </TabsTrigger>
+          <TabsTrigger
+            className="w-full data-[state=active]:bg-white"
+            value="beneficiaryQr"
+          >
+            {t('BENEFICIARY_QR')}
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="settings">
-          <AASettingsView />
-        </TabsContent>
         <TabsContent value="categories">
           <AACategoriesView />
         </TabsContent>
         <TabsContent value="phases">
           <AAProjectPhasesView />
+        </TabsContent>
+        <TabsContent value="health">
+          <ProjectHealthView />
+        </TabsContent>
+        <TabsContent value="beneficiaryQr">
+          <BeneficiaryQrConfigView />
         </TabsContent>
       </Tabs>
     </div>

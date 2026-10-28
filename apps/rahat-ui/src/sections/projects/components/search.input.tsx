@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Search } from 'lucide-react';
 import { cn } from '@rahat-ui/shadcn/src';
+import { useTranslations } from 'next-intl';
 
 type IProps = {
   name: string;
@@ -20,6 +21,7 @@ export default function SearchInput({
   isDisabled = false,
   value,
 }: IProps) {
+  const t = useTranslations('GLOBAL');
   return (
     <div className={cn('relative', className)}>
       <Search
@@ -29,7 +31,7 @@ export default function SearchInput({
       />
       <Input
         name={name}
-        placeholder={`Search ${name}...`}
+        placeholder={t('SEARCH_PLACEHOLDER', { name })}
         className="pl-8"
         value={value}
         onChange={onSearch}

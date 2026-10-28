@@ -1,13 +1,17 @@
 'use client';
 
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
+import ProjectPermissionGuard from 'apps/rahat-ui/src/guards/project-permission-guard';
 import AddInkindView from 'apps/rahat-ui/src/sections/projects/aa-2/inkindManagement/add.inkind';
 
 const AddInkindPage = () => {
   return (
-    <RoleAuth roles={[AARoles.ADMIN]}>
+    <ProjectPermissionGuard action={ACTIONS.CREATE} subject={SUBJECTS.INKIND}>
       <AddInkindView />
-    </RoleAuth>
+    </ProjectPermissionGuard>
   );
 };
 

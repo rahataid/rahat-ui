@@ -1,5 +1,7 @@
 // components
 
+import { ApexOptions } from 'apexcharts';
+import merge from 'lodash/merge';
 import styled from '@emotion/styled';
 import Chart from '../chart';
 import useChart from '../use-chart';
@@ -15,6 +17,7 @@ type Props = {
   showLegend?: boolean;
   colors?: string[];
   showDonutLabel?: boolean;
+  options?: ApexOptions;
 };
 
 export default function ChartDonut({
@@ -26,8 +29,9 @@ export default function ChartDonut({
   showLegend = true,
   colors = ['#00b67a', '#8BC34A', '#FFA726', '#007bb6', '#7a00b6'],
   showDonutLabel = false,
+  options,
 }: Props) {
-  const chartOptions = useChart({
+  const baseOptions = useChart({
     colors,
     labels: labels,
     stroke: {
@@ -55,6 +59,8 @@ export default function ChartDonut({
       },
     },
   });
+
+  const chartOptions = merge(baseOptions, options);
 
   return (
     <Chart

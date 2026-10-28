@@ -31,20 +31,26 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@rahat-ui/shadcn/src/components/ui/select';
+} from '@rahat-ui/shadcn/components/select';
 import { UUID } from 'crypto';
 import Image from 'next/image';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import TooltipWrapper from '../../components/tooltip.wrapper';
-import SelectComponent from '../projects/el-kenya/select.component';
 import { Project } from '@rahataid/sdk/project/project.types';
+import { useTranslations } from 'next-intl';
+import { getColumnLabel } from 'apps/rahat-ui/src/utils/getColumnLabel';
+import {
+  VendorFilterTags,
+  VendorProjectFilter,
+  VendorStatusFilter,
+} from './vendors.table.filters';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 
 export type IVendor = {
   id: string;
@@ -53,6 +59,10 @@ export type IVendor = {
   status: 'pending' | 'processing' | 'success' | 'failed';
   email: string;
   walletAddress: `0x${string}`;
+  phone: string;
+  gender: 'MALE' | 'FEMALE' | 'UNKNOWN';
+  projectArea?: string;
+  registeredApps?: string[];
 };
 
 type ProjectModalType = {
@@ -60,6 +70,9 @@ type ProjectModalType = {
   onToggle: () => void;
 };
 
+type ColumnMeta = {
+  className?: string;
+};
 type IProps = {
   table: Table<IVendor>;
   selectedProject: UUID | undefined;
@@ -67,6 +80,7 @@ type IProps = {
   handleAssignProject: VoidFunction;
   projectModal: ProjectModalType;
   selectedRow: IVendor | null;
+  total: number;
 };
 
 export default function VendorsTable({
@@ -76,7 +90,10 @@ export default function VendorsTable({
   handleAssignProject,
   projectModal,
   selectedRow,
+  total,
 }: IProps) {
+  const t = useTranslations('VENDORS_LIST');
+  const g = useTranslations('GLOBAL');
   const projectList = useProjectList({ page: 1, perPage: 1000 });
 
   const handleProjectChange = (d: UUID) => setSelectedProject(d);
@@ -87,71 +104,92 @@ export default function VendorsTable({
   const projectFilter =
     (table.getColumn('projectName')?.getFilterValue() as string) || '';
   const projectNames =
-    projectList?.data?.data?.map((project: Project) => project.name) ?? [];
+    projectList?.data?.data
+      ?.map((project: Project) => project.name)
+      .filter((name): name is string => Boolean(name)) ?? [];
+  const activeFilters = [
+    {
+      key: 'name',
+      label: g('NAME'),
+      value: vendorNameFilter,
+      clear: () => table.getColumn('name')?.setFilterValue(''),
+    },
+    {
+      key: 'status',
+      label: g('STATUS'),
+      value:
+        statusFilter === 'Assigned'
+          ? g('ASSIGNED')
+          : statusFilter === 'Pending'
+          ? g('PENDING')
+          : statusFilter,
+      clear: () => table.getColumn('status')?.setFilterValue(''),
+    },
+    {
+      key: 'projectName',
+      label: g('PROJECT_NAME'),
+      value: projectFilter,
+      clear: () => table.getColumn('projectName')?.setFilterValue(''),
+    },
+  ].filter((filter) => filter.value);
 
   return (
     <div className="border rounded shadow p-3">
       <div className="flex items-center mb-2 space-x-2">
         <Input
-          placeholder="Search Vendors"
+          className="w-full"
+          name={t('VENDORS')}
+          placeholder={t('SEARCH_VENDORS_BY_NAME')}
           value={vendorNameFilter}
           onChange={(event) =>
             table.getColumn('name')?.setFilterValue(event.target.value)
           }
-          className="rounded w-full"
+        />
+        {/* Status Filter Section */}
+        <VendorStatusFilter
+          onChange={(value) => table.getColumn('status')?.setFilterValue(value)}
+        />
+        {/* Project Filter Section */}
+        <VendorProjectFilter
+          projectNames={projectNames}
+          onChange={(value) =>
+            table.getColumn('projectName')?.setFilterValue(value)
+          }
         />
 
-        <SelectComponent
-          onChange={(event) => {
-            const nextStatusFilter: string =
-              !event || event === 'All' ? '' : event;
-            table.getColumn('status')?.setFilterValue(nextStatusFilter);
-          }}
-          name="Status"
-          options={['All', 'Assigned', 'Pending']}
-          value={statusFilter || 'All'}
-        />
-
-        <SelectComponent
-          onChange={(event) => {
-            const nextProjectFilter: string =
-              !event || event === 'All' ? '' : event;
-            table.getColumn('projectName')?.setFilterValue(nextProjectFilter);
-          }}
-          name="Project Name"
-          options={['All', ...projectNames]}
-          value={projectFilter || 'All'}
-        />
+        {/* Column Hide and Reveal */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
+            <Button variant="outline">
               <Settings2 className="mr-2 h-4 w-5" />
-              View
+              {g('VIEW')}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
+            <DropdownMenuLabel>{g('TOGGLE_COLUMNS')}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {table
               .getAllColumns()
               .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
+              .map((column) => (
+                <DropdownMenuCheckboxItem
+                  key={column.id}
+                  className="capitalize"
+                  checked={column.getIsVisible()}
+                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                >
+                  {getColumnLabel(column)}
+                </DropdownMenuCheckboxItem>
+              ))}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+
+      <VendorFilterTags
+        filters={activeFilters}
+        total={total}
+        onClearAll={() => table.resetColumnFilters()}
+      />
       <div>
         {table.getRowModel().rows?.length ? (
           <>
@@ -162,7 +200,16 @@ export default function VendorsTable({
                     <TableRow key={headerGroup.id}>
                       {headerGroup.headers.map((header) => {
                         return (
-                          <TableHead key={header.id}>
+                          <TableHead
+                            key={header.id}
+                            className={
+                              (
+                                header.column.columnDef.meta as
+                                  | ColumnMeta
+                                  | undefined
+                              )?.className
+                            }
+                          >
                             {header.isPlaceholder
                               ? null
                               : flexRender(
@@ -182,7 +229,16 @@ export default function VendorsTable({
                       data-state={row.getIsSelected() && 'selected'}
                     >
                       {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
+                        <TableCell
+                          key={cell.id}
+                          className={
+                            (
+                              cell.column.columnDef.meta as
+                                | ColumnMeta
+                                | undefined
+                            )?.className
+                          }
+                        >
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext(),
@@ -199,30 +255,29 @@ export default function VendorsTable({
           <div className="w-full h-[calc(100vh-290px)]">
             <div className="flex flex-col items-center justify-center">
               <Image src="/noData.png" height={250} width={250} alt="no data" />
-              <p className="text-medium text-base mb-1">No Data Available</p>
+              <p className="text-medium text-base mb-1">
+                {g('NO_DATA_AVAILABLE')}
+              </p>
               <p className="text-sm mb-4 text-gray-500">
-                There are no vendors to display at the moment
+                {t('THERE_ARE_NO_VENDORS_TO_DISPLAY')}
               </p>
             </div>
           </div>
         )}
       </div>
-
       <Dialog open={projectModal.value} onOpenChange={projectModal.onToggle}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Assign Project</DialogTitle>
+            <DialogTitle>{g('ASSIGN_PROJECT')}</DialogTitle>
             <DialogDescription>
-              {!selectedProject && (
-                <p>Select a project to assign the selected vendor</p>
-              )}
+              {!selectedProject && <p>{t('SELECT_A_PROJECT_TO_ASSIGN_THE')}</p>}
             </DialogDescription>
           </DialogHeader>
           <div>
-            <Label>Project</Label>
+            <Label>{t('PROJECT')}</Label>
             <Select onValueChange={handleProjectChange}>
               <SelectTrigger className="mt-2">
-                <SelectValue placeholder="Select Project Name" />
+                <SelectValue placeholder={t('SELECT_PROJECT_NAME')} />
               </SelectTrigger>
               <SelectContent>
                 {projectList.data?.data.length ? (
@@ -240,7 +295,7 @@ export default function VendorsTable({
                     return (
                       <TooltipWrapper
                         key={project.id}
-                        tip="Project Already Assigned"
+                        tip={t('PROJECT_ALREADY_ASSIGNED')}
                         disable={!isAssigned}
                       >
                         <SelectItem
@@ -254,7 +309,7 @@ export default function VendorsTable({
                     );
                   })
                 ) : (
-                  <p className="text-xs">No project found</p>
+                  <p className="text-xs">{t('NO_PROJECT_FOUND')}</p>
                 )}
               </SelectContent>
             </Select>
@@ -262,7 +317,7 @@ export default function VendorsTable({
           <DialogFooter>
             <DialogClose asChild>
               <Button className="w-full" type="button" variant="secondary">
-                Close
+                {g('CLOSE')}
               </Button>
             </DialogClose>
             <DialogClose asChild>
@@ -271,7 +326,7 @@ export default function VendorsTable({
                 onClick={handleAssignProject}
                 type="button"
               >
-                Confirm
+                {g('CONFIRM')}
               </Button>
             </DialogClose>
           </DialogFooter>

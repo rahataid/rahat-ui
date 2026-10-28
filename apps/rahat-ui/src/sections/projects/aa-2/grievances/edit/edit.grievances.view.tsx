@@ -42,58 +42,88 @@ import { Tag, TagInput } from 'emblor';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslations } from 'next-intl';
 import { z } from 'zod';
-
-const emailOrPhone = z.string().refine(
-  (value) => {
-    // Check if it's a valid email or a valid phone number (minimum 10 digits)
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const phoneRegex = /^[0-9]{10,15}$/; // Assuming phone numbers are 10-15 digits
-    return emailRegex.test(value) || phoneRegex.test(value);
-  },
-  {
-    message: 'Please enter a valid email or phone number',
-  },
-);
-
-const grievanceFormSchema = z.object({
-  reportedBy: z
-    .string()
-    .min(1, { message: 'Reporter name is required' })
-    .max(100, { message: 'Reporter name must be less than 100 characters' }),
-
-  reporterContact: emailOrPhone,
-
-  title: z
-    .string()
-    .min(5, { message: 'Title must be at least 5 characters' })
-    .max(100, { message: 'Title must be less than 100 characters' }),
-
-  type: z.nativeEnum(GrievanceType, {
-    required_error: 'Please select a grievance type',
-  }),
-
-  description: z
-    .string()
-    .min(10, { message: 'Description must be at least 10 characters' })
-    .max(1000, { message: 'Description must be less than 1000 characters' }),
-
-  status: z
-    .nativeEnum(GrievanceStatus, {
-      required_error: 'Status is required',
-    })
-    .default(GrievanceStatus.NEW),
-
-  priority: z.nativeEnum(GrievancePriority, {
-    required_error: 'Please select a grievance priority',
-  }),
-
-  tags: z.array(z.object({ id: z.string(), text: z.string() })).optional(),
-});
-
-type GrievanceFormValues = z.infer<typeof grievanceFormSchema>;
+import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 
 export default function EditGrievance() {
+  const t = useTranslations('AA_PROJECT');
+
+  // Normalizes Devanagari numerals (०-९) to ASCII before the email/phone
+  // check runs, so a phone number typed in Nepali digits validates and
+  // submits correctly instead of failing the ASCII-only phoneRegex below.
+  const emailOrPhone = z.preprocess(
+    (raw) => {
+      if (typeof raw !== 'string') return raw;
+      const asciiValue = toAsciiDigits(raw);
+      // Strip spaces/hyphens used as visual separators in a typed phone
+      // number (e.g. "974 6473456" -> "9746473456"), but leave email
+      // addresses untouched since hyphens are valid there.
+      return asciiValue.includes('@')
+        ? asciiValue
+        : asciiValue.replace(/[\s-]/g, '');
+    },
+    z.string().refine(
+      (value) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const phoneRegex = /^[0-9]{10,15}$/;
+        return emailRegex.test(value) || phoneRegex.test(value);
+      },
+      {
+        message: t('PLEASE_ENTER_VALID_EMAIL_OR_PHONE'),
+      },
+    ),
+  );
+
+  const grievanceFormSchema = z.object({
+    reportedBy: z
+      .string()
+      .min(1, { message: t('REPORTER_NAME_IS_REQUIRED') })
+      .max(100, { message: t('REPORTER_NAME_MAX_100') }),
+
+    reporterContact: emailOrPhone,
+
+    title: z
+      .string()
+      .min(5, { message: t('TITLE_MUST_BE_5_CHARACTERS') })
+      .max(100, { message: t('TITLE_MAX_100_CHARACTERS') }),
+
+    type: z.nativeEnum(GrievanceType, {
+      required_error: t('PLEASE_SELECT_GRIEVANCE_TYPE'),
+    }),
+
+    description: z
+      .string()
+      .min(10, { message: t('DESCRIPTION_MUST_BE_10_CHARACTERS') })
+      .max(1000, { message: t('DESCRIPTION_MAX_1000_CHARACTERS') }),
+
+    status: z
+      .nativeEnum(GrievanceStatus, {
+        required_error: t('STATUS_IS_REQUIRED'),
+      })
+      .default(GrievanceStatus.NEW),
+
+    priority: z.nativeEnum(GrievancePriority, {
+      required_error: t('PLEASE_SELECT_GRIEVANCE_PRIORITY'),
+    }),
+
+    tags: z.array(z.object({ id: z.string(), text: z.string() })).optional(),
+  });
+
+  type GrievanceFormValues = z.infer<typeof grievanceFormSchema>;
+  const labelMap: Record<string, string> = {
+    'Technical': t('TECHNICAL'),
+    'Non-Technical': t('NON_TECHNICAL'),
+    'Other': t('OTHER'),
+    'New': t('NEW'),
+    'Under Review': t('UNDER_REVIEW'),
+    'Resolved': t('RESOLVED'),
+    'Closed': t('CLOSED'),
+    'Low': t('LOW'),
+    'Medium': t('MEDIUM'),
+    'High': t('HIGH'),
+  };
   const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
@@ -114,6 +144,8 @@ export default function EditGrievance() {
     projectUUID: projectID,
     grievanceUUID: grievanceID,
   });
+
+  const formatLabel = useLabelDigits();
 
   // Initialize form
   const form = useForm<GrievanceFormValues>({
@@ -280,8 +312,8 @@ export default function EditGrievance() {
               <div className="mt-4 flex justify-between items-center">
                 <div>
                   <Heading
-                    title={`Edit Grievance`}
-                    description="Fill the form below to edit grievance"
+                    title={t('EDIT_GRIEVANCE')}
+                    description={t('FILL_THE_FORM_BELOW_TO_EDIT_GRIEVANCE')}
                   />
                 </div>
 
@@ -299,11 +331,11 @@ export default function EditGrievance() {
                     render={({ field }) => {
                       return (
                         <FormItem>
-                          <FormLabel>Grievance Title *</FormLabel>
+                          <FormLabel>{t('GRIEVANCE_TITLE')} *</FormLabel>
                           <FormControl>
                             <Input
                               type="text"
-                              placeholder="Write grievance title"
+                              placeholder={t('WRITE_GRIEVANCE_TITLE')}
                               {...field}
                             />
                           </FormControl>
@@ -319,10 +351,10 @@ export default function EditGrievance() {
                     render={({ field }) => {
                       return (
                         <FormItem>
-                          <FormLabel>Description *</FormLabel>
+                          <FormLabel>{t('DESCRIPTION')} *</FormLabel>
                           <FormControl>
                             <Textarea
-                              placeholder="Provide the detailed information about the grievance"
+                              placeholder={t('PROVIDE_DETAILED_INFORMATION')}
                               {...field}
                             />
                           </FormControl>
@@ -339,7 +371,7 @@ export default function EditGrievance() {
                       name="type"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Grievance Type *</FormLabel>
+                          <FormLabel>{t('GRIEVANCE_TYPE')} *</FormLabel>
                           <Select
                             onValueChange={(value: string) =>
                               field.onChange(value as GrievanceType)
@@ -349,7 +381,7 @@ export default function EditGrievance() {
                           >
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder="Select Grievance Type" />
+                                <SelectValue placeholder={t('SELECT_GRIEVANCE_TYPE')} />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
@@ -358,7 +390,7 @@ export default function EditGrievance() {
                                   key={item.value}
                                   value={item.value as GrievanceType}
                                 >
-                                  {item.label}
+                                  {labelMap[item.label] || item.label}
                                 </SelectItem>
                               ))}
                             </SelectContent>
@@ -373,7 +405,7 @@ export default function EditGrievance() {
                       name="status"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Status *</FormLabel>
+                          <FormLabel>{t('STATUS')} *</FormLabel>
                           <Select
                             onValueChange={(value: string) =>
                               field.onChange(value as GrievanceStatus)
@@ -383,7 +415,7 @@ export default function EditGrievance() {
                           >
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder="Select Grievance Status" />
+                                <SelectValue placeholder={t('SELECT_GRIEVANCE_STATUS')} />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
@@ -392,7 +424,7 @@ export default function EditGrievance() {
                                   key={item.value}
                                   value={item.value as GrievanceStatus}
                                 >
-                                  {item.label}
+                                  {labelMap[item.label] || item.label}
                                 </SelectItem>
                               ))}
                             </SelectContent>
@@ -408,7 +440,7 @@ export default function EditGrievance() {
                       name="priority"
                       render={({ field }) => (
                         <FormItem className="space-y-3">
-                          <FormLabel>Priority *</FormLabel>
+                          <FormLabel>{t('PRIORITY')} *</FormLabel>
                           <FormControl>
                             <RadioGroup
                               onValueChange={(value: string) =>
@@ -428,7 +460,7 @@ export default function EditGrievance() {
                                     />
                                   </FormControl>
                                   <FormLabel className="font-normal">
-                                    {item.label}
+                                    {labelMap[item.label] || item.label}
                                   </FormLabel>
                                 </FormItem>
                               ))}
@@ -447,15 +479,15 @@ export default function EditGrievance() {
                       render={({ field }) => {
                         return (
                           <FormItem>
-                            <FormLabel>Reporter Name *</FormLabel>
-                            <FormControl>
-                              <Input
-                                type="text"
-                                placeholder="Enter reporter name"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
+                          <FormLabel>{t('REPORTER_NAME')} *</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="text"
+                              placeholder={t('ENTER_REPORTER_NAME')}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
                           </FormItem>
                         );
                       }}
@@ -465,17 +497,28 @@ export default function EditGrievance() {
                       control={form.control}
                       name="reporterContact"
                       render={({ field }) => {
+                        const isEmail =
+                          typeof field.value === 'string' &&
+                          field.value.includes('@');
                         return (
                           <FormItem>
-                            <FormLabel>Contact Information *</FormLabel>
-                            <FormControl>
-                              <Input
-                                type="text"
-                                placeholder="Write reporter's contact information"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
+                          <FormLabel>{t('CONTACT_INFORMATION')} *</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="text"
+                              placeholder={t('WRITE_REPORTER_CONTACT')}
+                              {...field}
+                              value={
+                                isEmail
+                                  ? field.value
+                                  : formatLabel(field.value)
+                              }
+                              onChange={(e) =>
+                                field.onChange(toAsciiDigits(e.target.value))
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
                           </FormItem>
                         );
                       }}
@@ -488,7 +531,7 @@ export default function EditGrievance() {
                     render={({ field }) => {
                       return (
                         <FormItem>
-                          <Label>Tags</Label>
+                          <Label>{t('TAGS')}</Label>
                           <FormControl>
                             <>
                               <TagInput
@@ -501,9 +544,7 @@ export default function EditGrievance() {
                                     newTags as [Tag, ...Tag[]],
                                   );
                                 }}
-                                placeholder={
-                                  'Enter Tag and press ENTER to continue'
-                                }
+                                placeholder={t('ENTER_TAG_AND_PRESS_ENTER')}
                                 className="min-h-[23px]"
                                 styleClasses={{
                                   inlineTagsContainer:
@@ -529,7 +570,7 @@ export default function EditGrievance() {
                               />
                               {unsavedTag && (
                                 <span className="text-sm text-red-400 ml-1">
-                                  Press Enter to add.
+                                  {t('PRESS_ENTER_TO_ADD')}
                                 </span>
                               )}
                             </>
@@ -549,14 +590,16 @@ export default function EditGrievance() {
                   className="w-36"
                   onClick={handleResetForm}
                 >
-                  Reset
+                  {t('RESET')}
                 </Button>
                 <Button
                   type="submit"
                   disabled={updateGrievance.isPending}
                   className="w-36"
                 >
-                  {updateGrievance.isPending ? 'Saving...' : 'Save Changes'}
+                  {updateGrievance.isPending
+                    ? t('SAVING')
+                    : t('UPDATE_GRIEVANCE_BUTTON')}
                 </Button>
               </div>
             </ScrollArea>

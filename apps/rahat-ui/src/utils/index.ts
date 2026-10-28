@@ -3,6 +3,7 @@
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import { format, isValid, parse } from 'date-fns';
+import { localizeNepaliParts } from './i18n/date';
 
 export function truncateEthereumAddress(address: string) {
   if (address.length <= 42) {
@@ -57,8 +58,10 @@ export function getDayOfWeek(dbDate: string) {
 }
 
 export const humanizeString = (inputString: string) => {
-  // Replace underscore with space
-  inputString = inputString?.replace(/_/g, ' ');
+  // Replace underscore with space, and split camelCase words apart
+  inputString = inputString
+    ?.replace(/_/g, ' ')
+    ?.replace(/([a-z0-9])([A-Z])/g, '$1 $2');
 
   const words = inputString?.toLowerCase().split(' ');
   // Capitalize the first letter of each word
@@ -135,38 +138,72 @@ export function capitalizeFirstLetter(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 }
 
-export const intlFormatDate = (dateStr?: string) => {
+export const intlFormatDate = (dateStr?: string, locale: string = 'en') => {
   if (!dateStr) return '';
   const date = new Date(dateStr);
   if (isNaN(date.getTime())) return '-';
-  return new Intl.DateTimeFormat('en-US', {
+  const options: Intl.DateTimeFormatOptions = {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
     hour12: true,
     hour: 'numeric',
     minute: 'numeric',
-  }).format(date);
+    second: 'numeric',
+  };
+  const neOptions =
+    locale === 'ne' ? { ...options, numberingSystem: 'deva' } : options;
+  const formatter = new Intl.DateTimeFormat(
+    locale === 'ne' ? 'ne-NP' : locale,
+    neOptions,
+  );
+  if (locale === 'ne') {
+    return localizeNepaliParts(date, neOptions, formatter.formatToParts(date));
+  }
+  return formatter.format(date);
 };
 
-export const intlDateFormat = (dateStr?: string) => {
+export const intlDateFormat = (dateStr?: string, locale: string = 'en') => {
   if (!dateStr) return '';
   const date = new Date(dateStr);
   if (isNaN(date.getTime())) return '-';
 
-  const day = new Intl.DateTimeFormat('en-US', { day: '2-digit' }).format(date);
-  const month = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(
-    date,
-  );
-  const year = new Intl.DateTimeFormat('en-US', { year: 'numeric' }).format(
-    date,
-  );
-  const time = new Intl.DateTimeFormat('en-US', {
+  const localeTag = locale === 'ne' ? 'ne-NP' : locale;
+  const numberingSystem =
+    locale === 'ne' ? ({ numberingSystem: 'deva' } as const) : {};
+
+  const dayOptions: Intl.DateTimeFormatOptions = {
+    day: '2-digit',
+    ...numberingSystem,
+  };
+  const monthOptions: Intl.DateTimeFormatOptions = {
+    month: 'long',
+    ...numberingSystem,
+  };
+  const yearOptions: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    ...numberingSystem,
+  };
+  const timeOptions: Intl.DateTimeFormatOptions = {
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
     hour12: true,
-  }).format(date);
+    ...numberingSystem,
+  };
+
+  const day = new Intl.DateTimeFormat(localeTag, dayOptions).format(date);
+  const monthFormatter = new Intl.DateTimeFormat(localeTag, monthOptions);
+  const month =
+    locale === 'ne'
+      ? localizeNepaliParts(
+          date,
+          monthOptions,
+          monthFormatter.formatToParts(date),
+        )
+      : monthFormatter.format(date);
+  const year = new Intl.DateTimeFormat(localeTag, yearOptions).format(date);
+  const time = new Intl.DateTimeFormat(localeTag, timeOptions).format(date);
 
   return `${day} ${month}, ${year}, ${time}`;
 };
@@ -209,7 +246,8 @@ export type ChainSettings =
     }
   | {
       type: 'stellar';
-      network: 'mainnet' | 'testnet';
+      network?: 'mainnet' | 'testnet';
+      name?: string;
     };
 
 export const getExplorerUrl = ({
@@ -221,7 +259,8 @@ export const getExplorerUrl = ({
   target: ExplorerTarget;
   value?: string;
 }): string | null => {
-  if (!chainSettings || !value) return null;
+  // Only strings are valid explorer inputs; reject non-strings (e.g. numeric
+  if (!chainSettings || typeof value !== 'string' || !value) return null;
 
   if (chainSettings.type === 'evm') {
     const evmPathMap: Record<ExplorerTarget, string> = {
@@ -230,7 +269,6 @@ export const getExplorerUrl = ({
       tx: 'tx',
     };
 
-    // Remove trailing slash and any existing path segments (like /tx/, /address/, etc.)
     let baseUrl = chainSettings.explorerurl.replace(/\/$/, '');
     baseUrl = baseUrl.replace(/\/(tx|token|address)$/, '');
 
@@ -238,7 +276,10 @@ export const getExplorerUrl = ({
   }
 
   if (chainSettings.type === 'stellar') {
-    const network = chainSettings.network === 'mainnet' ? 'public' : 'testnet';
+    const network =
+      (chainSettings.network ?? chainSettings.name) === 'mainnet'
+        ? 'public'
+        : 'testnet';
 
     const stellarPathMap: Record<ExplorerTarget, string> = {
       asset: 'asset',
@@ -246,7 +287,10 @@ export const getExplorerUrl = ({
       tx: 'tx',
     };
 
-    return `https://stellar.expert/explorer/${network}/${stellarPathMap[target]}/${value}`;
+    // Horizon tx ids may come as "<txHash>:<opId>"; explorer only wants the hash
+    const id = target === 'tx' ? value.split(':')[0] : value;
+
+    return `https://stellar.expert/explorer/${network}/${stellarPathMap[target]}/${id}`;
   }
 
   return null;

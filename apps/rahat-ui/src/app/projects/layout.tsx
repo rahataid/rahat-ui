@@ -11,6 +11,8 @@ import {
   useProjectSafeWalletSettings,
   useProjectSubgraphSettings,
 } from '@rahat-ui/query';
+import { useTranslations } from 'next-intl';
+import { ProjectAbilityProvider } from '../../providers/project-ability-provider';
 
 export default function ProjectLayoutRoot({
   children,
@@ -25,6 +27,7 @@ export default function ProjectLayoutRoot({
 
   const router = useRouter();
 
+  const t = useTranslations('PROJECTS_LIST');
   const uuid = useParams().id as UUID;
   useProjectContractSettings(uuid);
   useProjectSubgraphSettings(uuid);
@@ -52,17 +55,19 @@ export default function ProjectLayoutRoot({
 
   return (
     <GarphQlProvider>
+      <ProjectAbilityProvider>
       <DashboardLayout
         hasDefaultHeader={allowNavPaths.includes(pathName)}
         margin="mt-0"
       >
-        <title>Projects</title>
+        <title>{t('PROJECTS')}</title>
         {!allowedPaths.includes(pathName) ? (
           <>{children}</>
         ) : (
           <ProjectLayout projectType="ALL">{children}</ProjectLayout>
         )}
       </DashboardLayout>
+      </ProjectAbilityProvider>
     </GarphQlProvider>
   );
 }

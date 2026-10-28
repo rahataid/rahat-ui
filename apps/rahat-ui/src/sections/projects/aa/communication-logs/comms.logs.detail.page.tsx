@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import CommsLogsTable from './comms.logs.table';
 import { useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import {
   useGetCommunicationLogs,
   useListSessionLogs,
@@ -21,6 +22,7 @@ import {
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import Loader from 'apps/rahat-ui/src/components/table.loader';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { Player } from 'react-simple-player';
 import { BroadcastStatus } from '@rumsan/connect/src/types';
 import React, { useMemo } from 'react';
@@ -31,6 +33,7 @@ import {
 } from '@tanstack/react-table';
 import useCommsLogsTableColumns from './useCommsLogsTableColumns';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 
 type IHeadCardProps = {
   title: string;
@@ -39,6 +42,8 @@ type IHeadCardProps = {
 };
 
 export default function CommsLogsDetailPage() {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const { id: projectID, commsIdXactivityIdXsessionId } = useParams();
   const [communicationId, activityId, sessionId] = (
     commsIdXactivityIdXsessionId as string
@@ -50,6 +55,7 @@ export default function CommsLogsDetailPage() {
 
   const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
     usePagination();
+  const formatDate = useDateFormat();
 
   const columns = useCommsLogsTableColumns();
 
@@ -103,31 +109,31 @@ export default function CommsLogsDetailPage() {
 
   const headCardFields = [
     {
-      title: 'Total Audience',
+      title: t('TOTAL_AUDIENCE'),
       icon: Hash,
       content: logsMeta?.total || 'N/A',
     },
     {
-      title: 'Triggered At',
+      title: t('TRIGGERED_AT'),
       icon: Timer,
-      content: renderDateTime(logs?.sessionDetails?.createdAt),
+      content: formatDate(logs?.sessionDetails?.createdAt),
     },
     {
-      title: 'Group Name',
+      title: t('GROUP_NAME'),
       icon: UsersRound,
       content: logsGroupName || 'N/A',
     },
     {
-      title: 'Group Type',
+      title: t('GROUP_TYPE'),
       icon: Component,
       content: logs?.communicationDetail?.groupType || 'N/A',
     },
     {
-      title: 'Status',
+      title: t('STATUS'),
       icon: MessageSquareWarning,
       content: (
         <Badge className="bg-orange-100 text-orange-600">
-          {logs?.sessionDetails?.status}
+          {translateValue(tg, logs?.sessionDetails?.status)}
         </Badge>
       ),
     },
@@ -140,16 +146,16 @@ export default function CommsLogsDetailPage() {
   return (
     <div className="p-4 h-[calc(100vh-65px)] bg-secondary">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="font-semibold text-xl">Communication Details</h1>
+        <h1 className="font-semibold text-xl">{t('COMMUNICATION_DETAILS')}</h1>
         <div className="flex gap-2">
           <Button type="button">
             <Download className="mr-2" size={16} strokeWidth={2} />
-            <span className="font-normal">Failed Exports</span>
+            <span className="font-normal">{t('FAILED_EXPORTS')}</span>
           </Button>
           {failedCount > 0 && (
             <Button type="button" onClick={retryFailed}>
               <RefreshCcw className="mr-2" size={16} strokeWidth={2} />
-              <span className="font-normal">Retry Failed</span>
+              <span className="font-normal">{t('RETRY_FAILED')}</span>
             </Button>
           )}
         </div>
@@ -191,7 +197,7 @@ export default function CommsLogsDetailPage() {
               />
             </div>
             <div>
-              <p className="text-sm font-medium">Message</p>
+              <p className="text-sm font-medium">{t('MESSAGE')}</p>
               <p className="text-muted-foreground text-sm">
                 {logs?.sessionDetails?.Transport?.name}
               </p>
@@ -225,16 +231,6 @@ export default function CommsLogsDetailPage() {
       />
     </div>
   );
-}
-
-function renderDateTime(dateTime: string) {
-  if (dateTime) {
-    const d = new Date(dateTime);
-    const localeDate = d.toLocaleDateString();
-    const localeTime = d.toLocaleTimeString();
-    return `${localeDate} ${localeTime}`;
-  }
-  return 'N/A';
 }
 
 function renderMessage(message: any) {

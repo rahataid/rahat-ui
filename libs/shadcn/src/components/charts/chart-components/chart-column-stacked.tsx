@@ -16,6 +16,7 @@ type Props = {
   categories?: string[];
   communityTool?: boolean;
   custom?: boolean;
+  options?: ApexCharts.ApexOptions;
 };
 
 export default function ChartColumnStacked({
@@ -26,6 +27,7 @@ export default function ChartColumnStacked({
   categories = ['Enrolled', 'Referred'],
   communityTool = false,
   custom = false,
+  options = {},
 }: Props) {
   const chartOptions = useChart({
     chart: {
@@ -60,6 +62,7 @@ export default function ChartColumnStacked({
     xaxis: {
       categories,
     },
+    ...options,
   });
   return (
     <div

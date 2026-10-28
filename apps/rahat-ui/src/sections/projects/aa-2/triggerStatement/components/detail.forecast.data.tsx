@@ -1,7 +1,9 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Heading } from 'apps/rahat-ui/src/common';
 import { TriangleAlert } from 'lucide-react';
-import { SOURCE_CONFIG } from '../trigger.statement.schema';
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { getSourceSubTypeLabel } from '../trigger.statement.schema';
 import { toLabel, TriggerStatement } from '../utils';
 
 type IProps = {
@@ -15,6 +17,8 @@ export function ForecastDataSection({
   phase,
   triggerStatement,
 }: IProps) {
+  const t = useTranslations('AA_PROJECT');
+  const formatNum = useNumberFormat();
   const {
     value,
     source: triggerSource,
@@ -22,8 +26,7 @@ export function ForecastDataSection({
     expression,
     sourceSubType,
   } = triggerStatement;
-  const sourceSubTypeLabel =
-    SOURCE_CONFIG[triggerSource as keyof typeof SOURCE_CONFIG]?.sourceSubType;
+  const sourceSubTypeLabel = getSourceSubTypeLabel(triggerSource, t);
   const unit = sourceSubTypeLabel?.match(/\((.*?)\)/)?.[1] || '';
   const formattedSourceSubType = toLabel(sourceSubType);
 
@@ -33,19 +36,19 @@ export function ForecastDataSection({
   ) => {
     switch (triggerSourceValue) {
       case 'prob_humidity':
-        return 'Humidity Level';
+        return t('HUMIDITY_LEVEL');
       case 'temperature_c':
-        return 'Temperature Level';
+        return t('TEMPERATURE_LEVEL');
       case 'rainfall_mm':
-        return 'Rainfall Level';
+        return t('RAINFALL_LEVEL');
       default:
         switch (triggerSourceSubTypeValue) {
           case 'warning_level':
-            return 'Warning Level';
+            return t('WARNING_LEVEL');
           case 'danger_level':
-            return 'Danger Level';
+            return t('DANGER_LEVEL');
           default:
-            return 'Water Level';
+            return t('WATER_LEVEL');
         }
     }
   };
@@ -57,11 +60,11 @@ export function ForecastDataSection({
 
       case 'GFH':
         return triggerSourceSubType === 'warning_discharge'
-          ? 'Warning Discharge'
-          : 'Danger Discharge';
+          ? t('WARNING_DISCHARGE')
+          : t('DANGER_DISCHARGE');
 
       case 'GLOFAS':
-        return 'Flood Probability';
+        return t('FLOOD_PROBABILITY');
 
       default:
         return '';
@@ -71,21 +74,21 @@ export function ForecastDataSection({
   return (
     <div className="p-4 border rounded-sm shadow">
       <Heading
-        title="Forecast Data"
+        title={t('FORECAST_DATA')}
         titleStyle="text-lg/7"
-        description={`Source: ${source} - ${sourceSubTypeLabel}`}
+        description={t('SOURCE_WITH_SUBTYPE', { source, subType: sourceSubTypeLabel ?? '' })}
       />
       {Object.keys(triggerStatement).length ? (
         <div className="p-3 text-center border rounded">
           <p className="font-semibold text-3xl/10 text-primary">
-            {value} {unit || '%'}
+            {formatNum(value)} {unit || '%'}
           </p>
           <p className="font-medium text-sm/6 flex justify-center items-center gap-2">
             <TriangleAlert size={16} strokeWidth={2.5} color="red" />
             {setIconLabel(source, sourceSubType)}
           </p>
           <Badge className="font-normal">
-            ({formattedSourceSubType} {operator} {value} {unit || '%'})
+            ({formattedSourceSubType} {operator} {formatNum(value)} {unit || '%'})
           </Badge>
         </div>
       ) : null}
@@ -95,19 +98,19 @@ export function ForecastDataSection({
             <p className="font-semibold text-3xl/10 text-primary">
               {triggerStatement?.minLeadTimeDays}
             </p>
-            <p className="font-medium text-sm/6">Minimum Lead Time Days</p>
+            <p className="font-medium text-sm/6">{t('MINIMUM_LEAD_TIME_DAYS')}</p>
           </div>
           <div className="p-3 text-center border rounded">
             <p className="font-semibold text-3xl/10 text-primary">
               {triggerStatement?.maxLeadTimeDays}
             </p>
-            <p className="font-medium text-sm/6">Maximum Lead Time Days</p>
+            <p className="font-medium text-sm/6">{t('MAXIMUM_LEAD_TIME_DAYS')}</p>
           </div>
           <div className="p-3 text-center border rounded">
             <p className="font-semibold text-3xl/10 text-primary">
               {triggerStatement?.probability}
             </p>
-            <p className="font-medium text-sm/6">Forecast Probability</p>
+            <p className="font-medium text-sm/6">{t('FORECAST_PROBABILITY')}</p>
           </div>
         </div>
       )}
@@ -119,7 +122,7 @@ export function ForecastDataSection({
           </p>
           <p className="font-medium text-sm/6 flex justify-center items-center gap-2">
             <TriangleAlert size={16} strokeWidth={2.5} color="red" />
-            Danger Level
+            {t('DANGER_LEVEL')}
           </p>
         </div>
       )}
@@ -131,7 +134,7 @@ export function ForecastDataSection({
           </p>
           <p className="font-medium text-sm/6 flex justify-center items-center gap-2">
             <TriangleAlert size={16} strokeWidth={2.5} color="orange" />
-            Warning Level
+            {t('WARNING_LEVEL')}
           </p>
         </div>
       )}
@@ -156,7 +159,7 @@ export function ForecastDataSection({
             <p className="font-semibold text-3xl/10 text-primary">
               {triggerStatement?.forecastStatus}
             </p>
-            <p className="font-medium text-sm/6">Forecast Status</p>
+            <p className="font-medium text-sm/6">{t('FORECAST_STATUS')}</p>
           </div>
         </div>
       )} */}

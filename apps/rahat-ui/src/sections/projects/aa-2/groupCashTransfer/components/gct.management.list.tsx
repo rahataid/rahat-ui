@@ -62,8 +62,12 @@ import {
   GCT_RECORD_STATUSES,
 } from '../types/gct.types';
 import { CIPS_BANKS } from '../types/cips-banks';
+import { useTranslations } from 'next-intl';
+import { useNumberFormat } from '../../../../../utils/i18n/number';
 
 export default function GctManagementList() {
+  const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
+  const tGlobal = useTranslations('GLOBAL');
   const { id } = useParams();
   const projectUUID = id as UUID;
   const router = useRouter();
@@ -90,7 +94,67 @@ export default function GctManagementList() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [downloading, setDownloading] = useState(false);
+  const formatNum = useNumberFormat();
   const q = useProjectAction();
+
+  const statusLabel = (s: string) => {
+    const map: Record<string, string> = {
+      NOT_STARTED: t('NOT_STARTED'),
+      PENDING: tGlobal('PENDING'),
+      STARTED: t('STARTED'),
+      COMPLETED: tGlobal('COMPLETED'),
+      SUCCESS: tGlobal('SUCCESS'),
+      FAILED: tGlobal('FAILED'),
+      REJECTED: t('REJECTED'),
+    };
+    return map[s] ?? s.replace(/_/g, ' ');
+  };
+
+  const buildDownloadRows = (records: GctFundRecord[]) => {
+    return records.map((r) => {
+      const offrampRequest = r.disbursementInfo?.result?.offrampRequest;
+      const paymentDetails = offrampRequest?.paymentDetails;
+      const cipsBatch =
+        r.disbursementInfo?.result?.transaction?.cipsBatchResponse;
+      const cipsTxn =
+        r.disbursementInfo?.result?.transaction?.cipsTxnResponseList?.[0];
+      const agentId = paymentDetails?.creditorAgent;
+
+      const row: Record<string, string | number> = {
+        [t('GCT_RECORD_TITLE')]: r.title ?? '',
+        [t('GROUP_CASH_TRANSFER_NAME')]: r.groupCashTransfer?.name ?? '',
+        [t('BANK_NAME')]:
+          CIPS_BANKS.find((b) => b.bankId === agentId)?.bankName ??
+          agentId ??
+          '',
+        [t('BANK_BRANCH_ID')]: paymentDetails?.creditorBranch ?? '',
+        [t('ACCOUNT_HOLDER_NAME')]: paymentDetails?.creditorName ?? '',
+        [t('BANK_ACCOUNT_NUMBER')]: paymentDetails?.creditorAccount ?? '',
+        [t('ASSIGNED_AMOUNT')]: r.amount ?? '',
+        [t('DISBURSED_AMOUNT')]: paymentDetails?.amount ?? '',
+        [t('NCHL_STATUS')]: cipsBatch?.responseMessage ?? r.status ?? '',
+        [t('DISBURSED_AT')]: r.disbursedAt ?? '',
+        [t('BATCH_ID')]: cipsBatch?.batchId ?? '',
+      };
+
+      if (paymentDetails?.debtorAccount) {
+        row[t('DEBTOR_ACCOUNT')] = paymentDetails.debtorAccount;
+      }
+      if (paymentDetails?.debtorName) {
+        row[t('DEBTOR_NAME')] = paymentDetails.debtorName;
+      }
+      if (offrampRequest?.settlementDate) {
+        row[t('NCHL_SETTLEMENT_DATE')] = offrampRequest.settlementDate;
+      }
+
+      row[t('BATCH_REQUEST_DATE')] = offrampRequest?.createdAt ?? '';
+      row[t('TRANSACTION_HASH')] = offrampRequest?.transactionHash ?? '';
+      row[t('REMARKS')] =
+        r.disbursementInfo?.error ?? cipsTxn?.responseMessage ?? '';
+
+      return row;
+    });
+  };
 
   const handleDownload = async () => {
     setDownloading(true);
@@ -108,36 +172,7 @@ export default function GctManagementList() {
         },
       });
       const records: GctFundRecord[] = result?.data ?? [];
-      const rows = records.map((r) => ({
-        'GCT Record Title': r.title ?? '',
-        Amount: r.amount ?? '',
-        'Group Cash Transfer Name': r.groupCashTransfer?.name ?? '',
-        Status: r.status ?? '',
-        'Payout Processor ID': (r as any).payoutProcessorId ?? '',
-        'Disbursed At': (r as any).disbursedAt ?? '',
-        'Batch Id':
-          (r as any).disbursementInfo?.result?.transaction?.cipsBatchResponse
-            .batchId ?? '',
-        'Bank Account Number':
-          r.disbursementInfo?.result?.offrampRequest?.paymentDetails
-            ?.creditorAccount ?? '',
-
-        'Bank Account Name':
-          r.disbursementInfo?.result?.offrampRequest?.paymentDetails
-            ?.creditorName ?? '',
-
-        'Bank Name': (() => {
-            const agentId = r.disbursementInfo?.result?.offrampRequest?.paymentDetails?.creditorAgent;
-            return CIPS_BANKS.find((b) => b.bankId === agentId)?.bankName ?? agentId ?? '';
-          })(),
-        'Transaction Hash':
-          (r as any).disbursementInfo.result?.offrampRequest?.transactionHash ??
-          '',
-        Remarks:
-          (r as any).disbursementInfo?.error ??
-          (r as any).disbursementInfo?.result?.transaction?.cipsTxnResponseList?.[0]
-            ?.responseMessage ?? '',
-      }));
+      const rows = buildDownloadRows(records);
       const ws = XLSX.utils.json_to_sheet(rows);
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, 'Logs');
@@ -166,20 +201,18 @@ export default function GctManagementList() {
   const rows = useMemo<GctFundRecord[]>(() => data?.data ?? [], [data]);
   const meta = data?.meta ?? data?.response?.meta;
 
-  const filtered = rows;
-
   const columns: ColumnDef<GctFundRecord>[] = useMemo(
     () => [
       {
         id: 'title',
-        header: 'GCT Fund Title',
+        header: t('GCT_FUND_TITLE'),
         cell: ({ row }) => (
           <TruncatedCell text={row.original.title || '—'} maxLength={20} />
         ),
       },
       {
         id: 'groupName',
-        header: 'GCT Group Name',
+        header: t('GCT_GROUP_NAME_COL'),
         cell: ({ row }) => (
           <TruncatedCell
             text={row.original.groupCashTransfer?.name || '—'}
@@ -189,23 +222,23 @@ export default function GctManagementList() {
       },
       {
         id: 'amount',
-        header: 'Amount',
+        header: t('AMOUNT_COL'),
         cell: ({ row }) => (
           <span className="font-semibold">
-            {row.original.amount?.toLocaleString() ?? '—'}
+            {formatNum(row.original.amount ?? 0)}
           </span>
         ),
       },
       {
         id: 'createdBy',
-        header: 'Created By',
+        header: t('CREATED_BY_COL'),
         cell: ({ row }) => (
           <TruncatedCell text={row.original.createdBy || '—'} maxLength={18} />
         ),
       },
       {
         id: 'status',
-        header: 'Status',
+        header: t('STATUS_COL'),
         cell: ({ row }) => {
           const s = row.original.status;
           return (
@@ -214,14 +247,14 @@ export default function GctManagementList() {
                 GCT_STATUS_STYLE[s] ?? 'bg-gray-100 text-gray-600'
               }`}
             >
-              {s?.replace(/_/g, ' ') ?? '—'}
+              {s ? statusLabel(s) : '—'}
             </Badge>
           );
         },
       },
       {
         id: 'actions',
-        header: 'Action',
+        header: t('ACTION_COL'),
         cell: ({ row }) => {
           const s = row.original.status;
           const isFailed = s === 'FAILED';
@@ -231,7 +264,7 @@ export default function GctManagementList() {
             <TooltipProvider>
               <div className="flex items-center gap-1">
                 <GctActionBtn
-                  label="View"
+                  label={tGlobal('VIEW')}
                   icon={<Eye size={16} strokeWidth={1.8} />}
                   hoverClass="hover:bg-gray-100 text-gray-600"
                   onClick={() =>
@@ -254,15 +287,15 @@ export default function GctManagementList() {
                         />
                         <span className="font-semibold text-sm/6">
                           {isRejected
-                            ? 'Contact admin for assistance.'
-                            : 'Disbursement failed.'}
+                            ? t('CONTACT_ADMIN_FOR_ASSISTANCE')
+                            : t('DISBURSEMENT_FAILED')}
                         </span>
                       </div>
                       {errorMsg && (
                         <Collapsible className="mt-2">
                           <CollapsibleTrigger className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary">
                             <ChevronDown size={12} />
-                            View technical details
+                            {t('VIEW_TECHNICAL_DETAILS')}
                           </CollapsibleTrigger>
                           <CollapsibleContent>
                             <p className="text-gray-500 text-xs mt-2 break-words">
@@ -285,7 +318,7 @@ export default function GctManagementList() {
   );
 
   const table = useReactTable({
-    data: filtered,
+    data: rows,
     columns,
     manualPagination: true,
     onColumnVisibilityChange: setColumnVisibility,
@@ -301,9 +334,9 @@ export default function GctManagementList() {
     <div>
       <div className="flex justify-between items-center">
         <Heading
-          title="Group Cash Transfer Management"
+          title={t('GROUP_CASH_TRANSFER_MANAGEMENT')}
           titleStyle="font-medium text-lg"
-          description="List of all the Group Cash Transfer Records"
+          description={t('LIST_OF_ALL_THE_RECORDS')}
         />
         <div className="flex items-center gap-2">
           <Button
@@ -318,7 +351,7 @@ export default function GctManagementList() {
             ) : (
               <Download size={14} />
             )}
-            Download Logs
+            {t('DOWNLOAD_LOGS')}
           </Button>
           <RoleAuth
             roles={[AARoles.ADMIN, AARoles.Municipality]}
@@ -334,7 +367,7 @@ export default function GctManagementList() {
               }
             >
               <Plus size={14} />
-              Assign Cash
+              {t('ASSIGN_CASH')}
             </Button>
           </RoleAuth>
         </div>
@@ -343,37 +376,41 @@ export default function GctManagementList() {
       <div className="flex items-center gap-2 mb-2 flex-wrap">
         <SearchInput
           className="flex-1 min-w-[160px]"
-          name="title"
+          name={tGlobal('TITLE')}
           value={titleSearch}
           onSearch={(e) => setTitleSearch(e.target.value)}
         />
         <SearchInput
           className="flex-1 min-w-[160px]"
-          name="group name"
+          name={tGlobal('GROUP_NAME')}
           value={groupSearch}
           onSearch={(e) => setGroupSearch(e.target.value)}
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="h-9 gap-1 shrink-0">
-              {statusFilter ? statusFilter.replace(/_/g, ' ') : 'All Statuses'}
+              {statusFilter ? statusLabel(statusFilter) : t('ALL_STATUSES')}
               <ChevronDown className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onSelect={() => setStatusFilter(undefined)}>
-              All Statuses
+              {t('ALL_STATUSES')}
             </DropdownMenuItem>
             {GCT_RECORD_STATUSES.map((s) => (
               <DropdownMenuItem key={s} onSelect={() => setStatusFilter(s)}>
-                {s.replace(/_/g, ' ')}
+                {statusLabel(s)}
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
 
-      <DemoTable table={table} loading={isLoading} />
+      <DemoTable
+        table={table}
+        loading={isLoading}
+        message={tGlobal('NO_RESULTS')}
+      />
 
       <CustomPagination
         currentPage={pagination.page}

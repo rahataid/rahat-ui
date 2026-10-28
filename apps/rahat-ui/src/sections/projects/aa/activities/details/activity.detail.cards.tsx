@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Info, Text, SignalHigh, Book } from 'lucide-react';
 import UpdateActivityStatusDialog from './update.activity.status.dialog';
+import { useTranslations } from 'next-intl';
 
 type IProps = {
   activityDetail: any;
@@ -32,6 +33,8 @@ export default function ActivityDetailCards({
   activityDetail,
   loading,
 }: IProps) {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   return (
     <div className="grid grid-cols-4 gap-4 mt-4">
       <div className="p-4 rounded bg-card flex items-center gap-4">
@@ -40,16 +43,16 @@ export default function ActivityDetailCards({
         </div>
         <div className="w-full">
           <div className="flex justify-between items-center">
-            <h1 className="font-medium">Status</h1>
+            <h1 className="font-medium">{tg('STATUS')}</h1>
             <UpdateActivityStatusDialog
               activityDetail={activityDetail}
               loading={loading}
-              triggerTitle="update"
+              triggerTitle={t('UPDATE')}
               iconStyle="mr-1 h-3 w-3"
             />
           </div>
           <Badge className={`${getStatusBg(activityDetail?.status)}`}>
-            {activityDetail?.status}
+            {tg(activityDetail?.status)}
           </Badge>
         </div>
       </div>
@@ -58,7 +61,7 @@ export default function ActivityDetailCards({
           <Text size={25} />
         </div>
         <div>
-          <h1 className="font-medium">Responsible Station</h1>
+          <h1 className="font-medium">{t('RESPONSIBLE_STATION')}</h1>
           <p className="text-xl text-primary font-semibold">
             {activityDetail?.source}
           </p>
@@ -69,7 +72,7 @@ export default function ActivityDetailCards({
           <SignalHigh size={25} />
         </div>
         <div>
-          <h1 className="font-medium">Phase</h1>
+          <h1 className="font-medium">{t('PHASE')}</h1>
           <p className="text-xl text-primary font-semibold">
             {activityDetail?.phase?.name}
           </p>
@@ -80,9 +83,9 @@ export default function ActivityDetailCards({
           <Book size={25} />
         </div>
         <div>
-          <h1 className="font-medium">Activity Type</h1>
+          <h1 className="font-medium">{t('ACTIVITY_TYPE')}</h1>
           <p className="text-xl text-primary font-semibold">
-            {activityDetail?.isAutomated ? 'Automated' : 'Manual'}
+            {activityDetail?.isAutomated ? t('AUTOMATED') : t('MANUAL')}
           </p>
         </div>
       </div>

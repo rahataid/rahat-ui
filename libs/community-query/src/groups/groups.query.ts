@@ -10,6 +10,7 @@ import {
 } from '@tanstack/react-query';
 import Swal from 'sweetalert2';
 import { TAGS } from '../config';
+import { getTranslate } from '../translate';
 
 type GroupState = {
   uuid: string;
@@ -22,15 +23,17 @@ export const useCommunityGroupCreate = () => {
     mutationKey: [TAGS.ADD_COMMUNITY_GROUP],
     mutationFn: groupClient.create,
     onSuccess: () => {
-      Swal.fire('Group Created Successfully', '', 'success');
+      const t = getTranslate();
+      Swal.fire(t('GROUP_CREATED_SUCCESSFULLY'), '', 'success');
       queryClient.invalidateQueries({
         queryKey: [TAGS.LIST_COMMUNITY_GROUP],
       });
     },
     onError: (error: any) => {
+      const t = getTranslate();
       Swal.fire(
-        'Error',
-        error.response.data.message || 'Encounter error on Creating Data',
+        t('ERROR'),
+        error.response.data.message || t('ERROR_ON_CREATING_DATA'),
         'error',
       );
     },
@@ -44,15 +47,17 @@ export const useCommunityGroupUpdate = () => {
     mutationKey: [TAGS.UPDATE_GROUP],
     mutationFn: groupClient.update,
     onSuccess: () => {
-      Swal.fire('Group updated Successfully', '', 'success');
+      const t = getTranslate();
+      Swal.fire(t('GROUP_UPDATED_SUCCESSFULLY'), '', 'success');
       queryClient.invalidateQueries({
         queryKey: [TAGS.LIST_COMMUNITY_GROUP],
       });
     },
     onError: (error: any) => {
+      const t = getTranslate();
       Swal.fire(
-        'Error',
-        error.response.data.message || 'Something went wrong!',
+        t('ERROR'),
+        error.response.data.message || t('SOMETHING_WENT_WRONG'),
         'error',
       );
     },
@@ -77,6 +82,7 @@ export const useCommunityGroupList = (
 export const useCommunityGroupListByID = (
   uuid: string,
   query: any,
+  enabled = true,
 ): UseQueryResult<any, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
   const groupClient = getGroupClient(rumsanService.client);
@@ -84,6 +90,7 @@ export const useCommunityGroupListByID = (
     {
       queryKey: [TAGS.LIST_COMMUNITY_GROUP_BY_ID, query, uuid],
       queryFn: () => groupClient.listById(uuid, query),
+      enabled,
     },
     queryClient,
   );
@@ -110,17 +117,17 @@ export const useCommunityGroupRemove = () => {
       mutationKey: [TAGS.REMOVE_COMMUNITY_GROUP],
       mutationFn: groupClient.remove,
       onSuccess: () => {
-        Swal.fire('Beneficiary Disconnected Successfully', '', 'success');
+        const t = getTranslate();
+        Swal.fire(t('BENEFICIARY_DISCONNECTED_SUCCESSFULLY'), '', 'success');
         queryClient.invalidateQueries({
           queryKey: [TAGS.LIST_COMMUNITY_GROUP],
         });
       },
       onError: (error: any) => {
+        const t = getTranslate();
         Swal.fire({
           icon: 'error',
-          title:
-            error?.response?.data?.message ||
-            'Encounter error on Removing Data',
+          title: error?.response?.data?.message || t('ERROR_ON_REMOVING_DATA'),
         });
       },
     },
@@ -137,13 +144,14 @@ export const usePurgeGroupedBeneficiary = () => {
     {
       mutationKey: [TAGS.PURGE_COMMUNITY_GROUP],
       mutationFn: async (data: GroupPurge) => {
+        const t = getTranslate();
         const { isConfirmed } = await Swal.fire({
-          title: 'CAUTION!',
-          text: ' Selected beneficiaries will be deleted permanently!',
+          title: t('CAUTION'),
+          text: t('DELETE_BENEFICIARIES_WARNING'),
           icon: 'warning',
           showDenyButton: true,
-          confirmButtonText: 'Yes, I am sure!',
-          denyButtonText: 'No, cancel it!',
+          confirmButtonText: t('CONFIRM_YES_I_AM_SURE'),
+          denyButtonText: t('CONFIRM_NO_CANCEL'),
           customClass: {
             actions: 'my-actions',
             confirmButton: 'order-1',
@@ -156,16 +164,15 @@ export const usePurgeGroupedBeneficiary = () => {
       },
       onSuccess: (data) => {
         if (!data) return;
-        Swal.fire('Selected Beneficiaries deleted!', '', 'success');
+        const t = getTranslate();
+        Swal.fire(t('BENEFICIARIES_DELETED_SUCCESSFULLY'), '', 'success');
         qc.invalidateQueries({ queryKey: [TAGS.LIST_COMMUNITY_GROUP_BY_ID] });
       },
       onError: (error: any) => {
+        const t = getTranslate();
         Swal.fire({
           icon: 'error',
-          title:
-            error?.response?.data?.message ||
-            'Encounter error on Removing Data' ||
-            'Operation Canceled',
+          title: error?.response?.data?.message || t('ERROR_ON_REMOVING_DATA'),
         });
       },
     },
@@ -180,14 +187,17 @@ export const useCommunityGroupDelete = () => {
     {
       mutationKey: [TAGS.REMOVE_COMMUNITY_GROUP],
       mutationFn: async (data: GroupState) => {
+        const t = getTranslate();
         const { isConfirmed } = await Swal.fire({
           title: `${
-            data?.pathName === '/group' ? 'Delete Group' : 'Delete Imports Logs'
+            data?.pathName === '/group'
+              ? t('DELETE_GROUP_LABEL')
+              : t('DELETE_IMPORTS_LOGS_LABEL')
           }`,
-          text: 'Are you sure you want to delete permanently?',
+          text: t('CONFIRM_DELETE_PERMANENTLY'),
           showCancelButton: true,
-          confirmButtonText: 'Delete',
-          cancelButtonText: 'Cancel',
+          confirmButtonText: t('DELETE'),
+          cancelButtonText: t('CANCEL'),
           confirmButtonColor: '#dc3545',
           allowOutsideClick: false,
         });
@@ -205,11 +215,10 @@ export const useCommunityGroupDelete = () => {
         });
       },
       onError: (error: any) => {
+        const t = getTranslate();
         Swal.fire({
           icon: 'error',
-          title:
-            error?.response?.data?.message ||
-            'Encounter error on Removing Data',
+          title: error?.response?.data?.message || t('ERROR_ON_REMOVING_DATA'),
         });
       },
     },
@@ -225,8 +234,9 @@ export const useBulkGenerateVerificationLink = () => {
       mutationKey: [TAGS.BULK_GENERATE_LINK],
       mutationFn: grpClient.bulkGenerateLink,
       onSuccess: (data: any) => {
+        const t = getTranslate();
         Swal.fire({
-          title: 'Success!',
+          title: t('SUCCESS'),
           text: data?.data,
 
           icon: 'success',
@@ -241,9 +251,10 @@ export const useBulkGenerateVerificationLink = () => {
         });
       },
       onError: (error: any) => {
+        const t = getTranslate();
         Swal.fire(
-          'Error',
-          error.response.data.message || 'Encounter error on Creating Data',
+          t('ERROR'),
+          error.response.data.message || t('ERROR_ON_CREATING_DATA'),
           'error',
         );
       },
@@ -282,14 +293,16 @@ export const useUploadBulkBeneficiaryUpdate = () => {
       queryClient.invalidateQueries({
         queryKey: [TAGS.LIST_COMMUNITY_BENFICIARIES],
       });
+      queryClient.invalidateQueries({
+        queryKey: [TAGS.LIST_COMMUNITY_GROUP_BY_ID],
+      });
     },
 
     onError: (error: any) => {
+      const t = getTranslate();
       Swal.fire({
         icon: 'error',
-        title:
-          error?.response?.data?.message ||
-          'Encountered an error while updating data',
+        title: error?.response?.data?.message || t('ERROR_WHILE_UPDATING_DATA'),
       });
     },
   });

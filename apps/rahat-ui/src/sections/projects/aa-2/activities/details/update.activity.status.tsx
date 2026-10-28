@@ -1,8 +1,15 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import React, { useEffect, useMemo } from 'react';
 
-import { Back, Heading } from 'apps/rahat-ui/src/common';
+import {
+  Back,
+  FormSelectTrigger,
+  FormTextarea,
+  Heading,
+} from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
 import { CloudUpload, File, LoaderCircle, X } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
@@ -22,26 +29,26 @@ import {
   FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
-  SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { ACTIVITY_STATUS } from 'apps/rahat-ui/src/constants/aa.constants';
 import { validateFile } from 'apps/rahat-ui/src/utils/file.validation';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
 import LoaderRahat from 'apps/rahat-ui/src/components/LoaderRahat';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 
 const { NOT_STARTED, WORK_IN_PROGRESS, COMPLETED, DELAYED } = ACTIVITY_STATUS;
 const statusList = [NOT_STARTED, WORK_IN_PROGRESS, COMPLETED, DELAYED];
 
 export default function UpdateStatus() {
+  const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const params = useParams();
   const projectId = params.id as UUID;
   const activityId = params.activityID as UUID;
@@ -80,7 +87,7 @@ export default function UpdateStatus() {
   const nextId = React.useRef(0);
 
   const FormSchema = z.object({
-    status: z.string().min(1, { message: 'Please select status' }),
+    status: z.string().min(1, { message: t('PLEASE_SELECT_STATUS') }),
     notes: z.string().optional(),
     activityDocuments: z
       .array(
@@ -111,11 +118,11 @@ export default function UpdateStatus() {
       for (const file of filesArray) {
         const isDuplicateFile = documents?.some((d) => d?.name === file?.name);
         if (isDuplicateFile) {
-          toast.error(`Cannot upload duplicate file: ${file.name}`);
+          toast.error(t('CANNOT_UPLOAD_DUPLICATE_FILE', { name: file.name }));
           continue;
         }
 
-        if (!validateFile(file)) {
+        if (!validateFile(file, t)) {
           continue;
         }
 
@@ -130,7 +137,7 @@ export default function UpdateStatus() {
         } catch (error) {
           // Remove the document from the list if upload fails
           setDocuments((prev) => prev.filter((doc) => doc.name !== file.name));
-          toast.error(`Failed to upload ${file.name}`);
+          toast.error(t('FAILED_TO_UPLOAD', { name: file.name }));
         }
       }
 
@@ -175,11 +182,9 @@ export default function UpdateStatus() {
       setDocuments([]);
     }
   };
-  const formatStatus = (status: string) => {
-    return status
-      .replace(/_/g, ' ')
-      .replace(/\b\w/g, (char) => char.toUpperCase());
-  };
+  // Status slugs (NOT_STARTED) have GLOBAL keys; fall back to the prettified
+  // slug for any status the constants add later.
+  const formatStatus = (status: string) => translateValue(tg, status);
 
   React.useEffect(() => {
     if (activityDetail) {
@@ -201,8 +206,8 @@ export default function UpdateStatus() {
 
           <div className="mt-4 flex justify-between items-center">
             <Heading
-              title={`Update Status`}
-              description="Change the status of this activity"
+              title={t('UPDATE_STATUS')}
+              description={t('CHANGE_THE_STATUS_OF_THIS_ACTIVITY')}
             />
           </div>
         </div>
@@ -217,16 +222,16 @@ export default function UpdateStatus() {
                   render={({ field }) => (
                     <FormItem className="space-y-3">
                       <FormLabel className="text-muted-foreground">
-                        Status:
+                        {tg('STATUS')}:
                       </FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         value={field.value || ''}
                       >
                         <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select status" />
-                          </SelectTrigger>
+                          <FormSelectTrigger value={field.value}>
+                            <SelectValue placeholder={t('SELECT_STATUS')} />
+                          </FormSelectTrigger>
                         </FormControl>
                         <SelectContent>
                           {statusList.map((status) => (
@@ -247,11 +252,12 @@ export default function UpdateStatus() {
                     return (
                       <FormItem>
                         <FormLabel className="text-muted-foreground">
-                          Add note
+                          {t('ADD_NOTE')}
                         </FormLabel>
                         <FormControl>
-                          <Textarea
-                            placeholder="Enter notes"
+                          <FormTextarea
+                            placeholder={t('ENTER_NOTES')}
+                            className="rounded"
                             {...field}
                           />
                         </FormControl>
@@ -275,9 +281,9 @@ export default function UpdateStatus() {
                                 className="text-primary"
                               />
                               <p className="text-sm font-medium">
-                                Drop files to upload, or{' '}
+                                {t('DROP_FILES_TO_UPLOAD')}{' '}
                                 <span className="text-primary cursor-pointer">
-                                  browse
+                                  {t('BROWSE')}
                                 </span>
                               </p>
                             </div>
@@ -291,8 +297,7 @@ export default function UpdateStatus() {
                         </FormControl>
                         <FormMessage />
                         <p className="text-xs text-orange-500 text-end">
-                          *Files must be JPEG, PNG, BMP, PDF, XLSX, DOC, DOCX or
-                          CSV under 5 MB.
+                          {t('FILE_VALIDATION_TEXT')}
                         </p>
 
                         <div className="grid grid-cols-5 gap-4 p-2">
@@ -349,7 +354,7 @@ export default function UpdateStatus() {
                     className="bg-red-100 text-red-600  w-48 rounded-sm"
                     onClick={() => form.reset()}
                   >
-                    Reset
+                    {t('RESET')}
                   </Button>
 
                   <Button
@@ -361,7 +366,7 @@ export default function UpdateStatus() {
                       !activityDetail
                     }
                   >
-                    Update
+                    {t('UPDATE')}
                   </Button>
                 </div>
               </div>

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import React, { useState } from 'react';
 import {
   CustomPagination,
@@ -25,7 +26,7 @@ import {
   Layers,
   CloudDownloadIcon,
 } from 'lucide-react';
-import { format } from 'date-fns';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { useInkindsSummary, useInkindTransactions } from '@rahat-ui/query';
@@ -36,6 +37,7 @@ import {
   MOVEMENT_CONFIG,
 } from '../utils/utils';
 import { formatLabel } from './inkind.allocation.list';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 import DynamicPieChart from 'apps/rahat-ui/src/sections/projects/components/dynamicPieChart';
 import {
@@ -115,6 +117,11 @@ export default function InkindOverview() {
     null,
   );
 
+  const tv = useTranslations('AA_PROJECT_WITH_GNOSIS');
+  const tg = useTranslations('GLOBAL');
+  const formatDate = useDateFormat();
+  const formatNum = useNumberFormat();
+
   const sortedMovements = [...movements].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
@@ -128,18 +135,18 @@ export default function InkindOverview() {
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-between">
         <Heading
-          title="Inkind Overview"
+          title={tv('INKIND_OVERVIEW')}
           titleStyle="font-medium text-lg"
-          description="Overview of all in-kind items and stock movements"
+          description={tv('TRACK_YOUR_IN_KIND_FLOW_HERE')}
         />
         <div className="flex gap-2 items-center">
           <TooltipWrapper
-            tip={hasData ? '' : 'No inkind data available to export'}
+            tip={hasData ? '' : tg('NO_INKIND_DATA_TO_EXPORT')}
           >
             <IconLabelBtn
               Icon={CloudDownloadIcon}
               handleClick={handleDownloadReport}
-              name={'Export Report'}
+              name={tg('EXPORT_REPORT')}
               variant="outline"
               disabled={!hasData}
               className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
@@ -147,7 +154,7 @@ export default function InkindOverview() {
           </TooltipWrapper>
 
           <DateRangePicker
-            placeholder="Pick date range"
+            placeholder={tg('PICK_DATE_RANGE')}
             handleDateChange={handleDateChange}
             handleClearDate={handleClearDate}
             type="range"
@@ -162,72 +169,78 @@ export default function InkindOverview() {
           <div className="grid xl:grid-cols-3 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-3 mb-3">
             <DataCard
               className="rounded-sm"
-              title="Total Inkind Types"
-              number={String(
+              title={tv('TOTAL_INKIND_TYPES')}
+              number={formatNum(
                 inkindItemsSummary?.totalInkindTypes
                   ? inkindItemsSummary.totalInkindTypes
                   : 0,
               )}
-              subtitle="Distinct items registered"
+              subtitle={tv('DISTINCT_ITEMS_REGISTERED')}
             />
             <DataCard
               className="rounded-sm"
-              title="Available Stock"
-              number={String(
+              title={tv('AVAILABLE_STOCK')}
+              number={formatNum(
                 inkindItemsSummary?.totalAvailableStock
                   ? inkindItemsSummary.totalAvailableStock
                   : 0,
               )}
-              subtitle="Units currently available"
+              subtitle={tv('UNITS_CURRENTLY_AVAILABLE')}
             />
             <DataCard
               className="rounded-sm"
-              title="Redeemed Stock"
-              number={String(
+              title={tv('REDEEMED_STOCK')}
+              number={formatNum(
                 inkindItemsSummary?.totalRedeemedStock
                   ? inkindItemsSummary.totalRedeemedStock
                   : 0,
               )}
-              subtitle="Units currently redeemed"
+              subtitle={tv('UNITS_CURRENTLY_REDEEMED')}
             />
           </div>
 
           {/* Row 1: Redemption Type + Redemption Status */}
           <div className="grid xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-1 gap-3 mb-3">
             <div className="border rounded-sm p-4">
-              <h3 className="text-sm font-medium mb-3">Redemption Type</h3>
+              <h3 className="text-sm font-medium mb-3">{tv('REDEMPTION_TYPE')}</h3>
               <div className="w-full h-48">
                 <DynamicPieChart
                   pieData={[
                     {
-                      label: 'Predefined',
+                      label: tv('PRE_DEFINED_BENEFICIARY_LIST'),
                       value:
                         inkindItemsSummary?.chartData?.redemptionType
                           ?.predefined || 0,
                     },
                     {
-                      label: 'Walk-in',
+                      label: tv('WALK_IN_BENEFICIARY_LIST'),
                       value:
                         inkindItemsSummary?.chartData?.redemptionType?.walkIn ||
                         0,
                     },
                   ]}
                   colors={['#F4A462', '#2A9D90']}
-                />
+                  options={{
+                tooltip: {
+                  fillSeriesColor: true,
+                  y: { formatter: (val: number) => formatNum(val) },
+                },
+              }}
+            />
               </div>
             </div>
 
             <div className="border rounded-sm p-4">
-              <h3 className="text-sm font-medium mb-3">Redemption Status</h3>
+              <h3 className="text-sm font-medium mb-3">{tv('REDEMPTION_STATUS')}</h3>
               <div className="w-full h-48">
                 <DynamicPieChart
                   pieData={[
                     {
-                      label: 'Redeemed',
+                      label: tv('REDEEMED'),
                       value: inkindItemsSummary?.totalRedeemedStock || 0,
                     },
                     {
-                      label: 'Not Redeemed',
+                      label: tv('NOT_REDEEMED'),
                       value: Math.max(
                         0,
                         (inkindItemsSummary?.totalAssignedStock || 0) -
@@ -236,7 +249,13 @@ export default function InkindOverview() {
                     },
                   ]}
                   colors={['#FFA500', '#10B981']}
-                />
+                  options={{
+                tooltip: {
+                  fillSeriesColor: true,
+                  y: { formatter: (val: number) => formatNum(val) },
+                },
+              }}
+            />
               </div>
             </div>
           </div>
@@ -246,30 +265,36 @@ export default function InkindOverview() {
             {/* Left Column: OTP Status + OTP Skip Reasons */}
             <div className="flex flex-col gap-3">
               <div className="border rounded-sm p-4">
-                <h3 className="text-sm font-medium mb-3">OTP Status</h3>
+                <h3 className="text-sm font-medium mb-3">{tv('OTP_STATUS')}</h3>
                 <div className="w-full h-48">
                   <DynamicPieChart
                     pieData={[
                       {
-                        label: 'Skipped',
+                        label: tv('SKIPPED'),
                         value:
                           inkindItemsSummary?.chartData?.otpStatus?.skipped ||
                           0,
                       },
                       {
-                        label: 'Not Skipped',
+                        label: tv('NOT_SKIPPED'),
                         value:
                           inkindItemsSummary?.chartData?.otpStatus
                             ?.notSkipped || 0,
                       },
                     ]}
                     colors={['#FFA500', '#10B981']}
-                  />
+                    options={{
+                  tooltip: {
+                    fillSeriesColor: true,
+                    y: { formatter: (val: number) => formatNum(val) },
+                  },
+                }}
+              />
                 </div>
               </div>
 
               <div className="border rounded-sm p-4">
-                <h3 className="text-sm font-medium mb-3">OTP Skip Reasons</h3>
+                <h3 className="text-sm font-medium mb-3">{tv('OTP_SKIP_REASONS')}</h3>
                 {inkindItemsSummary?.chartData?.otpSkipReasons &&
                 inkindItemsSummary.chartData.otpSkipReasons.length > 0 ? (
                   (() => {
@@ -284,7 +309,7 @@ export default function InkindOverview() {
                             {reasons.map((r, i) => (
                               <div key={i} className="flex items-center gap-2">
                                 <div className="w-4 text-xs text-muted-foreground shrink-0 text-right">
-                                  {i + 1}
+                                  {formatNum(i + 1)}
                                 </div>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
@@ -308,7 +333,7 @@ export default function InkindOverview() {
                                   />
                                 </div>
                                 <div className="text-xs font-medium w-6 shrink-0 text-right">
-                                  {r.count}
+                                  {formatNum(r.count)}
                                 </div>
                               </div>
                             ))}
@@ -319,7 +344,7 @@ export default function InkindOverview() {
                   })()
                 ) : (
                   <div className="flex items-center justify-center h-48 text-muted-foreground text-sm">
-                    No data available
+                    {tg('NO_DATA_AVAILABLE')}
                   </div>
                 )}
               </div>
@@ -328,11 +353,11 @@ export default function InkindOverview() {
             {/* Right Column: Overall Inkind Flow */}
             <div className="border rounded-sm p-4 flex flex-col">
               <div className="flex items-start justify-between mb-0.5">
-                <h1 className="text-lg font-medium">Overall Inkind Flow</h1>
+                <h1 className="text-lg font-medium">{tv('OVERALL_INKIND_FLOW')}</h1>
               </div>
               {movements.length !== 0 && (
                 <p className="text-xs text-muted-foreground mb-3">
-                  Click on any logs to view details
+                  {tv('CLICK_ON_ANY_LOGS_TO_VIEW')}
                 </p>
               )}
               <div className="relative flex-1 min-h-[150px]">
@@ -344,7 +369,7 @@ export default function InkindOverview() {
                 <ScrollArea className="flex-1 min-h-[120px] max-h-[40vh] overflow-auto items-center justify-center">
                   {movements.length === 0 ? (
                     <p className="text-sm text-muted-foreground align-center justify-center text-center py-6">
-                      No records available.
+                      {tv('NO_RECORDS_AVAILABLE')}
                     </p>
                   ) : (
                     <div className="flex flex-col space-y-2">
@@ -379,9 +404,9 @@ export default function InkindOverview() {
                                     maxLength={30}
                                   />
                                   <Badge className="bg-gray-200 text-gray-600">
-                                    {formatLabel(
-                                      INKIND_TYPE_LABELS[movement.inkind?.type],
-                                    )}
+                                    {movement.inkind?.type
+                                      ? tg(movement.inkind.type)
+                                      : ''}
                                   </Badge>
                                 </div>
                                 {movement.groupInkind && (
@@ -391,7 +416,7 @@ export default function InkindOverview() {
                                 )}
                                 <p className="text-xs text-muted-foreground mt-0.5">
                                   {movement.createdAt
-                                    ? format(
+                                    ? formatDate(
                                         new Date(movement.createdAt),
                                         'dd MMM yyyy, HH:mm',
                                       )
@@ -404,13 +429,13 @@ export default function InkindOverview() {
                                 className={`text-sm font-semibold ${config.color}`}
                               >
                                 {isPositive ? '+' : '-'}
-                                {movement.quantity ?? 0}
+                                {formatNum(movement.quantity ?? 0)}
                               </span>
                               <Badge
                                 variant="outline"
                                 className={`rounded-sm text-xs ${config.color} border-current`}
                               >
-                                {config.label}
+                                {tv(config.labelKey)}
                               </Badge>
                             </div>
                           </button>
@@ -473,32 +498,32 @@ export default function InkindOverview() {
                           </div>
                           <div>
                             <SheetTitle className="text-base">
-                              Transaction Details
+                              {tv('TRANSACTION_DETAILS')}
                             </SheetTitle>
                             <Badge
                               variant="outline"
                               className={`mt-1 rounded-sm text-xs ${config.color} border-current`}
                             >
-                              {config.label}
+                              {tv(config.labelKey)}
                             </Badge>
                           </div>
                         </div>
                       </SheetHeader>
 
                       <div className="mb-5">
-                        <SectionTitle title="Transaction" />
+                        <SectionTitle title={tv('TRANSACTION_DETAILS')} />
                         <div className="border rounded-md px-3">
                           <DetailRow
                             icon={Hash}
-                            label="Transaction ID"
+                            label={tv('TRANSACTION_ID')}
                             value={selectedMovement.uuid}
                           />
                           <DetailRow
                             icon={Calendar}
-                            label="Date & Time"
+                            label={tv('DATE_TIME')}
                             value={
                               selectedMovement.createdAt
-                                ? format(
+                                ? formatDate(
                                     new Date(selectedMovement.createdAt),
                                     'dd MMM yyyy, HH:mm:ss',
                                   )
@@ -507,66 +532,62 @@ export default function InkindOverview() {
                           />
                           <DetailRow
                             icon={Layers}
-                            label="Quantity"
+                            label={tv('QUANTITY')}
                             value={
                               <span className={`font-bold ${config.color}`}>
                                 {isPositive ? '+' : '-'}
-                                {selectedMovement.quantity}
+                                {formatNum(selectedMovement.quantity)}
                               </span>
                             }
                           />
                         </div>
                       </div>
 
-                      {selectedMovement.inkind && (
-                        <div className="mb-5">
-                          <SectionTitle title="Inkind Item" />
-                          <div className="border rounded-md px-3">
-                            <DetailRow
-                              icon={Package}
-                              label="Name"
-                              value={selectedMovement.inkind.name}
-                            />
-                            <DetailRow
-                              icon={Layers}
-                              label="Type"
-                              value={
-                                <Badge className="bg-gray-200 text-gray-600">
-                                  {formatLabel(
-                                    INKIND_TYPE_LABELS[
-                                      selectedMovement.inkind.type
-                                    ],
-                                  )}
-                                </Badge>
-                              }
-                            />
-                            <DetailRow
-                              icon={Archive}
-                              label="Available Stock"
-                              value={
-                                <span className="text-primary font-bold">
-                                  {selectedMovement.inkind.availableStock}
-                                </span>
-                              }
-                            />
-                            {selectedMovement.inkind.description && (
-                              <DetailRow
-                                icon={Hash}
-                                label="Description"
-                                value={selectedMovement.inkind.description}
-                              />
-                            )}
-                          </div>
-                        </div>
-                      )}
+                  {selectedMovement.inkind && (
+                    <div className="mb-5">
+                      <SectionTitle title={tv('INKIND_ITEM')} />
+                      <div className="border rounded-md px-3">
+                        <DetailRow
+                          icon={Package}
+                          label={tg('NAME')}
+                          value={selectedMovement.inkind.name}
+                        />
+                        <DetailRow
+                          icon={Layers}
+                          label={tg('TYPE')}
+                          value={
+                            <Badge className="bg-gray-200 text-gray-600">
+                              {tg(selectedMovement.inkind.type)}
+                            </Badge>
+                          }
+                        />
+                        <DetailRow
+                          icon={Archive}
+                          label={tv('AVAILABLE_STOCK')}
+                          value={
+                            <span className="text-primary font-bold">
+                              {formatNum(selectedMovement.inkind.availableStock)}
+                            </span>
+                          }
+                        />
+                        {selectedMovement.inkind.description && (
+                          <DetailRow
+                            icon={Hash}
+                            label={tg('DESCRIPTION')}
+                            value={selectedMovement.inkind.description}
+                          />
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                       {selectedMovement.groupInkind && (
                         <div className="mb-5">
-                          <SectionTitle title="Group Allocation" />
+                          <SectionTitle title={tv('GROUP_ALLOCATION')} />
                           <div className="border rounded-md px-3">
                             <DetailRow
                               icon={Users}
-                              label="Group"
+                              label={tv('GROUP')}
                               value={
                                 <span className="text-primary font-bold">
                                   {selectedMovement.groupInkind.group?.name ??

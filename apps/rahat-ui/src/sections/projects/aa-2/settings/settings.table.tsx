@@ -1,4 +1,5 @@
 'use client';
+import { useTranslations } from 'next-intl';
 
 import {
   VisibilityState,
@@ -35,6 +36,8 @@ import { Settings2 } from 'lucide-react';
 import { useAASettingColumns } from './settings.columns';
 
 export default function AASettingsTable() {
+  const t = useTranslations('AA_PROJECT');
+
   const { id } = useParams();
   const projectUUID = id as UUID;
 
@@ -78,7 +81,7 @@ export default function AASettingsTable() {
     <div className="w-full mt-1 p-1 bg-secondary">
       <div className="flex items-center mb-2">
         <Input
-          placeholder="Search by name..."
+          placeholder={t('SEARCH_BY_NAME')}
           value={globalFilter}
           onChange={(e) => setGlobalFilter(e.target.value)}
           className="rounded mr-2"
@@ -87,16 +90,16 @@ export default function AASettingsTable() {
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
               <Settings2 className="mr-2 h-4 w-5" />
-              Filters
+              {t('FILTERS')}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuSeparator />
             <DropdownMenuRadioGroup value={flag} onValueChange={handleSwitchChange}>
-              <DropdownMenuRadioItem value="all">All</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="private">Private</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="public">Public</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="read">ReadOnly</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="all">{t('ALL')}</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="private">{t('PRIVATE')}</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="public">{t('PUBLIC')}</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="read">{t('READ_ONLY')}</DropdownMenuRadioItem>
             </DropdownMenuRadioGroup>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -128,7 +131,7 @@ export default function AASettingsTable() {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    Loading...
+                    {t('LOADING')}
                   </TableCell>
                 </TableRow>
               ) : table.getRowModel().rows?.length ? (
@@ -153,7 +156,7 @@ export default function AASettingsTable() {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    No results.
+                    {t('NO_RESULTS')}
                   </TableCell>
                 </TableRow>
               )}

@@ -5,8 +5,11 @@ import { useProjectAction, useProjectSettingsStore } from '../../projects';
 import { useActivitiesStore } from './activities.store';
 import { ACTIVITY_QUERY_KEYS } from './activities.constants';
 import { UUID } from 'crypto';
-import { useSwal } from 'libs/query/src/swal';
 import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
+import { useTranslations } from 'next-intl';
+import { resolveBackendErrorMessage } from '../../../utils/i18n/backend-error';
+import { toast } from 'react-toastify';
+import { showToast } from 'libs/query/src/utils/custom-toast';
 
 type ActivityTemplateFilters = {
   page?: number;
@@ -127,6 +130,7 @@ export const useActivities = (uuid: UUID, payload: any) => {
     completedBy: d?.completedBy,
     completedAt: d?.completedAt,
     activityDocuments: d?.activityDocuments || null,
+    activityCommunication: d?.activityCommunication || null,
     createdAt: d?.createdAt,
     notes: d?.notes,
     timeDifference: d?.differenceInTriggerAndActivityCompletion,
@@ -186,14 +190,8 @@ export const useSingleActivity = (
   uuid: UUID,
   activityId: string | string[],
 ) => {
+  const t = useTranslations('AA_PROJECT');
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
 
   const query = useQuery({
     queryKey: [ACTIVITY_QUERY_KEYS.ACTIVITY, uuid, activityId],
@@ -211,11 +209,11 @@ export const useSingleActivity = (
         return mutate.data;
       } catch (error: any) {
         const errorMessage =
-          error?.response?.data?.message || 'Failed to fetch activity';
-        toast.fire({
-          title: 'Error loading activity',
-          text: errorMessage,
-          icon: 'error',
+          error?.response?.data?.message || t('FAILED_TO_FETCH_ACTIVITY');
+        showToast({
+          type: 'error',
+          title: t('ERROR_LOADING_ACTIVITY'),
+          description: errorMessage,
         });
         throw error;
       }
@@ -226,15 +224,11 @@ export const useSingleActivity = (
 };
 
 export const useCreateActivities = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const qc = useQueryClient();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -254,34 +248,42 @@ export const useCreateActivities = () => {
     onSuccess: (data) => {
       q.reset();
       qc.invalidateQueries({ queryKey: [ACTIVITY_QUERY_KEYS.ACTIVITIES] });
-      toast.fire({
-        title: data?.data?.isTemplate
-          ? 'Activity and its template added successfully'
-          : 'Activity created successfully',
-        icon: 'success',
-      });
+      toast.success(
+        data?.data?.isTemplate
+          ? t('ACTIVITY_AND_TEMPLATE_ADDED_SUCCESSFULLY')
+          : t('ACTIVITY_CREATED_SUCCESSFULLY'),
+      );
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const codeResolvedMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['ACTIVITIES'],
+        rawMessage,
+      );
+      const errorMessage =
+        codeResolvedMessage !== rawMessage
+          ? codeResolvedMessage
+          : rawMessage === 'Something went wrong'
+          ? tb('BACKEND.ACTIVITIES.SOMETHING_WENT_WRONG' as never)
+          : rawMessage;
       q.reset();
-      toast.fire({
-        title: 'Error while adding activity.',
-        icon: 'error',
-        text: errorMessage,
+      showToast({
+        type: 'error',
+        title: t('ERROR_WHILE_ADDING_ACTIVITY'),
+        description: errorMessage,
       });
     },
   });
 };
 
 export const useValidateBulkAddActivities = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -302,27 +304,36 @@ export const useValidateBulkAddActivities = () => {
       q.reset();
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const codeResolvedMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['ACTIVITIES'],
+        rawMessage,
+      );
+      const errorMessage =
+        codeResolvedMessage !== rawMessage
+          ? codeResolvedMessage
+          : rawMessage === 'Something went wrong'
+          ? tb('BACKEND.ACTIVITIES.SOMETHING_WENT_WRONG' as never)
+          : rawMessage;
       q.reset();
-      toast.fire({
-        title: 'Error while validating activities.',
-        icon: 'error',
-        text: errorMessage,
+      showToast({
+        type: 'error',
+        title: t('ERROR_WHILE_VALIDATING_ACTIVITIES'),
+        description: errorMessage,
       });
     },
   });
 };
 
 export const useBulkAddActivities = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const qc = useQueryClient();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -344,27 +355,36 @@ export const useBulkAddActivities = () => {
       qc.invalidateQueries({ queryKey: [ACTIVITY_QUERY_KEYS.ACTIVITIES] });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const codeResolvedMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['ACTIVITIES'],
+        rawMessage,
+      );
+      const errorMessage =
+        codeResolvedMessage !== rawMessage
+          ? codeResolvedMessage
+          : rawMessage === 'Something went wrong'
+          ? tb('BACKEND.ACTIVITIES.SOMETHING_WENT_WRONG' as never)
+          : rawMessage;
       q.reset();
-      toast.fire({
-        title: 'Error while submitting activities.',
-        icon: 'error',
-        text: errorMessage,
+      showToast({
+        type: 'error',
+        title: t('ERROR_WHILE_SUBMITTING_ACTIVITIES'),
+        description: errorMessage,
       });
     },
   });
 };
 
 export const useUpdateActivities = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -388,33 +408,33 @@ export const useUpdateActivities = () => {
       qc.invalidateQueries({
         queryKey: [ACTIVITY_QUERY_KEYS.ACTIVITIES_HAVING_COMMS],
       });
-      toast.fire({
-        title: 'Activity updated successfully',
-        icon: 'success',
-      });
+      toast.success(t('ACTIVITY_UPDATED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['ACTIVITIES'],
+        rawMessage,
+      );
       q.reset();
-      toast.fire({
-        title: 'Error while updating activity.',
-        icon: 'error',
-        text: errorMessage,
+      showToast({
+        type: 'error',
+        title: t('ERROR_WHILE_UPDATING_ACTIVITY'),
+        description: errorMessage,
       });
     },
   });
 };
 
 export const useDeleteActivities = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -439,33 +459,39 @@ export const useDeleteActivities = () => {
       qc.invalidateQueries({
         queryKey: [ACTIVITY_QUERY_KEYS.ACTIVITIES_HAVING_COMMS],
       });
-      toast.fire({
-        title: 'Activity removed successfully',
-        icon: 'success',
-      });
+      toast.success(t('ACTIVITY_REMOVED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const codeResolvedMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['ACTIVITIES'],
+        rawMessage,
+      );
+      const errorMessage =
+        codeResolvedMessage !== rawMessage
+          ? codeResolvedMessage
+          : rawMessage === 'Something went wrong'
+          ? tb('BACKEND.ACTIVITIES.SOMETHING_WENT_WRONG' as never)
+          : rawMessage;
       q.reset();
-      toast.fire({
-        title: 'Error while removing activity.',
-        icon: 'error',
-        text: errorMessage,
+      showToast({
+        type: 'error',
+        title: t('ERROR_WHILE_REMOVING_ACTIVITY'),
+        description: errorMessage,
       });
     },
   });
 };
 
 export const useTriggerCommunication = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const qc = useQueryClient();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -486,33 +512,33 @@ export const useTriggerCommunication = () => {
     onSuccess: () => {
       q.reset();
       qc.invalidateQueries({ queryKey: [ACTIVITY_QUERY_KEYS.ACTIVITY] });
-      toast.fire({
-        title: 'Communication Trigger successfully',
-        icon: 'success',
-      });
+      toast.success(t('COMMUNICATION_TRIGGER_SUCCESSFULLY'));
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['ACTIVITIES'],
+        rawMessage,
+      );
       q.reset();
-      toast.fire({
-        title: 'Error while triggering communication.',
-        icon: 'error',
-        text: errorMessage,
+      showToast({
+        type: 'error',
+        title: t('ERROR_WHILE_TRIGGERING_COMMUNICATION'),
+        description: errorMessage,
       });
     },
   });
 };
 
 export const useUpdateActivityStatus = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const qc = useQueryClient();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -539,18 +565,22 @@ export const useUpdateActivityStatus = () => {
       q.reset();
       qc.invalidateQueries({ queryKey: [ACTIVITY_QUERY_KEYS.ACTIVITIES] });
       qc.invalidateQueries({ queryKey: [ACTIVITY_QUERY_KEYS.ACTIVITY] });
-      toast.fire({
-        title: 'Status Updated',
-        icon: 'success',
-      });
+      toast.success(t('STATUS_UPDATED'));
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['ACTIVITIES'],
+        rawMessage,
+      );
       q.reset();
-      toast.fire({
-        title: 'Status Update Failed',
-        icon: 'error',
-        text: errorMessage,
+      showToast({
+        type: 'error',
+        title: t('STATUS_UPDATE_FAILED'),
+        description: errorMessage,
       });
     },
   });

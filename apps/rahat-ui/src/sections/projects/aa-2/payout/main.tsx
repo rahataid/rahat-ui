@@ -1,4 +1,5 @@
 'use client';
+import { useTranslations } from 'next-intl';
 import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { Plus } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
@@ -9,7 +10,6 @@ import {
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useMemo, useState } from 'react';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import {
   Tabs,
   TabsContent,
@@ -17,10 +17,19 @@ import {
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import PayoutTransactionList from './table/payoutTransactionList';
 import PayoutOverview from './component/payout-overview';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 
 export default function PayoutView() {
+  const t = useTranslations('AA_PROJECT');
+  const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
+  const formatNum = useNumberFormat();
   const params = useParams();
   const projectID = params.id as UUID;
   const route = useRouter();
@@ -35,7 +44,7 @@ export default function PayoutView() {
     ...(startDate && { startDate }),
     ...(endDate && { endDate }),
   });
-  const { data: statsPayout } = usePayoutStats(projectID, {
+  const { data: statsPayout, isPending } = usePayoutStats(projectID, {
     startDate,
     endDate,
   });
@@ -59,16 +68,17 @@ export default function PayoutView() {
     return [
       {
         label: 'No. of Beneficiaries Recieving Cash',
-        value: statsPayout?.payoutStats?.beneficiaries || 'N/A',
+        value: statsPayout?.payoutStats?.beneficiaries ?? 'N/A',
         infoIcon: true,
-        infoTooltip: 'Total number of beneficiaries recieving cash',
+        infoTooltip: tv('NO_OF_BENEFICIARIES_RECEIVING_CASH_TOOLTIP'),
       },
       {
         label: 'Total Cash Distribution',
-        value:
-          `Rs. ${statsPayout?.payoutStats?.totalCashDistribution}` || 'N/A',
+        value: `Rs. ${
+          statsPayout?.payoutStats?.totalCashDistribution ?? 'N/A'
+        }`,
         infoIcon: true,
-        infoTooltip: 'Total amount of cash distributed to the beneficiaries',
+        infoTooltip: tv('TOTAL_CASH_DISTRIBUTION_TOOLTIP'),
       },
     ];
   }, [statsPayout]);
@@ -77,14 +87,11 @@ export default function PayoutView() {
     <div className="p-4 ">
       <div className="flex justify-between">
         <Heading
-          title="Payout"
-          description="Track all the payout reports here"
+          title={t('PAYOUT2')}
+          description={tv('TRACK_ALL_THE_PAYOUT_REPORTS_HERE')}
         />
         <div className="flex flex-end gap-2 items-center">
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.Municipality]}
-            hasContent={false}
-          >
+          <Can action={ACTIONS.CREATE} subject={SUBJECTS.PAYOUT}>
             <IconLabelBtn
               Icon={Plus}
               handleClick={() => {
@@ -92,11 +99,11 @@ export default function PayoutView() {
                   `/projects/aa/${projectID}/payout/initiate-payout?from=${activeTab}`,
                 );
               }}
-              name="Create Payout"
+              name={tv('CREATE_PAYOUT')}
               variant="default"
               payout-main-bug-refactor
             />
-          </RoleAuth>
+          </Can>
         </div>
       </div>
       <div className="flex justify-between items-center space-x-4 ">
@@ -110,18 +117,19 @@ export default function PayoutView() {
               className="w-full data-[state=active]:bg-white"
               value="payoutOverview"
             >
-              Payout Overview
+              {tv('PAYOUT_OVERVIEW')}
             </TabsTrigger>
             <TabsTrigger
               className="w-full data-[state=active]:bg-white"
               value="payoutList"
             >
-              Payout List
+              {tv('PAYOUT_LIST')}
             </TabsTrigger>
           </TabsList>
           <TabsContent value="payoutOverview">
             <PayoutOverview
               payoutStats={payoutStats}
+              isPending={isPending}
               statsPayout={statsPayout}
               payouts={payouts || { data: [] }}
               handleDateChange={handleDateChange}

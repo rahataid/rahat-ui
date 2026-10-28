@@ -8,7 +8,12 @@ import { UUID } from 'crypto';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import StakeHolderInfo from './staholders.info';
 import { useDeleteStakeholders, useStakeholderDetails } from '@rahat-ui/query';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { useTranslations } from 'next-intl';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 import { ConflictDialog } from './component/conflict-dialog';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { useState } from 'react';
@@ -18,6 +23,7 @@ const StakeholdersDetail = () => {
   const projectId = params.id as UUID;
   const stakeholderId = params.stakeholdersId as UUID;
   const searchParams = useSearchParams();
+  const t = useTranslations('AA_PROJECT');
   const redirectTo = searchParams.get('groupId');
   const details = useStakeholderDetails(projectId, { uuid: stakeholderId });
   const removeStakeholder = useDeleteStakeholders();
@@ -63,31 +69,31 @@ const StakeholdersDetail = () => {
       />
       <div className="flex justify-between items-center">
         <HeaderWithBack
-          title={'Stakeholders Details'}
-          subtitle="Detailed view of the selected stakeholder"
+          title={t('STAKEHOLDER_DETAILS')}
+          subtitle={t('DETAILED_VIEW_OF_THE_SELECTED_STAKEHOLDER')}
           path={routeNav}
         />
-        <RoleAuth
-          roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-        >
-          <div className="flex flex-end justify-end gap-[clamp(4px,0.6vw,12px)] mt-auto">
+        <div className="flex flex-end justify-end gap-[clamp(4px,0.6vw,12px)] mt-auto">
+          <Can action={ACTIONS.DELETE} subject={SUBJECTS.STAKEHOLDER}>
             <DeleteButton
               className="rounded-sm flex gap-1 items-center p-[clamp(4px,0.8vw,8px)] h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)] [&_svg]:size-[clamp(14px,1.4vw,18px)]"
-              name="stakeholder"
-              label="Delete"
+              name={t('STAKEHOLDER')}
+              label={t('DELETE')}
               handleContinueClick={handleDelete}
             />
+          </Can>
+          <Can action={ACTIONS.UPDATE} subject={SUBJECTS.STAKEHOLDER}>
             <EditButton
               className="rounded-sm flex gap-1 items-center p-[clamp(4px,0.8vw,8px)] h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)] [&_svg]:size-[clamp(14px,1.4vw,18px)]"
-              label="Edit"
+              label={t('EDIT')}
               onFallback={() =>
                 router.push(
                   `/projects/aa/${projectId}/stakeholders/${stakeholderId}/edit`,
                 )
               }
             />
-          </div>
-        </RoleAuth>
+          </Can>
+        </div>
       </div>
 
       <div className="flex">

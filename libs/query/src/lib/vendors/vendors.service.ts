@@ -14,6 +14,8 @@ import { useEffect } from 'react';
 import { api } from '../../utils/api';
 import { UUID } from 'crypto';
 import { useSwal } from '../../swal';
+import { useTranslations } from 'next-intl';
+import { resolveBackendErrorMessage } from '../../utils/i18n/backend-error';
 
 export const useVendorList = (
   payload: any,
@@ -51,6 +53,8 @@ export const useVendorList = (
             name: d.User?.name,
             phone: d.User?.phone,
             gender: d.User?.gender,
+            projectArea: d.User?.extras?.projectArea,
+            registeredApps: d.User?.extras?.registeredApps || [],
             createdAt: d.User?.createdAt,
           })),
         };
@@ -89,6 +93,24 @@ export const useGetVendor = (uuid: UUID): UseQueryResult<any, Error> => {
       queryKey: [TAGS.GET_VENDOR_DETAILS, uuid],
       // @ts-ignore
       queryFn: () => getVendor(uuid),
+      // Backend returns either the user object (unassigned vendor) or an
+      // array of project-link rows (assigned vendor). Normalize to one shape
+      // so all readers see consistent fields.
+      select: (res: any) => {
+        const payload = res?.data ?? res;
+        if (Array.isArray(payload)) {
+          const first = payload[0] as any;
+          return {
+            ...(res ?? {}),
+            data: {
+              ...(first?.User ?? {}),
+              projects: payload.map((row: any) => row?.Project).filter(Boolean),
+              vendorIdentifier: first?.extras,
+            },
+          };
+        }
+        return res;
+      },
     },
     queryClient,
   );
@@ -110,6 +132,7 @@ const updateVendor = async (uuid: UUID, payload: any) => {
 export const useUpdateVendor = () => {
   const qc = useQueryClient();
   const alert = useSwal();
+  const t = useTranslations();
   const toast = alert.mixin({
     toast: true,
     position: 'top-end',
@@ -119,18 +142,32 @@ export const useUpdateVendor = () => {
   return useMutation({
     mutationFn: ({ uuid, payload }: { uuid: UUID; payload: any }) =>
       updateVendor(uuid, payload),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: [TAGS.GET_VENDORS] });
+    onSuccess: (_data, variables: any) => {
+      qc.invalidateQueries({
+        queryKey: [TAGS.GET_VENDORS],
+      });
       qc.invalidateQueries({ queryKey: [TAGS.GET_VENDOR_DETAILS] });
       toast.fire({
-        title: 'Vendor updated successfully.',
+        title:
+          variables?.successMessage ||
+          t('GLOBAL.VENDOR_UPDATED_SUCCESSFULLY' as never),
         icon: 'success',
       });
     },
-    onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+    onError: (error: any, variables: any) => {
+      const code = error?.response?.data?.code;
+      const name = error?.response?.data?.name;
+      const errorMessage = resolveBackendErrorMessage(
+        t,
+        code || name,
+        error?.response?.data?.params,
+        ['VENDORS', 'USERS'],
+        error?.response?.data?.message || t('GLOBAL.ERROR' as never),
+      );
       toast.fire({
-        title: 'Error while updating vendor.',
+        title:
+          variables?.errorMessage ||
+          t('GLOBAL.ERROR_WHILE_UPDATING_VENDOR' as never),
         icon: 'error',
         text: errorMessage,
       });
@@ -154,6 +191,7 @@ const removeVendor = async ({
 export const useRemoveVendor = () => {
   const qc = useQueryClient();
   const alert = useSwal();
+  const t = useTranslations();
   const toast = alert.mixin({
     toast: true,
     position: 'top-end',
@@ -169,18 +207,32 @@ export const useRemoveVendor = () => {
       vendorId: UUID;
       projectId?: UUID;
     }) => removeVendor({ vendorId, projectId }),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: [TAGS.GET_VENDORS] });
+    onSuccess: (_data, variables: any) => {
+      qc.invalidateQueries({
+        queryKey: [TAGS.GET_VENDORS],
+      });
       qc.invalidateQueries({ queryKey: [TAGS.GET_VENDOR_DETAILS] });
       toast.fire({
-        title: 'Vendor removed successfully.',
+        title:
+          variables?.successMessage ||
+          t('GLOBAL.VENDOR_REMOVED_SUCCESSFULLY' as never),
         icon: 'success',
       });
     },
-    onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+    onError: (error: any, variables: any) => {
+      const code = error?.response?.data?.code;
+      const name = error?.response?.data?.name;
+      const errorMessage = resolveBackendErrorMessage(
+        t,
+        code || name,
+        error?.response?.data?.params,
+        ['VENDORS', 'USERS'],
+        error?.response?.data?.message || t('GLOBAL.ERROR' as never),
+      );
       toast.fire({
-        title: 'Error while removing vendor.',
+        title:
+          variables?.errorMessage ||
+          t('GLOBAL.ERROR_WHILE_REMOVING_VENDOR' as never),
         icon: 'error',
         text: errorMessage,
       });

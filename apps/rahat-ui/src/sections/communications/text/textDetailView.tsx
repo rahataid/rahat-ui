@@ -12,7 +12,10 @@ import InfoCard from '../infoCard';
 import TextDetailTable from './textDetailTable';
 
 import { useGetCampaign } from '@rumsan/communication-query';
+import { useTranslations } from 'next-intl';
 export default function TextDetailView() {
+  const t = useTranslations('COMMUNICATIONS_TEXT_SMS');
+  const tg = useTranslations('GLOBAL');
   const params = useParams<{ tag: string; id: string }>();
   const { data, isLoading} = useGetCampaign({
     id: Number(params.id),
@@ -21,11 +24,11 @@ export default function TextDetailView() {
   return (
     <>
       {isLoading ? (
-        <p>Loading ...</p>
+        <p>{t('LOADING')}</p>
       ) : (
         <div className="p-2 bg-secondary">
           <div className="flex justify-between font-semibold text-lg items-center mt-2">
-            <div>Campaign Name</div>
+            <div>{tg('CAMPAIGN_NAME')}</div>
           </div>
           <div className="mt-2 grid grid-cols-3 gap-5">
             <div className="col-span-2">
@@ -43,7 +46,7 @@ export default function TextDetailView() {
             </div>
             <Card className="shadow-md">
               <CardHeader>
-                <CardTitle>Message</CardTitle>
+                <CardTitle>{tg('MESSAGE')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p>

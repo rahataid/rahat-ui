@@ -1,8 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useProjectAction, useProjectSettingsStore } from '../../projects';
-import { useSwal } from 'libs/query/src/swal';
+import { toast } from 'react-toastify';
+import { showToast } from 'libs/query/src/utils/custom-toast';
 import { UUID } from 'crypto';
 import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
+import { useTranslations } from 'next-intl';
+import { resolveBackendErrorMessage } from '../../../utils/i18n/backend-error';
 
 export type HealthStatus = 'HEALTHY' | 'UNHEALTHY' | 'DEGRADED';
 
@@ -51,14 +54,9 @@ export interface HealthCacheData {
 }
 
 export const useCreateDailyMonitoring = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -77,18 +75,22 @@ export const useCreateDailyMonitoring = () => {
     },
     onSuccess: () => {
       q.reset();
-      toast.fire({
-        title: 'Added successfully',
-        icon: 'success',
-      });
+      toast.success(t('ADDED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['DATA_SOURCES_DAILY_MONITORING'],
+        rawMessage,
+      );
       q.reset();
-      toast.fire({
-        title: 'Error while adding.',
-        icon: 'error',
-        text: errorMessage,
+      showToast({
+        type: 'error',
+        title: t('ERROR_WHILE_ADDING'),
+        description: errorMessage,
       });
     },
   });
@@ -191,15 +193,10 @@ export const useSingleMonitoring = (uuid: UUID, monitoringId: UUID) => {
 };
 
 export const useUpdateMonitoring = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -221,33 +218,32 @@ export const useUpdateMonitoring = () => {
       qc.invalidateQueries({
         queryKey: ['dailyMonitorings', 'dailyMonitoring'],
       });
-      toast.fire({
-        title: 'Updated successfully',
-        icon: 'success',
-      });
+      toast.success(t('UPDATED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['DATA_SOURCES_DAILY_MONITORING'],
+        rawMessage,
+      );
       q.reset();
-      toast.fire({
-        title: 'Error while updating.',
-        icon: 'error',
-        text: errorMessage,
+      showToast({
+        type: 'error',
+        title: t('ERROR_WHILE_UPDATING'),
+        description: errorMessage,
       });
     },
   });
 };
 
 export const useRemoveMonitoring = () => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const qc = useQueryClient();
   const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -269,18 +265,22 @@ export const useRemoveMonitoring = () => {
     onSuccess: () => {
       q.reset();
       qc.invalidateQueries({ queryKey: ['dailyMonitorings'] });
-      toast.fire({
-        title: 'Removed successfully',
-        icon: 'success',
-      });
+      toast.success(t('REMOVED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['DATA_SOURCES_DAILY_MONITORING'],
+        rawMessage,
+      );
       q.reset();
-      toast.fire({
-        title: 'Error while removing.',
-        icon: 'error',
-        text: errorMessage,
+      showToast({
+        type: 'error',
+        title: t('ERROR_WHILE_REMOVING'),
+        description: errorMessage,
       });
     },
   });

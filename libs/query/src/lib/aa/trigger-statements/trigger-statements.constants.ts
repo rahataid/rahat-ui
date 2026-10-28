@@ -17,4 +17,7 @@ export const PHASE_QUERY_KEYS = {
   TRIGGER_STATEMENTS: 'triggerStatements',
   TRIGGER_STATEMENT: 'triggerStatement',
   PHASE_HISTORY: 'phaseHistory',
+  TOKEN_DETAILS: 'aa.tokenDetails',
+  TRANSFER_LIST: 'aa.transferList',
+  SAFE_OWNERS: 'safeOwners',
 };

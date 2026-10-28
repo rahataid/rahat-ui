@@ -18,6 +18,7 @@ import { useCommunityBeneficiaryGroupTableColumns } from './useCommunityBenefici
 import { ChevronLeftIcon } from 'lucide-react';
 import HeaderWithBack from '../projects/components/header.with.back';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 function ViewCommunityGroup() {
   const router = useRouter();
@@ -39,6 +40,7 @@ function ViewCommunityGroup() {
     ...(filters as any),
   });
 
+  const t = useTranslations('COMMUNITY_BENEFICIARY_LIST');
   const columns = useCommunityBeneficiaryGroupTableColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const table = useReactTable({
@@ -59,9 +61,8 @@ function ViewCommunityGroup() {
   return (
     <div className="p-4">
       <HeaderWithBack
-        title="Import Group from Community Tool"
-        subtitle=" Here beneficiary groups from the Community Tool are listed and
-          available for import"
+        title={t('IMPORT_GROUP_FROM_COMMUNITY_TOOL')}
+        subtitle={t('HERE_BENEFICIARY_GROUPS_FROM_THE_COMMUNITY')}
         path="/beneficiary"
       />
       <div className="p-4  border rounded-sm ">

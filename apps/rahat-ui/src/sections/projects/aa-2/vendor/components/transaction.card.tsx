@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import {
   PROJECT_SETTINGS_KEYS,
   useProjectSettingsStore,
@@ -8,6 +9,8 @@ import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 import { getAssetCode } from 'apps/rahat-ui/src/utils/stellar';
 import { formatEnumString } from 'apps/rahat-ui/src/utils/string';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { UUID } from 'crypto';
 import { ScrollArea } from 'libs/shadcn/src/components/ui/scroll-area';
 import { ArrowLeftRight, Copy, CopyCheck, Info } from 'lucide-react';
@@ -38,6 +41,9 @@ type Props = {
 };
 
 const Transaction = ({ amount, date, hash, title, type }: Txn) => {
+  const t = useTranslations('AA_PROJECT');
+  const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
   const { id } = useParams();
   const projectId = id as string;
 
@@ -60,7 +66,7 @@ const Transaction = ({ amount, date, hash, title, type }: Txn) => {
         <div>
           <div>
             <p className="font-normal text-[14px] leading-[16px] text-[#37404C]">
-              {title ? formatEnumString(title) : 'N/A'}
+              {title ? formatEnumString(title) : t('N_A')}
             </p>
           </div>
           <div className="flex gap-1">
@@ -80,22 +86,14 @@ const Transaction = ({ amount, date, hash, title, type }: Txn) => {
           </div>
           <p className="text-[14px] font-normal text-[#64748B] leading-[16px]">
             {date
-              ? Intl.DateTimeFormat('en-US', {
-                  year: 'numeric',
-                  month: 'short',
-                  day: 'numeric',
-                  hour12: true,
-                  hour: 'numeric',
-                  minute: 'numeric',
-                  second: 'numeric',
-                }).format(new Date(date))
-              : 'N/A'}
+              ? formatDate(date, 'MMM d, yyyy, h:mm:ss a')
+              : t('N_A')}
           </p>
         </div>
       </div>
       <div>
         <p className="font-semibold text-[14px] leading-[24px]">
-          {amount} {type === 'cva' ? getAssetCode(settings, projectId) : ''}
+          {formatNum(Number(amount))} {type === 'cva' ? getAssetCode(settings, projectId) : ''}
         </p>
       </div>
     </div>
@@ -155,6 +153,8 @@ export default function TransactionCard({
   inkindTransactions,
   loading,
 }: Props) {
+  const t = useTranslations('AA_PROJECT');
+  const formatNum = useNumberFormat();
   const [activeTab, setActiveTab] = useState('cva');
 
   const cvaTransactions =
@@ -169,10 +169,10 @@ export default function TransactionCard({
     })) || [];
 
   const TabsTriggerStats = [
-    { value: 'cva', title: 'CVA', count: cvaTransactions.length },
+    { value: 'cva', title: t('CVA'), count: cvaTransactions.length },
     {
       value: 'inkind',
-      title: 'In-kind',
+      title: t('IN_KIND'),
       count: normalizedInkindTransactions.length,
     },
   ];
@@ -180,9 +180,9 @@ export default function TransactionCard({
   return (
     <div className="border rounded-sm p-4">
       <Heading
-        title="Recent Transactions"
+        title={t('RECENT_TRANSACTIONS')}
         titleStyle="text-lg"
-        description="List of recently made transactions"
+        description={t('RECENT_TRANSACTIONS_DESC')}
       />
       {loading ? (
         <SkeletonTransaction />
@@ -203,7 +203,7 @@ export default function TransactionCard({
                       : 'bg-gray-300 text-gray-600'
                   }`}
                 >
-                  {tab.count}
+                  {formatNum(tab.count)}
                 </span>
               </TabsTrigger>
             ))}
@@ -222,7 +222,7 @@ export default function TransactionCard({
         <div className="h-full grid place-items-center">
           <div className="flex flex-col items-center text-muted-foreground">
             <Info />
-            <p className="text-sm">No transactions made</p>
+            <p className="text-sm">{t('NO_TRANSACTIONS')}</p>
           </div>
         </div>
       )}

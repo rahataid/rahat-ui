@@ -8,7 +8,7 @@ export * from './phases';
 export * from './graph';
 export * from './daily-monitoring';
 export * from './communication';
-export * from './funManagement';
+export * from './fundManagement';
 export * from './vendors';
 export * from './payout';
 export * from './inkinds';

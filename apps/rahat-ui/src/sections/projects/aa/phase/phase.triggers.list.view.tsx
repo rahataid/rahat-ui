@@ -9,21 +9,24 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
+import { useTranslations } from 'next-intl';
 
 type IProps = {
     triggersList: any
 }
 
 export default function PhaseTriggersListView({ triggersList }: IProps) {
+    const tg = useTranslations('GLOBAL');
+    const t = useTranslations('AA_PROJECT');
     const columns: ColumnDef<any>[] = [
         {
             accessorKey: 'title',
-            header: 'Title',
+            header: tg('TITLE'),
             cell: ({ row }) => { return row.getValue('title') },
         },
         {
             accessorKey: 'optional',
-            header: () => <div className='text-center'>Optional?</div>,
+            header: () => <div className='text-center'>{t('OPTIONAL')}?</div>,
             cell: () => <div className='text-center'><Switch /></div>,
         },
     ];

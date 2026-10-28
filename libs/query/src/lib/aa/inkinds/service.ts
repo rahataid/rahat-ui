@@ -1,8 +1,11 @@
 'use client';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useProjectAction } from '../../projects';
-import { useSwal } from 'libs/query/src/swal';
+import { toast } from 'react-toastify';
+import { showToast } from 'libs/query/src/utils/custom-toast';
 import { UUID } from 'crypto';
+import { useTranslations } from 'next-intl';
+import { resolveBackendErrorMessage } from '../../../utils/i18n/backend-error';
 
 export type InkindType = 'PRE_DEFINED' | 'WALK_IN';
 
@@ -28,16 +31,6 @@ export type ListInkindParams = {
   type?: string;
   name?: string;
 };
-
-function useToast() {
-  const alert = useSwal();
-  return alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
-}
 
 // Common runAction hook as similar mutation is required over sevices
 async function runAction(
@@ -79,87 +72,105 @@ export const useGetOneInkind = (projectUUID: UUID, inkindUUID: string) => {
 };
 
 export const useCreateInkind = (projectUUID: UUID) => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const toast = useToast();
 
   return useMutation({
     mutationFn: (payload: CreateInkindPayload) =>
       runAction(q, projectUUID, 'aa.inkinds.create', payload as any),
     onSuccess: () => {
       q.reset();
-      toast.fire({
-        title: 'In-kind item created successfully.',
-        icon: 'success',
-      });
+      toast.success(t('IN_KIND_ITEM_CREATED_SUCCESSFULLY'));
       queryClient.invalidateQueries({
         queryKey: ['aa.inkinds.get', projectUUID],
       });
     },
     onError: (error: any) => {
       q.reset();
-      toast.fire({
-        title: 'Error while creating in-kind item.',
-        icon: 'error',
-        text: error?.response?.data?.message || 'Error',
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['IN_KIND_VENDORS'],
+        rawMessage,
+      );
+      showToast({
+        type: 'error',
+        title: t('ERROR_WHILE_CREATING_IN_KIND_ITEM'),
+        description: errorMessage,
       });
     },
   });
 };
 
 export const useUpdateInkind = (projectUUID: UUID) => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const toast = useToast();
 
   return useMutation({
     mutationFn: (payload: UpdateInkindPayload) =>
       runAction(q, projectUUID, 'aa.inkinds.update', payload as any),
     onSuccess: () => {
       q.reset();
-      toast.fire({
-        title: 'In-kind item updated successfully.',
-        icon: 'success',
-      });
+      toast.success(t('IN_KIND_ITEM_UPDATED_SUCCESSFULLY'));
       queryClient.invalidateQueries({
         queryKey: ['aa.inkinds.get', projectUUID],
       });
     },
     onError: (error: any) => {
       q.reset();
-      toast.fire({
-        title: 'Error while updating in-kind item.',
-        icon: 'error',
-        text: error?.response?.data?.message || 'Error',
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['IN_KIND_VENDORS'],
+        rawMessage,
+      );
+      showToast({
+        type: 'error',
+        title: t('ERROR_WHILE_UPDATING_IN_KIND_ITEM'),
+        description: errorMessage,
       });
     },
   });
 };
 
 export const useDeleteInkind = (projectUUID: UUID) => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const toast = useToast();
 
   return useMutation({
     mutationFn: ({ uuid }: { uuid: string }) =>
       runAction(q, projectUUID, 'aa.inkinds.delete', { uuid }),
     onSuccess: () => {
       q.reset();
-      toast.fire({
-        title: 'In-kind item deleted successfully.',
-        icon: 'success',
-      });
+      toast.success(t('IN_KIND_ITEM_DELETED_SUCCESSFULLY'));
       queryClient.invalidateQueries({
         queryKey: ['aa.inkinds.get', projectUUID],
       });
     },
     onError: (error: any) => {
       q.reset();
-      toast.fire({
-        title: 'Error while deleting in-kind item.',
-        icon: 'error',
-        text: error?.response?.data?.message || 'Error',
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['IN_KIND_VENDORS'],
+        rawMessage,
+      );
+      showToast({
+        type: 'error',
+        title: t('ERROR_WHILE_DELETING_IN_KIND_ITEM'),
+        description: errorMessage,
       });
     },
   });
@@ -221,16 +232,17 @@ export const useInkindTransactions = (
 };
 
 export const useAddInkindStock = (projectUUID: UUID) => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const toast = useToast();
 
   return useMutation({
     mutationFn: (payload: { inkindId: string; quantity: number }) =>
       runAction(q, projectUUID, 'aaProject.inkindStock.add', payload as any),
     onSuccess: () => {
       q.reset();
-      toast.fire({ title: 'Stock added successfully.', icon: 'success' });
+      toast.success(t('STOCK_ADDED_SUCCESSFULLY'));
       queryClient.invalidateQueries({
         queryKey: ['aa.inkinds.get', projectUUID],
       });
@@ -240,26 +252,35 @@ export const useAddInkindStock = (projectUUID: UUID) => {
     },
     onError: (error: any) => {
       q.reset();
-      toast.fire({
-        title: 'Error while adding stock.',
-        icon: 'error',
-        text: error?.response?.data?.message || 'Error',
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['IN_KIND_VENDORS'],
+        rawMessage,
+      );
+      showToast({
+        type: 'error',
+        title: t('ERROR_WHILE_ADDING_STOCK'),
+        description: errorMessage,
       });
     },
   });
 };
 
 export const useRemoveInkindStock = (projectUUID: UUID) => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const toast = useToast();
 
   return useMutation({
     mutationFn: (payload: { inkindUuid: string; quantity: number }) =>
       runAction(q, projectUUID, 'aaProject.inkindStock.remove', payload as any),
     onSuccess: () => {
       q.reset();
-      toast.fire({ title: 'Stock removed successfully.', icon: 'success' });
+      toast.success(t('STOCK_REMOVED_SUCCESSFULLY'));
       queryClient.invalidateQueries({
         queryKey: ['aa.inkinds.get', projectUUID],
       });
@@ -269,10 +290,18 @@ export const useRemoveInkindStock = (projectUUID: UUID) => {
     },
     onError: (error: any) => {
       q.reset();
-      toast.fire({
-        title: 'Error while removing stock.',
-        icon: 'error',
-        text: error?.response?.data?.message || 'Error',
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['IN_KIND_VENDORS'],
+        rawMessage,
+      );
+      showToast({
+        type: 'error',
+        title: t('ERROR_WHILE_REMOVING_STOCK'),
+        description: errorMessage,
       });
     },
   });
@@ -296,9 +325,10 @@ export const useGroupInkindAllocations = (projectUUID: UUID, payload?: any) => {
 };
 
 export const useUpdateGroupInkindAllocation = (projectUUID: UUID) => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const toast = useToast();
 
   return useMutation({
     mutationFn: (payload: {
@@ -314,10 +344,7 @@ export const useUpdateGroupInkindAllocation = (projectUUID: UUID) => {
       ),
     onSuccess: () => {
       q.reset();
-      toast.fire({
-        title: 'Allocation updated successfully.',
-        icon: 'success',
-      });
+      toast.success(t('ALLOCATION_UPDATED_SUCCESSFULLY'));
       queryClient.invalidateQueries({
         queryKey: ['aaProject.groupInkinds.list', projectUUID],
       });
@@ -330,10 +357,18 @@ export const useUpdateGroupInkindAllocation = (projectUUID: UUID) => {
     },
     onError: (error: any) => {
       q.reset();
-      toast.fire({
-        title: 'Error while updating allocation.',
-        icon: 'error',
-        text: error?.response?.data?.message || 'Error',
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['IN_KIND_VENDORS'],
+        rawMessage,
+      );
+      showToast({
+        type: 'error',
+        title: t('ERROR_WHILE_UPDATING_ALLOCATION'),
+        description: errorMessage,
       });
     },
   });
@@ -423,9 +458,10 @@ export const useGetUnassignedGroupInkind = (
 };
 
 export const useAssignGroupInkind = (projectUUID: UUID) => {
+  const t = useTranslations('AA_PROJECT');
+  const tb = useTranslations();
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const toast = useToast();
 
   return useMutation({
     mutationFn: (payload: {
@@ -442,10 +478,7 @@ export const useAssignGroupInkind = (projectUUID: UUID) => {
       ),
     onSuccess: () => {
       q.reset();
-      toast.fire({
-        title: 'Inkind assigned to group successfully.',
-        icon: 'success',
-      });
+      toast.success(t('INKIND_ASSIGNED_TO_GROUP_SUCCESSFULLY'));
       queryClient.invalidateQueries({
         queryKey: ['aa.inkinds.get', projectUUID],
       });
@@ -457,11 +490,19 @@ export const useAssignGroupInkind = (projectUUID: UUID) => {
       });
     },
     onError: (error: any) => {
+      const rawMessage = error?.response?.data?.message || t('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['IN_KIND_VENDORS'],
+        rawMessage,
+      );
       q.reset();
-      toast.fire({
-        title: 'Error while assigning inkind to group.',
-        icon: 'error',
-        text: error?.response?.data?.message || 'Error',
+      showToast({
+        type: 'error',
+        title: t('ERROR_WHILE_ASSIGNING_INKIND_TO_GROUP'),
+        description: errorMessage,
       });
     },
   });

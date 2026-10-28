@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import { useParams } from 'next/navigation';
 import {
@@ -11,6 +12,7 @@ import BeneficiaryGroupsListView from './beneficiary/beneficiary.groups.list.vie
 import AddButton from '../../components/add.btn';
 
 export default function GroupsView() {
+  const t = useTranslations('AA_PROJECT');
   const { id: projectId } = useParams();
   const [activeTab, setActiveTab] =
     React.useState<string>('stakeholdersGroups');
@@ -23,20 +25,20 @@ export default function GroupsView() {
               value="stakeholdersGroups"
               className="w-52 bg-card border data-[state=active]:border-primary"
             >
-              Stakeholders Groups
+              {t('STAKEHOLDERS_GROUPS')}
             </TabsTrigger>
             <TabsTrigger
               value="beneficiaryGroups"
               className="w-52 bg-card border data-[state=active]:border-primary"
             >
-              Beneficiary Groups
+              {t('BENEFICIARY_GROUP')}s
             </TabsTrigger>
           </TabsList>
           {/* Add Groups Btn  */}
           {activeTab === 'stakeholdersGroups' && (
             <AddButton
               path={`/projects/aa/${projectId}/groups/add`}
-              name="Stakeholders Groups"
+              name={t('STAKEHOLDERS_GROUPS')}
             />
           )}
         </div>

@@ -13,10 +13,15 @@ import {
 } from '@tanstack/react-table';
 import { useProjectBeneficiaryGroupDetailsTableColumns } from './columns';
 import { useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { UUID } from 'crypto';
 import {
+  useExportBeneficiariesExcel,
   useGenerateQrPdf,
   useGetBeneficiariesQr,
+  useGetSponsorshipStatusForGroup,
+  useRegenerateQrPdf,
+  useRetrySponsorshipForGroup,
   useSingleBeneficiaryGroup,
 } from '@rahat-ui/query';
 import {
@@ -29,12 +34,24 @@ import {
 } from 'apps/rahat-ui/src/common';
 
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { CloudDownload } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
+import { ChevronDown, CloudDownload, RefreshCw } from 'lucide-react';
+import { QrOtpConfirmValues, QrOtpDialog } from './qr-otp.dialog';
+import { exportToExcel } from 'apps/rahat-ui/src/utils/exportToExcle';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 const BeneficiaryGroupsDetails = () => {
+  const tGlobal = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const params = useParams();
   const projectId = params.id as UUID;
   const groupId = params.groupId as UUID;
+  const t = useTranslations('AA_PROJECT');
   const { data: groupDetails, isPending: isGroupLoading } =
     useSingleBeneficiaryGroup(projectId, groupId);
 
@@ -43,7 +60,72 @@ const BeneficiaryGroupsDetails = () => {
     groupId,
   });
 
-  const { mutate: generateQr } = useGenerateQrPdf(projectId);
+  const { mutate: generateQr, isPending: isGeneratingQr } =
+    useGenerateQrPdf(projectId);
+  const { mutate: regenerateQr, isPending: isRegeneratingQr } =
+    useRegenerateQrPdf(projectId);
+  const [isQrOptionsOpen, setIsQrOptionsOpen] = useState(false);
+  const [isExcelOptionsOpen, setIsExcelOptionsOpen] = useState(false);
+  // Tracks which action the dialog's confirm button should trigger --
+  // the initial generate, or a re-generate of an already-completed QR.
+  const [qrDialogMode, setQrDialogMode] = useState<'generate' | 'regenerate'>(
+    'generate',
+  );
+  const { mutate: exportExcel, isPending: isExporting } =
+    useExportBeneficiariesExcel(projectId);
+
+  const isSubmittingQr = isGeneratingQr || isRegeneratingQr;
+
+  const handleGenerateQr = ({
+    includeOtp,
+    onlyUnphonedBeneficiaries,
+    pdfFields,
+  }: QrOtpConfirmValues) => {
+    if (isSubmittingQr) return;
+    const mutate = qrDialogMode === 'regenerate' ? regenerateQr : generateQr;
+    mutate(
+      { groupId, includeOtp, onlyUnphonedBeneficiaries, pdfFields },
+      {
+        onSuccess: () => setIsQrOptionsOpen(false),
+      },
+    );
+  };
+
+  const openQrDialog = (mode: 'generate' | 'regenerate') => {
+    setQrDialogMode(mode);
+    setIsQrOptionsOpen(true);
+  };
+
+  const handleExportExcel = ({
+    includeOtp,
+    onlyUnphonedBeneficiaries,
+    pdfFields,
+  }: QrOtpConfirmValues) => {
+    if (isExporting) return;
+
+    exportExcel(
+      {
+        groupId,
+        includeOtp,
+        onlyUnphonedBeneficiaries,
+        excelFields: pdfFields,
+      },
+      {
+        onSuccess: (rows) => {
+          const list = Array.isArray(rows) ? rows : [];
+          exportToExcel(list, `beneficiaries-${groupDetails?.name ?? groupId}`);
+          setIsExcelOptionsOpen(false);
+        },
+      },
+    );
+  };
+
+  const { data: sponsorshipStatus } = useGetSponsorshipStatusForGroup({
+    projectUuid: projectId,
+    groupUuid: groupId,
+  });
+  const { mutate: retrySponsorship, isPending: isRetrying } =
+    useRetrySponsorshipForGroup(projectId);
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
@@ -97,53 +179,121 @@ const BeneficiaryGroupsDetails = () => {
       <div className="flex justify-between items-center ">
         <HeaderWithBack
           title={groupDetails?.name}
-          subtitle="Detailed view of the selected beneficiary groups"
+          subtitle={t('DETAILED_VIEW_OF_THE_SELECTED_BENEFICIARY2')}
           path={`/projects/aa/${projectId}/beneficiary?tab=beneficiaryGroups`}
         />
-        {/* <div className="flex items-end justify-end"> */}
-        {qrDetails?.status === 'completed' ? (
+        <div className="flex items-center gap-2">
           <Button
             variant="outline"
-            onClick={() => window.open(qrDetails.fileUrl, '_blank')}
+            onClick={() => setIsExcelOptionsOpen(true)}
             className="cursor-pointer"
+            disabled={isExporting}
           >
             <CloudDownload className="mr-1" />
-            Download QR
+            {t('DOWNLOAD_EXCEL')}
           </Button>
-        ) : (
-          <Button
-            variant="outline"
-            onClick={() => generateQr(groupId)}
-            className="cursor-pointer"
-            disabled={isQrLoading}
-          >
-            <CloudDownload className="mr-1" />
-            Generate QR
-          </Button>
-        )}
-
-        {/* </div> */}
+          {qrDetails?.status === 'completed' ? (
+            <div className="flex">
+              <Button
+                variant="outline"
+                onClick={() => window.open(qrDetails.fileUrl, '_blank')}
+                className="cursor-pointer rounded-r-none border-r-0"
+                disabled={isSubmittingQr}
+              >
+                <CloudDownload className="mr-1" />
+                {t('DOWNLOAD_QR')}
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="cursor-pointer rounded-l-none px-2"
+                    disabled={isSubmittingQr}
+                  >
+                    <ChevronDown size={16} />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    onSelect={() => window.open(qrDetails.fileUrl, '_blank')}
+                  >
+                    <CloudDownload className="mr-2 h-4 w-4" />
+                    {t('DOWNLOAD_QR')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => openQrDialog('regenerate')}>
+                    <RefreshCw className="mr-2 h-4 w-4" />
+                    {t('REGENERATE_QR')}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          ) : (
+            <Button
+              variant="outline"
+              onClick={() => openQrDialog('generate')}
+              className="cursor-pointer"
+              disabled={isQrLoading || isSubmittingQr}
+            >
+              <CloudDownload className="mr-1" />
+              {t('GENERATE_QR')}
+            </Button>
+          )}
+          {sponsorshipStatus?.isStellarChain && (
+            <Button
+              variant="outline"
+              className="cursor-pointer"
+              disabled={isRetrying}
+              onClick={() => retrySponsorship(groupId)}
+            >
+              {t('RETRY_SPONSORSHIP')}
+            </Button>
+          )}
+        </div>
       </div>
+      {sponsorshipStatus?.isStellarChain ? (
+        <div className="flex items-center gap-4 mb-3 text-sm">
+          <span className="px-2 py-1 rounded bg-secondary text-secondary-foreground">
+            {t('SPONSORED_OF_TOTAL', {
+              sponsored: formatNum(sponsorshipStatus.sponsored),
+              total: formatNum(sponsorshipStatus.total),
+            })}
+          </span>
+          {sponsorshipStatus.pending === 0 && (
+            <>
+              <span className="text-green-600">
+                {t('SUCCESS_COUNT', {
+                  count: formatNum(sponsorshipStatus.sponsored),
+                })}
+              </span>
+              <span className="text-red-600">
+                {t('FAILED_COUNT', {
+                  count: formatNum(sponsorshipStatus.failed),
+                })}
+              </span>
+            </>
+          )}
+        </div>
+      ) : null}
       <div className="flex gap-6 mb-5">
         <DataCard
           className="border-solid w-1/4 rounded-xl"
           iconStyle="bg-white text-secondary-muted"
-          title="Total Beneficiaries"
+          title={t('TOTAL_BENEFICIARIES')}
           Icon={User}
-          number={groupDetails?.groupedBeneficiaries?.length || 0}
+          number={formatNum(groupDetails?.groupedBeneficiaries?.length ?? 0)}
         />
         {/* <DataCard
           className="border-solid w-1/4 rounded-xl"
           iconStyle="bg-white text-secondary-muted"
-          title="Total Token Assigned"
+          title={t('TOTAL_TOKEN_ASSIGNED')}
           Icon={Coins}
-          number={totalTokensAssigned}
+          number={formatNum(totalTokensAssigned)}
         /> */}
       </div>
       <div className="p-4 rounded-sm border">
         <SearchInput
           className="w-full m-1"
-          name="walletAddress"
+          name={tGlobal('WALLET_ADDRESS')}
           value={
             (table.getColumn('walletAddress')?.getFilterValue() as string) ?? ''
           }
@@ -155,6 +305,22 @@ const BeneficiaryGroupsDetails = () => {
 
         <ClientSidePagination table={table} />
       </div>
+      <QrOtpDialog
+        open={isQrOptionsOpen}
+        onOpenChange={setIsQrOptionsOpen}
+        onConfirm={handleGenerateQr}
+        isPending={isSubmittingQr}
+      />
+      <QrOtpDialog
+        open={isExcelOptionsOpen}
+        onOpenChange={setIsExcelOptionsOpen}
+        onConfirm={handleExportExcel}
+        isPending={isExporting}
+        title={t('DOWNLOAD_EXCEL')}
+        description={t('EXCEL_EXPORT_OPTIONS_DESCRIPTION')}
+        confirmLabel={t('DOWNLOAD')}
+        pendingLabel={t('GENERATING')}
+      />
     </div>
   );
 };

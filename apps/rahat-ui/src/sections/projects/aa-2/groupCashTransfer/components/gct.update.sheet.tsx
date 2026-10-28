@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -26,7 +27,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useUpdateGroupCashTransfer } from '@rahat-ui/query';
-import { GctGroupSchema, GctGroupValues, applyDuplicateErrors } from '../types/gct.schemas';
+import { buildGctGroupSchema, GctGroupValues, applyDuplicateErrors } from '../types/gct.schemas';
 import { BasicInfoSection, BankDetailsSection } from './gct.form-sections';
 
 interface GctUpdateSheetProps {
@@ -42,6 +43,8 @@ export default function GctUpdateSheet({
   open,
   onOpenChange,
 }: GctUpdateSheetProps) {
+  const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
+  const tGlobal = useTranslations('GLOBAL');
   const updateGct = useUpdateGroupCashTransfer(projectUUID);
 
   const [initialTags, setInitialTags] = useState<Tag[]>([]);
@@ -49,6 +52,7 @@ export default function GctUpdateSheet({
   const [pendingValues, setPendingValues] = useState<GctGroupValues | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
+  const GctGroupSchema = buildGctGroupSchema(t);
   const form = useForm<GctGroupValues>({
     resolver: zodResolver(GctGroupSchema),
     defaultValues: {
@@ -122,7 +126,7 @@ export default function GctUpdateSheet({
     } catch (error: any) {
       const msg: string = error?.response?.data?.message || error?.message || '';
       applyDuplicateErrors(msg, (field, err) =>
-        form.setError(field as keyof GctGroupValues, err),
+        form.setError(field as keyof GctGroupValues, err), t,
       );
     }
   };
@@ -135,9 +139,9 @@ export default function GctUpdateSheet({
           className="w-[480px] sm:w-[560px] overflow-y-auto"
         >
           <SheetHeader className="mb-6">
-            <SheetTitle>Edit GCT Group</SheetTitle>
+            <SheetTitle>{t('EDIT_GCT_GROUP')}</SheetTitle>
             <SheetDescription>
-              Update the details for this group cash transfer.
+              {t('UPDATE_THE_DETAILS_FOR_THIS_GROUP')}
             </SheetDescription>
           </SheetHeader>
 
@@ -159,7 +163,7 @@ export default function GctUpdateSheet({
                   onClick={() => onOpenChange(false)}
                   disabled={updateGct.isPending}
                 >
-                  Cancel
+                  {tGlobal('CANCEL')}
                 </Button>
                 <Button
                   type="submit"
@@ -169,10 +173,10 @@ export default function GctUpdateSheet({
                   {updateGct.isPending ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Saving...
+                      {t('SAVING')}
                     </>
                   ) : (
-                    'Save Changes'
+                    t('SAVE_CHANGES')
                   )}
                 </Button>
               </div>
@@ -184,17 +188,13 @@ export default function GctUpdateSheet({
       <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Edit</AlertDialogTitle>
+            <AlertDialogTitle>{t('CONFIRM_EDIT_TITLE')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to save the changes to{' '}
-              <span className="font-semibold text-foreground">
-                "{item?.name}"
-              </span>
-              ?
+              {t('ARE_YOU_SURE_YOU_WANT_TO_SAVE_CHANGES_TO', { name: item?.name })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={updateGct.isPending}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={updateGct.isPending}>{tGlobal('CANCEL')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmedUpdate}
               disabled={updateGct.isPending}
@@ -202,10 +202,10 @@ export default function GctUpdateSheet({
               {updateGct.isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Saving...
+                  {t('SAVING')}
                 </>
               ) : (
-                'Save Changes'
+                t('SAVE_CHANGES')
               )}
             </AlertDialogAction>
           </AlertDialogFooter>

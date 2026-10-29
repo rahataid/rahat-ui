@@ -206,7 +206,7 @@ export default function AddToQueue({
             <ArrowBigUp size={18} strokeWidth={2} /> Export Invalid
           </Button>
 
-          {(invalidFields.length > 0 || hasDuplicates) && (
+          {(invalidFields.length > 0 || hasDuplicates || hasPendingEdits) && (
             <Button
               disabled={loading}
               onClick={onRevalidate}

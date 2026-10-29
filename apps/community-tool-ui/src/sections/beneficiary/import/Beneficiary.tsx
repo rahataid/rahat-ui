@@ -131,6 +131,11 @@ export default function BenImp({ fieldDefinitions }: IProps) {
   >([]);
   const [forceInsert, setForceInsert] = React.useState(false);
   const [hasPendingEdits, setHasPendingEdits] = React.useState(false);
+  // Full mapped dataset from the file (ALL rows) that was last sent to
+  // validate. The validate response only returns a preview (first 1000 rows),
+  // so processedData alone must never be used as the import payload.
+  // Invariant: processedData[i] corresponds to fullPayload[i].
+  const [fullPayload, setFullPayload] = React.useState<any[]>([]);
 
   const [forceInsertDialogOpen, setForceInsertDialogOpen] =
     React.useState(false);
@@ -392,13 +397,28 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     return setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
   };
 
+  const cleanPreviewRows = (previewRows: any[]) =>
+    previewRows.map((row: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { isDuplicate, rawData, ...rest } = row;
+
+      if (!hasUUID) delete rest.uuid;
+      return rest;
+    });
+
+  const buildFullPayload = () => {
+    const previewRows = processedData as any[];
+    return [
+      ...cleanPreviewRows(previewRows),
+      ...fullPayload.slice(previewRows.length),
+    ];
+  };
+
   const handleImportNowClick = async (groupName: string | null) => {
-    // If we have processedData (came through validate screen), use it directly
-    // so any inline edits the user made are preserved in the payload.
+    // Came through the validate screen: send ALL rows from the file (preview
+    // rows with inline edits + the rows beyond the preview).
     if (processedData.length) {
-      const cleanedData = (processedData as any[]).map(
-        ({ isDuplicate, ...rest }) => rest,
-      );
+      const cleanedData = buildFullPayload();
       const sourcePayload = {
         action: IMPORT_ACTION.IMPORT,
         name: importSource,
@@ -408,8 +428,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
       };
       return createImportSource(sourcePayload);
     }
-    // Fallback: no validated data yet — process from raw (shouldn't normally happen
-    // since Import button is only reachable after validation).
+
     if (validBenef.length) {
       const sourcePayload = {
         action: IMPORT_ACTION.IMPORT,
@@ -454,9 +473,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
 
       setMappings(finalMappings);
     }
-    // Build each row in ONE pass over the mappings. The previous approach
-    // re-copied every row once per mapping (rows x mappings x columns), which
-    // froze the browser on wide sheets (e.g. 6k rows x 160 columns).
+
     const selectedTargetSet = new Set<string>(); // Only submit selected target fields
     for (const m of finalMappings) {
       if (m.targetField === TARGET_FIELD.HOUSE_HEAD_NAME) {
@@ -505,6 +522,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     // no longer attached: it doubled the request size and the backend never
     // used it.
     const final_mapping = finalPayload;
+    if (action === IMPORT_ACTION.VALIDATE) setFullPayload(finalPayload);
     const sourcePayload = {
       action,
       name: importSource,
@@ -551,12 +569,14 @@ export default function BenImp({ fieldDefinitions }: IProps) {
 
   const handleRetargetClick = () => {
     setValidBenef([]);
+    setFullPayload([]);
     setProcessedData([]);
     setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
     setInvalidFields([]);
   };
 
   const resetStates = () => {
+    setFullPayload([]);
     setHasExistingMapping(false);
     setValidBenef([]);
     setValidBenef([]);
@@ -568,6 +588,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
   };
 
   const handleBackClick = () => {
+    setFullPayload([]);
     resetMyMappings();
     setHasExistingMapping(false);
     setMappings([]);
@@ -577,15 +598,15 @@ export default function BenImp({ fieldDefinitions }: IProps) {
   };
 
   const handleRevalidate = async () => {
-    const cleanedData = (processedData as any[]).map(
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      ({ isDuplicate, rawData, ...rest }) => rest,
-    );
+    // Re-validate the WHOLE file (with edits), not only the preview rows.
+    const cleanedData = buildFullPayload();
+    setFullPayload(cleanedData);
     const sourcePayload = {
       action: IMPORT_ACTION.VALIDATE,
       name: importSource,
       importId,
       groupName: null,
+      uniqueFields: forceInsert ? [] : selectedUniqueFields,
       fieldMapping: { data: cleanedData, sourceTargetMappings: mappings },
     };
     return createImportSource(sourcePayload);
@@ -597,12 +618,18 @@ export default function BenImp({ fieldDefinitions }: IProps) {
       invalidFields as [],
     );
 
+    // Rows beyond the preview were never shown, so keep them and force a
+    // re-validate of the full set before import is allowed.
+    const remainingRows = fullPayload.slice((processedData as any[]).length);
+    setFullPayload([...cleanPreviewRows(validData), ...remainingRows]);
+    if (remainingRows.length) setHasPendingEdits(true);
+
     setValidBenef(validData);
     setProcessedData(validData);
     setInvalidFields([]);
     const transformed = transformExportKeys(invalidData);
     if (transformed.length) exportDataToExcel(transformed);
-    if (!validData.length) {
+    if (!validData.length && !remainingRows.length) {
       setHasExistingMapping(false);
       setCurrentScreen(BENEF_IMPORT_SCREENS.SELECTION);
     }

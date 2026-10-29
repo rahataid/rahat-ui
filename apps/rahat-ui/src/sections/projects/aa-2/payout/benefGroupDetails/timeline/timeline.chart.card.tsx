@@ -99,6 +99,12 @@ export default function TimelineChartCard({
       total: translateValue(tv, 'TOTAL_TRANSACTIONS', {
         fallback: 'Total Transactions',
       }),
+      transactions: translateValue(tv, 'TRANSACTIONS', {
+        fallback: translateValue(tg, 'TRANSACTIONS', { fallback: 'Transactions' }),
+      }),
+      time: translateValue(tv, 'TIME', {
+        fallback: translateValue(tg, 'TIME', { fallback: 'Time' }),
+      }),
       zoomIn: translateValue(tg, 'ZOOM_IN', { fallback: 'Zoom In' }),
       zoomOut: translateValue(tg, 'ZOOM_OUT', { fallback: 'Zoom Out' }),
       pan: translateValue(tg, 'PAN', { fallback: 'Pan' }),
@@ -245,16 +251,16 @@ export default function TimelineChartCard({
           options={chartOptions}
           series={chartSeries}
           type="bar"
-          height={340}
+          height={360}
         />
       )}
 
       {hasData && (
-        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 pt-2 border-t border-slate-100 text-xs font-medium text-slate-700">
+        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 pt-2 border-t border-slate-100 text-xs font-medium text-slate-800">
           <span className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full inline-block bg-slate-400" />
+            <span className="w-2.5 h-2.5 rounded-full inline-block bg-slate-500" />
             <span>{labels.allTransactions}</span>
-            <span className="text-slate-400 font-normal">
+            <span className="text-slate-600 font-semibold">
               ({formatNum(statusCounts.total)})
             </span>
           </span>
@@ -269,7 +275,7 @@ export default function TimelineChartCard({
                   style={{ backgroundColor: meta.color }}
                 />
                 <span>{meta.label}</span>
-                <span className="text-slate-400 font-normal">
+                <span className="text-slate-600 font-semibold">
                   ({formatNum(count)})
                 </span>
               </span>

@@ -134,29 +134,98 @@ export const buildTimelineChartOptions = ({
         rotateAlways: barCount > 15,
         trim: true,
         maxHeight: 80,
-        style: { fontSize: '10px', colors: '#64748B' },
+        style: { fontSize: '11px', fontWeight: 600, colors: '#334155' },
       },
-      axisBorder: { color: '#E2E8F0' },
-      axisTicks: { color: '#E2E8F0' },
+      axisBorder: { show: true, color: '#CBD5E1' },
+      axisTicks: { show: true, color: '#CBD5E1' },
+      title: {
+        text: labels.time || 'Time',
+        style: {
+          fontSize: '12px',
+          fontWeight: 700,
+          color: '#1E293B',
+        },
+      },
+      crosshairs: {
+        show: true,
+        width: 'barWidth',
+        position: 'back',
+        opacity: 0.9,
+        stroke: {
+          color: '#CBD5E1',
+          width: 1,
+          dashArray: 3,
+        },
+        fill: {
+          type: 'solid',
+          color: '#F8FAFC',
+        },
+      },
       tooltip: { enabled: false },
     },
     yaxis: {
       min: 0,
       max: yCeiling,
-      forceNiceScale: true,
+      tickAmount: yCeiling <= 6 ? yCeiling : undefined,
+      forceNiceScale: yCeiling > 6,
       labels: {
         formatter: yLabelFormatter(formatNumRef),
-        style: { fontSize: '11px', colors: '#64748B' },
+        style: { fontSize: '12px', fontWeight: 600, colors: '#334155' },
       },
+      axisBorder: { show: true, color: '#CBD5E1' },
+      axisTicks: { show: true, color: '#CBD5E1' },
       title: {
-        text: 'Transactions',
-        style: { fontSize: '12px', fontWeight: 500, color: '#64748B' },
+        text: labels.transactions || 'Transactions',
+        style: {
+          fontSize: '12px',
+          fontWeight: 700,
+          color: '#1E293B',
+        },
       },
+      crosshairs: {
+        show: true,
+        position: 'front',
+        stroke: {
+          color: '#64748B',
+          width: 1.5,
+          dashArray: 3,
+        },
+      },
+      tooltip: { enabled: false },
     },
     grid: {
-      borderColor: '#F1F5F9',
-      strokeDashArray: 3,
+      show: true,
+      borderColor: '#CBD5E1',
+      strokeDashArray: 4,
       xaxis: { lines: { show: false } },
+      yaxis: { lines: { show: true } },
+      padding: {
+        top: 0,
+        right: 12,
+        bottom: 4,
+        left: 10,
+      },
+    },
+    states: {
+      normal: {
+        filter: {
+          type: 'none',
+          value: 0,
+        },
+      },
+      hover: {
+        filter: {
+          type: 'darken',
+          value: 0.92,
+        },
+      },
+      active: {
+        allowMultipleDataPointsSelection: false,
+        filter: {
+          type: 'darken',
+          value: 0.88,
+        },
+      },
     },
     tooltip: {
       shared: true,

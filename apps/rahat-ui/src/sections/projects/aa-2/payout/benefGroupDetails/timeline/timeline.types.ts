@@ -86,6 +86,8 @@ export type TimelineChartLabels = {
   zoomOut: string;
   pan: string;
   reset: string;
+  transactions: string;
+  time: string;
 };
 
 export type FormatNumRef = { current: (value: number) => string };

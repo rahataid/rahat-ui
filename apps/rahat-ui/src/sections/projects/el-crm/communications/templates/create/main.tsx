@@ -40,6 +40,7 @@ import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { cn } from '@rahat-ui/shadcn/src/utils';
+import { isWhatsAppChannel } from '../../const';
 
 // Validation schema
 const createTemplateSchema = z.object({
@@ -155,7 +156,7 @@ export default function CreateTemplateView() {
   const whatsappTransports = useMemo(
     () =>
       (transport.data ?? []).filter((ch: any) =>
-        ch?.name?.toLowerCase().includes('whatsapp'),
+        isWhatsAppChannel(ch?.name),
       ),
     [transport.data],
   );

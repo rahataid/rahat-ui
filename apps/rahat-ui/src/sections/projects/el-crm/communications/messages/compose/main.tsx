@@ -59,7 +59,11 @@ import {
   useListElCrmTransport,
   useSendElCrmCampaignExcel,
 } from '@rahat-ui/query';
-import { getPlasgateSmsInfo, isPlasgateChannel } from '../../const';
+import {
+  getPlasgateSmsInfo,
+  isPlasgateChannel,
+  isWhatsAppChannel,
+} from '../../const';
 
 // Convert an ArrayBuffer to base64 in fixed-size chunks to avoid blowing the
 // call stack on large files.
@@ -247,11 +251,10 @@ export default function ComposeMessageView() {
       setSelectedTransportName(channelMatch.name);
     }
 
-    const isWhatsAppChannel = (channelMatch?.name || prefillChannel)
-      .toLowerCase()
-      .includes('whatsapp');
-
-    if (prefillTemplateId && isWhatsAppChannel) {
+    if (
+      prefillTemplateId &&
+      isWhatsAppChannel(channelMatch?.name || prefillChannel)
+    ) {
       setMessageContent(prefillTemplateId);
     }
 
@@ -320,7 +323,7 @@ export default function ComposeMessageView() {
   const audienceNoun =
     selectedGroup === 'BENEFICIARY' ? 'consumers' : 'customers';
 
-  const isWhatsApp = selectedTransportName?.toLowerCase().includes('whatsapp');
+  const isWhatsApp = isWhatsAppChannel(selectedTransportName);
   // Only fetch templates belonging to the selected WhatsApp transport
   const templates = useListElCrmTemplate(
     projectUUID,

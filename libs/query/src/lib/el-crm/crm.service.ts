@@ -23,10 +23,13 @@ const TOAST_CONFIG = {
 // Extracts the most useful error message from API error responses.
 // Backend may return nested structures (RpcException wraps inner errors),
 // validation arrays, or plain strings — try each shape in priority order.
-const getErrorMessage = (error: unknown, fallback: string): string => {
+export const getErrorMessage = (error: unknown, fallback: string): string => {
   const err = error as any;
   const raw =
-    err?.response?.data?.message || err?.response?.message || err?.message;
+    err?.response?.data?.message ||
+    err?.response?.data?.error ||
+    err?.response?.message ||
+    err?.message;
 
   if (Array.isArray(raw)) return raw.join('. ');
   if (typeof raw === 'string' && raw.length > 0) return raw;

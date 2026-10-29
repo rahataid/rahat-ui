@@ -88,11 +88,18 @@ export const useMsgTableColumn = (
   const isRetryRow = (row: any) =>
     (row.original?.options as Record<string, any>)?.isRetry === true;
 
+  const isAutomaticRow = (row: any) =>
+    (row.original?.isAutomatic ?? isAutomatic) && !isRetryRow(row);
+
+  const getAutomationRules = (row: any) =>
+    row.original?.automationRules as Array<{ isEnabled?: boolean }> | undefined;
+
   // Only messages that were never triggered (regular) or have no rule
   // attached (automated) can be deleted.
   const canDelete = (row: any) => {
-    if (isAutomatic && !isRetryRow(row)) {
-      return (row.original?.automationRules ?? []).length === 0;
+    if (isAutomaticRow(row)) {
+      const rules = getAutomationRules(row);
+      return Array.isArray(rules) && rules.length === 0;
     }
     return !row.original?.sessionId;
   };
@@ -167,7 +174,7 @@ export const useMsgTableColumn = (
         </span>
       ),
       cell: ({ row }) => {
-        if (row.original?.isAutomatic && !isRetryRow(row)) {
+        if (isAutomaticRow(row)) {
           return <span className="text-sm text-muted-foreground">\u2014</span>;
         }
         return (
@@ -204,10 +211,11 @@ export const useMsgTableColumn = (
         </span>
       ),
       cell: ({ row }) => {
-        if (isAutomatic && !isRetryRow(row)) {
-          const rules = (row.original?.automationRules ?? []) as Array<{
-            isEnabled?: boolean;
-          }>;
+        if (isAutomaticRow(row)) {
+          const rules = getAutomationRules(row);
+          if (!Array.isArray(rules)) {
+            return <Badge variant="outline">Automatic</Badge>;
+          }
           if (rules.length === 0) {
             return <Badge variant="outline">No Rule</Badge>;
           }

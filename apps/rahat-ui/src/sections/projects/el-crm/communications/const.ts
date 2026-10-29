@@ -34,6 +34,9 @@ const GSM7_CHARS = new Set([...GSM7_BASIC, ...GSM7_EXTENSION]);
 export const isPlasgateChannel = (name?: string | null) =>
   !!name && name.toLowerCase().includes('plasgate');
 
+export const isWhatsAppChannel = (name?: string | null) =>
+  !!name && name.toLowerCase().includes('whatsapp');
+
 export const isGsm7Message = (text: string) => {
   for (const ch of text) {
     if (!GSM7_CHARS.has(ch)) return false;

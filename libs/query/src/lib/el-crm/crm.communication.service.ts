@@ -10,6 +10,7 @@ import { UUID } from 'crypto';
 import { useSwal } from 'libs/query/src/swal';
 import { useProjectAction } from '../projects';
 import { api } from '../../utils/api';
+import { getErrorMessage } from './crm.service';
 
 // Constants for actions
 const CREATE_CAMPAIGN = 'elProject.campaign.create';
@@ -299,16 +300,9 @@ export const useDeleteElCrmCampaign = (projectUUID: UUID) => {
         queryKey: [queryKeys.elCrmCampaignList],
       });
     },
-    onError: (error: any) => {
-      const apiMessage =
-        error?.response?.data?.message ||
-        error?.response?.data?.error ||
-        error?.message;
+    onError: (error: unknown) => {
       toast.fire({
-        title:
-          typeof apiMessage === 'string' && apiMessage.length > 0
-            ? apiMessage
-            : 'Error while deleting message.',
+        title: getErrorMessage(error, 'Error while deleting message.'),
         icon: 'error',
       });
     },

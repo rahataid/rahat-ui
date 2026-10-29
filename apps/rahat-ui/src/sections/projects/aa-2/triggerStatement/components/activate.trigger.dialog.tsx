@@ -17,8 +17,17 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
@@ -33,6 +42,7 @@ type IProps = {
   triggerId: string;
   version?: boolean;
   notes?: string;
+  isPhaseActive?: boolean;
 };
 
 export default function ActivateTriggerDialog({
@@ -40,12 +50,15 @@ export default function ActivateTriggerDialog({
   triggerId,
   version,
   notes,
+  isPhaseActive = false,
 }: IProps) {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const uploadFile = useUploadFile();
   const activateTrigger = useActivateTrigger();
   const [showModal, setShowModal] = React.useState<boolean>(false);
+  const [showPhaseWarning, setShowPhaseWarning] =
+    React.useState<boolean>(false);
   const [documents, setDocuments] = React.useState<
     { id: number; name: string }[]
   >([]);
@@ -137,136 +150,175 @@ export default function ActivateTriggerDialog({
     }
   };
 
+  const handleTriggerClick = () => {
+    // Triggering in an already active phase needs an explicit confirmation first
+    if (isPhaseActive) {
+      setShowPhaseWarning(true);
+    } else {
+      setShowModal(true);
+    }
+  };
+
   return (
-    <Dialog open={showModal} onOpenChange={() => setShowModal(!showModal)}>
-      <DialogTrigger asChild>
-        <Button
-          type="button"
-          className={`px-8 ${version && 'hidden'}`}
-          onClick={() => setShowModal(true)}
-        >
-          {tg('TRIGGER')}
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="rounded-xl">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleTriggerSubmit)}>
-            <DialogHeader>
-              <DialogTitle className="text-center">{t('CONFIRM_TRIGGER')}</DialogTitle>
-              <DialogDescription className="text-center">
-                {t('FILL_OUT_DETAILS_TO_TRIGGER')}
-              </DialogDescription>
-            </DialogHeader>
-            <div className="mt-4 grid gap-4">
-              <FormField
-                control={form.control}
-                name="notes"
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <FormLabel>{t('TRIGGER_NOTES')}</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          className="rounded"
-                          placeholder={t('WRITE_TRIGGER_NOTES_HERE')}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-              <FormField
-                control={form.control}
-                name="triggerDocuments"
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <FormControl>
-                        <div className="relative border border-dashed border-primary rounded p-1.5">
-                          <div className="absolute inset-0 flex gap-2 items-center justify-center">
-                            <CloudUpload
-                              strokeWidth={1.5}
-                              className="text-primary"
-                            />
-                            <p className="text-sm font-medium text-primary">
-                              {t('CHOOSE_FILE_TO_UPLOAD')}
-                            </p>
-                          </div>
-                          <Input
-                            className="opacity-0 cursor-pointer"
-                            type="file"
-                            multiple
-                            onChange={handleFileChange}
+    <>
+      <Button
+        type="button"
+        className={`px-8 ${version && 'hidden'}`}
+        onClick={handleTriggerClick}
+      >
+        {tg('TRIGGER')}
+      </Button>
+      <AlertDialog open={showPhaseWarning} onOpenChange={setShowPhaseWarning}>
+        <AlertDialogContent className="max-w-[clamp(260px,30vw,512px)] p-[clamp(10px,2vw,24px)] gap-[clamp(6px,1.2vw,16px)]">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-[clamp(14px,1.6vw,18px)]">
+              {t('TRIGGER_IN_ACTIVE_PHASE_TITLE')}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-[clamp(11px,1vw,14px)]">
+              {t('TRIGGER_IN_ACTIVE_PHASE_CONFIRM')}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="h-[clamp(26px,3.2vw,40px)] px-[clamp(10px,1.4vw,16px)] text-[clamp(11px,1vw,14px)]">
+              {tg('CANCEL')}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => setShowModal(true)}
+              className="h-[clamp(26px,3.2vw,40px)] px-[clamp(10px,1.4vw,16px)] text-[clamp(11px,1vw,14px)] bg-red-600 hover:bg-red-700 text-white"
+            >
+              {tg('TRIGGER')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <Dialog open={showModal} onOpenChange={setShowModal}>
+        <DialogContent className="rounded-xl">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleTriggerSubmit)}>
+              <DialogHeader>
+                <DialogTitle className="text-center">
+                  {t('CONFIRM_TRIGGER')}
+                </DialogTitle>
+                <DialogDescription className="text-center">
+                  {t('FILL_OUT_DETAILS_TO_TRIGGER')}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="mt-4 grid gap-4">
+                <FormField
+                  control={form.control}
+                  name="notes"
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormLabel>{t('TRIGGER_NOTES')}</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            className="rounded"
+                            placeholder={t('WRITE_TRIGGER_NOTES_HERE')}
+                            {...field}
                           />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                      <p className="text-xs text-muted-foreground font-medium">
-                        {t('FILES_MUST_BE_UNDER_5MB')}
-                      </p>
-                      {documents?.map((file) => (
-                        <div
-                          key={file.name}
-                          className="p-2 flex justify-between items-center border rounded-sm shadow"
-                        >
-                          <p className="text-sm flex gap-2 items-center">
-                            {uploadFile.isPending &&
-                            documents?.[documents?.length - 1].name ===
-                              file.name ? (
-                              <LoaderCircle
-                                size={16}
-                                className="text-green-600 animate-spin"
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+                <FormField
+                  control={form.control}
+                  name="triggerDocuments"
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormControl>
+                          <div className="relative border border-dashed border-primary rounded p-1.5">
+                            <div className="absolute inset-0 flex gap-2 items-center justify-center">
+                              <CloudUpload
+                                strokeWidth={1.5}
+                                className="text-primary"
                               />
-                            ) : (
-                              <FileCheck size={16} className="text-green-600" />
-                            )}
-                            {file.name}
-                          </p>
-                          <div className="p-0.5 rounded-full text-muted-foreground hover:text-red-500 cursor-pointer">
-                            <X
-                              size={16}
-                              strokeWidth={2.5}
-                              onClick={() => {
-                                const newDocuments = documents?.filter(
-                                  (doc) => doc.name !== file.name,
-                                );
-                                setDocuments(newDocuments);
-                                const newFiles = allFiles.filter(
-                                  (f, index) => index !== file.id,
-                                );
-                                setAllFiles(newFiles);
-                              }}
+                              <p className="text-sm font-medium text-primary">
+                                {t('CHOOSE_FILE_TO_UPLOAD')}
+                              </p>
+                            </div>
+                            <Input
+                              className="opacity-0 cursor-pointer"
+                              type="file"
+                              multiple
+                              onChange={handleFileChange}
                             />
                           </div>
-                        </div>
-                      ))}
-                    </FormItem>
-                  );
-                }}
-              />
-              <div className="flex justify-between gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => setShowModal(!showModal)}
-                >
-                  {tg('CANCEL')}
-                </Button>
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={uploadFile?.isPending || activateTrigger?.isPending}
-                >
-                  {tg('CONFIRM')}
-                </Button>
+                        </FormControl>
+                        <FormMessage />
+                        <p className="text-xs text-muted-foreground font-medium">
+                          {t('FILES_MUST_BE_UNDER_5MB')}
+                        </p>
+                        {documents?.map((file) => (
+                          <div
+                            key={file.name}
+                            className="p-2 flex justify-between items-center border rounded-sm shadow"
+                          >
+                            <p className="text-sm flex gap-2 items-center">
+                              {uploadFile.isPending &&
+                              documents?.[documents?.length - 1].name ===
+                                file.name ? (
+                                <LoaderCircle
+                                  size={16}
+                                  className="text-green-600 animate-spin"
+                                />
+                              ) : (
+                                <FileCheck
+                                  size={16}
+                                  className="text-green-600"
+                                />
+                              )}
+                              {file.name}
+                            </p>
+                            <div className="p-0.5 rounded-full text-muted-foreground hover:text-red-500 cursor-pointer">
+                              <X
+                                size={16}
+                                strokeWidth={2.5}
+                                onClick={() => {
+                                  const newDocuments = documents?.filter(
+                                    (doc) => doc.name !== file.name,
+                                  );
+                                  setDocuments(newDocuments);
+                                  const newFiles = allFiles.filter(
+                                    (f, index) => index !== file.id,
+                                  );
+                                  setAllFiles(newFiles);
+                                }}
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </FormItem>
+                    );
+                  }}
+                />
+                <div className="flex justify-between gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => setShowModal(!showModal)}
+                  >
+                    {tg('CANCEL')}
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={
+                      uploadFile?.isPending || activateTrigger?.isPending
+                    }
+                  >
+                    {tg('CONFIRM')}
+                  </Button>
+                </div>
               </div>
-            </div>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

@@ -163,35 +163,37 @@ export default function TriggerStatementDetail() {
             </TooltipWrapper>
           </Can>
           <Can action={ACTIONS.UPDATE} subject={SUBJECTS.TRIGGER}>
-            <TooltipWrapper
-              tip={isEditDeleteDisabled ? getEditDeleteTip() : ''}
-              disable={!isEditDeleteDisabled}
-            >
-              <EditButton
-                className={`rounded flex gap-1 items-center text-sm font-medium ${
-                  version && 'hidden'
-                }`}
-                label={t('EDIT')}
-                onFallback={() =>
-                  router.push(
-                    `/projects/aa/${id}/trigger-statements/${triggerIdKey}/edit`,
-                  )
-                }
-                disabled={isEditDeleteDisabled}
-              />
-            </TooltipWrapper>
+            {/* Locked triggers stay editable after a warning */}
+            <EditButton
+              className={`rounded flex gap-1 items-center text-sm font-medium ${
+                version && 'hidden'
+              }`}
+              label={t('EDIT')}
+              {...(isEditDeleteDisabled && {
+                title: t('UPDATE_LOCKED_TRIGGER_TITLE'),
+                description: trigger?.isTriggered
+                  ? t('UPDATE_TRIGGERED_TRIGGER_CONFIRM')
+                  : t('UPDATE_ACTIVE_PHASE_TRIGGER_CONFIRM'),
+                actionLabel: t('UPDATE'),
+                destructive: true,
+              })}
+              onFallback={() =>
+                router.push(
+                  `/projects/aa/${id}/trigger-statements/${triggerIdKey}/edit`,
+                )
+              }
+            />
           </Can>
           <Can action={ACTIONS.ACTIVATE} subject={SUBJECTS.TRIGGER}>
-            {source === 'MANUAL' &&
-              !trigger?.phase?.isActive &&
-              !trigger?.isTriggered && (
-                <ActivateTriggerDialog
-                  projectId={id}
-                  triggerId={triggerIdKey as string}
-                  version={version}
-                  notes={trigger?.notes}
-                />
-              )}
+            {source === 'MANUAL' && !trigger?.isTriggered && (
+              <ActivateTriggerDialog
+                projectId={id}
+                triggerId={triggerIdKey as string}
+                version={version}
+                notes={trigger?.notes}
+                isPhaseActive={trigger?.phase?.isActive}
+              />
+            )}
           </Can>
         </div>
       </div>

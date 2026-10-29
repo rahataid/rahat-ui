@@ -11,10 +11,8 @@ import {
   TARGET_FIELD,
 } from 'apps/community-tool-ui/src/constants/app.const';
 import {
-  attachedRawData,
   exportDataToExcel,
   formatNameString,
-  includeOnlySelectedTarget,
   normalizeInvalidFields,
   removeFieldsWithUnderscore,
   splitFullName,
@@ -456,50 +454,34 @@ export default function BenImp({ fieldDefinitions }: IProps) {
 
       setMappings(finalMappings);
     }
-    let finalPayload = rawData as any[];
-    const selectedTargets = []; // Only submit selected target fields
-
+    // Build each row in ONE pass over the mappings. The previous approach
+    // re-copied every row once per mapping (rows x mappings x columns), which
+    // froze the browser on wide sheets (e.g. 6k rows x 160 columns).
+    const selectedTargetSet = new Set<string>(); // Only submit selected target fields
     for (const m of finalMappings) {
-      if (m.targetField === TARGET_FIELD.FIRSTNAME) {
-        selectedTargets.push(TARGET_FIELD.FIRSTNAME);
-        const replaced = finalPayload.map((item: any) => {
-          const firstName = item[m.sourceField];
-          const newItem = { ...item, firstName };
-          if (m.sourceField !== m.targetField) delete newItem[m.sourceField];
-          return newItem;
-        });
-        finalPayload = replaced;
-      } else if (m.targetField === TARGET_FIELD.LASTNAME) {
-        selectedTargets.push(TARGET_FIELD.LASTNAME);
-        const replaced = finalPayload.map((item: any) => {
-          const lastName = item[m.sourceField];
-          const newItem = { ...item, lastName };
-          if (m.sourceField !== m.targetField) delete newItem[m.sourceField];
-          return newItem;
-        });
-        finalPayload = replaced;
-      } else if (m.targetField === TARGET_FIELD.HOUSE_HEAD_NAME) {
-        // Split fullName, update target_key:value and delete old_source_key
-        selectedTargets.push(TARGET_FIELD.FIRSTNAME);
-        selectedTargets.push(TARGET_FIELD.LASTNAME);
-        const replaced = finalPayload.map((item: any) => {
-          const { firstName, lastName } = splitFullName(item[m.sourceField]);
-          const newItem = { ...item, firstName, lastName };
-          // if (m.sourceField !== m.targetField) delete newItem[m.sourceField];
-          return newItem;
-        });
-        finalPayload = replaced;
+      if (m.targetField === TARGET_FIELD.HOUSE_HEAD_NAME) {
+        selectedTargetSet.add(TARGET_FIELD.FIRSTNAME);
+        selectedTargetSet.add(TARGET_FIELD.LASTNAME);
       } else {
-        selectedTargets.push(m.targetField);
-        // Update target_key:value and delete old_source_key
-        const replaced = finalPayload.map((item: any) => {
-          const newItem = { ...item, [m.targetField]: item[m.sourceField] };
-          if (m.sourceField !== m.targetField) delete newItem[m.sourceField];
-          return newItem;
-        });
-        finalPayload = replaced;
+        selectedTargetSet.add(m.targetField);
       }
     }
+    const selectedTargets = [...selectedTargetSet];
+
+    const finalPayload = (rawData as any[]).map((item: any) => {
+      const row: any = {};
+      for (const m of finalMappings) {
+        if (m.targetField === TARGET_FIELD.HOUSE_HEAD_NAME) {
+          const { firstName, lastName } = splitFullName(item[m.sourceField]);
+          row.firstName = firstName;
+          row.lastName = lastName;
+        } else {
+          row[m.targetField] = item[m.sourceField];
+        }
+      }
+      return row;
+    });
+
     return validateAndImortBeneficiary(
       finalPayload,
       selectedTargets,
@@ -519,11 +501,10 @@ export default function BenImp({ fieldDefinitions }: IProps) {
         icon: 'error',
         title: 'Please select target fields!',
       });
-    const selectedFieldsOnly = includeOnlySelectedTarget(
-      finalPayload,
-      selectedTargets,
-    );
-    const final_mapping = attachedRawData(selectedFieldsOnly, rawData as []);
+    // finalPayload already contains only the mapped target fields. rawData is
+    // no longer attached: it doubled the request size and the backend never
+    // used it.
+    const final_mapping = finalPayload;
     const sourcePayload = {
       action,
       name: importSource,
@@ -597,7 +578,8 @@ export default function BenImp({ fieldDefinitions }: IProps) {
 
   const handleRevalidate = async () => {
     const cleanedData = (processedData as any[]).map(
-      ({ isDuplicate, ...rest }) => rest,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      ({ isDuplicate, rawData, ...rest }) => rest,
     );
     const sourcePayload = {
       action: IMPORT_ACTION.VALIDATE,

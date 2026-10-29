@@ -437,7 +437,11 @@ export function transformActivitiesToCommunicationRows(
 
       rows.push({
         id: actId,
-        date: String(act['createdAt'] || new Date().toISOString()),
+        date: String(
+          act['updatedAt'] ||
+          act['createdAt'] ||
+          new Date().toISOString(),
+        ),
         projectId: proj.uuid,
         projectName: proj.name,
         title: String(act['title'] || 'Communication Activity'),
@@ -525,7 +529,13 @@ export function transformActivitiesToCommunicationRows(
 
       rows.push({
         id: `${actId}-${sId || commId || idx}`,
-        date: String(act['createdAt'] || new Date().toISOString()),
+        date: String(
+          c['updatedAt'] ||
+          c['createdAt'] ||
+          act['updatedAt'] ||
+          act['createdAt'] ||
+          new Date().toISOString(),
+        ),
         projectId: proj.uuid,
         projectName: proj.name,
         title: capitalizeFirstLetter(
@@ -570,7 +580,11 @@ export function transformCommunicationsToCommunicationRows(
   for (const comm of communications) {
     const commUuid = String(comm['uuid'] || '');
     const title = capitalizeFirstLetter(String(comm['title'] || 'Communication'));
-    const date = String(comm['createdAt'] || new Date().toISOString());
+    const date = String(
+      comm['updatedAt'] ||
+      comm['createdAt'] ||
+      new Date().toISOString(),
+    );
     const message = comm['message'] as string | undefined;
     const subject = comm['subject'] as string | undefined;
     const { channel, transportName } = resolveTransportInfo(comm as Record<string, unknown>, transports);

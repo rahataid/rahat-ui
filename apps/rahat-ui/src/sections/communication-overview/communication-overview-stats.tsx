@@ -271,7 +271,7 @@ const AudienceProgressRow = React.memo(function AudienceProgressRow({
       <div className="flex items-center justify-between text-xs font-semibold">
         <span className="text-foreground">{label}</span>
         <span className="text-muted-foreground">
-          {formatNum(delivered)} / {formatNum(total)} {deliveredLabel} ({successRate}%)
+          {formatNum(delivered)} / {formatNum(total)} {deliveredLabel} ({formatNum(successRate)}%)
         </span>
       </div>
 
@@ -279,17 +279,17 @@ const AudienceProgressRow = React.memo(function AudienceProgressRow({
         <div
           style={{ width: `${successRate}%` }}
           className="bg-green-600 h-full transition-all"
-          title={`${deliveredLabel}: ${successRate}%`}
+          title={`${deliveredLabel}: ${formatNum(successRate)}%`}
         />
         <div
           style={{ width: `${failRate}%` }}
           className="bg-red-600 h-full transition-all"
-          title={`${failedLabel}: ${failRate}%`}
+          title={`${failedLabel}: ${formatNum(failRate)}%`}
         />
         <div
           style={{ width: `${pendingRate}%` }}
           className="bg-amber-500 h-full transition-all"
-          title={`${pendingLabel}: ${pendingRate}%`}
+          title={`${pendingLabel}: ${formatNum(pendingRate)}%`}
         />
       </div>
 
@@ -393,18 +393,18 @@ export const CommunicationBreakdowns = React.memo(
           name: t('SUCCESS'),
           data: channelSuccessData,
         },
+        ...(hasPending
+          ? [
+              {
+                name: t('PENDING'),
+                data: channelPendingData,
+              },
+            ]
+          : []),
         {
           name: t('FAILED'),
           data: channelFailData,
         },
-        ...(hasPending
-          ? [
-            {
-              name: t('PENDING'),
-              data: channelPendingData,
-            },
-          ]
-          : []),
       ];
     }, [channelSuccessData, channelFailData, channelPendingData, t]);
 
@@ -412,7 +412,7 @@ export const CommunicationBreakdowns = React.memo(
       const hasPending = channelPendingData.some((v) => v > 0);
       return {
         colors: hasPending
-          ? [SUCCESS_COLOR, FAILED_COLOR, PENDING_COLOR]
+          ? [SUCCESS_COLOR, PENDING_COLOR, FAILED_COLOR]
           : [SUCCESS_COLOR, FAILED_COLOR],
         yaxis: { labels: { formatter: (val: number) => formatNum(val) } },
         tooltip: { y: { formatter: (val: number) => formatNum(val) } },

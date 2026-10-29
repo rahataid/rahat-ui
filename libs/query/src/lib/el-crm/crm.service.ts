@@ -23,10 +23,13 @@ const TOAST_CONFIG = {
 // Extracts the most useful error message from API error responses.
 // Backend may return nested structures (RpcException wraps inner errors),
 // validation arrays, or plain strings — try each shape in priority order.
-const getErrorMessage = (error: unknown, fallback: string): string => {
+export const getErrorMessage = (error: unknown, fallback: string): string => {
   const err = error as any;
   const raw =
-    err?.response?.data?.message || err?.response?.message || err?.message;
+    err?.response?.data?.message ||
+    err?.response?.data?.error ||
+    err?.response?.message ||
+    err?.message;
 
   if (Array.isArray(raw)) return raw.join('. ');
   if (typeof raw === 'string' && raw.length > 0) return raw;
@@ -314,6 +317,49 @@ export const useDeleteFailedBatch = () => {
       const detail = getErrorMessage(error, '');
       toast.fire({
         title: 'Failed to delete batch log',
+        icon: 'error',
+        text: detail || 'Something went wrong. Please try again.',
+        timer: 5000,
+      });
+    },
+  });
+};
+
+export const useDeleteCustomer = () => {
+  const q = useProjectAction();
+  const queryClient = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin(TOAST_CONFIG);
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      customerUUID,
+    }: {
+      projectUUID: UUID;
+      customerUUID: UUID;
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'elProject.crm.deleteVendor',
+          payload: { uuid: customerUUID },
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      queryClient.invalidateQueries({ queryKey: ['customers'] });
+      queryClient.invalidateQueries({ queryKey: ['customer-stats'] });
+      toast.fire({
+        title: 'Customer deleted',
+        icon: 'success',
+      });
+    },
+    onError: (error: unknown) => {
+      q.reset();
+      const detail = getErrorMessage(error, '');
+      toast.fire({
+        title: 'Failed to delete customer',
         icon: 'error',
         text: detail || 'Something went wrong. Please try again.',
         timer: 5000,

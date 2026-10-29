@@ -1,15 +1,34 @@
-import { CustomerCategory, CustomerSource } from '@rahat-ui/query';
+import {
+  CustomerCategory,
+  CustomerSource,
+  useDeleteCustomer,
+} from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { Button } from '@rahat-ui/shadcn/components/button';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { ColumnDef } from '@tanstack/react-table';
+import { UUID } from 'crypto';
+import { Trash2 } from 'lucide-react';
 import { formatDateTime } from 'apps/rahat-ui/src/utils';
 import { useParams, useRouter } from 'next/navigation';
 
 interface CustomerTableRow {
+  uuid: UUID;
   bde: string;
   bdm: string;
   customerCode: string;
@@ -27,6 +46,7 @@ interface CustomerTableRow {
 export const useCustomersTableColumn = () => {
   const { id } = useParams();
   const router = useRouter();
+  const deleteCustomer = useDeleteCustomer();
 
   const getCategoryBadgeVariant = (category: string) => {
     switch (category) {
@@ -252,6 +272,66 @@ export const useCustomersTableColumn = () => {
             {dateStr}
             <span className="text-muted-foreground ml-1">{timeStr}</span>
           </span>
+        );
+      },
+    },
+    {
+      id: 'actions',
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Actions
+        </span>
+      ),
+      cell: ({ row }) => {
+        const { uuid, name, customerCode } = row.original;
+        const isDeleting =
+          deleteCustomer.isPending &&
+          deleteCustomer.variables?.customerUUID === uuid;
+        return (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                disabled={isDeleting}
+                aria-label={`Delete customer ${name || customerCode}`}
+                className="text-destructive hover:text-destructive hover:bg-destructive/10"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  Delete customer{' '}
+                  <span className="text-foreground">
+                    &quot;{name || customerCode}&quot;
+                  </span>
+                  ?
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  The customer ({customerCode}) will be removed from the
+                  customer list, dashboard counts and future messages. Purchase
+                  and message history are kept, and re-importing this customer
+                  code restores it.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  onClick={() =>
+                    deleteCustomer.mutate({
+                      projectUUID: id as UUID,
+                      customerUUID: uuid,
+                    })
+                  }
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         );
       },
     },

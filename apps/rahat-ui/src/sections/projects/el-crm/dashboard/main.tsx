@@ -70,6 +70,8 @@ import {
   type RecentImport,
   type CustomersByMonthEntry,
   type SmsConversion,
+  type SmsConversionCategory,
+  type SmsConversionCounts,
   type SmsConversionByMonthEntry,
 } from '@rahat-ui/query';
 import { useParams, useRouter } from 'next/navigation';
@@ -132,14 +134,25 @@ function SmsTrendTooltip({
   active,
   label,
   data,
+  showCategories,
 }: {
   active?: boolean;
   label?: string;
-  data: { month: string; messaged: number; converted: number; rate: number }[];
+  data: (SmsConversionCounts & {
+    month: string;
+    byCategory?: Record<SmsConversionCategory, SmsConversionCounts>;
+  })[];
+  /** List each category's rate under the total (the "All" view). */
+  showCategories?: boolean;
 }) {
   if (!active || !label) return null;
   const entry = data.find((d) => d.month === label);
   if (!entry) return null;
+  const categories = showCategories
+    ? SMS_CONVERSION_CATEGORIES.filter(
+        (c) => (entry.byCategory?.[c.key]?.messaged ?? 0) > 0,
+      )
+    : [];
 
   return (
     <div className="rounded-lg border bg-background px-3 py-2 shadow-md text-xs">
@@ -152,6 +165,30 @@ function SmsTrendTooltip({
           messaged
         </span>
       </p>
+      {categories.length > 0 && (
+        <div className="mt-1.5 pt-1.5 border-t space-y-1">
+          {categories.map((c) => {
+            const counts = entry.byCategory![c.key];
+            return (
+              <div key={c.key} className="flex items-center gap-1.5">
+                <span
+                  className="h-2 w-2 rounded-full shrink-0"
+                  style={{ backgroundColor: c.color }}
+                />
+                <span className="text-muted-foreground">{c.label}</span>
+                <span className="ml-auto pl-3 tabular-nums text-foreground font-medium">
+                  {formatRate(counts.rate)}
+                  <span className="text-muted-foreground font-normal">
+                    {' '}
+                    ({formatNumber(counts.converted)}/
+                    {formatNumber(counts.messaged)})
+                  </span>
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
@@ -170,7 +207,23 @@ const COLORS = {
   smsConverted: '#22c55e', // green-500
   smsMessaged: '#c7d2fe', // indigo-200 (the not-converted remainder)
   smsRate: '#6366f1', // indigo-500
+  unknown: '#cbd5e1', // slate-300
 };
+
+const SMS_CONVERSION_CATEGORIES: {
+  key: SmsConversionCategory;
+  label: string;
+  color: string;
+}[] = [
+  { key: 'ACTIVE', label: 'Active', color: COLORS.active },
+  {
+    key: 'NEWLY_INACTIVE',
+    label: 'Newly Inactive',
+    color: COLORS.newlyInactive,
+  },
+  { key: 'INACTIVE', label: 'Inactive', color: COLORS.inactive },
+  { key: 'UNKNOWN', label: 'No prior purchase', color: COLORS.unknown },
+];
 
 // =============================================================================
 // DASHBOARD COMPONENT
@@ -207,18 +260,46 @@ export default function DashboardView() {
   };
   const smsConversionByMonth: SmsConversionByMonthEntry[] =
     getStat(stats, 'SMS_CONVERSION_BY_MONTH') || [];
+  const [smsTrendCategory, setSmsTrendCategory] = useState<
+    SmsConversionCategory | 'ALL'
+  >('ALL');
+  // Only offer categories that were actually messaged in some month.
+  const smsTrendCategoryOptions = useMemo(
+    () =>
+      SMS_CONVERSION_CATEGORIES.filter((c) =>
+        smsConversionByMonth.some(
+          (e: SmsConversionByMonthEntry) =>
+            (e.byCategory?.[c.key]?.messaged ?? 0) > 0,
+        ),
+      ),
+    [smsConversionByMonth],
+  );
   // Stacked-bar shape: converted (green) + the not-converted remainder = messaged.
   const smsTrendData = useMemo(
     () =>
-      smsConversionByMonth.map((e: SmsConversionByMonthEntry) => ({
-        month: e.month,
-        messaged: e.messaged,
-        converted: e.converted,
-        notConverted: Math.max(e.messaged - e.converted, 0),
-        rate: e.rate,
-      })),
-    [smsConversionByMonth],
+      smsConversionByMonth.map((e: SmsConversionByMonthEntry) => {
+        const counts =
+          smsTrendCategory === 'ALL'
+            ? e
+            : e.byCategory?.[smsTrendCategory] ?? {
+                messaged: 0,
+                converted: 0,
+                rate: 0,
+              };
+        return {
+          month: e.month,
+          messaged: counts.messaged,
+          converted: counts.converted,
+          notConverted: Math.max(counts.messaged - counts.converted, 0),
+          rate: counts.rate,
+          byCategory: e.byCategory,
+        };
+      }),
+    [smsConversionByMonth, smsTrendCategory],
   );
+  const smsTrendCategoryLabel = SMS_CONVERSION_CATEGORIES.find(
+    (c) => c.key === smsTrendCategory,
+  )?.label;
 
   // Communication stats are now provided as individual stats, not a combined object
   const totalMessagesSent: number = getStat(stats, 'TOTAL_MESSAGES_SENT') || 0;
@@ -397,20 +478,20 @@ export default function DashboardView() {
         commStats.deliveryRate >= 80
           ? 'bg-emerald-500/10'
           : commStats.deliveryRate >= 60
-          ? 'bg-amber-500/10'
-          : 'bg-red-500/10',
+            ? 'bg-amber-500/10'
+            : 'bg-red-500/10',
       iconColor:
         commStats.deliveryRate >= 80
           ? 'text-emerald-500'
           : commStats.deliveryRate >= 60
-          ? 'text-amber-500'
-          : 'text-red-500',
+            ? 'text-amber-500'
+            : 'text-red-500',
       subtitle:
         commStats.deliveryRate >= 80
           ? 'Healthy'
           : commStats.deliveryRate >= 60
-          ? 'Needs improvement'
-          : 'Critical',
+            ? 'Needs improvement'
+            : 'Critical',
     },
   ];
 
@@ -1052,20 +1133,48 @@ export default function DashboardView() {
             {/* ── SECTION 3d: SMS Conversion Trend ──────────────── */}
             <Card className="transition-all duration-200 hover:shadow-md">
               <CardHeader className="pb-3">
-                <div className="flex items-center gap-2 min-w-0">
-                  <div className="rounded-lg p-2 bg-violet-500/10 shrink-0">
-                    <MessageSquare className="h-4 w-4 text-violet-500" />
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div className="rounded-lg p-2 bg-violet-500/10 shrink-0">
+                      <MessageSquare className="h-4 w-4 text-violet-500" />
+                    </div>
+                    <div className="min-w-0">
+                      <CardTitle className="text-base font-semibold">
+                        SMS Conversion Trend
+                      </CardTitle>
+                      <CardDescription className="text-xs">
+                        By month messaged — bar height is{' '}
+                        {smsTrendCategoryLabel
+                          ? `customers messaged while ${smsTrendCategoryLabel}`
+                          : 'customers messaged'}
+                        , green is those who converted within{' '}
+                        {smsConversion.windowDays} days
+                      </CardDescription>
+                    </div>
                   </div>
-                  <div className="min-w-0">
-                    <CardTitle className="text-base font-semibold">
-                      SMS Conversion Trend
-                    </CardTitle>
-                    <CardDescription className="text-xs">
-                      By month messaged — bar height is customers messaged,
-                      green is those who converted within{' '}
-                      {smsConversion.windowDays} days
-                    </CardDescription>
-                  </div>
+                  {smsTrendCategoryOptions.length > 0 && (
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <span className="text-xs text-muted-foreground whitespace-nowrap">
+                        Category
+                      </span>
+                      <select
+                        value={smsTrendCategory}
+                        onChange={(e) =>
+                          setSmsTrendCategory(
+                            e.target.value as SmsConversionCategory | 'ALL',
+                          )
+                        }
+                        className="h-8 rounded-md border border-input bg-background px-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                      >
+                        <option value="ALL">All customers</option>
+                        {smsTrendCategoryOptions.map((c) => (
+                          <option key={c.key} value={c.key}>
+                            {c.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
                 </div>
               </CardHeader>
               <CardContent>
@@ -1127,7 +1236,12 @@ export default function DashboardView() {
                             tickFormatter={(v) => `${Number(v).toFixed(0)}%`}
                           />
                           <ChartTooltip
-                            content={<SmsTrendTooltip data={smsTrendData} />}
+                            content={
+                              <SmsTrendTooltip
+                                data={smsTrendData}
+                                showCategories={smsTrendCategory === 'ALL'}
+                              />
+                            }
                           />
                           <Bar
                             yAxisId="count"

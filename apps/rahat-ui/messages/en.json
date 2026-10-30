@@ -1423,16 +1423,20 @@
     "THIS_ACTION_CANNOT_BE_UNDONE": "This action cannot be undone.",
     "USER_ROLES": "User Roles",
     "ROLE": "Role",
-    "PROJECT_OPTIONAL": "Project (optional)",
+    "PROJECT_OPTIONAL": "Projects (optional)",
     "USER_DELETED_SUCCESSFULLY": "User Deleted Successfully",
     "ASSIGN_ROLE": "Assign Role",
     "ROLE_ASSIGNED_SUCCESSFULLY": "Role Assigned Successfully",
+    "ROLE_ALREADY_ASSIGNED": "Role Already Assigned",
     "ERROR_ASSIGNING_ROLE": "Error Assigning Role",
     "ROLE_REMOVED_SUCCESSFULLY": "Role Removed Successfully",
     "YOU_DO_NOT_HAVE_PERMISSION_TO": "You do not have permission to remove role",
     "PLEASE_SELECT_ROLE": "Please select role",
     "USERS_ROLES": "Users Roles",
-    "GENERAL_DETAILS": "General Details"
+    "GENERAL_DETAILS": "General Details",
+    "DELETE_ROLE": "Delete Role",
+    "DELTE_ROLE_COMFIRMATION": "Are you sure, you want to delete this role?",
+    "ERROR_REMOVING_ROLE": "Error Removing Role"
   },
   "USERS_ADD_ROLE": {
     "CREATE_A_NEW_ROLE_DETAIL": "Create a new role detail",

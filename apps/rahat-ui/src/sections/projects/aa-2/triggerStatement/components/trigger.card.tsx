@@ -23,7 +23,10 @@ type IProps = {
   id?: number;
   leadTime?: string;
   triggerStatement: TriggerStatement;
+  manualSources?: string[];
 };
+
+const MAX_VISIBLE_SOURCES = 3;
 
 const renderPhaseBadgeColor = (phase: string) => {
   switch (phase) {
@@ -52,6 +55,7 @@ export default function TriggerCard({
   id,
   triggerStatement: tgSt,
   leadTime,
+  manualSources = [],
 }: IProps) {
   const formatDate = useDateFormat();
   const formatNum = useNumberFormat();
@@ -123,6 +127,29 @@ export default function TriggerCard({
           </>
         )}
       </p>
+
+      {manualSources.length > 0 && (
+        <div className="flex items-start gap-2 mb-1 text-muted-foreground text-sm/4">
+          <span className="flex-shrink-0 mt-0.5">
+            {t('MANUAL_SOURCES_LABEL')}:
+          </span>
+          <div className="flex flex-wrap gap-1">
+            {manualSources.slice(0, MAX_VISIBLE_SOURCES).map((item, index) => (
+              <span
+                key={`${item}-${index}`}
+                className="bg-blue-100 text-blue-700 text-xs font-normal px-2 py-0.5 rounded-sm"
+              >
+                <TruncatedCell text={item} maxLength={20} />
+              </span>
+            ))}
+            {manualSources.length > MAX_VISIBLE_SOURCES && (
+              <span className="bg-gray-100 text-gray-600 text-xs font-normal px-2 py-0.5 rounded-sm">
+                +{formatNum(manualSources.length - MAX_VISIBLE_SOURCES)}
+              </span>
+            )}
+          </div>
+        </div>
+      )}
 
       {createdAt && (
         <p className="text-muted-foreground text-sm/4 mb-1">

@@ -27,6 +27,9 @@ type IProps = {
   onFallback?: (data?: any) => void;
   label?: string;
   disabled?: boolean;
+  title?: string;
+  actionLabel?: string;
+  destructive?: boolean;
 };
 
 export function EditButton({
@@ -36,6 +39,9 @@ export function EditButton({
   onFallback,
   label = '',
   disabled = false,
+  title,
+  actionLabel,
+  destructive = false,
 }: IProps) {
   const t = useTranslations('GLOBAL');
   const tc = useTranslations('CONFIRMATION_ALERT_DIALOGS');
@@ -72,7 +78,7 @@ export function EditButton({
             <AlertDialogContent className="max-w-[clamp(260px,30vw,512px)] p-[clamp(10px,2vw,24px)] gap-[clamp(6px,1.2vw,16px)]">
               <AlertDialogHeader>
                 <AlertDialogTitle className="text-[clamp(14px,1.6vw,18px)]">
-                  {t('ARE_YOU_ABSOLUTELY_SURE')}
+                  {title || t('ARE_YOU_ABSOLUTELY_SURE')}
                 </AlertDialogTitle>
                 <AlertDialogDescription className="text-[clamp(11px,1vw,14px)]">
                   {description || defaultDescription}
@@ -84,9 +90,12 @@ export function EditButton({
                 </AlertDialogCancel>
                 <AlertDialogAction
                   onClick={handleClick}
-                  className="h-[clamp(26px,3.2vw,40px)] px-[clamp(10px,1.4vw,16px)] text-[clamp(11px,1vw,14px)]"
+                  className={cn(
+                    'h-[clamp(26px,3.2vw,40px)] px-[clamp(10px,1.4vw,16px)] text-[clamp(11px,1vw,14px)]',
+                    destructive && 'bg-red-600 hover:bg-red-700 text-white',
+                  )}
                 >
-                  {t('CONTINUE')}
+                  {actionLabel || t('CONTINUE')}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>

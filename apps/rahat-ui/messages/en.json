@@ -1669,6 +1669,10 @@
     "STEP_INDEX": "Step {index}"
   },
   "AA_PROJECT": {
+    "MANUAL_SOURCES": "Sources (optional)",
+    "MANUAL_SOURCES_PLACEHOLDER": "Type a source and press Enter",
+    "MANUAL_SOURCES_HINT": "Press Enter to add",
+    "MANUAL_SOURCES_LABEL": "Sources",
     "ACCESS_INCLUSION": "Access & Inclusion",
     "ACCESS_TO_EARLY_WARNING_INFORMATION": "Access To Early Warning Information",
     "ACCESS_TO_INTERNET": "Access to Internet",
@@ -2203,6 +2207,11 @@
     "EDIT_THE_FORM_BELOW_TO_UPDATE2": "Edit the form below to update  activity",
     "EDIT_THE_FORM_BELOW_TO_UPDATE3": "Edit the form below to update this phase",
     "EDIT_TRIGGER": "Edit trigger",
+    "UPDATE_LOCKED_TRIGGER_TITLE": "Update trigger anyway?",
+    "UPDATE_TRIGGERED_TRIGGER_CONFIRM": "This trigger is already activated. Do you want to update it anyway?",
+    "UPDATE_ACTIVE_PHASE_TRIGGER_CONFIRM": "The phase of this trigger is already activated. Do you want to update it anyway?",
+    "TRIGGER_IN_ACTIVE_PHASE_TITLE": "Trigger anyway?",
+    "TRIGGER_IN_ACTIVE_PHASE_CONFIRM": "The phase of this trigger is already activated. Do you want to trigger it anyway?",
     "EDUCATION_SUPPORT_FUND": "Education Support Fund",
     "EG_CLIENT_ID": "eg:Client-ID",
     "ELECTRICITY_BILL": "Electricity Bill",

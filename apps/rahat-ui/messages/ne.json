@@ -1,5 +1,9 @@
 {
   "AA_PROJECT": {
+    "MANUAL_SOURCES": "स्रोतहरू (वैकल्पिक)",
+    "MANUAL_SOURCES_PLACEHOLDER": "स्रोत टाइप गरी Enter थिच्नुहोस्",
+    "MANUAL_SOURCES_HINT": "थप्न Enter थिच्नुहोस्",
+    "MANUAL_SOURCES_LABEL": "स्रोतहरू",
     "ACCESS_INCLUSION": "पहुँच र समावेशीकरण",
     "ACCESS_TO_EARLY_WARNING_INFORMATION": "पुर्व सूचना सम्बन्धि जानकारीमा पहुँच",
     "ACCESS_TO_INTERNET": "इन्टरनेटमा पहुँच",
@@ -531,6 +535,11 @@
     "EDIT_THE_FORM_BELOW_TO_UPDATE2": "गतिविधि अद्यावधिक गर्न तलको फारम सम्पादन गर्नुहोस्",
     "EDIT_THE_FORM_BELOW_TO_UPDATE3": "यो चरण अद्यावधिक गर्न तलको फारम सच्याउनुहोस्।",
     "EDIT_TRIGGER": "ट्रिगर सम्पादन गर्नुहोस्",
+    "UPDATE_LOCKED_TRIGGER_TITLE": "जसरी भए पनि ट्रिगर अद्यावधिक गर्ने?",
+    "UPDATE_TRIGGERED_TRIGGER_CONFIRM": "यो ट्रिगर पहिले नै सक्रिय भइसकेको छ। के तपाईं यसलाई जसरी भए पनि अद्यावधिक गर्न चाहनुहुन्छ?",
+    "UPDATE_ACTIVE_PHASE_TRIGGER_CONFIRM": "यो ट्रिगरको चरण पहिले नै सक्रिय भइसकेको छ। के तपाईं यसलाई जसरी भए पनि अद्यावधिक गर्न चाहनुहुन्छ?",
+    "TRIGGER_IN_ACTIVE_PHASE_TITLE": "जसरी भए पनि ट्रिगर गर्ने?",
+    "TRIGGER_IN_ACTIVE_PHASE_CONFIRM": "यो ट्रिगरको चरण पहिले नै सक्रिय भइसकेको छ। के तपाईं यसलाई जसरी भए पनि ट्रिगर गर्न चाहनुहुन्छ?",
     "EDUCATION_SUPPORT_FUND": "शिक्षा सहायता कोष",
     "EG_CLIENT_ID": "उदा: क्लाइन्ट आईडी",
     "ELECTRICITY_BILL": "बिजुली बिल",

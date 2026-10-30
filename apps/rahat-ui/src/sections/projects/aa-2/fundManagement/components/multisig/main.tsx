@@ -119,19 +119,20 @@ export default function MultiSigWalletView() {
   };
 
   const InfoCard = ({ title, content, color, icon, tip }: CardProps) => {
+    const isLong = String(content).length > 18;
     return (
       <Card
-        className={`rounded-sm text-${color}-500 bg-${color}-50 border-${color}-100`}
+        className={`rounded-sm text-${color}-500 bg-${color}-50 border-${color}-100 h-full flex flex-col justify-between`}
       >
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <div className="flex items-center space-x-2">
-            <CardTitle className="text-sm font-medium">{title}</CardTitle>
+          <div className="flex items-center space-x-2 min-w-0">
+            <CardTitle className="text-sm font-medium truncate">{title}</CardTitle>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Info
                     size={16}
-                    className="text-muted-foreground cursor-help hover:text-primary transition-colors"
+                    className="text-muted-foreground cursor-help hover:text-primary transition-colors shrink-0"
                   />
                 </TooltipTrigger>
                 <TooltipContent className="w-72">
@@ -140,10 +141,25 @@ export default function MultiSigWalletView() {
               </Tooltip>
             </TooltipProvider>
           </div>
-          {icon}
+          <div className="shrink-0">{icon}</div>
         </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{content}</div>
+        <CardContent className="pt-0">
+          <TooltipProvider delayDuration={100}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div
+                  className={`${
+                    isLong ? 'text-lg sm:text-xl' : 'text-xl sm:text-2xl'
+                  } font-bold truncate max-w-full cursor-pointer tracking-tight`}
+                >
+                  {content}
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="top" className="max-w-xs break-all">
+                <p className="text-xs font-semibold">{content}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </CardContent>
       </Card>
     );
@@ -167,7 +183,7 @@ export default function MultiSigWalletView() {
           isTxPending={safeOwners?.pendingTxCount > 0}
         />
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 [&>*]:min-w-0 items-stretch">
         {InfoCardData?.map((card) => (
           <InfoCard
             key={card.title}
@@ -180,7 +196,7 @@ export default function MultiSigWalletView() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 [&>*]:min-w-0">
         <Card className="rounded-sm">
           <CardHeader className="p-4">
             <div className="flex items-center space-x-2">

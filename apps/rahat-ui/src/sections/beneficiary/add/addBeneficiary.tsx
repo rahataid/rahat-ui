@@ -145,7 +145,8 @@ export default function AddBeneficiaryForm() {
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleCreateBeneficiary)}>
-          <div className="p-4 h-[calc(100vh-115px)]">
+          {/* Scrolls instead of spilling over the footer when the form is taller than the fixed height. */}
+          <div className="p-4 h-[calc(100vh-115px)] overflow-y-auto">
             <HeaderWithBack
               title={t('CREATE_BENEFICIARY')}
               subtitle={t('CREATE_A_NEW_BENEFICIARY')}

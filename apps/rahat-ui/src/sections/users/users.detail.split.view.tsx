@@ -124,7 +124,7 @@ export default function UsersDetailSplitView({
           </TabsList>
         </div>
         <TabsContent value="general">
-          <ScrollArea className="h-[calc(100vh-340px)]">
+          <ScrollArea className="h-[calc(100vh-340px)] [&_[data-radix-scroll-area-viewport]>div]:!block">
             <div className="flex flex-col gap-4 p-4">
               <section className="rounded-sm border bg-card p-4 shadow-sm">
                 <h2 className="mb-4 border-l-4 border-primary pl-3 text-base font-semibold">

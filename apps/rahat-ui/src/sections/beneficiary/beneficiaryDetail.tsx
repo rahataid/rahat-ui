@@ -168,7 +168,7 @@ export default function BeneficiaryDetail({
         </div>
       </div>
 
-      <ScrollArea className="h-[calc(100vh-240px)] p-4 ">
+      <ScrollArea className="h-[calc(100vh-240px)] p-4 [&_[data-radix-scroll-area-viewport]>div]:!block">
         <div className="flex flex-col gap-4 p-2">
           <section className="rounded-lg border bg-card p-4 shadow-sm rounded-sm">
             <h2 className="mb-4 border-l-4 border-primary pl-3 text-base font-semibold">

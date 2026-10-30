@@ -209,6 +209,8 @@ export const useListCommunications = (
     status?: string;
     transportId?: string;
     xrefId?: string;
+    startDate?: string;
+    endDate?: string;
   },
 ) => {
   const q = useProjectAction();
@@ -229,6 +231,8 @@ export const useListCommunications = (
             ...(payload?.status ? { status: payload.status } : {}),
             ...(payload?.transportId ? { transportId: payload.transportId } : {}),
             ...(payload?.xrefId ? { xrefId: payload.xrefId } : uuid ? { xrefId: uuid } : {}),
+            ...(payload?.startDate ? { startDate: payload.startDate } : {}),
+            ...(payload?.endDate ? { endDate: payload.endDate } : {}),
           },
         },
       });

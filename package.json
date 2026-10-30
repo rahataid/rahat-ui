@@ -2,7 +2,7 @@
   "name": "@rahat-ui/source",
   "version": "0.0.0",
   "rahat-ui-version": "v5.1.2",
-  "community-tool-ui-version": "v1.0.0",
+  "community-tool-ui-version": "v1.0.1",
   "license": "MPL-2.0",
   "scripts": {
     "rahat-ui": "nx serve rahat-ui",

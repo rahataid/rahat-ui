@@ -1,11 +1,13 @@
 import React from 'react';
-import { RoleAuth } from '@rahat-ui/auth';
-import { AARoles } from '@rahat-ui/auth';
+import { GlobalCan } from './global-can';
+import { ACTIONS, SUBJECTS } from '../constants/ability.constants';
 
 const CHAT_WIDGET_ORIGIN = process.env.NEXT_PUBLIC_CHAT_WIDGET_ORIGIN!;
 const CHAT_WIDGET_DEFAULT_SIZE = JSON.parse(
   process.env.NEXT_PUBLIC_CHAT_WIDGET_DEFAULT_SIZE!,
 );
+const CHAT_WIDGET_USER = process.env.NEXT_PUBLIC_CHAT_WIDGET_USER!;
+const CHAT_WIDGET_API_KEY = process.env.NEXT_PUBLIC_CHAT_WIDGET_API_KEY!;
 
 const CHAT_WIDGET_OFFSET = JSON.parse(
   process.env.NEXT_PUBLIC_CHAT_WIDGET_OFFSET!,
@@ -32,10 +34,10 @@ export function ChatWidgetFrame() {
   }, []);
 
   return (
-    <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+    <GlobalCan action={ACTIONS.MANAGE} subject={SUBJECTS.ALL}>
       <iframe
         ref={iframeRef}
-        src={`${CHAT_WIDGET_ORIGIN}/widget/chat?user=rahat-1786689553726&apiKey=rk_aeb83c86cb9e388951e26be76d432b2a8a386973bc5d76b129194fde0c7d5fdb&title=Rumsan+AI+Chat&placeholder=Ask+questions...&color=%23297AD6&bottomPosition=20`}
+        src={`${CHAT_WIDGET_ORIGIN}/widget/chat?user=${CHAT_WIDGET_USER}&apiKey=${CHAT_WIDGET_API_KEY}&title=Rumsan+AI+Chat&placeholder=Ask+questions...&color=%23297AD6&bottomPosition=20`}
         title="Rumsan AI Chat"
         style={{
           position: 'fixed',
@@ -50,6 +52,6 @@ export function ChatWidgetFrame() {
           transition: 'width 0.15s ease, height 0.15s ease',
         }}
       />
-    </RoleAuth>
+    </GlobalCan>
   );
 }

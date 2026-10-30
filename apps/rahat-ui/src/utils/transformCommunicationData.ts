@@ -31,6 +31,8 @@ export const transformCommunicationData = (
 
       return {
         ...communication,
+        beneficiaries: communication.beneficiaries || [],
+        stakeholders: communication.stakeholders || [],
         message: '',
         groupId: toGroupIdArray(communication.groupId),
         audioURL: messageObj
@@ -45,6 +47,8 @@ export const transformCommunicationData = (
     // For other transports (SMS/EMAIL), message is a string
     return {
       ...communication,
+      beneficiaries: communication.beneficiaries || [],
+      stakeholders: communication.stakeholders || [],
       groupId: toGroupIdArray(communication.groupId),
       message:
         typeof communication.message === 'string' ? communication.message : '',

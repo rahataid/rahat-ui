@@ -1,11 +1,17 @@
 import { useTranslations } from 'next-intl';
 import {
   getBeneficiariesGroupByUuids,
+  useBeneficiariesGroups,
   useBeneficiariesGroupStore,
   useStakeholdersGroupByUuids,
+  useStakeholdersGroups,
   useStakeholdersGroupsStore,
   useUploadFile,
 } from '@rahat-ui/query';
+import {
+  TargetAudienceSelector,
+  AudienceGroupOption,
+} from '../../communications/components/target-audience-selector';
 import {
   useState,
   useEffect,
@@ -29,13 +35,9 @@ import {
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import MultipleSelector, {
-  type Option,
-} from '@rahat-ui/shadcn/src/components/custom/multi-select';
 import { Transport, ValidationContent } from '@rumsan/connect/src/types';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
@@ -63,7 +65,6 @@ import { UseFormReturn } from 'react-hook-form';
 import { z } from 'zod';
 import { createCommunicationFormSchema } from '../schemas/activity.schemas';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
-import { renderGroups } from './renderGroup';
 import { UseBooleanReturnType } from 'apps/rahat-ui/src/hooks/use-boolean';
 import {
   FormInput,
@@ -73,6 +74,7 @@ import {
 import { cn } from '@rahat-ui/shadcn/src';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { getSmsInfo } from 'apps/rahat-ui/src/utils/buildCommunicationPayload';
+import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
 
 type CommunicationFormData = z.infer<
   ReturnType<typeof createCommunicationFormSchema>
@@ -138,58 +140,137 @@ export default function AddCommunicationForm({
     (state) => state.beneficiariesGroups,
   );
 
+  const { data: benGroupsData, isLoading: benGroupsLoading } =
+    useBeneficiariesGroups(projectId as UUID, {
+      excludeGroupPurpose: GroupPurpose.GENERAL,
+      page: 1,
+      perPage: 100,
+    });
+  const { data: stakeGroupsData, isLoading: stakeGroupsLoading } =
+    useStakeholdersGroups(projectId as UUID, {
+      page: 1,
+      perPage: 100,
+    });
+
+  const beneficiaryAudienceOptions: AudienceGroupOption[] = useMemo(() => {
+    const rawList =
+      (benGroupsData as any)?.data ??
+      (Array.isArray(beneficiaryGroups) && beneficiaryGroups.length > 0
+        ? beneficiaryGroups
+        : []);
+
+    return (Array.isArray(rawList) ? rawList : [])
+      .filter((g: any) => g?.groupPurpose !== GroupPurpose.GENERAL)
+      .map((g: any) => ({
+        id: g?.uuid,
+        name: g?.name,
+        count:
+          g?._count?.beneficiaries ??
+          g?.groupedBeneficiaries?.length ??
+          g?.beneficiaries?.length ??
+          0,
+      }))
+      .filter((g) => g.id && g.name);
+  }, [benGroupsData, beneficiaryGroups]);
+
+  const stakeholderAudienceOptions: AudienceGroupOption[] = useMemo(() => {
+    const rawList =
+      (stakeGroupsData as any)?.data ??
+      (Array.isArray(stakeholdersGroups) && stakeholdersGroups.length > 0
+        ? stakeholdersGroups
+        : []);
+    return (Array.isArray(rawList) ? rawList : [])
+      .map((g: any) => ({
+        id: g?.uuid,
+        name: g?.name,
+        count:
+          g?._count?.stakeholders ??
+          g?.stakeholders?.length ??
+          0,
+      }))
+      .filter((g) => g.id && g.name);
+  }, [stakeGroupsData, stakeholdersGroups]);
+
+  const selectedBeneficiaries = form.watch('beneficiaries' as any) || [];
+  const selectedStakeholders = form.watch('stakeholders' as any) || [];
+
   const groupType = form.watch('groupType');
   const groupId = form.watch('groupId');
   const { errors } = form.formState;
 
-  // Convert groups to Option[] format
-  const groupOptions = useMemo<Option[]>(() => {
-    if (groupType === 'STAKEHOLDERS') {
-      const stakeholdersGroupsList = stakeholdersGroups.filter(
-        (a: any) => a?._count?.stakeholders > 0,
-      );
-      return stakeholdersGroupsList.map((group: any) => ({
-        label: group?.name || '',
-        value: group.uuid,
-      }));
-    }
+  // Hydrate legacy single-group communication into TargetAudienceSelector when editing
+  useEffect(() => {
+    const hasSelection =
+      (Array.isArray(selectedBeneficiaries) && selectedBeneficiaries.length > 0) ||
+      (Array.isArray(selectedStakeholders) && selectedStakeholders.length > 0);
 
-    if (groupType === 'BENEFICIARY') {
-      const beneficiaryGroupsList = beneficiaryGroups.filter(
-        (a: any) => a?._count?.beneficiaries > 0,
-      );
-      return beneficiaryGroupsList.map((group: any) => ({
-        label: group?.name || '',
-        value: group.uuid,
-      }));
+    if (
+      !hasSelection &&
+      Array.isArray(groupId) &&
+      groupId.length > 0 &&
+      groupType
+    ) {
+      if (groupType === 'BENEFICIARY' && beneficiaryAudienceOptions.length > 0) {
+        const matching = beneficiaryAudienceOptions.filter((opt) =>
+          groupId.includes(opt.id),
+        );
+        if (matching.length > 0) {
+          form.setValue('beneficiaries' as any, matching, { shouldValidate: true });
+        }
+      } else if (
+        groupType === 'STAKEHOLDERS' &&
+        stakeholderAudienceOptions.length > 0
+      ) {
+        const matching = stakeholderAudienceOptions.filter((opt) =>
+          groupId.includes(opt.id),
+        );
+        if (matching.length > 0) {
+          form.setValue('stakeholders' as any, matching, { shouldValidate: true });
+        }
+      }
     }
+  }, [
+    groupId,
+    groupType,
+    beneficiaryAudienceOptions,
+    stakeholderAudienceOptions,
+    selectedBeneficiaries.length,
+    selectedStakeholders.length,
+    form,
+  ]);
 
+  const benGroupIds = useMemo(() => {
+    if (selectedBeneficiaries.length > 0) {
+      return selectedBeneficiaries.map((b: any) => b.id).filter(Boolean);
+    }
+    if (groupType === 'BENEFICIARY' && Array.isArray(groupId)) {
+      return groupId.filter(Boolean);
+    }
     return [];
-  }, [groupType, stakeholdersGroups, beneficiaryGroups]);
+  }, [selectedBeneficiaries, groupType, groupId]);
 
-  // Get actual selected options with labels
-  const selectedGroups = useMemo(() => {
-    if (!groupId) return [];
-    return groupId
-      .map((id: string) => groupOptions.find((opt: Option) => opt.value === id))
-      .filter(Boolean) as Option[];
-  }, [groupId, groupOptions]);
+  const stakeGroupIds = useMemo(() => {
+    if (selectedStakeholders.length > 0) {
+      return selectedStakeholders.map((s: any) => s.id).filter(Boolean);
+    }
+    if (groupType === 'STAKEHOLDERS' && Array.isArray(groupId)) {
+      return groupId.filter(Boolean);
+    }
+    return [];
+  }, [selectedStakeholders, groupType, groupId]);
 
-  // Query enable validation goes here
-  const enableStakeholdersGroupQuery =
-    groupType === 'STAKEHOLDERS' && groupId.length > 0;
-  const enableBeneficiaryGroupQuery =
-    groupType === 'BENEFICIARY' && groupId.length > 0;
+  const enableStakeholdersGroupQuery = stakeGroupIds.length > 0;
+  const enableBeneficiaryGroupQuery = benGroupIds.length > 0;
 
   const { data: stakeholdersGroup, isLoading: stakeholdersGroupLoading } =
     useStakeholdersGroupByUuids(
       projectId as UUID,
-      groupId,
+      stakeGroupIds,
       enableStakeholdersGroupQuery,
     );
 
   const { data: beneficiaryGroup, isLoading: beneficiaryGroupLoading } =
-    getBeneficiariesGroupByUuids(groupId, enableBeneficiaryGroupQuery);
+    getBeneficiariesGroupByUuids(benGroupIds, enableBeneficiaryGroupQuery);
 
   const handleAudioFileChange = async (
     fileOrEvent: File | ChangeEvent<HTMLInputElement>,
@@ -359,17 +440,18 @@ export default function AddCommunicationForm({
   const audioFile = form.watch('audioURL');
 
   const isLoading = useMemo(
-    () => stakeholdersGroupLoading || beneficiaryGroupLoading,
-    [stakeholdersGroupLoading, beneficiaryGroupLoading],
+    () =>
+      stakeholdersGroupLoading ||
+      beneficiaryGroupLoading ||
+      benGroupsLoading ||
+      stakeGroupsLoading,
+    [
+      stakeholdersGroupLoading,
+      beneficiaryGroupLoading,
+      benGroupsLoading,
+      stakeGroupsLoading,
+    ],
   );
-
-  const handleGroupTypeChange = (
-    value: string,
-    onChange: (v: string) => void,
-  ) => {
-    onChange(value);
-    form.setValue('groupId', []); // reset group selection on type change
-  };
 
   const transportData = useMemo(() => {
     if (!transportId || !appTransports?.length) {
@@ -382,50 +464,63 @@ export default function AddCommunicationForm({
   useEffect(() => {
     if (!transportData) return;
 
-    if (!groupId.length) {
+    if (benGroupIds.length === 0 && stakeGroupIds.length === 0) {
       setIsEmailValidated(true);
-      form.clearErrors('groupId');
       return;
     }
 
     if (transportData?.name === 'VOICE') {
-      // Clear any previous errors if transport doesn't require email
-      form.clearErrors('groupId');
       setIsEmailValidated(true);
       return;
     }
 
     const fieldName = transportData.name === 'EMAIL' ? 'email' : 'phone';
-    let result;
+    const invalidGroups: string[] = [];
 
-    if (groupType === 'STAKEHOLDERS' && stakeholdersGroup) {
-      result = validateStakeholderGroupFields(stakeholdersGroup, fieldName);
+    if (benGroupIds.length > 0 && beneficiaryGroup) {
+      const benResult = validateBeneficiaryGroupFields(
+        beneficiaryGroup,
+        fieldName,
+      );
+      if (!benResult.valid) {
+        invalidGroups.push(...benResult.invalidGroups);
+      }
     }
 
-    if (groupType === 'BENEFICIARY' && beneficiaryGroup) {
-      result = validateBeneficiaryGroupFields(beneficiaryGroup, fieldName);
+    if (stakeGroupIds.length > 0 && stakeholdersGroup) {
+      const stakeResult = validateStakeholderGroupFields(
+        stakeholdersGroup,
+        fieldName,
+      );
+      if (!stakeResult.valid) {
+        invalidGroups.push(...stakeResult.invalidGroups);
+      }
     }
 
-    if (!result) return;
-
-    if (!result.valid) {
-      form.clearErrors('groupId');
-      // error are not display for second time if selected groupId is same so implemented this solution. if there is better solution we have to update code.
-      setTimeout(() => {
-        form.setError('groupId', {
-          type: 'manual',
-          message: t('FIELD_MISSING_FOR_SOME_BENEFICIARIES', {
-            field: fieldName,
-            groups: result.invalidGroups.join(', '),
-          }),
-        });
-      }, 0);
+    if (invalidGroups.length > 0) {
+      form.setError('targetAudience', {
+        type: 'manual',
+        message: t('FIELD_MISSING_FOR_SOME_BENEFICIARIES', {
+          field: fieldName,
+          groups: invalidGroups.join(', '),
+        }),
+      });
+      setIsEmailValidated(false);
     } else {
-      form.clearErrors('groupId');
+      const currentError = form.formState.errors.targetAudience;
+      if (currentError?.type === 'manual') {
+        form.clearErrors('targetAudience');
+      }
+      setIsEmailValidated(true);
     }
-
-    setIsEmailValidated(result.valid);
-  }, [stakeholdersGroup, beneficiaryGroup, transportData, groupType]);
+  }, [
+    stakeholdersGroup,
+    beneficiaryGroup,
+    transportData,
+    benGroupIds.length,
+    stakeGroupIds.length,
+    t,
+  ]);
 
   // When transport type changes, reset relevant fields
   useEffect(() => {
@@ -474,129 +569,19 @@ export default function AddCommunicationForm({
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="groupType"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel required>{t('GROUP_TYPE')}</FormLabel>
-                <Select
-                  onValueChange={(value) =>
-                    handleGroupTypeChange(value, field.onChange)
-                  }
-                  value={field.value}
-                >
-                  <FormControl>
-                    <FormSelectTrigger value={field.value}>
-                      <SelectValue placeholder={t('SELECT_GROUP_TYPE')} />
-                    </FormSelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="STAKEHOLDERS">{t('STAKEHOLDERS')}</SelectItem>
-                    <SelectItem value="BENEFICIARY">{t('BENEFICIARY')}</SelectItem>
-                  </SelectContent>
-                </Select>
-                {errors.groupType && (
-                  <FormMessage>{errors.groupType.message}</FormMessage>
-                )}
-              </FormItem>
-            )}
-          />
-
-          {isMultiSelect ? (
-            <FormField
-              control={form.control}
-              name="groupId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel required>{t('GROUPS')}</FormLabel>
-                  <FormControl>
-                    <MultipleSelector
-                      options={groupOptions}
-                      value={selectedGroups}
-                      inputProps={{
-                        className: 'outline-none',
-                      }}
-                      className={cn(
-                        selectedGroups.length > 0 &&
-                          !errors.groupId &&
-                          'shadow-[inset_4px_0_0_0_hsl(var(--primary))] bg-blue-50 pl-2',
-                        errors.groupId &&
-                          'shadow-[inset_4px_0_0_0_hsl(var(--destructive))] bg-red-50',
-                        'max-h-20 overflow-y-auto',
-                      )}
-                      dropdownClassName="max-h-36 w-80"
-                      onChange={(options: Option[]) => {
-                        field.onChange(options.map((opt: Option) => opt.value));
-                      }}
-                      placeholder={
-                        groupType ? t('SELECT_GROUPS') : t('SELECT_GROUP_TYPE_FIRST')
-                      }
-                      loading={isLoading}
-                      loadingIndicator={
-                        <div className="flex items-center justify-center p-6">
-                          <Loader />
-                        </div>
-                      }
-                      emptyIndicator={
-                        <p className="text-sm text-muted-foreground">
-                          {t('NO_GROUPS_FOUND')}
-                        </p>
-                      }
-                      disabled={isLoading || !groupType}
-                    />
-                  </FormControl>
-                  {errors.groupId && (
-                    <FormMessage>{errors.groupId.message}</FormMessage>
-                  )}
-                </FormItem>
-              )}
+          <div className="col-span-2">
+            <TargetAudienceSelector
+              beneficiaryGroups={beneficiaryAudienceOptions}
+              stakeholderGroups={stakeholderAudienceOptions}
+              isLoading={isLoading}
             />
-          ) : (
-            <FormField
-              control={form.control}
-              name="groupId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel required>{t('GROUPS')}</FormLabel>
-                  <Select
-                    disabled={!groupType || isLoading}
-                    onValueChange={(value) => {
-                      // Set groupId as an array with the selected value
-                      field.onChange([value]);
-                    }}
-                    value={field.value?.[0] || ''}
-                  >
-                    <FormControl>
-                      <FormSelectTrigger value={field.value}>
-                        <SelectValue
-                          placeholder={
-                            groupType
-                              ? t('SELECT_GROUPS')
-                              : t('SELECT_GROUP_TYPE_FIRST')
-                          }
-                        />
-                      </FormSelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectGroup>
-                        {renderGroups(groupOptions, isLoading, t)}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                  {errors.groupId && (
-                    <FormMessage>{errors.groupId.message}</FormMessage>
-                  )}
-                </FormItem>
-              )}
-            />
-          )}
+          </div>
 
           <FormField
             control={form.control}
             name="transportId"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-2">
                 <FormLabel required>{t('COMMUNICATION_TYPE')}</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
@@ -798,10 +783,10 @@ export default function AddCommunicationForm({
               render={({ field }) => {
                 const isNep = /[\u0900-\u097F]/.test(field.value || '');
                 const maxLen = isNep ? 350 : 700;
-              const smsInfo =
-                transportData?.name === 'SMS' && field.value
-                  ? getSmsInfo(field.value)
-                  : null;
+                const smsInfo =
+                  transportData?.name === 'SMS' && field.value
+                    ? getSmsInfo(field.value)
+                    : null;
                 return (
                   <FormItem className="col-span-2">
                     <FormLabel required>{tg('MESSAGE')}</FormLabel>
@@ -820,18 +805,18 @@ export default function AddCommunicationForm({
                       )}
 
                       <div className="ml-auto flex text-xs text-muted-foreground gap-4">
-                      {smsInfo && (
-                        <p className="text-xs text-muted-foreground">
-                          <span className="font-medium text-foreground">
-                            {formatNum(smsInfo.smsCredits)}
-                          </span>{' '}
-                          {smsInfo.smsCredits === 1 ? t('SMS_CREDIT') : t('SMS_CREDITS')}
-                        </p>
-                      )}
-                      <p>
+                        {smsInfo && (
+                          <p className="text-xs text-muted-foreground">
+                            <span className="font-medium text-foreground">
+                              {formatNum(smsInfo.smsCredits)}
+                            </span>{' '}
+                            {smsInfo.smsCredits === 1 ? t('SMS_CREDIT') : t('SMS_CREDITS')}
+                          </p>
+                        )}
+                        <p>
                           {formatNum(field.value?.length ?? 0)} / {formatNum(maxLen)} {charactersText}
                         </p>
-                    </div>
+                      </div>
                     </div>
                   </FormItem>
                 );

@@ -23,6 +23,8 @@ export const useActivityForm = (appTransports?: Transport[]) => {
     communicationTitle: '',
     groupType: '',
     groupId: [],
+    beneficiaries: [],
+    stakeholders: [],
     transportId: '',
     message: '',
     subject: '',

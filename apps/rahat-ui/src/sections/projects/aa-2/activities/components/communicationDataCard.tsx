@@ -1,5 +1,6 @@
 import { useTranslations } from 'next-intl';
 import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Mail, MessageSquare, PencilIcon, Phone, Trash2 } from 'lucide-react';
 import React, { Dispatch, SetStateAction } from 'react';
 import { Transport } from '@rumsan/connect/src/types';
@@ -54,16 +55,26 @@ const CommunicationDataCard = ({
     setOpen(true);
 
     const itemData = communicationData[i];
+    const audioObj =
+      typeof itemData.audioURL === 'object' && itemData.audioURL !== null
+        ? itemData.audioURL
+        : {
+          fileName: '',
+          mediaURL: typeof itemData.audioURL === 'string' ? itemData.audioURL : '',
+        };
+
     form.reset({
       communicationTitle: itemData.communicationTitle || '',
-      sessionId: itemData.sessionId,
-      communicationId: itemData.communicationId,
-      groupId: itemData.groupId,
-      groupType: itemData.groupType,
-      message: itemData.message,
-      subject: itemData.subject,
-      transportId: itemData.transportId,
-      audioURL: itemData.audioURL,
+      sessionId: itemData.sessionId || '',
+      communicationId: itemData.communicationId || '',
+      groupId: itemData.groupId || [],
+      groupType: itemData.groupType || '',
+      beneficiaries: itemData.beneficiaries || [],
+      stakeholders: itemData.stakeholders || [],
+      message: typeof itemData.message === 'string' ? itemData.message : '',
+      subject: itemData.subject || '',
+      transportId: itemData.transportId || '',
+      audioURL: audioObj,
     });
   };
 
@@ -78,6 +89,13 @@ const CommunicationDataCard = ({
     <>
       <div className="grid grid-cols-1 gap-2 mt-4">
         {communicationData?.map((comm, i) => {
+          const audio =
+            typeof comm?.audioURL === 'object' && comm?.audioURL !== null
+              ? comm.audioURL
+              : typeof comm?.audioURL === 'string' && comm.audioURL
+              ? { fileName: '', mediaURL: comm.audioURL }
+              : null;
+
           return (
             <Card className="p-4 shadow-sm rounded-sm overflow-hidden" key={i}>
               <div className="flex items-start gap-4 min-w-0">
@@ -86,10 +104,10 @@ const CommunicationDataCard = ({
                     ?.name === 'EMAIL' ? (
                     <Mail className="h-5 w-5 text-gray-500" />
                   ) : appTransports?.find((g) => g.cuid === comm.transportId)
-                      ?.name === 'SMS' ? (
+                    ?.name === 'SMS' ? (
                     <MessageSquare className="h-5 w-5 text-gray-500" />
                   ) : appTransports?.find((g) => g.cuid === comm.transportId)
-                      ?.name === 'VOICE' ? (
+                    ?.name === 'VOICE' ? (
                     <Phone className="h-5 w-5 text-gray-500" />
                   ) : (
                     <MessageSquare className="h-5 w-5 text-gray-500" />
@@ -112,28 +130,55 @@ const CommunicationDataCard = ({
                             : '';
                         })()}
                       </span>
-                      <span>•</span>
-                      <span>{tg(comm?.groupType as any)}</span>
+                      {!comm?.beneficiaries?.length &&
+                        !comm?.stakeholders?.length &&
+                        comm?.groupType && (
+                          <>
+                            <span>•</span>
+                            <span>{tg(comm?.groupType as any)}</span>
+                          </>
+                        )}
 
                       {/* Group names container */}
                       <div className="flex flex-wrap gap-2 w-auto">
-                        {comm?.groupId?.map((uuid) => {
-                          const groupName =
-                            stakeholdersGroups?.find(
-                              (g: StakeholdersGroup) => g.uuid === uuid,
-                            )?.name ||
-                            beneficiaryGroups?.find(
-                              (g: BeneficiariesGroup) => g.uuid === uuid,
-                            )?.name ||
-                            t('UNKNOWN_GROUP');
+                        {(comm?.beneficiaries?.length || comm?.stakeholders?.length) ? (
+                          <>
+                            {comm.beneficiaries?.map((b) => (
+                              <div key={b.id} className="flex items-center gap-1">
+                                <span>•</span>
+                                <Badge variant="secondary" className="text-xs font-normal">
+                                  {tg('BENEFICIARY')}: <TruncatedCell text={b.name} maxLength={10} />
+                                </Badge>
+                              </div>
+                            ))}
+                            {comm.stakeholders?.map((s) => (
+                              <div key={s.id} className="flex items-center gap-1">
+                                <span>•</span>
+                                <Badge variant="outline" className="text-xs font-normal">
+                                  {tg('STAKEHOLDERS')}: <TruncatedCell text={s.name} maxLength={10} />
+                                </Badge>
+                              </div>
+                            ))}
+                          </>
+                        ) : (
+                          comm?.groupId?.map((uuid) => {
+                            const groupName =
+                              stakeholdersGroups?.find(
+                                (g: StakeholdersGroup) => g.uuid === uuid,
+                              )?.name ||
+                              beneficiaryGroups?.find(
+                                (g: BeneficiariesGroup) => g.uuid === uuid,
+                              )?.name ||
+                              t('UNKNOWN_GROUP');
 
-                          return (
-                            <div key={uuid} className="flex items-center gap-2">
-                              <span>•</span>
-                              <TruncatedCell text={groupName} maxLength={8} />
-                            </div>
-                          );
-                        })}
+                            return (
+                              <div key={uuid} className="flex items-center gap-2">
+                                <span>•</span>
+                                <TruncatedCell text={groupName} maxLength={8} />
+                              </div>
+                            );
+                          })
+                        )}
                       </div>
                     </div>
                   </div>
@@ -142,16 +187,20 @@ const CommunicationDataCard = ({
                       {comm?.subject}
                     </p>
                   )}
-                  <p className="text-sm text-gray-700 mt-1 break-all">
-                    {comm?.message}
-                  </p>
-                  {comm?.audioURL?.mediaURL && (
+                  {typeof comm?.message === 'string' && comm?.message && (
+                    <p className="text-sm text-gray-700 mt-1 break-all">
+                      {comm.message}
+                    </p>
+                  )}
+                  {audio?.mediaURL && (
                     <div className="pt-2">
-                      <h3 className="text-sm font-medium mb-2">
-                          {comm?.audioURL?.fileName}
-                      </h3>
+                      {audio?.fileName && (
+                        <h3 className="text-sm font-medium mb-2">
+                          {audio.fileName}
+                        </h3>
+                      )}
                       <audio
-                        src={comm?.audioURL?.mediaURL}
+                        src={audio.mediaURL}
                         controls
                         className="w-full h-10 "
                       />

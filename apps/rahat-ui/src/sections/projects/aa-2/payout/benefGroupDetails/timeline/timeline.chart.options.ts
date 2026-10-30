@@ -17,7 +17,6 @@ export const CATEGORY_META: Record<
 
 type ChartOptionsParams = {
   yCeiling: number;
-  locale: string;
   isLargeDataset: boolean;
   labels: TimelineChartLabels;
   formatNumRef: FormatNumRef;
@@ -258,12 +257,13 @@ export const buildTimelineChartOptions = ({
           if (catVal === 0) return;
 
           const meta = CATEGORY_META[cat];
+          const catLabel = labels[cat] || meta.label;
           html += `
             <div style="margin-bottom: 6px;">
               <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
                 <div style="display: flex; align-items: center; gap: 6px;">
                   <span style="width: 10px; height: 10px; border-radius: 2px; background: ${meta.color}; display: inline-block;"></span>
-                  <span style="font-weight: 600; color: #334155;">${meta.label}</span>
+                  <span style="font-weight: 600; color: #334155;">${catLabel}</span>
                 </div>
                 <strong style="color: #0F172A;">${formatNumRef.current(catVal)}</strong>
               </div>`;
@@ -274,11 +274,12 @@ export const buildTimelineChartOptions = ({
             );
             entries.forEach(([status, count]) => {
               const sColor = STATUS_COLORS[status] || '#64748B';
+              const sLabel = labels.statusLabels?.[status] || getStatusLabel(status);
               html += `
               <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-left: 16px; margin-top: 2px; font-size: 11px; color: #64748B;">
                 <div style="display: flex; align-items: center; gap: 5px;">
                   <span style="width: 6px; height: 6px; border-radius: 50%; background: ${sColor}; display: inline-block;"></span>
-                  <span>${getStatusLabel(status)}</span>
+                  <span>${sLabel}</span>
                 </div>
                 <span>${formatNumRef.current(count)}</span>
               </div>`;

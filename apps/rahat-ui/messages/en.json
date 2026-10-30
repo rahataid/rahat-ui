@@ -616,7 +616,17 @@
     "STATS": "Stats",
     "LIST": "List",
     "GENDER_DISTRIBUTION": "Gender Distribution",
-    "TOTAL_USERS": "Total Users"
+    "TOTAL_USERS": "Total Users",
+    "TIME": "Time",
+    "ALL_TRANSACTIONS": "All Transactions",
+    "IN_PROGRESS": "In Progress",
+    "ZOOM_IN": "Zoom In",
+    "ZOOM_OUT": "Zoom Out",
+    "PAN": "Pan",
+    "DOWNLOAD_SVG": "Download SVG",
+    "DOWNLOAD_PNG": "Download PNG",
+    "DOWNLOAD_CSV": "Download CSV",
+    "CHART_MENU": "Chart Menu"
   },
   "LOGIN": {
     "WELCOME_TO_RAHAT": "Welcome to Rahat",
@@ -3668,7 +3678,6 @@
     "EMAIL_SUBJECT": "Email Subject",
     "EMAIL_SUBJECT_PLACEHOLDER": "e.g. Important Update on Relief Support",
     "EXPORT_LOGS": "Export Logs",
-    "FAILED": "Failed",
     "FAILED_BOUNCED": "Failed / Bounced",
     "FAILURE_RATE": "failure rate",
     "FROM_LAST_WEEK": "from last week",
@@ -4300,7 +4309,17 @@
     "PLEASE_ENTER_DIGIT_PIN": "Please enter the {length} digit pin.",
     "INVALID_PIN_FALLBACK": "Invalid pin.",
     "VERIFYING": "Verifying…",
-    "TRIGGERING": "Triggering…"
+    "TRIGGERING": "Triggering…",
+    "TRANSACTION_VOLUME_OVER_TIME": "Transaction Volume Over Time",
+    "TRANSACTION_VOLUME_SUBTITLE": "Volume of transactions by status at each timestamp",
+    "ALL_TRANSACTIONS": "All Transactions",
+    "TIME": "Time",
+    "TIMELINE_MISSING_TIMESTAMP": "{count, plural, =1 {1 transaction is missing a timestamp and is not shown on the timeline.} other {# transactions are missing a timestamp and are not shown on the timeline.}}",
+    "IN_PROGRESS": "In Progress",
+    "ZOOM_IN": "Zoom In",
+    "ZOOM_OUT": "Zoom Out",
+    "PAN": "Pan",
+    "TRANSACTIONS": "Transactions"
   },
   "BACKEND": {
     "VENDORS": {

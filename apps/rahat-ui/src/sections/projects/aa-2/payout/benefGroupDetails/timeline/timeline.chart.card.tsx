@@ -92,9 +92,6 @@ export default function TimelineChartCard({
       allTransactions: translateValue(tv, 'ALL_TRANSACTIONS', {
         fallback: 'All Transactions',
       }),
-      txns: translateValue(tg, 'TXNS', {
-        fallback: locale === 'ne' ? 'कारोबारहरू' : 'txns',
-      }),
       disbursed: translateValue(tg, 'DISBURSED', { fallback: 'Disbursed' }),
       total: translateValue(tv, 'TOTAL_TRANSACTIONS', {
         fallback: 'Total Transactions',
@@ -105,6 +102,50 @@ export default function TimelineChartCard({
       time: translateValue(tv, 'TIME', {
         fallback: translateValue(tg, 'TIME', { fallback: 'Time' }),
       }),
+      success: translateValue(tv, 'SUCCESS', {
+        fallback: translateValue(tg, 'SUCCESS', { fallback: 'Success' }),
+      }),
+      inProgress: translateValue(tv, 'IN_PROGRESS', {
+        fallback: translateValue(tg, 'IN_PROGRESS', { fallback: 'In Progress' }),
+      }),
+      failed: translateValue(tv, 'FAILED', {
+        fallback: translateValue(tg, 'FAILED', { fallback: 'Failed' }),
+      }),
+      statusLabels: {
+        COMPLETED: translateValue(tg, 'COMPLETED', { fallback: 'Completed' }),
+        PARTIALLY_COMPLETED: translateValue(tg, 'PARTIALLY_COMPLETED', {
+          fallback: 'Partially Completed',
+        }),
+        TOKEN_TRANSACTION_COMPLETED: translateValue(
+          tg,
+          'TOKEN_TRANSACTION_COMPLETED',
+          { fallback: 'Token Completed' },
+        ),
+        FIAT_TRANSACTION_COMPLETED: translateValue(
+          tg,
+          'FIAT_TRANSACTION_COMPLETED',
+          { fallback: 'Fiat Completed' },
+        ),
+        PENDING: translateValue(tg, 'PENDING', { fallback: 'Pending' }),
+        TOKEN_TRANSACTION_INITIATED: translateValue(
+          tg,
+          'TOKEN_TRANSACTION_INITIATED',
+          { fallback: 'Token Initiated' },
+        ),
+        FIAT_TRANSACTION_INITIATED: translateValue(
+          tg,
+          'FIAT_TRANSACTION_INITIATED',
+          { fallback: 'Fiat Initiated' },
+        ),
+        FAILED: translateValue(tg, 'FAILED', { fallback: 'Failed' }),
+        TOKEN_TRANSACTION_FAILED: translateValue(tg, 'TOKEN_TRANSACTION_FAILED', {
+          fallback: 'Token Failed',
+        }),
+        FIAT_TRANSACTION_FAILED: translateValue(tg, 'FIAT_TRANSACTION_FAILED', {
+          fallback: 'Fiat Failed',
+        }),
+        CANCELLED: translateValue(tg, 'CANCELLED', { fallback: 'Cancelled' }),
+      },
       zoomIn: translateValue(tg, 'ZOOM_IN', { fallback: 'Zoom In' }),
       zoomOut: translateValue(tg, 'ZOOM_OUT', { fallback: 'Zoom Out' }),
       pan: translateValue(tg, 'PAN', { fallback: 'Pan' }),
@@ -160,7 +201,6 @@ export default function TimelineChartCard({
     () =>
       buildTimelineChartOptions({
         yCeiling,
-        locale,
         isLargeDataset,
         labels,
         formatNumRef,
@@ -168,16 +208,16 @@ export default function TimelineChartCard({
         onZoomed: handleZoomed,
         onResetZoom: handleResetZoom,
       }),
-    [yCeiling, locale, isLargeDataset, labels, series.seriesData, handleZoomed, handleResetZoom],
+    [yCeiling, isLargeDataset, labels, series.seriesData, handleZoomed, handleResetZoom],
   );
 
   const chartSeries = useMemo(
     () =>
       CATS.map((cat) => ({
-        name: CATEGORY_META[cat].label,
+        name: labels[cat] || CATEGORY_META[cat].label,
         data: series.seriesData.perCategory[cat] || [],
       })),
-    [series.seriesData],
+    [series.seriesData, labels],
   );
 
   const hasData = series.seriesData.xLabels.length > 0;
@@ -274,7 +314,7 @@ export default function TimelineChartCard({
                   className="w-2.5 h-2.5 rounded inline-block"
                   style={{ backgroundColor: meta.color }}
                 />
-                <span>{meta.label}</span>
+                <span>{labels[cat] || meta.label}</span>
                 <span className="text-slate-600 font-semibold">
                   ({formatNum(count)})
                 </span>

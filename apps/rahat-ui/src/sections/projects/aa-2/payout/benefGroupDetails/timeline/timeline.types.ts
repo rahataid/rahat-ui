@@ -80,7 +80,6 @@ export type TimelineChartLabels = {
   subtitle: string;
   allTransactions: string;
   total: string;
-  txns: string;
   disbursed: string;
   zoomIn: string;
   zoomOut: string;
@@ -88,6 +87,10 @@ export type TimelineChartLabels = {
   reset: string;
   transactions: string;
   time: string;
+  success: string;
+  inProgress: string;
+  failed: string;
+  statusLabels?: Record<string, string>;
 };
 
 export type FormatNumRef = { current: (value: number) => string };

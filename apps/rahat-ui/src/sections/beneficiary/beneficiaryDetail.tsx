@@ -74,7 +74,6 @@ export default function BeneficiaryDetail({
   const fromTab = searchParams.get('fromTab');
   const isAssignedToProject = searchParams.get('isAssignedToProject');
   const isGroupValidForAA = searchParams.get('isGroupValidForAA');
-
   return (
     <>
       <AssignToProjectModal
@@ -137,228 +136,283 @@ export default function BeneficiaryDetail({
           tip={g('CLOSE')}
         />
       </div>
-      <div className="p-4 flex justify-between items-center border-b">
+      <div className="flex items-center justify-between border-b bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-4">
         <div className="flex items-center gap-2">
           <Image
-            className="rounded-full"
+            className="rounded-full border-2 border-primary/20 shadow-sm"
             src="/profile.png"
             alt="profile"
             height={80}
             width={80}
           />
           <div>
-            <h1 className="font-semibold text-xl mb-1">
+            <h1 className="mb-2 text-xl font-semibold">
               {beneficiaryDetail?.piiData?.name ??
                 beneficiaryDetail?.name ??
                 'John Doe'}
             </h1>
-            <div className="flex space-x-4 items-center">
+            <div className="flex flex-wrap items-center gap-2">
               <Badge>
                 {formatEnumValue(beneficiaryDetail?.extras?.status ?? 'active')}
               </Badge>
-              <p className="text-base text-muted-foreground">
+              <span className="rounded-full border bg-background/80 px-2.5 py-1 text-xs text-muted-foreground">
                 {beneficiaryDetail?.extras?.age
                   ? formatNum(beneficiaryDetail.extras.age)
                   : g('N_A')}
-              </p>
-              <p className="text-base text-muted-foreground">
+              </span>
+              <span className="rounded-full border bg-background/80 px-2.5 py-1 text-xs text-muted-foreground">
                 {formatEnumValue(beneficiaryDetail?.gender) ?? g('UNKNOWN')}
-              </p>
+              </span>
             </div>
           </div>
         </div>
       </div>
 
-      <ScrollArea className="h-[calc(100vh-240px)] [&_[data-radix-scroll-area-viewport]>div]:!block">
-        <div className="p-4 flex flex-col space-y-4">
-          <h1 className="font-medium">{g('GENERAL')}</h1>
-
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4 shrink-0">
-              <MapPin size={20} strokeWidth={1.5} />
-              <p>{g('ADDRESS')}</p>
-            </div>
-            <p className="min-w-0 break-words pl-4 text-right text-muted-foreground text-base">
-              {beneficiaryDetail?.piiData?.extras?.address ||
-                beneficiaryDetail?.location ||
-                '-'}
-            </p>
-          </div>
-
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4 shrink-0">
-              <Phone size={20} strokeWidth={1.5} />
-              <p>{g('PHONE_NUMBER')}</p>
-            </div>
-            <p className="min-w-0 break-words pl-4 text-right text-muted-foreground text-base">
-              {formatPhone(
-                beneficiaryDetail?.piiData?.phone || beneficiaryDetail?.phone,
-              ) || '-'}
-            </p>
-          </div>
-
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4 shrink-0">
-              <Mail size={20} strokeWidth={1.5} />
-              <p>{g('EMAIL_ADDRESS')}</p>
-            </div>
-            <p className="min-w-0 break-words pl-4 text-right text-muted-foreground text-base">
-              {beneficiaryDetail?.piiData?.email ||
-                beneficiaryDetail?.email ||
-                '-'}
-            </p>
-          </div>
-
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4 shrink-0">
-              <Phone size={20} strokeWidth={1.5} />
-              <p>{g('PHONE_STATUS')}</p>
-            </div>
-            <p className="min-w-0 break-words pl-4 text-right text-muted-foreground text-base">
-              {formatEnumValue(beneficiaryDetail?.phoneStatus) || '-'}
-            </p>
-          </div>
-
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4 shrink-0">
-              <Landmark size={20} strokeWidth={1.5} />
-              <p>{t('BANK_STATUS')}</p>
-            </div>
-            <p className="min-w-0 break-words pl-4 text-right text-muted-foreground text-base">
-              {formatEnumValue(beneficiaryDetail?.bankedStatus) || '-'}
-            </p>
-          </div>
-
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4 shrink-0">
-              <Wifi size={20} strokeWidth={1.5} />
-              <p>{g('INTERNET_STATUS')}</p>
-            </div>
-            <p className="min-w-0 break-words pl-4 text-right text-muted-foreground text-base">
-              {formatEnumValue(beneficiaryDetail?.internetStatus) || '-'}
-            </p>
-          </div>
-
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4 shrink-0">
-              <WalletIcon size={20} strokeWidth={1.5} />
-              <p>{g('WALLET_ADDRESS')}</p>
-            </div>
-            <div className="flex items-center">
-              <div className="text-base text-muted-foreground truncate w-32  mr-2">
-                {beneficiaryDetail?.walletAddress || g('N_A')}
+      <ScrollArea className="h-[calc(100vh-240px)] p-4 [&_[data-radix-scroll-area-viewport]>div]:!block">
+        <div className="flex flex-col gap-4 p-2">
+          <section className="rounded-lg border bg-card p-4 shadow-sm rounded-sm">
+            <h2 className="mb-4 border-l-4 border-primary pl-3 text-base font-semibold">
+              {g('GENERAL')}
+            </h2>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-start justify-between gap-4 rounded-md border border-border/60 bg-muted/20 px-3 py-3 transition-colors hover:bg-muted/40">
+                <div className="flex shrink-0 items-center gap-3">
+                  <MapPin
+                    className="rounded-md bg-secondary p-1 text-primary"
+                    size={24}
+                    strokeWidth={1.5}
+                  />
+                  <p className="text-sm font-medium">{g('ADDRESS')}</p>
+                </div>
+                <p className="break-words text-right text-sm text-muted-foreground">
+                  {beneficiaryDetail?.piiData?.extras?.address ||
+                    beneficiaryDetail?.location ||
+                    '-'}
+                </p>
               </div>
-              <button
-                onClick={() =>
-                  clickToCopy(beneficiaryDetail?.walletAddress || '', 1)
-                }
-                className="ml-2 text-sm text-gray-500"
-              >
-                {copyAction === 1 ? (
-                  <CopyCheck className="w-4 h-4" />
-                ) : (
-                  <Copy className="w-4 h-4" />
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-        {beneficiaryDetail?.BeneficiaryProject && (
-          <div
-            className={`p-4 flex flex-col space-y-4 ml-2 ${beneficiaryDetail?.BeneficiaryProject?.length < 1 && 'hidden'
-              }`}
-          >
-            <div className="flex justify-between items-start">
-              <p className="text-base font-medium">{t('PROJECT_INVOLVED')}</p>
 
-              <div className="flex flex-col items-end space-y-2">
-                {beneficiaryDetail?.BeneficiaryProject?.map((item, index) => (
-                  <p
-                    key={item.id || index}
-                    className="text-muted-foreground text-base"
+              <div className="flex items-start justify-between gap-4 rounded-md border border-border/60 bg-muted/20 px-3 py-3 transition-colors hover:bg-muted/40">
+                <div className="flex shrink-0 items-center gap-3">
+                  <Phone
+                    className="rounded-md bg-secondary p-1 text-primary"
+                    size={24}
+                    strokeWidth={1.5}
+                  />
+                  <p className="text-sm font-medium">{g('PHONE_NUMBER')}</p>
+                </div>
+                <p className="break-all text-right text-sm text-muted-foreground">
+                  {formatPhone(
+                    beneficiaryDetail?.piiData?.phone ||
+                      beneficiaryDetail?.phone,
+                  ) || '-'}
+                </p>
+              </div>
+
+              <div className="flex items-start justify-between gap-4 rounded-md border border-border/60 bg-muted/20 px-3 py-3 transition-colors hover:bg-muted/40">
+                <div className="flex shrink-0 items-center gap-3">
+                  <Mail
+                    className="rounded-md bg-secondary p-1 text-primary"
+                    size={24}
+                    strokeWidth={1.5}
+                  />
+                  <p className="text-sm font-medium">{g('EMAIL_ADDRESS')}</p>
+                </div>
+                <p className="break-all text-right text-sm text-muted-foreground">
+                  {beneficiaryDetail?.piiData?.email ||
+                    beneficiaryDetail?.email ||
+                    '-'}
+                </p>
+              </div>
+
+              <div className="flex items-start justify-between gap-4 rounded-md border border-border/60 bg-muted/20 px-3 py-3 transition-colors hover:bg-muted/40">
+                <div className="flex shrink-0 items-center gap-3">
+                  <Phone
+                    className="rounded-md bg-secondary p-1 text-primary"
+                    size={24}
+                    strokeWidth={1.5}
+                  />
+                  <p className="text-sm font-medium">{g('PHONE_STATUS')}</p>
+                </div>
+                <p className="text-right text-sm text-muted-foreground">
+                  {formatEnumValue(beneficiaryDetail?.phoneStatus) || '-'}
+                </p>
+              </div>
+
+              <div className="flex items-start justify-between gap-4 rounded-md border border-border/60 bg-muted/20 px-3 py-3 transition-colors hover:bg-muted/40">
+                <div className="flex shrink-0 items-center gap-3">
+                  <Landmark
+                    className="rounded-md bg-secondary p-1 text-primary"
+                    size={24}
+                    strokeWidth={1.5}
+                  />
+                  <p className="text-sm font-medium">{t('BANK_STATUS')}</p>
+                </div>
+                <p className="text-right text-sm text-muted-foreground">
+                  {formatEnumValue(beneficiaryDetail?.bankedStatus) || '-'}
+                </p>
+              </div>
+
+              <div className="flex items-start justify-between gap-4 rounded-md border border-border/60 bg-muted/20 px-3 py-3 transition-colors hover:bg-muted/40">
+                <div className="flex shrink-0 items-center gap-3">
+                  <Wifi
+                    className="rounded-md bg-secondary p-1 text-primary"
+                    size={24}
+                    strokeWidth={1.5}
+                  />
+                  <p className="text-sm font-medium">{g('INTERNET_STATUS')}</p>
+                </div>
+                <p className="text-right text-sm text-muted-foreground">
+                  {formatEnumValue(beneficiaryDetail?.internetStatus) || '-'}
+                </p>
+              </div>
+
+              <div className="flex items-start justify-between gap-4 rounded-md border border-border/60 bg-muted/20 px-3 py-3 transition-colors hover:bg-muted/40">
+                <div className="flex shrink-0 items-center gap-3">
+                  <WalletIcon
+                    className="rounded-md bg-secondary p-1 text-primary"
+                    size={24}
+                    strokeWidth={1.5}
+                  />
+                  <p className="text-sm font-medium">{g('WALLET_ADDRESS')}</p>
+                </div>
+                <div className="flex min-w-0 items-center">
+                  <div className="max-w-32 truncate text-right text-sm text-muted-foreground">
+                    {beneficiaryDetail?.walletAddress || g('N_A')}
+                  </div>
+                  <button
+                    onClick={() =>
+                      clickToCopy(beneficiaryDetail?.walletAddress || '', 1)
+                    }
+                    className="ml-2 shrink-0 text-sm text-muted-foreground hover:text-foreground"
+                    aria-label={g('WALLET_ADDRESS')}
                   >
+                    {copyAction === 1 ? (
+                      <CopyCheck className="h-4 w-4" />
+                    ) : (
+                      <Copy className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+          {beneficiaryDetail?.BeneficiaryProject && (
+            <div
+              className={`rounded-lg border bg-card p-4 rounded-sm shadow-sm ${
+                beneficiaryDetail?.BeneficiaryProject?.length < 1 && 'hidden'
+              }`}
+            >
+              <h2 className="mb-4 border-l-4 border-primary pl-3 text-base font-semibold">
+                {t('PROJECT_INVOLVED')}
+              </h2>
+              <div className="flex flex-col gap-2">
+                {beneficiaryDetail?.BeneficiaryProject?.map((item, index) => (
+                  <div
+                    key={item.id || index}
+                    className="flex items-center gap-3 rounded-md border border-border/60 bg-muted/20 px-3 py-3 text-sm text-muted-foreground transition-colors hover:bg-muted/40"
+                  >
+                    <FolderPlus
+                      className="rounded-md bg-secondary p-1 text-primary"
+                      size={24}
+                      strokeWidth={1.5}
+                      aria-hidden="true"
+                    />
                     {item.Project?.name || '-'}
-                  </p>
+                  </div>
                 ))}
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {beneficiaryDetail?.bankAccount && (
-          <div className="p-4 flex flex-col space-y-4 ml-2">
-            <h1 className="font-medium">Validated Bank Details</h1>
-            <div className="flex justify-between items-start gap-4">
-              <p className="shrink-0">Bank Name</p>
-              <p className="min-w-0 break-words text-right text-muted-foreground text-base">
-                {beneficiaryDetail.bankAccount.bankName || '-'}
-              </p>
-            </div>
-            <div className="flex justify-between items-start gap-4">
-              <p className="shrink-0">Account Name</p>
-              <p className="min-w-0 break-words text-right text-muted-foreground text-base">
-                {beneficiaryDetail.bankAccount.accountName || '-'}
-              </p>
-            </div>
-            <div className="flex justify-between items-start gap-4">
-              <p className="shrink-0">Account Number</p>
-              <p className="min-w-0 break-words text-right text-muted-foreground text-base">
-                {beneficiaryDetail.bankAccount.accountNumber || '-'}
-              </p>
-            </div>
-          </div>
-        )}
-
-        {beneficiaryDetail?.extras && (
-          <div className="p-4 flex flex-col space-y-4 ml-2">
-            <h1 className="font-medium">{t('EXTRA_DETAILS')}</h1>
-
-            {Object.keys(beneficiaryDetail?.extras || {}).length > 0 &&
-              beneficiaryDetail?.extras && (
-                <div className="flex flex-col space-y-4">
-                  {Object.entries(beneficiaryDetail.extras)
-                    .filter(([key]) => {
-                      const cleanKey = key.trim().toLowerCase();
-                      return ![
-                        'error',
-                        'bankedstatus',
-                        'validbankaccount',
-                        'token',
-                      ].includes(cleanKey);
-                    })
-                    .map(([key, value]) => (
-                      <div
-                        key={key}
-                        className="flex justify-between items-start gap-4"
-                      >
-                        <p className="shrink-0">{humanizeString(key)}</p>
-                        <p className="min-w-0 break-words text-right text-muted-foreground text-base">
-                          {typeof value === 'string' &&
-                            value.startsWith('http') ? (
-                            <a
-                              href={value}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-blue-600 no-underline"
-                            >
-                              {t('VIEW_LINK')}
-                            </a>
-                          ) : typeof value === 'boolean' ? (
-                            value ? (
-                              g('YES')
-                            ) : (
-                              g('NO')
-                            )
-                          ) : (
-                            String(value) || '-'
-                          )}
-                        </p>
-                      </div>
-                    ))}
+          {/* Bank account details section */}
+          {beneficiaryDetail?.bankAccount && (
+            <div className=" rounded-md border border-primary/30 border-l-4 border-l-primary bg-primary/5 p-4 shadow-sm rounded-sm">
+              <div className="flex items-center gap-3 border-b pb-3">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <Landmark size={18} strokeWidth={1.75} aria-hidden="true" />
+                </span>
+                <h2 className="text-base font-semibold">
+                  Validated Bank Details
+                </h2>
+              </div>
+              <div className="divide-y divide-border/70">
+                <div className="flex items-start justify-between gap-4 py-3">
+                  <p className="text-sm font-medium ">Bank Name</p>
+                  <p className="break-all text-right text-base font-medium text-muted-foreground">
+                    {beneficiaryDetail.bankAccount.bankName || '-'}
+                  </p>
                 </div>
-              )}
-          </div>
-        )}
+                <div className="flex items-start justify-between gap-4 py-3">
+                  <p className="text-sm font-medium ">Account Name</p>
+                  <p className="break-all text-right text-base font-medium text-muted-foreground">
+                    {beneficiaryDetail.bankAccount.accountName || '-'}
+                  </p>
+                </div>
+                <div className="flex items-start justify-between gap-4 pt-3">
+                  <p className="text-sm font-medium ">Account Number</p>
+                  <p className="break-all text-right text-base font-semibold tabular-nums text-muted-foreground">
+                    {beneficiaryDetail.bankAccount.accountNumber || '-'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {beneficiaryDetail?.extras && (
+            <section className="rounded-sm border bg-card p-4 shadow-sm">
+              <h2 className="mb-4 border-l-4 border-primary pl-3 text-base font-semibold">
+                {t('EXTRA_DETAILS')}
+              </h2>
+
+              {Object.keys(beneficiaryDetail?.extras || {}).length > 0 &&
+                beneficiaryDetail?.extras && (
+                  <div className="flex flex-col gap-2">
+                    {Object.entries(beneficiaryDetail.extras)
+                      .filter(([key]) => {
+                        const cleanKey = key.trim().toLowerCase();
+                        return ![
+                          'error',
+                          'bankedstatus',
+                          'validbankaccount',
+                          'token',
+                        ].includes(cleanKey);
+                      })
+                      .map(([key, value]) => (
+                        <div
+                          key={key}
+                          className="flex items-start justify-between gap-4 rounded-md border border-border/60 bg-muted/20 px-3 py-3 transition-colors hover:bg-muted/40"
+                        >
+                          <p className="text-sm font-medium">
+                            {humanizeString(key)}
+                          </p>
+                          <p className="break-all text-right text-sm text-muted-foreground">
+                            {typeof value === 'string' &&
+                            value.startsWith('http') ? (
+                              <a
+                                href={value}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 no-underline"
+                              >
+                                {t('VIEW_LINK')}
+                              </a>
+                            ) : typeof value === 'boolean' ? (
+                              value ? (
+                                g('YES')
+                              ) : (
+                                g('NO')
+                              )
+                            ) : (
+                              String(value) || '-'
+                            )}
+                          </p>
+                        </div>
+                      ))}
+                  </div>
+                )}
+            </section>
+          )}
+        </div>
       </ScrollArea>
     </>
   );

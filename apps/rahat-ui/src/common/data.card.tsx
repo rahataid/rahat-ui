@@ -18,7 +18,7 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 
 type CardProps = {
   title: string;
-  number?: string;
+  number?: string | React.ReactNode;
   smallNumber?: string;
   className?: string;
   subtitle?: string;
@@ -114,7 +114,7 @@ export function DataCard({
             <TableLoader />
           ) : (
             <>
-              {number && number?.length > 6 && truncate ? (
+              {typeof number === 'string' && number.length > 6 && truncate ? (
                 <TooltipProvider delayDuration={100}>
                   <Tooltip>
                     <TooltipTrigger asChild>

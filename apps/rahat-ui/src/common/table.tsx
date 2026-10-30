@@ -5,6 +5,7 @@ import {
   Table as TableComponent,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -38,6 +39,11 @@ export function DemoTable({
   const containerClass = tableHeight ?? `h-[max(280px,calc(100vh-${height}))]`;
 
   const visibleColumns = table.getVisibleLeafColumns();
+  const hasFooter = table
+    .getFooterGroups()
+    .some((group) =>
+      group.headers.some((header) => header.column.columnDef.footer),
+    );
 
   // Floors the table width so narrow viewports scroll the wrapper instead of clipping columns.
   const minTableWidth = visibleColumns.length * minColumnWidth;
@@ -118,6 +124,30 @@ export function DemoTable({
             </TableRow>
           )}
         </TableBody>
+        {!loading && hasRows && hasFooter && (
+          <TableFooter className="sticky bottom-0 z-10 border-t [&_td]:bg-muted font-semibold">
+            {table.getFooterGroups().map((footerGroup) => (
+              <TableRow key={footerGroup.id}>
+                {footerGroup.headers.map((header) => (
+                  <TableCell
+                    key={header.id}
+                    className={
+                      (header.column.columnDef.meta as ColumnMeta | undefined)
+                        ?.className
+                    }
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.footer,
+                          header.getContext(),
+                        )}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableFooter>
+        )}
       </TableComponent>
     </div>
   );

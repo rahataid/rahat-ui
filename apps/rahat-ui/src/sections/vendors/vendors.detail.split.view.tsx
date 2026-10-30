@@ -152,22 +152,22 @@ export default function VendorsDetailSplitView({
       <div className="flex justify-between items-center p-4 border-b">
         <div className="flex space-x-4">
           <GlobalCan action={ACTIONS.DELETE} subject={SUBJECTS.VENDOR}>
-          <DeleteButton
-            className={`border-none p-0 shadow-none ${
-              isVendorAssigned ? 'hidden' : ''
-            }`}
-            name="vendor"
-            handleContinueClick={deleteVendor}
-          />
+            <DeleteButton
+              className={`border-none p-0 shadow-none ${
+                isVendorAssigned ? 'hidden' : ''
+              }`}
+              name="vendor"
+              handleContinueClick={deleteVendor}
+            />
           </GlobalCan>
 
           {vendorsDetail?.projectName === 'N/A' && (
             <GlobalCan action={ACTIONS.UPDATE} subject={SUBJECTS.VENDOR}>
-            <TooltipComponent
-              handleOnClick={assignVoucher}
-              Icon={FolderPlus}
-              tip={t('SELECT_A_PROJECT_TO_ASSIGN')}
-            />
+              <TooltipComponent
+                handleOnClick={assignVoucher}
+                Icon={FolderPlus}
+                tip={t('SELECT_A_PROJECT_TO_ASSIGN')}
+              />
             </GlobalCan>
           )}
           <TooltipComponent
@@ -182,126 +182,159 @@ export default function VendorsDetailSplitView({
           tip={g('CLOSE')}
         />
       </div>
-      <div className="p-4 flex justify-between items-center border-b">
+      <div className="flex items-center justify-between border-b bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-4">
         <div className="flex items-center gap-2">
           <Image
-            className="rounded-full"
+            className="rounded-full border-2 border-primary/20 shadow-sm"
             src="/profile.png"
             alt="profile"
             height={80}
             width={80}
           />
           <div>
-            <h1 className="font-semibold text-xl mb-1">
+            <h1 className="mb-2 text-xl font-semibold">
               {vendorsDetail?.name}
             </h1>
-            <div className="flex space-x-4 items-center">
+            <div className="flex flex-wrap items-center gap-2">
               <Badge>
-                {translateValue(g, vendorsDetail?.status, { fallbackStyle: 'raw' }) ||
-                  g('N_A')}
+                {translateValue(g, vendorsDetail?.status, {
+                  fallbackStyle: 'raw',
+                }) || g('N_A')}
               </Badge>
-              <p className="text-base text-muted-foreground">
-                {translateValue(g, vendorsDetail?.gender, { fallbackStyle: 'raw' }) ||
-                  g('N_A')}
-              </p>
+              <span className="rounded-full border bg-background/80 px-2.5 py-1 text-xs text-muted-foreground">
+                {translateValue(g, vendorsDetail?.gender, {
+                  fallbackStyle: 'raw',
+                }) || g('N_A')}
+              </span>
             </div>
           </div>
         </div>
       </div>
-      {/* Radix's viewport wrapper is display:table (shrink-to-fit) so it outgrows the panel; block bounds it so long values wrap. */}
       <ScrollArea className="h-[calc(100vh-240px)] [&_[data-radix-scroll-area-viewport]>div]:!block">
-        <div className="p-4 flex flex-col space-y-4">
-          <h1 className="font-medium">{g('GENERAL')}</h1>
-          <div className="flex justify-between items-start">
-            <div className="flex items-center space-x-4 shrink-0">
-              <FolderDot size={20} strokeWidth={1.5} />
-              <p>{g('PROJECT_NAME')}</p>
-            </div>
-            {Array.isArray(vendorsDetail?.projectName) &&
-            vendorsDetail.projectName.length > 0 ? (
-              <div className="flex flex-wrap gap-1.5 max-w-[200px] justify-end">
-                {(showAllProjects
-                  ? vendorsDetail.projectName
-                  : vendorsDetail.projectName.slice(0, 2)
-                ).map((item: any, index: number) => (
-                  <Badge
-                    key={item?.Project?.id || index}
-                    className="text-xs px-2 py-0.5 bg-blue-50 text-blue-500 border border-blue-200 rounded-full font-medium"
-                  >
-                    {item?.Project?.name || g('N_A')}
-                  </Badge>
-                ))}
-                {vendorsDetail.projectName.length > 2 && (
-                  <Badge
-                    onClick={() => setShowAllProjects((prev) => !prev)}
-                    className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 border border-gray-200 rounded-full font-medium cursor-pointer hover:bg-gray-200 transition-colors"
-                  >
-                    {showAllProjects
-                      ? t('SHOW_LESS')
-                      : `+${vendorsDetail.projectName.length - 2} ${g('MORE')}`}
-                  </Badge>
-                )}
-              </div>
-            ) : (
-              <span className="text-gray-400 text-sm">{g('N_A')}</span>
-            )}
-          </div>
-
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4 shrink-0">
-              <Wallet size={20} strokeWidth={1.5} />
-              <p>{g('WALLET_ADDRESS')}</p>
-            </div>
-            <div
-              className="flex space-x-3 items-center"
-              onClick={() => clickToCopy(vendorsDetail?.walletAddress)}
-            >
-              <p className="text-muted-foreground text-base truncate w-48">
-                {vendorsDetail?.walletAddress ?? '-'}
-              </p>
-
-              {vendorsDetail?.walletAddress &&
-                (walletAddressCopied ? (
-                  <CopyCheck size={15} strokeWidth={1.5} />
-                ) : (
-                  <Copy
-                    className="text-muted-foreground"
-                    size={15}
+        <div className="flex flex-col gap-4 p-4 ">
+          <section className="rounded-sm border bg-card p-4 shadow-sm">
+            <h2 className="mb-4 border-l-4 border-primary pl-3 text-base font-semibold">
+              {g('GENERAL')}
+            </h2>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-start justify-between gap-4 rounded-md border border-border/60 bg-muted/20 px-3 py-3 transition-colors hover:bg-muted/40">
+                <div className="flex shrink-0 items-center gap-3">
+                  <FolderDot
+                    className="rounded-md bg-secondary p-1 text-primary"
+                    size={24}
                     strokeWidth={1.5}
                   />
-                ))}
-            </div>
-          </div>
+                  <p className="text-sm font-medium">{g('PROJECT_NAME')}</p>
+                </div>
+                {Array.isArray(vendorsDetail?.projectName) &&
+                vendorsDetail.projectName.length > 0 ? (
+                  <div className="flex max-w-[200px] flex-wrap justify-end gap-1.5">
+                    {(showAllProjects
+                      ? vendorsDetail.projectName
+                      : vendorsDetail.projectName.slice(0, 2)
+                    ).map((item: any, index: number) => (
+                      <Badge
+                        key={item?.Project?.id || index}
+                        variant="secondary"
+                        className="rounded-full border border-border/60 text-xs font-medium"
+                      >
+                        {item?.Project?.name || g('N_A')}
+                      </Badge>
+                    ))}
+                    {vendorsDetail.projectName.length > 2 && (
+                      <Badge
+                        onClick={() => setShowAllProjects((prev) => !prev)}
+                        variant="outline"
+                        className="cursor-pointer rounded-full text-xs font-medium transition-colors hover:bg-muted"
+                      >
+                        {showAllProjects
+                          ? t('SHOW_LESS')
+                          : `+${vendorsDetail.projectName.length - 2} ${g(
+                              'MORE',
+                            )}`}
+                      </Badge>
+                    )}
+                  </div>
+                ) : (
+                  <span className="text-right text-sm text-muted-foreground">
+                    {g('N_A')}
+                  </span>
+                )}
+              </div>
 
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4 shrink-0">
-              <Phone size={20} strokeWidth={1.5} />
-              <p>{g('PHONE_NUMBER')}</p>
-            </div>
-            <p className="min-w-0 break-words pl-4 text-right text-muted-foreground text-base">
-              {formatPhone(vendorsDetail?.phone) || '-'}
-            </p>
-          </div>
+              <div className="flex items-start justify-between gap-4 rounded-md border border-border/60 bg-muted/20 px-3 py-3 transition-colors hover:bg-muted/40">
+                <div className="flex shrink-0 items-center gap-3">
+                  <Wallet
+                    className="rounded-md bg-secondary p-1 text-primary"
+                    size={24}
+                    strokeWidth={1.5}
+                  />
+                  <p className="text-sm font-medium">{g('WALLET_ADDRESS')}</p>
+                </div>
+                <div className="flex min-w-0 items-center gap-3">
+                  <p className="w-28 truncate text-right text-sm text-muted-foreground">
+                    {vendorsDetail?.walletAddress ?? '-'}
+                  </p>
+                  {vendorsDetail?.walletAddress && (
+                    <button
+                      type="button"
+                      onClick={() => clickToCopy(vendorsDetail.walletAddress)}
+                      className="shrink-0 text-muted-foreground transition-colors hover:text-foreground"
+                      aria-label={g('WALLET_ADDRESS')}
+                    >
+                      {walletAddressCopied ? (
+                        <CopyCheck size={16} strokeWidth={1.5} />
+                      ) : (
+                        <Copy size={16} strokeWidth={1.5} />
+                      )}
+                    </button>
+                  )}
+                </div>
+              </div>
 
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4 shrink-0">
-              <Mail size={20} strokeWidth={1.5} />
-              <p>{g('EMAIL_ADDRESS')}</p>
-            </div>
-            <p className="min-w-0 break-words pl-4 text-right text-muted-foreground text-base">
-              {vendorsDetail?.email || '-'}
-            </p>
-          </div>
+              <div className="flex items-start justify-between gap-4 rounded-md border border-border/60 bg-muted/20 px-3 py-3 transition-colors hover:bg-muted/40">
+                <div className="flex shrink-0 items-center gap-3">
+                  <Phone
+                    className="rounded-md bg-secondary p-1 text-primary"
+                    size={24}
+                    strokeWidth={1.5}
+                  />
+                  <p className="text-sm font-medium">{g('PHONE_NUMBER')}</p>
+                </div>
+                <p className="break-all text-right text-sm text-muted-foreground">
+                  {formatPhone(vendorsDetail?.phone) || '-'}
+                </p>
+              </div>
 
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4 shrink-0">
-              <Calendar size={20} strokeWidth={1.5} />
-              <p>{t('REGISTERED_DATE')}</p>
+              <div className="flex items-start justify-between gap-4 rounded-md border border-border/60 bg-muted/20 px-3 py-3 transition-colors hover:bg-muted/40">
+                <div className="flex shrink-0 items-center gap-3">
+                  <Mail
+                    className="rounded-md bg-secondary p-1 text-primary"
+                    size={24}
+                    strokeWidth={1.5}
+                  />
+                  <p className="text-sm font-medium">{g('EMAIL_ADDRESS')}</p>
+                </div>
+                <p className="break-all text-right text-sm text-muted-foreground">
+                  {vendorsDetail?.email || '-'}
+                </p>
+              </div>
+
+              <div className="flex items-start justify-between gap-4 rounded-md border border-border/60 bg-muted/20 px-3 py-3 transition-colors hover:bg-muted/40">
+                <div className="flex shrink-0 items-center gap-3">
+                  <Calendar
+                    className="rounded-md bg-secondary p-1 text-primary"
+                    size={24}
+                    strokeWidth={1.5}
+                  />
+                  <p className="text-sm font-medium">{t('REGISTERED_DATE')}</p>
+                </div>
+                <p className="text-right text-sm text-muted-foreground">
+                  {formattedDate || '-'}
+                </p>
+              </div>
             </div>
-            <p className="min-w-0 break-words pl-4 text-right text-muted-foreground text-base">
-              {formattedDate || '-'}
-            </p>
-          </div>
+          </section>
         </div>
       </ScrollArea>
 
@@ -311,7 +344,9 @@ export default function VendorsDetailSplitView({
             <DialogTitle>{g('ASSIGN_PROJECT')}</DialogTitle>
             <DialogDescription>
               {!selectedProject && (
-                <p className="text-orange-500">{t('SELECT_A_PROJECT_TO_ASSIGN')}</p>
+                <p className="text-orange-500">
+                  {t('SELECT_A_PROJECT_TO_ASSIGN')}
+                </p>
               )}
             </DialogDescription>
           </DialogHeader>

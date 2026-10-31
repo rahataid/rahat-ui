@@ -23,6 +23,12 @@ const TAB_OPTIONS: { value: string; label: string }[] = [
   { value: 'accessInclusion', label: 'Access & Inclusion' },
   { value: 'communicationOutreach', label: 'Communications & Outreach' },
   { value: 'heatwaveSurveyData', label: 'Heatwave Survey Data' },
+  // Flood 2026 survey tabs: also need a 2026 flood project with data to show.
+  { value: 'flood26Demographics', label: 'Flood 2026 Household Demographics' },
+  { value: 'flood26Livelihood', label: 'Flood 2026 Livelihood' },
+  { value: 'flood26Housing', label: 'Flood 2026 Housing' },
+  { value: 'flood26Exposure', label: 'Flood 2026 Disaster Exposure' },
+  { value: 'flood26Preparedness', label: 'Flood 2026 Preparedness' },
 ];
 
 type IProps = {

@@ -7,6 +7,7 @@ import {
   usePayoutExportLogs,
   usePayoutExportPdfFile,
   useSinglePayout,
+  useTriggerForOnePayoutFailed,
   useTriggerForPayoutFailed,
   useTriggerPayout,
 } from '@rahat-ui/query';
@@ -45,8 +46,16 @@ import {
   RotateCcw,
   Smartphone,
 } from 'lucide-react';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tabs';
 import PayoutConfirmationDialog from './payoutTriggerConfirmationModel';
+import OtpConfirmDialog from './otpConfirmDialog';
 import useBeneficiaryGroupDetailsLogColumns from './useBeneficiaryGroupDetailsLogColumns';
+import PayoutTimeline from './payout.timeline';
 import * as XLSX from 'xlsx';
 import { ONE_TOKEN_VALUE } from 'apps/rahat-ui/src/constants/aa.constants';
 import { getPayoutTransactionStatusOptions } from './utils';
@@ -60,8 +69,6 @@ import {
 import { Can } from 'apps/rahat-ui/src/components/can';
 import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
-// TODO: remove this table if used nowhgere
-// import BeneficiariesGroupTable from './beneficiariesGroupTable';
 
 export default function BeneficiaryGroupTransactionDetailsList() {
   const t = useTranslations('AA_PROJECT');
@@ -77,6 +84,13 @@ export default function BeneficiaryGroupTransactionDetailsList() {
   const cancelConfirmDialog = useBoolean(false);
 
   const router = useRouter();
+  const currentTab = searchParams.get('tab') || 'transactions';
+
+  const handleTabChange = (val: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('tab', val);
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
   const {
     pagination,
     setNextPage,
@@ -104,15 +118,26 @@ export default function BeneficiaryGroupTransactionDetailsList() {
   );
 
   const triggerForPayoutFailed = useTriggerForPayoutFailed();
+  const triggerForOnePayoutFailed = useTriggerForOnePayoutFailed();
   const triggerPayout = useTriggerPayout();
   const cancelPayout = useCompletePayout();
-  const columns = useBeneficiaryGroupDetailsLogColumns(payout?.type);
+  const retryOtpDialog = useBoolean(false);
+  const [retryMode, setRetryMode] = React.useState<'bulk' | 'single'>('bulk');
+  const [singleRetryUuid, setSingleRetryUuid] = React.useState<UUID | null>(
+    null,
+  );
+  const columns = useBeneficiaryGroupDetailsLogColumns(
+    payout?.type,
+    (uuid: UUID) => {
+      setSingleRetryUuid(uuid);
+      setRetryMode('single');
+      retryOtpDialog.onTrue();
+    },
+  );
   const { data: exportPayoutLogs } = usePayoutExportLogs({
     projectUUID: projectId,
     payoutUUID: payoutId,
   });
-  // PDF is generated server-side: the API renders the payout logs PDF
-  // (with photo evidence) and returns it as base64 for download.
   const exportPdfFile = usePayoutExportPdfFile();
   const pdfDownloading = exportPdfFile.isPending;
 
@@ -186,14 +211,34 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     });
   };
 
-  const handleTriggerPayoutFailed = React.useCallback(async () => {
-    triggerForPayoutFailed.mutateAsync({
-      projectUUID: projectId,
-      payload: {
-        payoutUUID: payoutId,
-      },
-    });
-  }, [triggerForPayoutFailed]);
+  const handleConfirmRetryOtp = React.useCallback(
+    async (otp: string) => {
+      if (retryMode === 'single' && singleRetryUuid) {
+        return triggerForOnePayoutFailed.mutateAsync({
+          projectUUID: projectId,
+          payload: {
+            beneficiaryRedeemUuid: singleRetryUuid,
+            otp,
+          },
+        });
+      }
+      return triggerForPayoutFailed.mutateAsync({
+        projectUUID: projectId,
+        payload: {
+          payoutUUID: payoutId,
+          otp,
+        },
+      });
+    },
+    [
+      retryMode,
+      singleRetryUuid,
+      triggerForOnePayoutFailed,
+      triggerForPayoutFailed,
+      projectId,
+      payoutId,
+    ],
+  );
 
   const handleTriggerPayout = React.useCallback(
     async (otp: string) => {
@@ -208,44 +253,69 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     [triggerPayout, projectId, payoutId],
   );
 
+  const actualBudget =
+    (payout?.beneficiaryGroupToken?.numberOfTokens ?? 0) * ONE_TOKEN_VALUE;
+  const disbursedAmount = payout?.totalSuccessAmount ?? 0;
+  const totalBeneficiaries =
+    payout?.beneficiaryGroupToken?.beneficiaryGroup?._count?.beneficiaries ?? 0;
+  const successfulTx = payout?.totalSuccessRequests ?? 0;
+  const failedTx = payout?.totalFailedPayoutRequests ?? 0;
+  const payoutTypeStr =
+    (payout?.type === 'VENDOR' ? 'CVA' : payout?.type) || 'CVA';
+  const rawMode =
+    (payout?.type === 'VENDOR'
+      ? payout?.mode
+      : payout?.extras?.paymentProviderName) || 'ONLINE';
+  const payoutMethodStr =
+    rawMode.toUpperCase() === 'ONLINE'
+      ? tg('ONLINE')
+      : rawMode.toUpperCase() === 'OFFLINE'
+        ? tg('OFFLINE')
+        : rawMode;
+
+  const payoutGapFormatted =
+    payout?.payoutGap !== undefined &&
+      payout?.payoutGap !== null &&
+      payout?.payoutGap !== 'N/A' &&
+      !isNaN(Number(payout.payoutGap))
+      ? `${t('RS')} ${formatNum(payout.payoutGap)}`
+      : 'N/A';
+
   const payoutStats = [
     {
-      label: tv('ACTUAL_BUDGET'),
-      smallNumber: `${t('RS')} ${formatNum(
-        payout?.beneficiaryGroupToken?.numberOfTokens * ONE_TOKEN_VALUE,
+      label: `${tv('AMOUNT_DISBURSED')} / ${t('BUDGET')}`,
+      smallNumber: `${t('RS')} ${formatNum(disbursedAmount)} / ${formatNum(
+        actualBudget,
       )}`,
-      infoIcon: true,
-      infoToolTip: tv('ACTUAL_BUDGET_TOOLTIP'),
-    },
-    {
-      label: tv('AMOUNT_DISBURSED'),
-      smallNumber: `${t('RS')} ${formatNum(payout?.totalSuccessAmount ?? 0)}`,
       infoIcon: true,
       infoToolTip: tv('AMOUNT_DISBURSED_TOOLTIP'),
     },
     {
-      label: tv('PAYOUT_TYPE'),
+      label: tg('TOTAL_BENEFICIARIES'),
+      smallNumber: formatNum(totalBeneficiaries),
       infoIcon: true,
-      infoToolTip: tv('PAYOUT_TYPE_TOOLTIP'),
-      smallNumber: translateValue(
-        tg,
-        payout?.type === 'VENDOR' ? 'CVA' : payout?.type,
-        { fallbackStyle: 'raw' },
-      ),
-      badge: true,
+      infoToolTip: tv('TOTAL_NO_OF_BENEFICIARIES_TOOLTIP'),
     },
     {
-      label: tv('PAYOUT_METHOD'),
+      label: `${tv('SUCCESS')} / ${tv('FAILED')}`,
+      smallNumber: `${formatNum(successfulTx)} / ${formatNum(failedTx)}`,
       infoIcon: true,
-      infoToolTip: tv('PAYOUT_METHOD_TOOLTIP'),
-      smallNumber: translateValue(
-        tg,
-        payout?.type === 'VENDOR'
-          ? payout?.mode
-          : payout?.extras?.paymentProviderName,
-        { fallbackStyle: 'raw' },
-      ),
-      badge: true,
+      infoToolTip: tv('SUCCESSFUL_TRANSACTIONS_TOOLTIP'),
+    },
+    {
+      label: tv('PAYOUT_GAP'),
+      smallNumber: payoutGapFormatted,
+      infoIcon: true,
+      infoToolTip: tv('PAYOUT_GAP_TOOLTIP'),
+    },
+    {
+      label: `${tv('PAYOUT_TYPE')} & ${tv('PAYOUT_METHOD')}`,
+      infoIcon: true,
+      infoToolTip: tv('PAYOUT_TYPE_TOOLTIP'),
+      smallNumber: `${payoutTypeStr} (${payoutMethodStr}${payout?.type === 'VENDOR' && payout?.extras?.vendorName
+        ? ` - ${payout.extras.vendorName}`
+        : ''
+        })`,
     },
   ];
 
@@ -328,22 +398,62 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                 onConfirm={handleTriggerPayout}
                 payoutData={payout}
               />
+              <OtpConfirmDialog
+                projectId={projectId}
+                open={retryOtpDialog.value}
+                onOpenChange={(open) =>
+                  open ? retryOtpDialog.onTrue() : retryOtpDialog.onFalse()
+                }
+                title={
+                  retryMode === 'single'
+                    ? tg('RETRY')
+                    : tv('RETRY_FAILED_REQUESTS')
+                }
+                description={tv('PLEASE_ENTER_DIGIT_PIN', { length: 4 })}
+                summary={
+                  retryMode === 'single' ? (
+                    <div className="flex justify-between gap-2">
+                      <span className="font-medium">
+                        {tv('BENEFICIARY_WALLET_ADDRESS')}
+                      </span>
+                      <span className="truncate max-w-52">
+                        {payoutlogs?.data?.find(
+                          (row: any) => row.uuid === singleRetryUuid,
+                        )?.beneficiaryWalletAddress ?? singleRetryUuid}
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="flex justify-between">
+                      <span className="font-medium">
+                        {tv('FAILED_TRANSACTIONS')}
+                      </span>
+                      <span>
+                        {formatNum(payout?.totalFailedPayoutRequests ?? 0)}
+                      </span>
+                    </div>
+                  )
+                }
+                confirmLabel={tg('RETRY')}
+                onConfirm={handleConfirmRetryOtp}
+              />
               {payout?.type === 'FSP' && (
                 <Can action={ACTIONS.ACTIVATE} subject={SUBJECTS.PAYOUT}>
                   <Button
                     className={`gap-2 text-sm ${
                       payout?.hasFailedPayoutRequests === false && 'hidden'
                     }`}
-                    onClick={handleTriggerPayoutFailed}
+                    onClick={() => {
+                      setRetryMode('bulk');
+                      retryOtpDialog.onTrue();
+                    }}
                     disabled={
                       triggerForPayoutFailed.isPending ||
                       payout?.status === 'COMPLETED'
                     }
                   >
                     <RotateCcw
-                      className={`${
-                        triggerForPayoutFailed.isPending ? 'animate-spin' : ''
-                      } w-4 h-4`}
+                      className={`${triggerForPayoutFailed.isPending ? 'animate-spin' : ''
+                        } w-4 h-4`}
                     />
                     {tv('RETRY_FAILED_REQUESTS')}
                   </Button>
@@ -362,9 +472,8 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button
-                            className={`gap-2 text-sm w-56 justify-between ${
-                              payout?.status === 'COMPLETED' && 'hidden'
-                            } `}
+                            className={`gap-2 text-sm w-56 justify-between ${payout?.status === 'COMPLETED' && 'hidden'
+                              } `}
                             disabled={
                               !payout?.beneficiaryGroupToken?.isDisbursed ||
                               payout?.status === 'COMPLETED'
@@ -408,25 +517,22 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                 )}
               {payout?.type === 'VENDOR' && (
                 <Button
-                  className={`gap-2 text-sm ${
-                    payoutlogs?.data?.length === 0 && 'hidden'
-                  }`}
+                  className={`gap-2 text-sm ${payoutlogs?.data?.length === 0 && 'hidden'
+                    }`}
                   onClick={handleDownloadPdf}
                   disabled={pdfDownloading}
                   variant={'outline'}
                 >
                   <CloudDownload
-                    className={`w-4 h-4 ${
-                      pdfDownloading ? 'animate-spin' : ''
-                    }`}
+                    className={`w-4 h-4 ${pdfDownloading ? 'animate-spin' : ''
+                      }`}
                   />
                   {tv('DOWNLOAD_PAYOUT_PDF')}
                 </Button>
               )}
               <Button
-                className={`gap-2 text-sm ${
-                  payoutlogs?.data?.length === 0 && 'hidden'
-                }`}
+                className={`gap-2 text-sm ${payoutlogs?.data?.length === 0 && 'hidden'
+                  }`}
                 onClick={handleDownload}
                 variant={'outline'}
               >
@@ -438,79 +544,33 @@ export default function BeneficiaryGroupTransactionDetailsList() {
         </div>
 
         <div
-          className={`grid grid-cols-1 md:grid-cols-2 ${
-            payout?.type === 'VENDOR' && payout?.mode === 'OFFLINE'
-              ? 'lg:grid-cols-5'
-              : 'lg:grid-cols-4'
-          } gap-4`}
+          className={`mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 ${
+            payout?.groupGap ||
+            payout?.extras?.group_gap ||
+            payout?.type === 'VENDOR'
+              ? 'xl:grid-cols-6 lg:grid-cols-3'
+              : 'xl:grid-cols-5 lg:grid-cols-3'
+          } gap-3 items-stretch`}
         >
           {payoutStats?.map((item) => (
             <DataCard
               key={item.label}
               title={item.label}
-              className="rounded-sm h-[80px] pt-10 pb-8"
+              className="rounded-sm min-h-[68px] h-full border-gray-200"
               infoIcon={item.infoIcon}
               infoTooltip={item.infoToolTip}
-              badge={item.badge}
+              badge={(item as any).badge}
               smallNumber={item.smallNumber}
             />
           ))}
 
-          {payout?.type === 'VENDOR' && payout?.mode === 'OFFLINE' && (
-            <DataCard
-              title={tv('VENDOR')}
-              infoIcon={true}
-              infoTooltip={tv('VENDOR_TOOLTIP')}
-              smallNumber={payout?.extras?.vendorName}
-              className="rounded-sm h-[80px] pt-10 pb-8"
-              badge
-            />
-          )}
-        </div>
-
-        <div
-          className={`grid ${
-            payout?.groupGap  || payout?.type === 'VENDOR'
-              ? 'lg:grid-cols-5'
-              : 'lg:grid-cols-4'
-          } gap-4 pt-2`}
-        >
-          <DataCard
-            title={tv('TOTAL_NO_OF_BENEFICIARIES')}
-            smallNumber={formatNum(
-              payout?.beneficiaryGroupToken?.beneficiaryGroup?._count
-                ?.beneficiaries ?? 0,
-            )}
-            className="rounded-sm h-[80px] pt-10 pb-8 "
-            infoIcon={true}
-            infoTooltip={tv('TOTAL_NO_OF_BENEFICIARIES_TOOLTIP')}
-          />
-          <DataCard
-            title={tv('SUCCESSFUL_TRANSACTIONS')}
-            smallNumber={formatNum(payout?.totalSuccessRequests ?? 0)}
-            className="rounded-sm h-[80px] pt-10 pb-8 "
-            infoIcon={true}
-            infoTooltip={tv('SUCCESSFUL_TRANSACTIONS_TOOLTIP')}
-          />
-          <DataCard
-            title={tv('FAILED_TRANSACTIONS')}
-            smallNumber={formatNum(payout?.totalFailedPayoutRequests ?? 0)}
-            className="rounded-sm h-[80px] pt-10 pb-8 "
-            infoIcon={true}
-            infoTooltip={tv('FAILED_TRANSACTIONS_TOOLTIP')}
-          />
-          <DataCard
-            title={tv('PAYOUT_GAP')}
-            smallNumber={formatNum(payout?.payoutGap ?? 0)}
-            className="rounded-sm h-[80px] pt-10 pb-8 "
-            infoIcon={true}
-            infoTooltip={tv('PAYOUT_GAP_TOOLTIP')}
-          />
-          {payout?.groupGap && (
+          {(payout?.groupGap || payout?.extras?.group_gap) && (
             <DataCard
               title={tv('GROUP_GAP')}
-              smallNumber={formatNum(payout?.groupGap ?? 0)}
-              className="rounded-sm h-[80px] pt-10 pb-8 "
+              smallNumber={formatNum(
+                (payout?.groupGap ?? payout?.extras?.group_gap) ?? 0,
+              )}
+              className="rounded-sm min-h-[68px] h-full border-gray-200"
               infoIcon={true}
               infoTooltip={tv('GROUP_GAP_TOOLTIP')}
             />
@@ -519,7 +579,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             <DataCard
               title={tv('TOTAL_SKIP_OTP')}
               smallNumber={formatNum(payout?.totalSkipOtp ?? 0)}
-              className="rounded-sm h-[80px] pt-10 pb-8 "
+              className="rounded-sm min-h-[68px] h-full border-gray-200"
               infoIcon={true}
               infoTooltip={tv('TOTAL_SKIP_OTP_TOOLTIP')}
             />
@@ -527,101 +587,144 @@ export default function BeneficiaryGroupTransactionDetailsList() {
         </div>
       </div>
 
-      <div className="rounded-sm border border-gray-100 space-y-2 p-2 mt-2">
-        <div className="flex gap-2">
-          <SearchInput
-            className="w-full flex-[4]"
-            name={tv('SEARCH_BENEFICIARY_WALLET')}
-            onSearch={(e) => handleSearch(e, 'search')}
-            value={filters?.search || ''}
-          />
+      <Tabs
+        value={currentTab}
+        onValueChange={handleTabChange}
+        className="w-full mt-4"
+      >
+        <div className="flex items-center justify-between mb-2">
+          <TabsList className="border bg-secondary rounded h-[clamp(28px,3vw,36px)]">
+            <TabsTrigger
+              value="transactions"
+              className="data-[state=active]:bg-white text-[clamp(11px,1vw,14px)] h-[clamp(23px,3vw,28px)]"
+            >
+              {tg('TRANSACTIONS')}
+            </TabsTrigger>
+            <TabsTrigger
+              value="timeline"
+              className="data-[state=active]:bg-white text-[clamp(11px,1vw,14px)] h-[clamp(23px,3vw,28px)]"
+            >
+              {tg('TIMELINE')}
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
-          {payout?.type === 'FSP' &&
-            payout?.extras?.paymentProviderType !== 'manual_bank_transfer' && (
+        <TabsContent value="transactions" className="mt-0 space-y-2">
+          <div className="rounded-sm border border-gray-100 space-y-2 p-2">
+            <div className="flex gap-2">
+              <SearchInput
+                className="w-full flex-[4]"
+                name="search"
+                placeholder={tv('SEARCH_BENEFICIARY_WALLET')}
+                onSearch={(e) => handleSearch(e, 'search')}
+                value={filters?.search || ''}
+              />
+
+              {payout?.type === 'FSP' &&
+                payout?.extras?.paymentProviderType !==
+                'manual_bank_transfer' && (
+                  <SelectComponent
+                    name={tv('TRANSACTION_TYPE')}
+                    options={[
+                      'ALL',
+                      'TOKEN_TRANSFER',
+                      'FIAT_TRANSFER',
+                      'VENDOR_REIMBURSEMENT',
+                    ]}
+                    labels={{
+                      ALL: tg('ALL'),
+                      TOKEN_TRANSFER: tg('TOKEN_TRANSFER'),
+                      FIAT_TRANSFER: tg('FIAT_TRANSFER'),
+                      VENDOR_REIMBURSEMENT: tg('VENDOR_REIMBURSEMENT'),
+                    }}
+                    onChange={(value) =>
+                      handleFilterChange({
+                        target: { name: 'transactionType', value },
+                      })
+                    }
+                    value={filters?.transactionType || ''}
+                    className="flex-[1]"
+                  />
+                )}
+
               <SelectComponent
-                name={tv('TRANSACTION_TYPE')}
-                options={[
-                  'ALL',
-                  'TOKEN_TRANSFER',
-                  'FIAT_TRANSFER',
-                  'VENDOR_REIMBURSEMENT',
-                ]}
+                name={tg('STATUS')}
+                options={
+                  getPayoutTransactionStatusOptions(
+                    payout?.type,
+                    payout?.extras?.paymentProviderType,
+                  ) as string[]
+                }
                 labels={{
                   ALL: tg('ALL'),
-                  TOKEN_TRANSFER: tg('TOKEN_TRANSFER'),
-                  FIAT_TRANSFER: tg('FIAT_TRANSFER'),
-                  VENDOR_REIMBURSEMENT: tg('VENDOR_REIMBURSEMENT'),
+                  PENDING: tg('PENDING'),
+                  COMPLETED: tg('COMPLETED'),
+                  FAILED: tg('FAILED'),
+                  FIAT_TRANSACTION_INITIATED: tg('FIAT_TRANSACTION_INITIATED'),
+                  FIAT_TRANSACTION_COMPLETED: tg('FIAT_TRANSACTION_COMPLETED'),
+                  FIAT_TRANSACTION_FAILED: tg('FIAT_TRANSACTION_FAILED'),
+                  TOKEN_TRANSACTION_INITIATED: tg(
+                    'TOKEN_TRANSACTION_INITIATED',
+                  ),
+                  TOKEN_TRANSACTION_COMPLETED: tg(
+                    'TOKEN_TRANSACTION_COMPLETED',
+                  ),
+                  TOKEN_TRANSACTION_FAILED: tg('TOKEN_TRANSACTION_FAILED'),
                 }}
                 onChange={(value) =>
                   handleFilterChange({
-                    target: { name: 'transactionType', value },
+                    target: { name: 'transactionStatus', value },
                   })
                 }
-                value={filters?.transactionType || ''}
+                value={filters?.transactionStatus || ''}
                 className="flex-[1]"
               />
-            )}
+            </div>
+            <DemoTable
+              table={table}
+              loading={payoutLogsLoading}
+              tableHeight="h-[max(280px,calc(100vh-600px))]"
+            />
 
-          <SelectComponent
-            name={tg('STATUS')}
-            options={
-              getPayoutTransactionStatusOptions(
-                payout?.type,
-                payout?.extras?.paymentProviderType,
-              ) as string[]
+            <CustomPagination
+              currentPage={pagination.page}
+              handleNextPage={setNextPage}
+              handlePrevPage={setPrevPage}
+              handlePageSizeChange={setPerPage}
+              setPagination={setPagination}
+              meta={
+                (payoutlogs?.response?.meta as any) || {
+                  total: 0,
+                  currentPage: 0,
+                }
+              }
+              perPage={pagination?.perPage}
+              total={payoutlogs?.response?.meta?.total || 0}
+              pageSizes={['10', '20', '50', '100', '250', '500', '1000']}
+            />
+          </div>
+        </TabsContent>
+
+        <TabsContent value="timeline" className="mt-0">
+          <PayoutTimeline
+            payout={payout}
+            logs={
+              exportPayoutLogs?.length
+                ? exportPayoutLogs
+                : payoutlogs?.data || []
             }
-            labels={{
-              ALL: tg('ALL'),
-              PENDING: tg('PENDING'),
-              COMPLETED: tg('COMPLETED'),
-              FAILED: tg('FAILED'),
-              FIAT_TRANSACTION_INITIATED: tg('FIAT_TRANSACTION_INITIATED'),
-              FIAT_TRANSACTION_COMPLETED: tg('FIAT_TRANSACTION_COMPLETED'),
-              FIAT_TRANSACTION_FAILED: tg('FIAT_TRANSACTION_FAILED'),
-              TOKEN_TRANSACTION_INITIATED: tg('TOKEN_TRANSACTION_INITIATED'),
-              TOKEN_TRANSACTION_COMPLETED: tg('TOKEN_TRANSACTION_COMPLETED'),
-              TOKEN_TRANSACTION_FAILED: tg('TOKEN_TRANSACTION_FAILED'),
-            }}
-            onChange={(value) =>
-              handleFilterChange({
-                target: { name: 'transactionStatus', value },
-              })
-            }
-            value={filters?.transactionStatus || ''}
-            className="flex-[1]"
+            loading={payoutLogsLoading}
+            projectId={projectId}
           />
-        </div>
-        {/* offset =navbar + back + heading + 2 stat rows + filters + pagination; retune if header changes */}
-        <DemoTable
-          table={table}
-          loading={payoutLogsLoading}
-          tableHeight="h-[max(280px,calc(100vh-600px))]"
-        />
-
-        <CustomPagination
-          currentPage={pagination.page}
-          handleNextPage={setNextPage}
-          handlePrevPage={setPrevPage}
-          handlePageSizeChange={setPerPage}
-          setPagination={setPagination}
-          meta={
-            (payoutlogs?.response?.meta as any) || {
-              total: 0,
-              currentPage: 0,
-            }
-          }
-          perPage={pagination?.perPage}
-          total={payoutlogs?.response?.meta?.total || 0}
-          pageSizes={['10', '20', '50', '100', '250', '500', '1000']}
-        />
-        <ConfirmationDialog
-          isConfirmationDialogOpen={cancelConfirmDialog.value}
-          onCancel={cancelDialog}
-          onConfirm={handleCompletePayout}
-          dialogTitle={t('MARK_AS_COMPLETED')}
-          dialogMessage={t('COMPLETE_PAYOUT_ALERT_DESCRIPTION')}
-        />
-      </div>
+        </TabsContent>
+      </Tabs>
+      <ConfirmationDialog
+        isConfirmationDialogOpen={cancelConfirmDialog.value}
+        onCancel={cancelDialog}
+        onConfirm={handleCompletePayout}
+        dialogTitle={t('MARK_AS_COMPLETED')}
+        dialogMessage={t('COMPLETE_PAYOUT_ALERT_DESCRIPTION')}
+      />
     </div>
   );
 }

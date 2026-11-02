@@ -29,13 +29,23 @@ export default function ChartColumnStacked({
   custom = false,
   options = {},
 }: Props) {
+  const catCount = categories?.length || 1;
+  const seriesCount = stacked ? 1 : series?.length || 1;
+
+  const columnWidth =
+    catCount <= 2
+      ? stacked || seriesCount === 1
+        ? '40%'
+        : '60%'
+      : catCount === 3
+      ? '75%'
+      : '82%';
+
   const chartOptions = useChart({
     chart: {
       stacked: stacked,
-      height: '50px',
-
       zoom: {
-        enabled: true,
+        enabled: false,
       },
     },
     dataLabels: {
@@ -51,9 +61,10 @@ export default function ChartColumnStacked({
 
     plotOptions: {
       bar: {
-        columnWidth: '50px',
+        columnWidth,
         borderRadius: 4,
         borderRadiusApplication: 'end',
+        hideZeroBarsWhenGrouped: true,
       },
     },
     stroke: {
@@ -62,6 +73,28 @@ export default function ChartColumnStacked({
     xaxis: {
       categories,
     },
+    responsive: [
+      {
+        breakpoint: 768,
+        options: {
+          plotOptions: {
+            bar: {
+              columnWidth,
+            },
+          },
+        },
+      },
+      {
+        breakpoint: 576,
+        options: {
+          plotOptions: {
+            bar: {
+              columnWidth,
+            },
+          },
+        },
+      },
+    ],
     ...options,
   });
   return (

@@ -217,9 +217,9 @@ on:
         required: true
         type: choice
         options:
-          - 'dev-aa | Tag: aa-dev | AA Development'
-          - 'dev-qa | Tag: aa-dev-qa | AA QA Development'
-          - 'dev-stellar | Tag: aa-dev-stellar | AA Stellar Development'
+          - 'dev-aa | Tag: dev | AA Development'
+          - 'dev-qa | Tag: dev-qa | AA QA Development'
+          - 'dev-stellar | Tag: aa-stellar | AA Stellar Development'
           - 'dev-unicef | Tag: aa-dev-unicef | UNICEF Development'
           - 'dev-crm | Tag: dev-crm | CRM Development'
           - 'dev-aidlink | Tag: dev-aidlink | AidLink Development'
@@ -241,6 +241,7 @@ on:
           - 'main-mcn | Tag: aa-mcn-main | AA MCN Main'
           - 'main-cam-ken | Tag: main-cam-ken | Cam-Ken Merge Main'
           - 'prod-aa-demo | Tag: aa-demo-v2 | AA Demo v2 (prod folder)'
+          - 'dev-v2 | Tag: dev-v2 | AA Development V2'
 
       custom_branch:
         description: 'Branch, tag or full commit SHA to build (leave empty to build the "Use workflow from" branch)'

@@ -185,6 +185,9 @@ export const useBackFill = (projectUuid: UUID) => {
       queryClient.invalidateQueries({
         queryKey: ['allStats', projectUuid],
       });
+      queryClient.invalidateQueries({
+        queryKey: ['projectDashboard', projectUuid],
+      });
       toast.success(t('STATS_DATA_SYNCED_SUCCESSFULLY'));
     },
     onError: (error) => {

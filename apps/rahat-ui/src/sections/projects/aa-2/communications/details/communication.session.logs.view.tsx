@@ -12,13 +12,11 @@ import {
 } from 'apps/rahat-ui/src/common';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
-  CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import {
   Tabs,
@@ -26,16 +24,20 @@ import {
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import { DialogComponent } from '../../activities/details/dialog.reuse';
 import { CommunicationTooltip } from '../components/communication-tooltip';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import {
   CloudDownload,
   RefreshCcw,
   SendHorizontal,
   Clock,
   ArrowLeft,
+  CheckCircle2,
+  AlertCircle,
+  CalendarClock,
+  Hourglass,
 } from 'lucide-react';
 import {
   useListSessionLogs,
@@ -64,22 +66,7 @@ import CommsLogsTable from '../../communicationLog/table/comms.logs.table';
 import useCommsLogsTableColumns from '../../communicationLog/table/useCommsLogsTableColumns';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { toast } from 'react-toastify';
 import { UUID } from 'crypto';
-
-function renderBadgeBg(status?: string) {
-  const s = status?.toUpperCase();
-  if (s === 'FAIL' || s === 'FAILED') {
-    return 'bg-red-100 text-red-700 hover:bg-red-100';
-  }
-  if (s === 'SUCCESS' || s === 'COMPLETED' || s === 'SENT') {
-    return 'bg-green-100 text-green-700 hover:bg-green-100';
-  }
-  if (s === 'PENDING' || s === 'PROCESSING') {
-    return 'bg-yellow-100 text-yellow-700 hover:bg-yellow-100';
-  }
-  return 'bg-gray-100 text-gray-700 hover:bg-gray-100';
-}
 
 export function CommunicationSessionLogsView() {
   const tGlobal = useTranslations('GLOBAL');
@@ -248,7 +235,6 @@ export function CommunicationSessionLogsView() {
 
   const {
     data: singleBeneficiaryGroupData,
-    isLoading: isLoadingBeneficiaryGroup,
   } = useSingleBeneficiaryGroup(
     projectId as UUID,
     (isBeneficiaryGroup && targetGroupId ? targetGroupId : '') as UUID,
@@ -256,15 +242,10 @@ export function CommunicationSessionLogsView() {
 
   const {
     data: singleStakeholderGroupData,
-    isLoading: isLoadingStakeholderGroup,
   } = useSingleStakeholdersGroup(
     projectId as UUID,
     (isStakeholderGroup && targetGroupId ? targetGroupId : '') as UUID,
   );
-
-  const isLoadingAudience =
-    (isBeneficiaryGroup && isLoadingBeneficiaryGroup) ||
-    (isStakeholderGroup && isLoadingStakeholderGroup);
 
   const groupFromList = useMemo(() => {
     const groupsData: any = isBeneficiaryGroup
@@ -341,35 +322,27 @@ export function CommunicationSessionLogsView() {
     !!actualSessionId && (isBroadcastLoading || broadcastCounts === undefined);
 
   const counts = useMemo(() => {
-    if (actualSessionId && broadcastCounts?.data) {
+    const rawCounts =
+      (broadcastCounts as any)?.data?.data ??
+      (broadcastCounts as any)?.data ??
+      broadcastCounts;
+    if (actualSessionId && rawCounts) {
       return {
-        SUCCESS: broadcastCounts.data.SUCCESS ?? 0,
-        FAIL: broadcastCounts.data.FAIL ?? 0,
-        PENDING: broadcastCounts.data.PENDING ?? 0,
-        SCHEDULED: broadcastCounts.data.SCHEDULED ?? 0,
-        TOTAL: broadcastCounts.data.TOTAL ?? 0,
+        SUCCESS: rawCounts.SUCCESS ?? 0,
+        FAIL: rawCounts.FAIL ?? 0,
+        PENDING: rawCounts.PENDING ?? 0,
+        SCHEDULED: rawCounts.SCHEDULED ?? 0,
+        TOTAL: rawCounts.TOTAL ?? 0,
       };
     }
-    const isPending =
-      !targetGroup?.status ||
-      targetGroup?.status === 'PENDING' ||
-      targetGroup?.status === 'PROCESSING';
-    const isFailed = targetGroup?.status === 'FAILED';
-    const totalAudience = groupInfo.count || audienceList.length || 0;
     return {
       SUCCESS: 0,
-      FAIL: isFailed ? totalAudience : 0,
-      PENDING: isPending ? totalAudience : 0,
+      FAIL: 0,
+      PENDING: 0,
       SCHEDULED: 0,
-      TOTAL: totalAudience,
+      TOTAL: 0,
     };
-  }, [
-    actualSessionId,
-    broadcastCounts?.data,
-    targetGroup?.status,
-    groupInfo.count,
-    audienceList.length,
-  ]);
+  }, [actualSessionId, broadcastCounts]);
 
   const mutateRetry = useSessionRetryFailed();
   const triggerBroadcast = useTriggerCommunicationBroadcast();
@@ -380,10 +353,10 @@ export function CommunicationSessionLogsView() {
     return resolveCommunicationLifecycleStatus({
       channel,
       rawStatus: targetGroup?.status,
-      counts,
+      counts: actualSessionId ? counts : undefined,
       hasActiveTargets: targetGroup?.status === 'PROCESSING',
       hasPendingTargets:
-        targetGroup?.status === 'PENDING' || !targetGroup?.status,
+        targetGroup?.status === 'PENDING' || !targetGroup?.status || !actualSessionId,
       hasSession: !!actualSessionId,
       isRetrying:
         mutateRetry.isPending || triggerBroadcast.isPending || isRetrying,
@@ -398,104 +371,44 @@ export function CommunicationSessionLogsView() {
     isRetrying,
   ]);
 
-  const logsList = sessionLogsData?.httpReponse?.data?.data ?? [];
-  const logsMeta = sessionLogsData?.httpReponse?.data?.meta ?? {
-    total: 0,
-    currentPage: 1,
-    lastPage: 0,
-    perPage: 10,
-    next: null,
-    prev: null,
-  };
+  const logsList = useMemo(() => {
+    if (!actualSessionId) return [];
+    const raw =
+      (sessionLogsData as any)?.data ??
+      (sessionLogsData as any)?.httpReponse?.data?.data ??
+      [];
+    return Array.isArray(raw) ? raw : [];
+  }, [actualSessionId, sessionLogsData]);
 
-  const audienceAsLogRows = useMemo(() => {
-    const rawStatus = targetGroup?.status || 'PENDING';
-    const mappedStatus =
-      rawStatus === 'SENT' || rawStatus === 'PROCESSING'
-        ? 'PENDING'
-        : rawStatus;
-
-    return audienceList.map((item: any) => ({
-      address: item.address,
-      name: item.name,
-      status: mappedStatus,
-      attempts: 0,
-      disposition: targetGroup?.error
-        ? { disposition: targetGroup.error }
-        : null,
-      updatedAt: targetGroup?.updatedAt || rawComm?.updatedAt,
-    }));
-  }, [
-    audienceList,
-    targetGroup?.status,
-    targetGroup?.error,
-    targetGroup?.updatedAt,
-    rawComm?.updatedAt,
-  ]);
-
-  const filteredAudienceLogRows = useMemo(() => {
-    const search = (cleanFilters.address || '').trim().toLowerCase();
-    const status = cleanFilters.status;
-
-    return audienceAsLogRows.filter((row: any) => {
-      const matchSearch =
-        !search ||
-        (row.address && String(row.address).toLowerCase().includes(search)) ||
-        (row.name && String(row.name).toLowerCase().includes(search));
-
-      const matchStatus =
-        !status ||
-        status === 'ALL' ||
-        String(row.status).toUpperCase() === status.toUpperCase();
-
-      return matchSearch && matchStatus;
-    });
-  }, [audienceAsLogRows, cleanFilters.address, cleanFilters.status]);
-
-  const displayData = useMemo(() => {
-    if (actualSessionId && logsList.length > 0) return logsList;
-    if (!actualSessionId && filteredAudienceLogRows.length > 0) {
-      const start = (pagination.page - 1) * pagination.perPage;
-      return filteredAudienceLogRows.slice(start, start + pagination.perPage);
-    }
-    return logsList;
-  }, [
-    actualSessionId,
-    logsList,
-    filteredAudienceLogRows,
-    pagination.page,
-    pagination.perPage,
-  ]);
-
-  const effectiveMeta = useMemo(() => {
-    if (actualSessionId && logsList.length > 0) return logsMeta;
+  const logsMeta = useMemo(() => {
     if (!actualSessionId) {
-      const total = filteredAudienceLogRows.length;
-      const lastPage = Math.max(1, Math.ceil(total / pagination.perPage));
       return {
-        total,
-        currentPage: pagination.page,
-        lastPage,
-        perPage: pagination.perPage,
-        next: pagination.page < lastPage ? pagination.page + 1 : null,
-        prev: pagination.page > 1 ? pagination.page - 1 : null,
+        total: 0,
+        currentPage: 1,
+        lastPage: 1,
+        perPage: 10,
+        next: null,
+        prev: null,
       };
     }
-    return logsMeta;
-  }, [
-    actualSessionId,
-    logsList.length,
-    logsMeta,
-    filteredAudienceLogRows.length,
-    pagination.page,
-    pagination.perPage,
-  ]);
+    return (
+      (sessionLogsData as any)?.meta ??
+      (sessionLogsData as any)?.httpReponse?.data?.meta ?? {
+        total: logsList.length,
+        currentPage: 1,
+        lastPage: 1,
+        perPage: 10,
+        next: null,
+        prev: null,
+      }
+    );
+  }, [actualSessionId, sessionLogsData, logsList.length]);
 
   const columns = useCommsLogsTableColumns(channel);
 
   const table = useReactTable({
     manualPagination: true,
-    data: displayData,
+    data: logsList,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
@@ -617,12 +530,12 @@ export function CommunicationSessionLogsView() {
       : rawComm?.subject || null;
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="p-3 sm:p-4 space-y-3">
       {/* ── Header Section ── */}
       <div className="flex flex-col space-y-0">
         <Back path={backPath} />
 
-        <div className="mt-1 flex flex-col pb-1 gap-2">
+        <div className="mt-1 flex flex-col pb-0.5 gap-2">
           <div className="flex justify-between items-start">
             <Heading
               title={t('COMMUNICATION_DETAILS')}
@@ -688,16 +601,16 @@ export function CommunicationSessionLogsView() {
         </div>
 
         {/* ── Upper Overview Banner & Data Cards Grid ── */}
-        <div className="flex flex-col lg:flex-row gap-4 w-full mt-2">
-          {/* Left Overview Card */}
-          <div className="flex-[2] min-w-0">
-            <Card className="p-4 rounded-sm bg-white border border-gray-200 h-full flex flex-col justify-between shadow-none space-y-3">
-              <div>
-                <CardTitle className="flex items-center gap-2 pb-2">
-                  <span className="bg-slate-100 text-slate-700 text-xs font-medium px-2.5 py-1 rounded border border-slate-200 flex items-center gap-1.5">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-2.5 sm:gap-3 w-full mt-1">
+          {/* Left Overview Card (7 cols) */}
+          <div className="lg:col-span-7 min-w-0 flex flex-col">
+            <Card className="p-3 sm:p-3.5 rounded-sm bg-white border border-gray-200/90 shadow-none h-full flex flex-col justify-between">
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2 pb-0.5 flex-wrap">
+                  <span className="bg-slate-100 text-slate-700 text-[11px] sm:text-xs font-medium px-2 py-0.5 rounded border border-slate-200/80 flex items-center gap-1.5">
                     <CommunicationChannelIcon
                       channel={channel}
-                      className="h-3.5 w-3.5"
+                      className="h-3.5 w-3.5 text-slate-600"
                     />
                     {t(channel)}
                   </span>
@@ -705,22 +618,22 @@ export function CommunicationSessionLogsView() {
                     status={effectiveStatus}
                     isLoading={isBroadcastResolving}
                   />
-                </CardTitle>
+                </div>
 
-                <CardContent className="pl-0 pb-2 pt-1 flex flex-col gap-1">
-                  <Label className="text-muted-foreground text-xs font-medium">
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-[10px] sm:text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
                     {t('COMMUNICATION_TITLE')}:
-                  </Label>
+                  </span>
                   <CommunicationTooltip
                     content={`${t('COMMUNICATION_TITLE')}: ${
                       rawComm?.title || ''
                     }`}
                   >
-                    <Label className="text-base font-bold text-gray-900 leading-snug break-all cursor-default">
+                    <h2 className="text-sm sm:text-base font-bold text-gray-900 leading-snug break-all cursor-default">
                       {rawComm?.title || t('COMMUNICATION')}
-                    </Label>
+                    </h2>
                   </CommunicationTooltip>
-                  <p className="text-xs text-muted-foreground mt-0.5">
+                  <p className="text-[11px] sm:text-xs text-muted-foreground mt-0.5">
                     {t(channel)}
                     {targetGroup?.groupType
                       ? ` • ${
@@ -731,105 +644,140 @@ export function CommunicationSessionLogsView() {
                       : ''}
                     {groupInfo.name ? ` • ${groupInfo.name}` : ''}
                   </p>
-                </CardContent>
+                </div>
               </div>
 
-              <div>
-                <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
+              <div className="mt-2 pt-2 border-t border-gray-100 space-y-1">
+                <p className="text-[10px] sm:text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
                   {channel === 'VOICE'
                     ? t('VOICE_RECORDING')
                     : t('MESSAGE_CONTENT')}
                 </p>
                 {channel === 'VOICE' && audioURL?.mediaURL ? (
-                  <div className="bg-slate-50 p-2.5 rounded border border-gray-200 space-y-1.5">
-                    <p className="text-[11px] font-medium text-gray-600 truncate">
+                  <div className="bg-slate-50/80 p-1.5 sm:p-2 rounded border border-gray-200/80 space-y-1">
+                    <p className="text-[10px] sm:text-[11px] font-medium text-gray-600 truncate">
                       {audioURL.fileName || 'recording.wav'}
                     </p>
                     <audio
                       src={audioURL.mediaURL}
                       controls
-                      className="w-full h-8 rounded"
+                      className="w-full h-7 rounded"
                     />
                   </div>
                 ) : messageText ? (
-                  <div className="bg-slate-50 p-2.5 rounded border border-gray-200 text-xs text-gray-800 leading-relaxed whitespace-pre-wrap max-h-28 overflow-y-auto font-sans">
+                  <div className="bg-slate-50/80 p-2 rounded border border-gray-200/80 text-xs text-gray-800 leading-relaxed whitespace-pre-wrap max-h-20 overflow-y-auto font-sans">
                     {messageText}
                   </div>
                 ) : (
-                  <div className="bg-slate-50 p-2.5 rounded border border-gray-200 text-xs text-muted-foreground italic">
+                  <div className="bg-slate-50/80 p-2 rounded border border-gray-200/80 text-xs text-muted-foreground italic">
                     {tg('N_A')}
                   </div>
                 )}
 
-                <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground pt-2.5 mt-2.5 border-t border-gray-100">
-                  <span>
-                    {t('STARTED_AT')}:{' '}
-                    {formatDate(
-                      targetGroup?.createdAt || rawComm?.createdAt,
-                      'MMMM d, yyyy, h:mm:ss a',
-                    )}
-                  </span>
-                  <span>
-                    {t('ENDED_AT')}:{' '}
-                    {formatDate(
-                      targetGroup?.updatedAt || rawComm?.updatedAt,
-                      'MMMM d, yyyy, h:mm:ss a',
-                    )}
-                  </span>
+                <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[10px] sm:text-[11px] text-muted-foreground pt-1.5 border-t border-gray-100">
+                  {actualSessionId && (targetGroup?.createdAt || rawComm?.createdAt) && (
+                    <span>
+                      {t('STARTED_AT')}:{' '}
+                      {formatDate(
+                        targetGroup?.createdAt || rawComm?.createdAt,
+                        'MMMM d, yyyy, h:mm:ss a',
+                      )}
+                    </span>
+                  )}
+                  {(effectiveStatus === 'COMPLETED' || effectiveStatus === 'FAILED') && (
+                    <span>
+                      {t('ENDED_AT')}:{' '}
+                      {formatDate(
+                        targetGroup?.updatedAt || rawComm?.updatedAt,
+                        'MMMM d, yyyy, h:mm:ss a',
+                      )}
+                    </span>
+                  )}
                 </div>
               </div>
             </Card>
           </div>
 
-          {/* Right 4 Summary Data Cards */}
-          <div className="flex-1 min-w-0 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 gap-3">
-            <div className="bg-white rounded-sm border border-gray-200 p-3 flex flex-col justify-between shadow-none min-h-[84px]">
-              <span className="font-medium text-xs text-muted-foreground leading-snug">
-                {t('SUCCESSFULLY_DELIVERED')}
-              </span>
-              {isLoadingComm || isLoadingLogs ? (
-                <Skeleton className="h-6 w-12 mt-2" />
-              ) : (
-                <span className="text-primary font-semibold text-xl sm:text-2xl mt-1.5">
-                  {formatNum(counts.SUCCESS)}
+          {/* Right 4 Summary Data Cards (5 cols) */}
+          <div className="lg:col-span-5 min-w-0 grid grid-cols-2 grid-rows-2 gap-2 sm:gap-2.5 h-full">
+            <div className="bg-white rounded-sm border border-gray-200/90 p-2.5 sm:p-3 flex flex-col justify-between shadow-none hover:border-gray-300 transition-colors">
+              <div className="flex items-start justify-between gap-1">
+                <span className="font-medium text-[11px] sm:text-xs text-muted-foreground leading-tight line-clamp-2" title={t('SUCCESSFULLY_DELIVERED')}>
+                  {t('SUCCESSFULLY_DELIVERED')}
                 </span>
-              )}
+                <div className="h-5 w-5 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                  <CheckCircle2 className="h-3 w-3" />
+                </div>
+              </div>
+              <div className="mt-1 sm:mt-1.5">
+                {isLoadingComm || isLoadingLogs ? (
+                  <Skeleton className="h-5 w-10" />
+                ) : (
+                  <span className="text-primary font-bold text-lg sm:text-xl tracking-tight leading-none">
+                    {formatNum(counts.SUCCESS)}
+                  </span>
+                )}
+              </div>
             </div>
-            <div className="bg-white rounded-sm border border-gray-200 p-3 flex flex-col justify-between shadow-none min-h-[84px]">
-              <span className="font-medium text-xs text-muted-foreground leading-snug">
-                {t('FAILED_DELIVERED')}
-              </span>
-              {isLoadingComm || isLoadingLogs ? (
-                <Skeleton className="h-6 w-12 mt-2" />
-              ) : (
-                <span className="text-primary font-semibold text-xl sm:text-2xl mt-1.5">
-                  {formatNum(counts.FAIL)}
+
+            <div className="bg-white rounded-sm border border-gray-200/90 p-2.5 sm:p-3 flex flex-col justify-between shadow-none hover:border-gray-300 transition-colors">
+              <div className="flex items-start justify-between gap-1">
+                <span className="font-medium text-[11px] sm:text-xs text-muted-foreground leading-tight line-clamp-2" title={t('FAILED_DELIVERED')}>
+                  {t('FAILED_DELIVERED')}
                 </span>
-              )}
+                <div className="h-5 w-5 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+                  <AlertCircle className="h-3 w-3" />
+                </div>
+              </div>
+              <div className="mt-1 sm:mt-1.5">
+                {isLoadingComm || isLoadingLogs ? (
+                  <Skeleton className="h-5 w-10" />
+                ) : (
+                  <span className="text-primary font-bold text-lg sm:text-xl tracking-tight leading-none">
+                    {formatNum(counts.FAIL)}
+                  </span>
+                )}
+              </div>
             </div>
-            <div className="bg-white rounded-sm border border-gray-200 p-3 flex flex-col justify-between shadow-none min-h-[84px]">
-              <span className="font-medium text-xs text-muted-foreground leading-snug">
-                {tg('SCHEDULED')}
-              </span>
-              {isLoadingComm || isLoadingLogs ? (
-                <Skeleton className="h-6 w-12 mt-2" />
-              ) : (
-                <span className="text-primary font-semibold text-xl sm:text-2xl mt-1.5">
-                  {formatNum(counts.SCHEDULED)}
+
+            <div className="bg-white rounded-sm border border-gray-200/90 p-2.5 sm:p-3 flex flex-col justify-between shadow-none hover:border-gray-300 transition-colors">
+              <div className="flex items-start justify-between gap-1">
+                <span className="font-medium text-[11px] sm:text-xs text-muted-foreground leading-tight line-clamp-2" title={tg('SCHEDULED')}>
+                  {tg('SCHEDULED')}
                 </span>
-              )}
+                <div className="h-5 w-5 rounded-full bg-sky-50 text-sky-600 flex items-center justify-center shrink-0">
+                  <CalendarClock className="h-3 w-3" />
+                </div>
+              </div>
+              <div className="mt-1 sm:mt-1.5">
+                {isLoadingComm || isLoadingLogs ? (
+                  <Skeleton className="h-5 w-10" />
+                ) : (
+                  <span className="text-primary font-bold text-lg sm:text-xl tracking-tight leading-none">
+                    {formatNum(counts.SCHEDULED)}
+                  </span>
+                )}
+              </div>
             </div>
-            <div className="bg-white rounded-sm border border-gray-200 p-3 flex flex-col justify-between shadow-none min-h-[84px]">
-              <span className="font-medium text-xs text-muted-foreground leading-snug">
-                {tg('PENDING')}
-              </span>
-              {isLoadingComm || isLoadingLogs ? (
-                <Skeleton className="h-6 w-12 mt-2" />
-              ) : (
-                <span className="text-primary font-semibold text-xl sm:text-2xl mt-1.5">
-                  {formatNum(counts.PENDING)}
+
+            <div className="bg-white rounded-sm border border-gray-200/90 p-2.5 sm:p-3 flex flex-col justify-between shadow-none hover:border-gray-300 transition-colors">
+              <div className="flex items-start justify-between gap-1">
+                <span className="font-medium text-[11px] sm:text-xs text-muted-foreground leading-tight line-clamp-2" title={tg('PENDING')}>
+                  {tg('PENDING')}
                 </span>
-              )}
+                <div className="h-5 w-5 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                  <Hourglass className="h-3 w-3" />
+                </div>
+              </div>
+              <div className="mt-1 sm:mt-1.5">
+                {isLoadingComm || isLoadingLogs ? (
+                  <Skeleton className="h-5 w-10" />
+                ) : (
+                  <span className="text-primary font-bold text-lg sm:text-xl tracking-tight leading-none">
+                    {formatNum(counts.PENDING)}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -858,16 +806,22 @@ export function CommunicationSessionLogsView() {
                     {t('LOGS_TAB')}
                   </TabsTrigger>
                 </TabsList>
-
                 <div className="max-h-[calc(100vh-400px)] overflow-y-auto">
-                  <TabsContent value="details" className="p-4 space-y-3 m-0">
-                    {/* Target Group */}
+                  <TabsContent
+                    value="details"
+                    className="p-4 space-y-3 m-0"
+                  >
+                    {/* Beneficiary Group */}
                     <div>
                       <p className="text-sm text-gray-500">
                         {targetGroup?.groupType
-                          ? translateValue(tg, targetGroup.groupType, {
-                              fallbackStyle: 'raw',
-                            }) +
+                          ? translateValue(
+                              tg,
+                              targetGroup.groupType,
+                              {
+                                fallbackStyle: 'raw',
+                              },
+                            ) +
                             ' ' +
                             t('GROUP')
                           : tg('N_A')}
@@ -881,9 +835,9 @@ export function CommunicationSessionLogsView() {
                         {t('TRIGGERED_DATE')}
                       </p>
                       <p className="font-medium">
-                        {formatDate(
-                          targetGroup?.updatedAt || rawComm?.updatedAt,
-                        )}
+                        {actualSessionId && (targetGroup?.updatedAt || rawComm?.updatedAt)
+                          ? formatDate(targetGroup?.updatedAt || rawComm?.updatedAt)
+                          : tg('N_A')}
                       </p>
                     </div>
 
@@ -897,38 +851,40 @@ export function CommunicationSessionLogsView() {
                       </p>
                     </div>
 
-                    {targetGroup?.createdAt && (
+                    {actualSessionId && (targetGroup?.createdAt || rawComm?.createdAt) && (
                       <div>
                         <p className="text-sm text-gray-500">
                           {t('STARTED_AT')}
                         </p>
                         <p className="font-medium">
-                          {formatDate(targetGroup.createdAt)}
+                          {formatDate(targetGroup?.createdAt || rawComm?.createdAt)}
                         </p>
                       </div>
                     )}
 
-                    {targetGroup?.updatedAt && (
+                    {(effectiveStatus === 'COMPLETED' || effectiveStatus === 'FAILED') && (
                       <div>
                         <p className="text-sm text-gray-500">
                           {t('ENDED_AT')}
                         </p>
                         <p className="font-medium">
-                          {formatDate(targetGroup.updatedAt)}
+                          {formatDate(targetGroup?.updatedAt || rawComm?.updatedAt)}
                         </p>
                       </div>
                     )}
 
-                    {/* Channel / Transport Status */}
+                    {/* Channel Status */}
                     <div className="flex items-center gap-3">
                       <div className="flex items-center gap-2">
                         <div className="w-6 h-6 flex items-center justify-center">
                           <CommunicationChannelIcon
                             channel={channel}
-                            className="h-5 w-5 text-gray-600"
+                            className="h-4 w-4 text-gray-600"
                           />
                         </div>
-                        <span className="font-medium">{t(channel)}</span>
+                        <span className="font-medium">
+                          {t(channel)}
+                        </span>
                       </div>
 
                       <CommunicationStatusBadge
@@ -937,68 +893,62 @@ export function CommunicationSessionLogsView() {
                       />
                     </div>
 
-                    {/* Communication Title & Subject & Message/Audio */}
+                    {/* Communication */}
                     <div className="space-y-3">
-                      <CommunicationTooltip
-                        content={`${t('COMMUNICATION_TITLE')}: ${
-                          rawComm?.title || ''
-                        }`}
+                      <TooltipWrapper
+                        tip={`${t(
+                          'COMMUNICATION_TITLE',
+                        )}: ${rawComm?.title || ''}`}
                       >
-                        <p className="text-sm text-gray-500 truncate cursor-default">
+                        <p className="text-sm text-gray-500">
                           {rawComm?.title || ''}
                         </p>
-                      </CommunicationTooltip>
-
+                      </TooltipWrapper>
                       {rawComm?.subject && (
-                        <CommunicationTooltip
-                          content={`${t('COMMUNICATION_SUBJECT')}: ${
+                        <TooltipWrapper
+                          tip={`${t('COMMUNICATION_SUBJECT')}: ${
                             rawComm.subject
                           }`}
                         >
-                          <div className="truncate cursor-default">
-                            <p className="font-medium truncate">{rawComm.subject}</p>
-                          </div>
-                        </CommunicationTooltip>
-                      )}
-
-                      <div>
-                        {channel === 'VOICE' && audioURL?.mediaURL ? (
-                          <div className="bg-gray-50 p-3 rounded-sm space-y-2 border border-gray-100">
-                            <p className="text-center text-xs text-gray-600 font-medium">
-                              {audioURL.fileName || 'recording.wav'}
+                          <div>
+                            <p className="font-medium">
+                              {rawComm.subject}
                             </p>
-                            <audio
-                              src={audioURL.mediaURL}
-                              controls
-                              className="w-full h-10"
-                            />
                           </div>
-                        ) : (
-                          <div className="bg-gray-50 p-3 rounded-sm text-xs text-gray-800 leading-relaxed whitespace-pre-wrap max-h-40 overflow-y-auto">
-                            {typeof rawComm?.message === 'string' ? (
-                              rawComm.message
-                            ) : rawComm?.subject ? (
-                              rawComm.subject
-                            ) : (
-                              <span className="text-gray-400 italic">
-                                {tg('N_A')}
-                              </span>
-                            )}
-                          </div>
-                        )}
-                      </div>
+                        </TooltipWrapper>
+                      )}
+                      <TooltipWrapper
+                        tip={`${t(
+                          'COMMUNICATION_MESSAGE',
+                        )}: ${messageText || tg('N_A')}`}
+                      >
+                        <div>
+                          {channel === 'VOICE' && audioURL?.mediaURL ? (
+                            <div className="bg-gray-50 p-3 rounded-sm space-y-1">
+                              <p className="text-center text-xs mb-2">{audioURL.fileName || 'recording.wav'}</p>
+                              <audio src={audioURL.mediaURL} controls className="w-full h-10" />
+                            </div>
+                          ) : messageText ? (
+                            <p className="font-medium text-xs whitespace-pre-wrap">{messageText}</p>
+                          ) : (
+                            <p className="text-gray-400 italic text-xs">{tg('N_A')}</p>
+                          )}
+                        </div>
+                      </TooltipWrapper>
                     </div>
                   </TabsContent>
 
                   <TabsContent value="logs" className="p-2 m-0 space-y-3">
-                    {targetGroup ? (
-                      <Card className="rounded-sm shadow-none border border-gray-100">
-                        <CardContent className="p-3.5 space-y-2">
+                    {actualSessionId && targetGroup ? (
+                      <Card className="rounded-sm shadow-sm">
+                        <CardContent className="p-4 space-y-2">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               <Clock className="h-4 w-4 text-muted-foreground" />
                               <span className="text-sm font-medium">
-                                {t('RUN_NUMBER', { number: formatNum(1) })}
+                                {t('RUN_NUMBER', {
+                                  number: formatNum(1),
+                                })}
                               </span>
                             </div>
                             <CommunicationStatusBadge status={effectiveStatus} />
@@ -1035,50 +985,52 @@ export function CommunicationSessionLogsView() {
         </Card>
 
         {/* Right Column (Communication Logs Table Card) */}
-        <Card className="col-span-1 md:col-span-2 w-full rounded-sm">
-          <CardHeader className="flex flex-row items-center justify-center gap-2 pb-0 pt-0.5 space-y-0 px-2">
-            <SearchInput
-              className="w-full"
-              value={filters?.address || ''}
-              name={tGlobal('AUDIENCE')}
-              onSearch={(e: any) => handleSearch(e, 'address')}
-            />
-            <SelectComponent
-              name={t('STATUS')}
-              options={['ALL', 'SUCCESS', 'PENDING', 'FAIL']}
-              labels={{
-                ALL: tGlobal('ALL'),
-                SUCCESS: tGlobal('SUCCESS'),
-                PENDING: tGlobal('PENDING'),
-                FAIL: tGlobal('FAIL'),
-              }}
-              onChange={(value) =>
-                handleFilterChange({
-                  target: { name: 'status', value },
-                })
-              }
-              value={filters?.status || ''}
-            />
+        <Card className="col-span-1 md:col-span-2 w-full rounded-sm bg-white border border-gray-200/90 shadow-none">
+          <CardHeader className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 p-3 pb-2 space-y-0">
+            <div className="flex-1 min-w-0">
+              <SearchInput
+                className="w-full"
+                value={filters?.address || ''}
+                name={tGlobal('AUDIENCE')}
+                onSearch={(e: any) => handleSearch(e, 'address')}
+              />
+            </div>
+            <div className="w-full sm:w-44 shrink-0">
+              <SelectComponent
+                name={t('STATUS')}
+                options={['ALL', 'SUCCESS', 'PENDING', 'FAIL']}
+                labels={{
+                  ALL: tGlobal('ALL'),
+                  SUCCESS: tGlobal('SUCCESS'),
+                  PENDING: tGlobal('PENDING'),
+                  FAIL: tGlobal('FAIL'),
+                }}
+                onChange={(value) =>
+                  handleFilterChange({
+                    target: { name: 'status', value },
+                  })
+                }
+                value={filters?.status || ''}
+              />
+            </div>
           </CardHeader>
 
-          <CardContent className="pt-0 pb-0 px-2">
+          <CardContent className="px-3 pt-0 pb-1">
             <CommsLogsTable
               table={table}
-              isLoading={
-                isLoadingLogs || (!actualSessionId && isLoadingAudience)
-              }
+              isLoading={isLoadingLogs}
             />
           </CardContent>
 
-          <CardFooter className="justify-end pt-0 pb-0">
+          <CardFooter className="justify-end px-3 py-2 border-t border-gray-100">
             <CustomPagination
-              meta={effectiveMeta}
+              meta={logsMeta}
               handleNextPage={setNextPage}
               handlePrevPage={setPrevPage}
               handlePageSizeChange={setPerPage}
               currentPage={pagination.page}
               perPage={pagination.perPage}
-              total={effectiveMeta?.lastPage || 0}
+              total={logsMeta?.lastPage || 0}
             />
           </CardFooter>
         </Card>

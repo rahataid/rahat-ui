@@ -49,7 +49,7 @@ export function CommunicationsStatsCards({
       {stats.map((stat, idx) => {
         const Icon = stat.Icon;
         return (
-          <div key={idx} className="bg-card border rounded-sm px-3.5 py-3 flex flex-col gap-2.5 shadow-sm">
+          <div key={idx} className="bg-white border border-gray-200/90 rounded-sm p-3 sm:p-3.5 flex flex-col gap-2 shadow-none hover:border-gray-300 transition-colors">
             <div className="flex justify-between items-start gap-2">
               <div className="min-w-0 flex-1">
                 <h3 className="text-sm font-semibold text-neutral-800 dark:text-white truncate">{stat.title}</h3>

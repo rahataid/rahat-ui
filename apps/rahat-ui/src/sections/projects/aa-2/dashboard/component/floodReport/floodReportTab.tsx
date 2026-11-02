@@ -204,6 +204,13 @@ export default function FloodReportTab({
   const t = useTranslations('FLOOD_REPORT');
   const charts = tab.charts
     .map((chart) => ({ chart, report: findStat(benefStats, chart.stat) }))
+    .map(({ chart, report }) => ({
+      chart,
+      report: report && {
+        ...report,
+        buckets: report.buckets.filter((b) => !chart.hide?.includes(b.id)),
+      },
+    }))
     .filter((c): c is { chart: ReportChart; report: Report } => !!c.report);
 
   return (

@@ -4911,6 +4911,7 @@
     "SAFE_EVACUATION_LOCATION": "Safe evacuation location",
     "POPULATION_COVERED": "Population covered",
     "HOUSEHOLD_SIZE_DISTRIBUTION": "Household size",
+    "POPULATION_BY_GENDER": "Population by gender",
     "POPULATION_BY_AGE_AND_GENDER": "Population by age and gender",
     "HOUSEHOLD_LEADERSHIP": "Household leadership",
     "DISABILITY_AND_CHRONIC_ILLNESS": "Disability and chronic illness",

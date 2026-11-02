@@ -4902,6 +4902,7 @@
     "SAFE_EVACUATION_LOCATION": "सुरक्षित स्थानान्तरण स्थल",
     "POPULATION_COVERED": "समेटिएको जनसंख्या",
     "HOUSEHOLD_SIZE_DISTRIBUTION": "घरधुरीको आकार",
+    "POPULATION_BY_GENDER": "लिङ्ग अनुसार जनसंख्या",
     "POPULATION_BY_AGE_AND_GENDER": "उमेर र लिङ्ग अनुसार जनसंख्या",
     "HOUSEHOLD_LEADERSHIP": "घरमूलीको प्रकार",
     "DISABILITY_AND_CHRONIC_ILLNESS": "अपाङ्गता र दीर्घ रोग",

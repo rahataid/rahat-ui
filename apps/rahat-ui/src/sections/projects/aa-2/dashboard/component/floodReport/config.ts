@@ -12,6 +12,8 @@ export type ReportChart = {
   title: string;
   kind: ChartKind;
   wide?: boolean;
+  // Bucket ids to leave out of the chart.
+  hide?: string[];
 };
 
 export type ReportTab = {
@@ -36,6 +38,12 @@ export const FLOOD_REPORT_TABS: ReportTab[] = [
         stat: 'FLOOD26_HOUSEHOLD_SIZE',
         title: 'HOUSEHOLD_SIZE_DISTRIBUTION',
         kind: 'bar',
+      },
+      {
+        stat: 'FLOOD26_POPULATION_BY_GENDER',
+        title: 'POPULATION_BY_GENDER',
+        kind: 'bar',
+        hide: ['GENDER_AND_SEXUAL_MINORITY'],
       },
       {
         stat: 'FLOOD26_POPULATION_BY_AGE_GENDER',

@@ -10,7 +10,6 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import BeneficiaryDemographics from './beneficiaryDemographics';
 import DigitalAccessOverview from './digitalAccessOverview';
 import CommunicationAnalytics from './communicationAnalytics';
-import MapView from './mapView';
 import HeatwaveSpecific from './heatwave.specific';
 import AccessAndResilienceOverview from './accessPieAndBar';
 import SocialProtectionBenefits from './socialProtectionBenefits';
@@ -155,7 +154,6 @@ export default function DashboardTabs({
             triggeersStats={triggeersStats}
             projectId={projectId}
           />
-          <MapView projectId={projectId} benefStats={benefStats} />
         </div>
       ),
     },

@@ -33,18 +33,8 @@ export const FLOOD_REPORT_TABS: ReportTab[] = [
         kind: 'kpi',
       },
       {
-        stat: 'FLOOD26_CHILDREN_AND_OLDER',
-        title: 'CHILDREN_AND_OLDER_PEOPLE',
-        kind: 'kpi',
-      },
-      {
         stat: 'FLOOD26_HOUSEHOLD_SIZE',
         title: 'HOUSEHOLD_SIZE_DISTRIBUTION',
-        kind: 'bar',
-      },
-      {
-        stat: 'FLOOD26_POPULATION_BY_GENDER',
-        title: 'POPULATION_BY_GENDER',
         kind: 'bar',
       },
       {
@@ -90,17 +80,7 @@ export const FLOOD_REPORT_TABS: ReportTab[] = [
         title: 'AGRICULTURAL_LAND_HOLDING',
         kind: 'bar',
       },
-      {
-        stat: 'FLOOD26_CULTIVATED_LAND',
-        title: 'LAND_USED_FOR_CULTIVATION',
-        kind: 'hbar',
-      },
       { stat: 'FLOOD26_LEASED_LAND', title: 'LEASED_LAND', kind: 'donut' },
-      {
-        stat: 'FLOOD26_LIVELIHOOD_CROP_DAMAGE',
-        title: 'LIVELIHOOD_VS_CROP_DAMAGE',
-        kind: 'stacked',
-      },
       {
         stat: 'FLOOD26_SOCIAL_PROTECTION',
         title: 'SOCIAL_PROTECTION_COVERAGE',
@@ -132,23 +112,6 @@ export const FLOOD_REPORT_TABS: ReportTab[] = [
         title: 'HOUSE_OWNERSHIP',
         kind: 'donut',
       },
-      { stat: 'FLOOD26_HOUSE_STOREYS', title: 'HOUSE_STOREYS', kind: 'bar' },
-      { stat: 'FLOOD26_FLOOR_HEIGHT', title: 'FLOOR_HEIGHT', kind: 'bar' },
-      {
-        stat: 'FLOOD26_ROOF_BY_WARD',
-        title: 'ROOF_TYPE_BY_WARD',
-        kind: 'stacked',
-      },
-      {
-        stat: 'FLOOD26_WALL_BY_WARD',
-        title: 'WALL_TYPE_BY_WARD',
-        kind: 'stacked',
-      },
-      {
-        stat: 'FLOOD26_FLOOR_BY_WARD',
-        title: 'FLOOR_TYPE_BY_WARD',
-        kind: 'stacked',
-      },
     ],
   },
   {
@@ -170,32 +133,6 @@ export const FLOOD_REPORT_TABS: ReportTab[] = [
         stat: 'FLOOD26_FLOOD_DAMAGE_TYPES',
         title: 'FLOOD_DAMAGE_TYPES',
         kind: 'hbar',
-      },
-      {
-        stat: 'FLOOD26_LIVELIHOOD_CROP_DAMAGE',
-        title: 'CROP_DAMAGE_BY_LIVELIHOOD',
-        kind: 'stacked',
-      },
-      {
-        stat: 'FLOOD26_HAZARD_BY_WARD',
-        title: 'HAZARD_EXPOSURE_BY_WARD',
-        kind: 'grouped',
-        wide: true,
-      },
-      {
-        stat: 'FLOOD26_DAMAGE_BY_ROOF',
-        title: 'DAMAGE_BY_ROOF_TYPE',
-        kind: 'grouped',
-      },
-      {
-        stat: 'FLOOD26_DAMAGE_BY_WALL',
-        title: 'DAMAGE_BY_WALL_TYPE',
-        kind: 'grouped',
-      },
-      {
-        stat: 'FLOOD26_DAMAGE_BY_FLOOR',
-        title: 'DAMAGE_BY_FLOOR_TYPE',
-        kind: 'grouped',
       },
     ],
   },
@@ -220,11 +157,6 @@ export const FLOOD_REPORT_TABS: ReportTab[] = [
         kind: 'hbar',
       },
       {
-        stat: 'FLOOD26_EVACUATION_DESTINATION',
-        title: 'EVACUATION_DESTINATION',
-        kind: 'hbar',
-      },
-      {
         stat: 'FLOOD26_EVACUATION_THRESHOLD',
         title: 'EVACUATION_THRESHOLD',
         kind: 'hbar',
@@ -233,12 +165,6 @@ export const FLOOD_REPORT_TABS: ReportTab[] = [
         stat: 'FLOOD26_RESPONSE_SKILLS',
         title: 'SWIMMING_AND_RESPONSE_TRAINING',
         kind: 'grouped',
-      },
-      {
-        stat: 'FLOOD26_PREPAREDNESS_BY_WARD',
-        title: 'PREPAREDNESS_BY_WARD',
-        kind: 'grouped',
-        wide: true,
       },
     ],
   },

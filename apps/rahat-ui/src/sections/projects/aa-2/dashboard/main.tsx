@@ -23,7 +23,10 @@ const Main = () => {
   const { data: projectInfo, isPending: isProjectInfoLoading } =
     useProjectInfo(projectId);
 
-  const projectType = projectInfo?.value.project_type;
+  const projectType =
+    projectInfo?.value?.project_type ?? projectInfo?.value?.PROJECT_TYPE;
+  const activeYear =
+    projectInfo?.value?.active_year ?? projectInfo?.value?.ACTIVE_YEAR;
   const { data, isLoading } = useProjectDashboardReporting(projectId);
   const { mutate: syncStats, isPending: isSyncing } = useBackFill(projectId);
 
@@ -53,6 +56,7 @@ const Main = () => {
         tokenStats={data?.tokenStats}
         projectId={projectId}
         projectType={projectType}
+        activeYear={activeYear}
       />
     </div>
   );

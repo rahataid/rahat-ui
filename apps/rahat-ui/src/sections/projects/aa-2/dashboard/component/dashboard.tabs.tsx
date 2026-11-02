@@ -21,6 +21,8 @@ import { UUID } from 'crypto';
 import { PROJECT_SETTINGS_KEYS, useTabConfiguration } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
+import { FLOOD_REPORT_TABS } from './floodReport/config';
+import FloodReportTab, { hasReportData } from './floodReport/floodReportTab';
 
 type TabConfig = {
   value: string;
@@ -36,7 +38,8 @@ type Props = {
   triggeersStats: any[];
   tokenStats: any;
   projectId: UUID;
-  projectType: string;
+  projectType?: string;
+  activeYear?: string | number;
 };
 
 export default function DashboardTabs({
@@ -44,8 +47,11 @@ export default function DashboardTabs({
   triggeersStats,
   tokenStats,
   projectId,
+  projectType,
+  activeYear,
 }: Props) {
   const t = useTranslations('AA_PROJECT');
+  const tf = useTranslations('FLOOD_REPORT');
   const { id: projectID } = useParams();
 
   const { data, isLoading } = useTabConfiguration(
@@ -122,6 +128,22 @@ export default function DashboardTabs({
     },
   ];
 
+  // Flood 2026 survey tabs: enabled per tab in DASHBOARD_TAB_CONFIG, and
+  // only shown when the project is a 2026 flood project with data for it.
+  const isFlood2026 =
+    String(projectType ?? '').toUpperCase() === 'FLOOD' &&
+    String(activeYear ?? '').trim() === '2026';
+  const floodReportTabs: TabConfig[] = isFlood2026
+    ? FLOOD_REPORT_TABS.filter((tab) => hasReportData(tab, benefStats)).map(
+        (tab) => ({
+          value: tab.value,
+          configKey: tab.configKey,
+          label: tf(tab.title),
+          content: <FloodReportTab tab={tab} benefStats={benefStats} />,
+        }),
+      )
+    : [];
+
   const allTabs: TabConfig[] = [
     {
       value: 'main',
@@ -138,6 +160,7 @@ export default function DashboardTabs({
       ),
     },
     ...projectTabs,
+    ...floodReportTabs,
   ].filter(isTabVisible);
 
   return (

@@ -49,6 +49,9 @@ function readReport(stat: any): Report | null {
   return empty || !report.answered ? null : report;
 }
 
+// Fixed pixels: the chart wrappers have no height, so "100%" collapses.
+const CHART_HEIGHT = 320;
+
 const PALETTE = [
   '#4A90E2',
   '#00796B',
@@ -95,15 +98,6 @@ function Chart({ chart, report }: { chart: ReportChart; report: Report }) {
     const base = report.multi ? report.answered : report.total;
     return base ? ` (${Math.round((n / base) * 100)}%)` : '';
   };
-  const subtitle = [
-    t('HOUSEHOLDS_ANSWERED', {
-      total: formatNum(report.total),
-      answered: formatNum(report.answered),
-    }),
-    report.multi && t('MULTIPLE_RESPONSES'),
-  ]
-    .filter(Boolean)
-    .join(' · ');
 
   if (chart.kind === 'kpi') {
     return (
@@ -154,7 +148,7 @@ function Chart({ chart, report }: { chart: ReportChart; report: Report }) {
         xaxisLabels
         yaxisLabels
         barHeight={horizontal ? '60%' : 20}
-        height="100%"
+        height={CHART_HEIGHT}
         width="100%"
         yaxisTitle={horizontal ? ' ' : t('HOUSEHOLDS')}
         xaxisTitle={horizontal ? t('HOUSEHOLDS') : ' '}
@@ -179,7 +173,7 @@ function Chart({ chart, report }: { chart: ReportChart; report: Report }) {
         }))}
         categories={report.categories.map(label)}
         stacked={chart.kind === 'stacked'}
-        height="100%"
+        height={CHART_HEIGHT}
         width="100%"
         custom
         options={{
@@ -195,8 +189,7 @@ function Chart({ chart, report }: { chart: ReportChart; report: Report }) {
   return (
     <>
       <h1 className="text-sm font-medium">{t(chart.title)}</h1>
-      <p className="text-xs text-muted-foreground">{subtitle}</p>
-      <div className="flex-1 p-2 min-h-[260px]">{body}</div>
+      <div className="p-2">{body}</div>
     </>
   );
 }
@@ -211,6 +204,13 @@ export default function FloodReportTab({
   const t = useTranslations('FLOOD_REPORT');
   const charts = tab.charts
     .map((chart) => ({ chart, report: findStat(benefStats, chart.stat) }))
+    .map(({ chart, report }) => ({
+      chart,
+      report: report && {
+        ...report,
+        buckets: report.buckets.filter((b) => !chart.hide?.includes(b.id)),
+      },
+    }))
     .filter((c): c is { chart: ReportChart; report: Report } => !!c.report);
 
   return (
@@ -218,15 +218,15 @@ export default function FloodReportTab({
       <Heading
         title={t(tab.title)}
         titleStyle="text-lg"
-        description={t('SURVEY_2026_DESCRIPTION')}
+        description=""
       />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {charts.map(({ chart, report }) => (
           <div
             key={chart.stat}
-            className={`border rounded-sm p-2 flex flex-col min-h-[200px] ${
+            className={`border rounded-sm p-2 flex flex-col ${
               chart.kind === 'kpi' || chart.wide ? 'lg:col-span-2' : ''
-            } ${chart.kind === 'kpi' ? '' : 'sm:min-h-[340px]'}`}
+            }`}
           >
             <Chart chart={chart} report={report} />
           </div>

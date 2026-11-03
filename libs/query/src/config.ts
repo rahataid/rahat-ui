@@ -57,6 +57,10 @@ export const TAGS = {
     GET_CREDITS: 'comms_usage.get_credits',
     GET_CREDITS_BY_XREF: 'comms_usage.get_credits_by_xref',
   },
+  COMMUNICATION_OVERVIEW: {
+    GET_OVERVIEW_STATS: 'communication_overview.get_overview_stats',
+    LIST_COMMUNICATION_ACTIVITIES: 'communication_overview.list_communication_activities',
+  },
   ALL_NOTIFICATIONS: 'all_notifications',
   VERFIY_MANUAL_PAYOUT: 'verify_manual_payout',
 };

@@ -16,6 +16,10 @@ import {
   SendHorizontal,
   ArrowRight,
   Pencil,
+  CheckCircle2,
+  AlertCircle,
+  CalendarClock,
+  Hourglass,
 } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
@@ -124,19 +128,18 @@ export default function CommunicationDetailsView() {
       return sum + (info.count || 0);
     }, 0);
 
-  const pendingTargetsAudienceCount = targets
-    .filter((t: any) => t?.status === 'PENDING' || t?.status === 'PROCESSING')
-    .reduce((sum: number, target: any) => {
-      const info = getGroupDetails(target.groupId, target.groupType, target.group);
-      return sum + (info.count || 0);
-    }, 0);
-
   const { data: broadcastCounts, isLoading: isBroadcastLoading } = useSessionBroadCastCount(sessionIds);
   const isBroadcastResolving = sessionIds.length > 0 && (isBroadcastLoading || broadcastCounts === undefined);
-  const deliveredCount = broadcastCounts?.data?.SUCCESS ?? 0;
-  const failedCount = (broadcastCounts?.data?.FAIL ?? 0) + failedTargetsAudienceCount;
-  const pendingCountBroadcast = (broadcastCounts?.data?.PENDING ?? 0) + pendingTargetsAudienceCount;
-  const scheduledCount = broadcastCounts?.data?.SCHEDULED ?? 0;
+
+  const rawBroadcastCounts =
+    (broadcastCounts as any)?.data?.data ??
+    (broadcastCounts as any)?.data ??
+    broadcastCounts;
+
+  const deliveredCount = rawBroadcastCounts?.SUCCESS ?? 0;
+  const scheduledCount = rawBroadcastCounts?.SCHEDULED ?? 0;
+  const failedCount = rawBroadcastCounts?.FAIL ?? 0;
+  const pendingCountBroadcast = rawBroadcastCounts?.PENDING ?? 0;
 
   const record = useMemo(() => {
     if (!raw) return null;
@@ -150,10 +153,10 @@ export default function CommunicationDetailsView() {
     return resolveCommunicationLifecycleStatus({
       channel: record?.channel || raw?.channel || 'SMS',
       rawStatus: record?.status || raw?.status,
-      counts: broadcastCounts?.data,
+      counts: sessionIds.length > 0 ? rawBroadcastCounts : undefined,
       hasActiveTargets:
         targets.some((t: any) => t?.status === 'PROCESSING'),
-      hasPendingTargets: targets.some((t: any) => t?.status === 'PENDING'),
+      hasPendingTargets: targets.some((t: any) => t?.status === 'PENDING' || !t?.status),
       hasSession: sessionIds.length > 0,
       isRetrying: isRetrying || retryFailedSession.isPending || triggerBroadcast.isPending,
     });
@@ -162,7 +165,7 @@ export default function CommunicationDetailsView() {
     raw?.channel,
     record?.status,
     raw?.status,
-    broadcastCounts?.data,
+    rawBroadcastCounts,
     sessionIds.length,
     targets,
     isRetrying,
@@ -251,8 +254,9 @@ export default function CommunicationDetailsView() {
         matchesStatus = rawStatus === 'FAILED' || rawStatus === 'FAIL';
       } else if (statusFilter === 'IN_PROGRESS') {
         matchesStatus = rawStatus === 'IN_PROGRESS' || rawStatus === 'PROCESSING';
-      } else if (statusFilter === 'PENDING') {
+      } else if (statusFilter === 'NOT_STARTED' || statusFilter === 'PENDING') {
         matchesStatus =
+          rawStatus === 'NOT_STARTED' ||
           rawStatus === 'PENDING' ||
           rawStatus === 'NEW' ||
           !rawStatus ||
@@ -353,34 +357,40 @@ export default function CommunicationDetailsView() {
   };
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="p-3.5 sm:p-4 space-y-3.5">
       {/* ── Header Section ── */}
       <div className="flex flex-col space-y-0">
         <Back path={communicationsListPath} />
 
-        <div className="mt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1">
+        <div className="mt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-0.5">
           <div>
             <Heading
               title={t('COMMUNICATION_DETAILS')}
               description={t('SELECT_COMMUNICATION_TO_VIEW') || 'Select a target group to view its details'}
             />
             {raw?.updatedAt && (
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-xs text-muted-foreground mt-0.5">
                 {t('UPDATED_AT')}: {formatDate(raw.updatedAt, 'MMMM d, yyyy, h:mm:ss a') || raw.updatedAt}
               </p>
             )}
           </div>
 
           <div className="flex items-center flex-wrap gap-2">
-            <Button
+            <DialogComponent
+              buttonIcon={Pencil}
+              buttonText={t('EDIT')}
+              dialogTitle={t('EDIT_COMMUNICATION')}
+              dialogDescription={t('EDIT_COMMUNICATION_CONFIRM')}
+              confirmButtonText={t('CONFIRM')}
+              handleClick={() =>
+                router.push(
+                  `/projects/aa/${projectId}/communications/${commId}/edit`,
+                )
+              }
+              buttonClassName="rounded-sm text-xs h-8 px-3"
+              confirmButtonClassName="rounded-sm bg-primary"
               variant="outline"
-              onClick={() => router.push(`/projects/aa/${projectId}/communications/${commId}/edit`)}
-              className="rounded-sm text-xs h-9 px-3 gap-1.5"
-              disabled={isMutating}
-            >
-              <Pencil className="w-3.5 h-3.5" />
-              {t('EDIT') || 'Edit'}
-            </Button>
+            />
 
             <DialogComponent
               buttonIcon={Trash}
@@ -389,7 +399,7 @@ export default function CommunicationDetailsView() {
               dialogDescription={t('DELETE_COMMUNICATION_CONFIRM')}
               confirmButtonText={t('CONFIRM')}
               handleClick={handleDeleteConfirm}
-              buttonClassName="rounded-sm text-red-500 border-red-500 text-xs h-9 px-3"
+              buttonClassName="rounded-sm text-red-500 border-red-500 text-xs h-8 px-3"
               confirmButtonClassName="rounded-sm bg-red-500"
               variant="outline"
             />
@@ -398,7 +408,7 @@ export default function CommunicationDetailsView() {
               <Button
                 variant="outline"
                 size="sm"
-                className="rounded-sm text-xs h-9 px-3 gap-1.5"
+                className="rounded-sm text-xs h-8 px-3 gap-1.5"
                 onClick={() => setIsSendConfirmOpen(true)}
                 disabled={isMutating}
               >
@@ -415,7 +425,7 @@ export default function CommunicationDetailsView() {
                 dialogDescription={t('RETRY_COMMUNICATION_CONFIRM') || 'Are you sure you want to retry sending failed messages for this communication?'}
                 confirmButtonText={t('CONFIRM')}
                 handleClick={handleRetryConfirm}
-                buttonClassName="rounded-sm text-xs h-9 px-3 gap-1.5"
+                buttonClassName="rounded-sm text-xs h-8 px-3 gap-1.5"
                 confirmButtonClassName="rounded-sm bg-primary"
                 variant="outline"
               />
@@ -427,18 +437,18 @@ export default function CommunicationDetailsView() {
       {/* ── Communication Main Banner & 4 Top Data Cards ── */}
       <div className="space-y-3">
         {/* Title & Channel Header Card */}
-        <Card className="p-4 rounded-sm bg-white border border-gray-200 shadow-none flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <Card className="p-3.5 sm:p-4 rounded-sm bg-white border border-gray-200/90 shadow-none flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="bg-slate-100 text-slate-700 text-xs font-medium px-2.5 py-1 rounded border border-slate-200 flex items-center gap-1.5">
-                <CommunicationChannelIcon channel={record?.channel || 'SMS'} className="h-3.5 w-3.5" />
+              <span className="bg-slate-100 text-slate-700 text-xs font-medium px-2 py-0.5 rounded border border-slate-200/80 flex items-center gap-1.5">
+                <CommunicationChannelIcon channel={record?.channel || 'SMS'} className="h-3.5 w-3.5 text-slate-600" />
                 {t(record?.channel || 'SMS')}
               </span>
               <CommunicationStatusBadge status={effectiveOverallStatus} isLoading={isBroadcastResolving} />
             </div>
-            <div className="pt-1 min-w-0">
-              <span className="text-xs text-muted-foreground font-medium">{t('COMMUNICATION_TITLE')}:</span>
-              <h2 className="text-lg font-bold text-gray-900 leading-snug break-words break-all [overflow-wrap:anywhere]">
+            <div className="pt-0.5 min-w-0">
+              <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">{t('COMMUNICATION_TITLE')}:</span>
+              <h2 className="text-base sm:text-lg font-bold text-gray-900 leading-snug break-words break-all [overflow-wrap:anywhere]">
                 {record?.title || raw?.title || ''}
               </h2>
             </div>
@@ -446,44 +456,91 @@ export default function CommunicationDetailsView() {
         </Card>
 
         {/* 4 Summary Stats Cards Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="bg-white rounded-sm border border-gray-200 p-3.5 flex flex-col justify-between shadow-sm min-h-[88px]">
-            <h1 className="font-medium text-[13px] text-muted-foreground line-clamp-2 leading-tight">{t('SUCCESSFULLY_DELIVERED') || 'Successfully Delivered'}</h1>
-            {isBroadcastResolving ? (
-              <Skeleton className="h-7 w-16 mt-2" />
-            ) : (
-              <p className="text-primary font-semibold text-2xl mt-2">{formatNum(deliveredCount)}</p>
-            )}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+          <div className="bg-white rounded-sm border border-gray-200/90 p-3 sm:p-3.5 flex flex-col justify-between shadow-none hover:border-gray-300 transition-colors">
+            <div className="flex items-start justify-between gap-1.5">
+              <span className="font-medium text-xs text-muted-foreground leading-snug line-clamp-2" title={t('SUCCESSFULLY_DELIVERED') || 'Successfully Delivered'}>
+                {t('SUCCESSFULLY_DELIVERED') || 'Successfully Delivered'}
+              </span>
+              <div className="h-6 w-6 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                <CheckCircle2 className="h-3.5 w-3.5" />
+              </div>
+            </div>
+            <div className="mt-2">
+              {isBroadcastResolving ? (
+                <Skeleton className="h-6 w-12" />
+              ) : (
+                <span className="text-primary font-bold text-xl sm:text-2xl tracking-tight leading-none">
+                  {formatNum(deliveredCount)}
+                </span>
+              )}
+            </div>
           </div>
-          <div className="bg-white rounded-sm border border-gray-200 p-3.5 flex flex-col justify-between shadow-sm min-h-[88px]">
-            <h1 className="font-medium text-[13px] text-muted-foreground line-clamp-2 leading-tight">{t('FAILED_DELIVERED') || 'Failed Delivered'}</h1>
-            {isBroadcastResolving ? (
-              <Skeleton className="h-7 w-16 mt-2" />
-            ) : (
-              <p className="text-primary font-semibold text-2xl mt-2">{formatNum(failedCount)}</p>
-            )}
+
+          <div className="bg-white rounded-sm border border-gray-200/90 p-3 sm:p-3.5 flex flex-col justify-between shadow-none hover:border-gray-300 transition-colors">
+            <div className="flex items-start justify-between gap-1.5">
+              <span className="font-medium text-xs text-muted-foreground leading-snug line-clamp-2" title={t('FAILED_DELIVERED') || 'Failed Delivered'}>
+                {t('FAILED_DELIVERED') || 'Failed Delivered'}
+              </span>
+              <div className="h-6 w-6 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+                <AlertCircle className="h-3.5 w-3.5" />
+              </div>
+            </div>
+            <div className="mt-2">
+              {isBroadcastResolving ? (
+                <Skeleton className="h-6 w-12" />
+              ) : (
+                <span className="text-primary font-bold text-xl sm:text-2xl tracking-tight leading-none">
+                  {formatNum(failedCount)}
+                </span>
+              )}
+            </div>
           </div>
-          <div className="bg-white rounded-sm border border-gray-200 p-3.5 flex flex-col justify-between shadow-sm min-h-[88px]">
-            <h1 className="font-medium text-[13px] text-muted-foreground line-clamp-2 leading-tight">{tg('SCHEDULED') || 'Scheduled'}</h1>
-            {isBroadcastResolving ? (
-              <Skeleton className="h-7 w-16 mt-2" />
-            ) : (
-              <p className="text-primary font-semibold text-2xl mt-2">{formatNum(scheduledCount)}</p>
-            )}
+
+          <div className="bg-white rounded-sm border border-gray-200/90 p-3 sm:p-3.5 flex flex-col justify-between shadow-none hover:border-gray-300 transition-colors">
+            <div className="flex items-start justify-between gap-1.5">
+              <span className="font-medium text-xs text-muted-foreground leading-snug line-clamp-2" title={tg('SCHEDULED') || 'Scheduled'}>
+                {tg('SCHEDULED') || 'Scheduled'}
+              </span>
+              <div className="h-6 w-6 rounded-full bg-sky-50 text-sky-600 flex items-center justify-center shrink-0">
+                <CalendarClock className="h-3.5 w-3.5" />
+              </div>
+            </div>
+            <div className="mt-2">
+              {isBroadcastResolving ? (
+                <Skeleton className="h-6 w-12" />
+              ) : (
+                <span className="text-primary font-bold text-xl sm:text-2xl tracking-tight leading-none">
+                  {formatNum(scheduledCount)}
+                </span>
+              )}
+            </div>
           </div>
-          <div className="bg-white rounded-sm border border-gray-200 p-3.5 flex flex-col justify-between shadow-sm min-h-[88px]">
-            <h1 className="font-medium text-[13px] text-muted-foreground line-clamp-2 leading-tight">{tg('PENDING') || 'Pending'}</h1>
-            {isBroadcastResolving ? (
-              <Skeleton className="h-7 w-16 mt-2" />
-            ) : (
-              <p className="text-primary font-semibold text-2xl mt-2">{formatNum(pendingCountBroadcast)}</p>
-            )}
+
+          <div className="bg-white rounded-sm border border-gray-200/90 p-3 sm:p-3.5 flex flex-col justify-between shadow-none hover:border-gray-300 transition-colors">
+            <div className="flex items-start justify-between gap-1.5">
+              <span className="font-medium text-xs text-muted-foreground leading-snug line-clamp-2" title={tg('PENDING') || 'Pending'}>
+                {tg('PENDING') || 'Pending'}
+              </span>
+              <div className="h-6 w-6 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                <Hourglass className="h-3.5 w-3.5" />
+              </div>
+            </div>
+            <div className="mt-2">
+              {isBroadcastResolving ? (
+                <Skeleton className="h-6 w-12" />
+              ) : (
+                <span className="text-primary font-bold text-xl sm:text-2xl tracking-tight leading-none">
+                  {formatNum(pendingCountBroadcast)}
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </div>
 
       {/* ── Filter Bar & Target Group Cards Grid (matching Activity Communication Details) ── */}
-      <Card className="bg-white rounded-sm border border-gray-200 p-4 space-y-4 shadow-none">
+      <Card className="bg-white rounded-sm border border-gray-200/90 p-3.5 sm:p-4 space-y-3.5 shadow-none">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="w-full sm:w-72">
             <SearchInput
@@ -500,7 +557,7 @@ export default function CommunicationDetailsView() {
                 { label: t('COMPLETED') || 'Completed', value: 'COMPLETED' },
                 { label: t('FAILED') || 'Failed', value: 'FAILED' },
                 { label: t('IN_PROGRESS') || 'In Progress', value: 'IN_PROGRESS' },
-                { label: tg('PENDING') || 'Pending', value: 'PENDING' },
+                { label: t('NOT_STARTED') || 'Not Started', value: 'NOT_STARTED' },
               ]}
               value={statusFilter}
               onChange={(val) => setStatusFilter(val)}
@@ -581,8 +638,13 @@ function TargetGroupCardItem({
 
   const isTargetResolving = !!target?.sessionId && (isGroupBroadcastLoading || broadcastCounts === undefined);
 
-  const delivered = broadcastCounts?.data?.SUCCESS ?? 0;
-  const failed = broadcastCounts?.data?.FAIL ?? 0;
+  const rawGroupCounts =
+    (broadcastCounts as any)?.data?.data ??
+    (broadcastCounts as any)?.data ??
+    broadcastCounts;
+
+  const delivered = rawGroupCounts?.SUCCESS ?? 0;
+  const failed = rawGroupCounts?.FAIL ?? 0;
   const audioURL = typeof raw?.audioURL === 'object' ? raw.audioURL : null;
   const messageText =
     typeof raw?.message === 'string' && raw.message.trim()
@@ -595,13 +657,13 @@ function TargetGroupCardItem({
     return resolveCommunicationLifecycleStatus({
       channel: record.channel,
       rawStatus: target?.status,
-      counts: broadcastCounts?.data,
+      counts: target?.sessionId ? rawGroupCounts : undefined,
       hasActiveTargets: target?.status === 'PROCESSING',
-      hasPendingTargets: target?.status === 'PENDING',
+      hasPendingTargets: target?.status === 'PENDING' || !target?.status,
       hasSession: !!target?.sessionId,
       isRetrying: (failed > 0 || target?.status === 'FAILED') && isRetrying,
     });
-  }, [target?.status, broadcastCounts?.data, record.channel, isRetrying, failed]);
+  }, [target?.status, target?.sessionId, rawGroupCounts, record.channel, isRetrying, failed]);
 
   const handleRetry = async () => {
     if (isRetrying) return;
@@ -621,13 +683,13 @@ function TargetGroupCardItem({
   };
 
   return (
-    <Card className="bg-white border border-gray-200 rounded-sm shadow-sm flex flex-col justify-between p-4 space-y-3 hover:border-gray-300 transition-colors">
-      <div className="space-y-3">
+    <Card className="bg-white border border-gray-200/90 rounded-sm shadow-none flex flex-col justify-between p-3.5 sm:p-4 space-y-3 hover:border-gray-300 transition-colors">
+      <div className="space-y-2.5">
         {/* Header Row: Channel Icon + Title/Subtitle + Status Badge */}
         <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-600 shrink-0">
-              <CommunicationChannelIcon channel={record.channel} className="h-5 w-5" />
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-100 text-gray-600 shrink-0">
+              <CommunicationChannelIcon channel={record.channel} className="h-4 w-4" />
             </div>
             <div className="min-w-0">
               <h4 className="font-semibold text-sm text-gray-900 truncate">{groupInfo.name}</h4>
@@ -641,12 +703,12 @@ function TargetGroupCardItem({
 
         {/* Voice Player or Message Preview */}
         {record.channel === 'VOICE' && audioURL?.mediaURL ? (
-          <div className="bg-slate-50 p-2.5 rounded border border-gray-200 space-y-1">
+          <div className="bg-slate-50/80 p-2 sm:p-2.5 rounded border border-gray-200/80 space-y-1">
             <p className="text-[11px] font-medium text-gray-600 truncate">{audioURL.fileName || 'recording.wav'}</p>
             <audio src={audioURL.mediaURL} controls className="w-full h-8 rounded" />
           </div>
         ) : messageText ? (
-          <div className="bg-slate-50 p-2.5 rounded border border-gray-200 text-xs text-gray-800 leading-relaxed whitespace-pre-wrap max-h-28 overflow-y-auto font-sans break-words break-all [overflow-wrap:anywhere]">
+          <div className="bg-slate-50/80 p-2 sm:p-2.5 rounded border border-gray-200/80 text-xs text-gray-800 leading-relaxed whitespace-pre-wrap max-h-24 overflow-y-auto font-sans break-words break-all [overflow-wrap:anywhere]">
             {messageText}
           </div>
         ) : null}
@@ -662,9 +724,11 @@ function TargetGroupCardItem({
       </div>
 
       {/* Footer Section: Timestamps on Left + Buttons on Right */}
-      <div className="pt-3 border-t border-gray-100 flex flex-wrap items-end justify-between gap-2">
+      <div className="pt-2.5 border-t border-gray-100 flex flex-wrap items-end justify-between gap-2">
         <div className="text-[11px] text-gray-500 space-y-0.5">
-          <p>{t('COMPLETED_AT') || 'Completed At'}: {formatDate(target?.updatedAt || raw?.updatedAt, 'MMMM d, yyyy at h:mm:ss a')}</p>
+          {(effectiveTargetStatus === 'COMPLETED' || target?.status === 'COMPLETED') && (
+            <p>{t('COMPLETED_AT') || 'Completed At'}: {formatDate(target?.updatedAt || raw?.updatedAt, 'MMMM d, yyyy at h:mm:ss a')}</p>
+          )}
           <p>{t('UPDATED_AT') || 'Updated at'}: {formatDate(target?.updatedAt || raw?.updatedAt, 'MMMM d, yyyy at h:mm:ss a')}</p>
         </div>
 

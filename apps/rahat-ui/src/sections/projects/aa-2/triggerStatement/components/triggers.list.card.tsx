@@ -2,6 +2,7 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Heading, NoResult } from 'apps/rahat-ui/src/common';
 import TriggerCard from './trigger.card';
 import { useTranslations } from 'next-intl';
+import { getManualSources } from '../utils';
 
 type IProps = {
   projectId: string;
@@ -35,6 +36,7 @@ export default function TriggersListCard({ projectId, triggers }: IProps) {
                 triggeredAt={trigger?.triggeredAt}
                 triggerStatement={trigger?.triggerStatement}
                 leadTime={trigger?.leadTime}
+                manualSources={getManualSources(trigger)}
               />
             ))
           ) : (

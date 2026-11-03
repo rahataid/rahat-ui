@@ -207,7 +207,7 @@ export default function CommunicationsView() {
   ]);
 
   return (
-    <div className="flex flex-col p-4 space-y-5">
+    <div className="flex flex-col p-3.5 sm:p-4 space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <Heading
           title={t("COMMUNICATIONS_OUTREACH")}

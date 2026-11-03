@@ -76,7 +76,7 @@ export function CommunicationsChannelRibbon({
         return (
           <div
             key={idx}
-            className="flex items-center gap-3 px-3 py-2.5 bg-card border rounded-sm shadow-sm"
+            className="flex items-center gap-3 px-3 py-2.5 bg-white border border-gray-200/90 rounded-sm shadow-none hover:border-gray-300 transition-colors"
           >
             <div className="p-2 rounded-md bg-secondary text-primary shrink-0">
               <Icon size={18} />

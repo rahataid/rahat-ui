@@ -8,13 +8,16 @@ import {
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import { cn } from '@rahat-ui/shadcn/src/utils';
 import { DataCard, TableLoader, NoResult } from 'apps/rahat-ui/src/common';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import {
   CommunicationOverviewData,
   classifyTransportString,
   capitalizeFirstLetter,
+  TransportDeliveryCounts,
+  GroupTransportStats,
+  ChannelWiseStats,
 } from '@rahat-ui/query';
 import {
   PieChart,
@@ -23,23 +26,9 @@ import {
 import {
   Radio,
   CheckCircle,
-  Users,
+  Megaphone,
 } from 'lucide-react';
-
-const CHANNEL_LABEL_KEYS: Record<string, string> = {
-  VOICE: 'VOICE',
-  EMAIL: 'EMAIL',
-  SMS: 'SMS',
-  WHATSAPP: 'WHATSAPP',
-};
-
-export type CommunicationOverviewStatsProps = {
-  data?: CommunicationOverviewData;
-  isLoading?: boolean;
-  activeStatus?: string;
-  onSelectStatus?: (status?: string) => void;
-  projectName?: string;
-};
+import { CommunicationChannelIcon } from '../projects/aa-2/communications/components/communication-channel-icon';
 
 const CHANNEL_COLORS: Record<string, string> = {
   SMS: '#4A90E2',
@@ -52,7 +41,58 @@ const SUCCESS_COLOR = '#16A34A';
 const FAILED_COLOR = '#DC2626';
 const PENDING_COLOR = '#F59E0B';
 
-const FALLBACK_COLORS = ['#8B5CF6', '#EC4899', '#06B6D4', '#F97316'];
+const FALLBACK_COLORS = [
+  '#4A90E2',
+  '#00b67a',
+  '#FFA726',
+  '#25D366',
+  '#0284C7',
+  '#8B5CF6',
+  '#EC4899',
+  '#06B6D4',
+  '#F97316',
+  '#14B8A6',
+];
+
+const DEFAULT_OVERALL = {
+  totalCommunications: 0,
+  totalCampaigns: 0,
+  successful: 0,
+  failed: 0,
+  pending: 0,
+  totalRecipients: 0,
+  successRate: 0,
+};
+
+const DEFAULT_RECIPIENT_WISE = {
+  beneficiary: { total: 0, successful: 0, failed: 0, pending: 0, successRate: 0 },
+  stakeholder: { total: 0, successful: 0, failed: 0, pending: 0, successRate: 0 },
+};
+
+const EMPTY_CHANNEL_WISE: ChannelWiseStats = {};
+
+type ApexFormatterOpts = {
+  seriesIndex?: number;
+  w?: {
+    globals?: {
+      series?: number[];
+      seriesTotals?: number[];
+    };
+    config?: {
+      series?: number[];
+    };
+  };
+};
+
+export type CommunicationOverviewStatsProps = {
+  data?: CommunicationOverviewData;
+  isLoading?: boolean;
+  activeStatus?: string;
+  onSelectStatus?: (status?: string) => void;
+  projectName?: string;
+  activeChannel?: string;
+  activeRecipient?: string;
+};
 
 function buildDonutOptions(
   formatNum: (v: number | string) => string,
@@ -62,10 +102,11 @@ function buildDonutOptions(
   return {
     dataLabels: {
       enabled: true,
-      formatter: (val: number | string, opts?: any) => {
+      formatter: (_val: number | string, opts?: ApexFormatterOpts) => {
+        const seriesIdx = opts?.seriesIndex ?? 0;
         const num =
-          opts?.w?.globals?.series?.[opts?.seriesIndex] ??
-          opts?.w?.config?.series?.[opts?.seriesIndex];
+          opts?.w?.globals?.series?.[seriesIdx] ??
+          opts?.w?.config?.series?.[seriesIdx];
         if (num === undefined || num === null || num === 0) return '';
         return formatNum(num);
       },
@@ -73,7 +114,7 @@ function buildDonutOptions(
     tooltip: {
       fillSeriesColor: true,
       y: {
-        formatter: (val: number, opts?: any) => {
+        formatter: (val: number, opts?: ApexFormatterOpts) => {
           const sum =
             opts?.w?.globals?.seriesTotals?.reduce(
               (a: number, b: number) => a + b,
@@ -92,7 +133,7 @@ function buildDonutOptions(
           labels: {
             show: true,
             value: {
-              formatter: (val: number | string, opts?: any) => {
+              formatter: (val: number | string, opts?: ApexFormatterOpts) => {
                 const num = Number(val);
                 const sum =
                   opts?.w?.globals?.seriesTotals?.reduce(
@@ -116,10 +157,13 @@ function buildDonutOptions(
 }
 
 function getChannelColor(channel: string, index: number) {
-  return (
-    CHANNEL_COLORS[channel.toUpperCase()] ||
-    FALLBACK_COLORS[index % FALLBACK_COLORS.length]
-  );
+  const upper = channel.toUpperCase().trim();
+  if (CHANNEL_COLORS[upper]) return CHANNEL_COLORS[upper];
+  if (upper.includes('WHATSAPP')) return '#25D366';
+  if (upper.includes('PRABHU')) return '#0284C7';
+  const canonical = classifyTransportString(channel);
+  if (CHANNEL_COLORS[canonical] && index === 0) return CHANNEL_COLORS[canonical];
+  return FALLBACK_COLORS[index % FALLBACK_COLORS.length];
 }
 
 export const CommunicationTopKpis = React.memo(
@@ -133,18 +177,7 @@ export const CommunicationTopKpis = React.memo(
     const t = useTranslations('USAGE');
     const formatNum = useNumberFormat();
 
-    const overall = React.useMemo(
-      () =>
-        data?.overall ?? {
-          totalCommunications: 0,
-          successful: 0,
-          failed: 0,
-          pending: 0,
-          totalRecipients: 0,
-          successRate: 0,
-        },
-      [data?.overall],
-    );
+    const overall = data?.overall ?? DEFAULT_OVERALL;
 
     const totalRecipients =
       overall.totalRecipients > 0
@@ -166,7 +199,7 @@ export const CommunicationTopKpis = React.memo(
         <div
           onClick={() => onSelectStatus?.(undefined)}
           className={`cursor-pointer transition-all rounded-lg ${
-            !activeStatus ? 'ring-2 ring-primary/60' : 'hover:opacity-90'
+            activeStatus ? 'hover:opacity-90' : ''
           }`}
           title={t('VIEW_ALL_COMMUNICATIONS')}
         >
@@ -176,6 +209,7 @@ export const CommunicationTopKpis = React.memo(
             Icon={Radio}
             loading={isLoading}
             subtitle={projectName || t('ALL_PROJECTS')}
+            truncate={false}
           />
         </div>
 
@@ -190,42 +224,48 @@ export const CommunicationTopKpis = React.memo(
               ? 'ring-2 ring-green-600'
               : 'hover:opacity-90'
           }`}
-          title={t('FILTER_COMPLETED_COMMUNICATIONS')}
+          title={
+            activeStatus === 'COMPLETED'
+              ? t('CLEAR_FILTERS') || 'Clear filter'
+              : t('FILTER_COMPLETED_COMMUNICATIONS')
+          }
         >
           <DataCard
             title={t('DELIVERY_STATUS') || 'Delivery Status'}
-            number={deliveryRatio}
+            number={
+              <span
+                className={
+                  deliveryRatio.length > 11
+                    ? 'text-xl sm:text-2xl xl:text-3xl whitespace-nowrap'
+                    : 'text-2xl sm:text-3xl whitespace-nowrap'
+                }
+              >
+                {deliveryRatio}
+              </span>
+            }
             Icon={CheckCircle}
             loading={isLoading}
             subtitle={subtitleText}
             iconStyle="text-green-600 bg-green-100"
+            truncate={false}
           />
         </div>
 
         <div
-          onClick={() =>
-            onSelectStatus?.(
-              activeStatus === 'IN_PROGRESS' ? undefined : 'IN_PROGRESS',
-            )
-          }
+          onClick={() => onSelectStatus?.(undefined)}
           className={`cursor-pointer transition-all rounded-lg ${
-            activeStatus === 'IN_PROGRESS'
-              ? 'ring-2 ring-amber-500'
-              : 'hover:opacity-90'
+            activeStatus ? 'hover:opacity-90' : ''
           }`}
-          title={t('FILTER_PENDING_COMMUNICATIONS')}
+          title={t('VIEW_ALL_COMMUNICATIONS')}
         >
           <DataCard
-            title={t('TOTAL_RECIPIENTS') || 'Total Recipients'}
-            number={formatNum(overall.totalRecipients)}
-            Icon={Users}
+            title={t('TOTAL_CAMPAIGNS') || 'Total Campaigns'}
+            number={formatNum(overall.totalCampaigns ?? overall.totalCommunications)}
+            Icon={Megaphone}
             loading={isLoading}
-            subtitle={
-              overall.pending > 0
-                ? `${formatNum(overall.pending)} ${t('PENDING') || 'Pending'}`
-                : `${formatNum(overall.successful)} ${t('DELIVERED') || 'Delivered'}`
-            }
-            iconStyle="text-blue-600 bg-blue-100"
+            subtitle={projectName || t('ALL_PROJECTS')}
+            iconStyle="text-purple-600 bg-purple-100"
+            truncate={false}
           />
         </div>
       </div>
@@ -241,12 +281,11 @@ type AudienceProgressRowProps = {
   delivered: number;
   failed: number;
   pending: number;
-  successRate: number;
-  failRate: number;
-  pendingRate: number;
   formatNum: (v: number | string) => string;
-  t: (key: string) => string;
+  t: any;
   borderTop?: boolean;
+  channelBreakdown?: Record<string, TransportDeliveryCounts>;
+  activeChannel?: string;
 };
 
 const AudienceProgressRow = React.memo(function AudienceProgressRow({
@@ -255,60 +294,126 @@ const AudienceProgressRow = React.memo(function AudienceProgressRow({
   delivered,
   failed,
   pending,
-  successRate,
-  failRate,
-  pendingRate,
   formatNum,
   t,
   borderTop = false,
+  channelBreakdown,
+  activeChannel,
 }: AudienceProgressRowProps) {
   const deliveredLabel = capitalizeFirstLetter(t('DELIVERED')) || 'Delivered';
   const failedLabel = capitalizeFirstLetter(t('FAILED')) || 'Failed';
   const pendingLabel = capitalizeFirstLetter(t('PENDING')) || 'Pending';
 
+  const successPct = total > 0 ? (delivered / total) * 100 : 0;
+  const failPct = total > 0 ? (failed / total) * 100 : 0;
+  const pendingPct = total > 0 ? (pending / total) * 100 : 0;
+  const pctFormatted =
+    successPct % 1 === 0 ? successPct.toFixed(0) : successPct.toFixed(1);
+  const displayPct = formatNum(pctFormatted);
+
+  const targetChannel =
+    activeChannel && activeChannel !== 'all'
+      ? classifyTransportString(activeChannel)
+      : undefined;
+
   return (
-    <div className={`space-y-2 ${borderTop ? 'pt-2 border-t' : ''}`}>
-      <div className="flex items-center justify-between text-xs font-semibold">
-        <span className="text-foreground">{label}</span>
-        <span className="text-muted-foreground">
-          {formatNum(delivered)} / {formatNum(total)} {deliveredLabel} ({formatNum(successRate)}%)
+    <div className={`space-y-2.5 ${borderTop ? 'pt-4 border-t' : ''}`}>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs">
+        <span className="font-semibold text-foreground text-sm tracking-tight">{label}</span>
+        <span className="text-muted-foreground tabular-nums font-medium">
+          <span className="text-foreground font-semibold">{formatNum(delivered)}</span> / {formatNum(total)} {deliveredLabel} ({displayPct}%)
         </span>
       </div>
 
-      <div className="w-full h-3 rounded-full bg-secondary flex overflow-hidden">
-        <div
-          style={{ width: `${successRate}%` }}
-          className="bg-green-600 h-full transition-all"
-          title={`${deliveredLabel}: ${formatNum(successRate)}%`}
-        />
-        <div
-          style={{ width: `${failRate}%` }}
-          className="bg-red-600 h-full transition-all"
-          title={`${failedLabel}: ${formatNum(failRate)}%`}
-        />
-        <div
-          style={{ width: `${pendingRate}%` }}
-          className="bg-amber-500 h-full transition-all"
-          title={`${pendingLabel}: ${formatNum(pendingRate)}%`}
-        />
-      </div>
-
-      <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-0.5">
-        <span className="flex items-center gap-1.5 text-green-700 dark:text-green-400">
-          <span className="w-2 h-2 rounded-full bg-green-600" />
-          {deliveredLabel}: {formatNum(delivered)}
-        </span>
-        <span className="flex items-center gap-1.5 text-red-700 dark:text-red-400">
-          <span className="w-2 h-2 rounded-full bg-red-600" />
-          {failedLabel}: {formatNum(failed)}
-        </span>
-        {pending > 0 && (
-          <span className="flex items-center gap-1.5 text-amber-700 dark:text-amber-400">
-            <span className="w-2 h-2 rounded-full bg-amber-500" />
-            {pendingLabel}: {formatNum(pending)}
-          </span>
+      <div className="w-full h-3 rounded-full bg-secondary/80 flex overflow-hidden">
+        {successPct > 0 && (
+          <div
+            style={{ width: `${successPct}%` }}
+            className="bg-emerald-600 dark:bg-emerald-500 h-full transition-all duration-300"
+            title={`${deliveredLabel}: ${formatNum(delivered)} (${displayPct}%)`}
+          />
+        )}
+        {failPct > 0 && (
+          <div
+            style={{ width: `${failPct}%` }}
+            className="bg-rose-600 dark:bg-rose-500 h-full transition-all duration-300 min-w-[3px]"
+            title={`${failedLabel}: ${formatNum(failed)}`}
+          />
+        )}
+        {pendingPct > 0 && (
+          <div
+            style={{ width: `${pendingPct}%` }}
+            className="bg-amber-500 dark:bg-amber-400 h-full transition-all duration-300 min-w-[3px]"
+            title={`${pendingLabel}: ${formatNum(pending)}`}
+          />
         )}
       </div>
+
+      <div className="flex flex-wrap items-center justify-between gap-y-1 gap-x-3 text-xs text-muted-foreground pt-0.5">
+        <span className="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400 font-medium">
+          <span className="w-2 h-2 rounded-full bg-emerald-600 shrink-0" />
+          <span>{deliveredLabel}:</span>
+          <span className="tabular-nums font-semibold">{formatNum(delivered)}</span>
+        </span>
+        <div className="flex items-center gap-3">
+          <span className="flex items-center gap-1.5 text-rose-700 dark:text-rose-400 font-medium">
+            <span className="w-2 h-2 rounded-full bg-rose-600 shrink-0" />
+            <span>{failedLabel}:</span>
+            <span className="tabular-nums font-semibold">{formatNum(failed)}</span>
+          </span>
+          {pending > 0 && (
+            <span className="flex items-center gap-1.5 text-amber-700 dark:text-amber-400 font-medium">
+              <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
+              <span>{pendingLabel}:</span>
+              <span className="tabular-nums font-semibold">{formatNum(pending)}</span>
+            </span>
+          )}
+        </div>
+      </div>
+
+      {channelBreakdown && Object.keys(channelBreakdown).length > 0 && (
+        <div className="flex flex-wrap items-center gap-1.5 pt-1">
+          {Object.entries(channelBreakdown)
+            .filter(([chName]) => !targetChannel || classifyTransportString(chName) === targetChannel)
+            .map(([chName, c]) => {
+              const chDelivered = Number(c?.SUCCESS || 0);
+              const chFailed = Number(c?.FAIL || 0);
+              const chPending = Number((c?.PENDING || 0) + (c?.SCHEDULED || 0));
+              const chTotal = Number(
+                c?.TOTAL || chDelivered + chFailed + chPending,
+              );
+              if (chTotal === 0) return null;
+
+              return (
+                <span
+                  key={chName}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-muted/60 hover:bg-muted text-foreground border border-border/70 transition-colors shadow-xs whitespace-nowrap"
+                >
+                  <CommunicationChannelIcon
+                    channel={chName}
+                    className="h-3.5 w-3.5 text-muted-foreground shrink-0"
+                  />
+                  <span className="font-semibold">
+                    {translateValue(t, chName, { fallback: chName })}:
+                  </span>
+                  <span className="tabular-nums font-mono text-muted-foreground">
+                    {formatNum(chDelivered)}/{formatNum(chTotal)}
+                  </span>
+                  {chFailed > 0 && (
+                    <span className="text-rose-600 dark:text-rose-400 font-semibold text-[11px] bg-rose-50 dark:bg-rose-950/50 px-1.5 py-0.5 rounded">
+                      ({formatNum(chFailed)} {t('FAILED')?.toLowerCase() || 'failed'})
+                    </span>
+                  )}
+                  {chPending > 0 && (
+                    <span className="text-amber-600 dark:text-amber-400 font-medium text-[11px] bg-amber-50 dark:bg-amber-950/50 px-1.5 py-0.5 rounded">
+                      ({formatNum(chPending)} {t('PENDING')?.toLowerCase() || 'pending'})
+                    </span>
+                  )}
+                </span>
+              );
+            })}
+        </div>
+      )}
     </div>
   );
 });
@@ -317,38 +422,26 @@ export const CommunicationBreakdowns = React.memo(
   function CommunicationBreakdowns({
     data,
     isLoading = false,
-    activeStatus,
-    onSelectStatus,
+    activeChannel,
+    activeRecipient,
   }: CommunicationOverviewStatsProps) {
     const t = useTranslations('USAGE');
     const g = useTranslations('GLOBAL');
     const formatNum = useNumberFormat();
 
-    const recipientWise = React.useMemo(
-      () =>
-        data?.recipientWise ?? {
-          beneficiary: {
-            total: 0,
-            successful: 0,
-            failed: 0,
-            pending: 0,
-            successRate: 0,
-          },
-          stakeholder: {
-            total: 0,
-            successful: 0,
-            failed: 0,
-            pending: 0,
-            successRate: 0,
-          },
-        },
-      [data?.recipientWise],
-    );
+    const showBeneficiary =
+      !activeRecipient ||
+      activeRecipient === 'all' ||
+      activeRecipient.toUpperCase().includes('BENEFICIARY');
 
-    const channelWise = React.useMemo(
-      () => data?.channelWise ?? {},
-      [data?.channelWise],
-    );
+    const showStakeholder =
+      !activeRecipient ||
+      activeRecipient === 'all' ||
+      activeRecipient.toUpperCase().includes('STAKEHOLDER');
+
+    const recipientWise = data?.recipientWise ?? DEFAULT_RECIPIENT_WISE;
+    const channelWise: ChannelWiseStats = data?.channelWise ?? EMPTY_CHANNEL_WISE;
+    const rawGroupStats = data?.rawGroupStats as GroupTransportStats | undefined;
 
     const benTotal = recipientWise.beneficiary.total;
     const stkTotal = recipientWise.stakeholder.total;
@@ -356,35 +449,46 @@ export const CommunicationBreakdowns = React.memo(
     const totalLabel = g('TOTAL') || 'TOTAL';
 
     const { channelKeys, channelSeriesData, channelSuccessData, channelFailData, channelPendingData, channelTotal } = React.useMemo(() => {
-      const keys = Object.keys(channelWise).sort();
-      const series = keys.map((k) => channelWise[k]?.total || 0);
+      const keys = Object.keys(channelWise).sort(
+        (a, b) => (channelWise[b]?.total || 0) - (channelWise[a]?.total || 0),
+      );
+      const seriesData: number[] = [];
+      const successData: number[] = [];
+      const failData: number[] = [];
+      const pendingData: number[] = [];
+      let total = 0;
+
+      for (const k of keys) {
+        const item = channelWise[k];
+        const tCount = item?.total || 0;
+        seriesData.push(tCount);
+        successData.push(item?.successful || 0);
+        failData.push(item?.failed || 0);
+        pendingData.push(item?.pending || 0);
+        total += tCount;
+      }
+
       return {
         channelKeys: keys,
-        channelSeriesData: series,
-        channelSuccessData: keys.map((k) => channelWise[k]?.successful || 0),
-        channelFailData: keys.map((k) => channelWise[k]?.failed || 0),
-        channelPendingData: keys.map((k) => channelWise[k]?.pending || 0),
-        channelTotal: series.reduce((sum, v) => sum + v, 0),
+        channelSeriesData: seriesData,
+        channelSuccessData: successData,
+        channelFailData: failData,
+        channelPendingData: pendingData,
+        channelTotal: total,
       };
     }, [channelWise]);
 
-    const getChannelLabel = React.useCallback(
-      (k: string) => {
-        const canonical = classifyTransportString(k);
-        const key = CHANNEL_LABEL_KEYS[canonical];
-        return key ? t(key) : capitalizeFirstLetter(k);
-      },
-      [t],
+    const channelPieData = React.useMemo(
+      () => ({
+        series: channelKeys.map((k, idx) => ({
+          label: translateValue(t, k, { fallback: k }),
+          value: channelSeriesData[idx] || 0,
+        })),
+        colors: channelKeys.map((k, idx) => getChannelColor(k, idx)),
+        options: buildDonutOptions(formatNum, totalLabel, channelTotal),
+      }),
+      [channelKeys, channelSeriesData, channelTotal, formatNum, totalLabel, t],
     );
-
-    const channelPieData = React.useMemo(() => ({
-      series: channelKeys.map((k, idx) => ({
-        label: getChannelLabel(k),
-        value: channelSeriesData[idx] || 0,
-      })),
-      colors: channelKeys.map((k, idx) => getChannelColor(k, idx)),
-      options: buildDonutOptions(formatNum, totalLabel, channelTotal),
-    }), [channelKeys, channelSeriesData, channelTotal, formatNum, getChannelLabel, totalLabel]);
 
     const barSeries = React.useMemo(() => {
       const hasPending = channelPendingData.some((v) => v > 0);
@@ -419,34 +523,23 @@ export const CommunicationBreakdowns = React.memo(
       };
     }, [channelPendingData, formatNum]);
 
-    const audiencePieData = React.useMemo(() => ({
-      series: [
-        { label: t('BENEFICIARIES'), value: benTotal },
-        { label: t('STAKEHOLDERS'), value: stkTotal },
-      ],
-      colors: ['#4A90E2', '#8B5CF6'],
-      options: buildDonutOptions(formatNum, totalLabel, recipientTotal),
-    }), [benTotal, stkTotal, recipientTotal, formatNum, t, totalLabel]);
+    const audiencePieData = React.useMemo(() => {
+      const series = [
+        ...(showBeneficiary ? [{ label: t('BENEFICIARIES'), value: benTotal }] : []),
+        ...(showStakeholder ? [{ label: t('STAKEHOLDERS'), value: stkTotal }] : []),
+      ];
+      const colors = [
+        ...(showBeneficiary ? ['#4A90E2'] : []),
+        ...(showStakeholder ? ['#8B5CF6'] : []),
+      ];
+      const total = (showBeneficiary ? benTotal : 0) + (showStakeholder ? stkTotal : 0);
 
-    const benSuccessRate =
-      benTotal > 0
-        ? Math.round((recipientWise.beneficiary.successful / benTotal) * 100)
-        : 0;
-    const benFailRate =
-      benTotal > 0
-        ? Math.round((recipientWise.beneficiary.failed / benTotal) * 100)
-        : 0;
-    const benPendingRate = Math.max(0, 100 - benSuccessRate - benFailRate);
-
-    const stkSuccessRate =
-      stkTotal > 0
-        ? Math.round((recipientWise.stakeholder.successful / stkTotal) * 100)
-        : 0;
-    const stkFailRate =
-      stkTotal > 0
-        ? Math.round((recipientWise.stakeholder.failed / stkTotal) * 100)
-        : 0;
-    const stkPendingRate = Math.max(0, 100 - stkSuccessRate - stkFailRate);
+      return {
+        series,
+        colors,
+        options: buildDonutOptions(formatNum, totalLabel, total),
+      };
+    }, [showBeneficiary, showStakeholder, benTotal, stkTotal, formatNum, t, totalLabel]);
 
     return (
       <div className="space-y-6 w-full max-w-full min-w-0">
@@ -500,7 +593,9 @@ export const CommunicationBreakdowns = React.memo(
                 ) : (
                   <ChartColumnStacked
                     series={barSeries}
-                    categories={channelKeys.map((k) => getChannelLabel(k))}
+                    categories={channelKeys.map((k) =>
+                      translateValue(t, k, { fallback: k }),
+                    )}
                     height={300}
                     width="100%"
                     custom
@@ -561,31 +656,33 @@ export const CommunicationBreakdowns = React.memo(
                   />
                 ) : (
                   <>
-                    <AudienceProgressRow
-                      label={t('BENEFICIARIES')}
-                      total={benTotal}
-                      delivered={recipientWise.beneficiary.successful}
-                      failed={recipientWise.beneficiary.failed}
-                      pending={recipientWise.beneficiary.pending}
-                      successRate={benSuccessRate}
-                      failRate={benFailRate}
-                      pendingRate={benPendingRate}
-                      formatNum={formatNum}
-                      t={t}
-                    />
-                    <AudienceProgressRow
-                      label={t('STAKEHOLDERS')}
-                      total={stkTotal}
-                      delivered={recipientWise.stakeholder.successful}
-                      failed={recipientWise.stakeholder.failed}
-                      pending={recipientWise.stakeholder.pending}
-                      successRate={stkSuccessRate}
-                      failRate={stkFailRate}
-                      pendingRate={stkPendingRate}
-                      formatNum={formatNum}
-                      t={t}
-                      borderTop
-                    />
+                    {showBeneficiary && (
+                      <AudienceProgressRow
+                        label={t('BENEFICIARIES')}
+                        total={benTotal}
+                        delivered={recipientWise.beneficiary.successful}
+                        failed={recipientWise.beneficiary.failed}
+                        pending={recipientWise.beneficiary.pending}
+                        formatNum={formatNum}
+                        t={t}
+                        channelBreakdown={rawGroupStats?.beneficiary}
+                        activeChannel={activeChannel}
+                      />
+                    )}
+                    {showStakeholder && (
+                      <AudienceProgressRow
+                        label={t('STAKEHOLDERS')}
+                        total={stkTotal}
+                        delivered={recipientWise.stakeholder.successful}
+                        failed={recipientWise.stakeholder.failed}
+                        pending={recipientWise.stakeholder.pending}
+                        formatNum={formatNum}
+                        t={t}
+                        borderTop={showBeneficiary}
+                        channelBreakdown={rawGroupStats?.stakeholder}
+                        activeChannel={activeChannel}
+                      />
+                    )}
                   </>
                 )}
               </CardContent>
@@ -603,11 +700,30 @@ export const CommunicationOverviewStats = React.memo(
   function CommunicationOverviewStats({
     data,
     isLoading,
+    activeStatus,
+    onSelectStatus,
+    projectName,
+    activeChannel,
+    activeRecipient,
   }: CommunicationOverviewStatsProps) {
     return (
       <div className="space-y-6 w-full">
-        <CommunicationTopKpis data={data} isLoading={isLoading} />
-        <CommunicationBreakdowns data={data} isLoading={isLoading} />
+        <CommunicationTopKpis
+          data={data}
+          isLoading={isLoading}
+          activeStatus={activeStatus}
+          onSelectStatus={onSelectStatus}
+          projectName={projectName}
+        />
+        <CommunicationBreakdowns
+          data={data}
+          isLoading={isLoading}
+          activeStatus={activeStatus}
+          onSelectStatus={onSelectStatus}
+          projectName={projectName}
+          activeChannel={activeChannel}
+          activeRecipient={activeRecipient}
+        />
       </div>
     );
   },

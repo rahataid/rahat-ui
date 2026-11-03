@@ -364,7 +364,7 @@ export function CommunicationCard({
         dialogTitle={t('SEND_COMMUNICATION')}
       >
         <div>
-          {t('SEND_COMMUNICATION_CONFIRM')}
+          {t('ARE_YOU_SURE_YOU_WANT_TO')}
           <span className="font-bold mx-1">
             {activityCommunication?.transportName}
           </span>
@@ -372,7 +372,7 @@ export function CommunicationCard({
           <span className="font-bold mx-1">
             {activityCommunication?.groupName}
           </span>
-          {t('GROUP_QUESTION')}
+          {t('GROUP')}?
         </div>
       </ConfirmationDialog>
     </Card>

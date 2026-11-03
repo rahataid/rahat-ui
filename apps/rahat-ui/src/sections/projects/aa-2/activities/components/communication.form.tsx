@@ -25,6 +25,13 @@ import {
 } from 'react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@rahat-ui/shadcn/src/components/ui/card';
+import {
   Form,
   FormControl,
   FormField,
@@ -49,7 +56,8 @@ import {
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import { MicIcon, Trash2, UploadIcon } from 'lucide-react';
+import { CloudUpload, Mic, Trash2 } from 'lucide-react';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import {
   Dialog,
   DialogContent,
@@ -460,6 +468,15 @@ export default function AddCommunicationForm({
     return appTransports?.find((t) => t.cuid === transportId);
   }, [transportId, appTransports]);
 
+  const isVoice =
+    transportData?.name === 'VOICE' ||
+    contentType === ValidationContent.URL;
+  const isEmail = transportData?.name === 'EMAIL';
+  const isText =
+    transportData?.name === 'SMS' ||
+    transportData?.name === 'EMAIL' ||
+    contentType === ValidationContent.TEXT;
+
   // Validate emails whenever group or transport changes
   useEffect(() => {
     if (!transportData) return;
@@ -546,220 +563,212 @@ export default function AddCommunicationForm({
 
   return (
     <Form {...form}>
-      <div className="border border-dashed rounded p-4 my-8">
-        <div className="flex justify-between items-center mb-2">
-          <h1 className="text-lg font-semibold">{t('ADD_COMMUNICATION')}</h1>
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="communicationTitle"
-            render={({ field }) => (
-              <FormItem className="col-span-2">
-                <FormLabel required>{t('COMMUNICATION_TITLE')}</FormLabel>
-                <FormControl>
-                  <FormInput
-                    placeholder={t('WRITE_COMMUNICATION_TITLE')}
-                    {...field}
-                  />
-                </FormControl>
-                {errors.communicationTitle && (
-                  <FormMessage>{errors.communicationTitle.message}</FormMessage>
-                )}
-              </FormItem>
-            )}
-          />
-          <div className="col-span-2">
-            <TargetAudienceSelector
-              beneficiaryGroups={beneficiaryAudienceOptions}
-              stakeholderGroups={stakeholderAudienceOptions}
-              isLoading={isLoading}
+      <Card className="shadow-sm my-6 border">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-xl font-semibold">
+            {editMode?.value ? t('EDIT_COMMUNICATION') : t('ADD_COMMUNICATION')}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <FormField
+              control={form.control}
+              name="communicationTitle"
+              render={({ field }) => (
+                <FormItem className="space-y-2">
+                  <FormLabel required>{t('COMMUNICATION_TITLE')}</FormLabel>
+                  <FormControl>
+                    <FormInput
+                      placeholder={t('WRITE_COMMUNICATION_TITLE')}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="transportId"
+              render={({ field }) => (
+                <FormItem className="space-y-2">
+                  <FormLabel required>{t('COMMUNICATION_TYPE')}</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <FormSelectTrigger value={field.value}>
+                        <SelectValue placeholder={t('SELECT_COMMUNICATION_TYPE')} />
+                      </FormSelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {appTransports?.map((transport) => {
+                        return (
+                          <SelectItem
+                            key={transport?.cuid}
+                            value={transport?.cuid as string}
+                          >
+                            {tg(transport?.name as any) || transport?.name}
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
           </div>
 
-          <FormField
-            control={form.control}
-            name="transportId"
-            render={({ field }) => (
-              <FormItem className="col-span-2">
-                <FormLabel required>{t('COMMUNICATION_TYPE')}</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <FormControl>
-                    <FormSelectTrigger value={field.value}>
-                      <SelectValue placeholder={t('SELECT_COMMUNICATION_TYPE')} />
-                    </FormSelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {appTransports?.map((transport) => {
-                      return (
-                        <SelectItem
-                          key={transport?.cuid}
-                          value={transport?.cuid as string}
-                        >
-                          {tg(transport?.name as any) || transport?.name}
-                        </SelectItem>
-                      );
-                    })}
-                  </SelectContent>
-                </Select>
-                {errors.transportId && (
-                  <FormMessage>{errors.transportId.message}</FormMessage>
-                )}
-              </FormItem>
-            )}
-          />
-
-          {contentType === ValidationContent.URL && !fileUpload.isSuccess && (
-            <div className="col-span-2">
-              <Tabs defaultValue="upload" className="items-center">
-                <TabsList className="">
-                  <TabsTrigger value="upload" className="group gap-2">
-                    <UploadIcon className="w-5 h-5" />
-                    {t('UPLOAD')}
-                  </TabsTrigger>
-                  <TabsTrigger value="record" className="group gap-2">
-                    <MicIcon className="w-5 h-5" />
-                    {t('RECORD')}
-                  </TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="upload">
-                  <FormField
-                    control={form.control}
-                    name="audioURL"
-                    render={() => (
-                      <FormItem className="col-span-2">
-                        <FormControl>
-                          <Input
-                            type="file"
-                            accept="audio/*"
-                            onChange={handleAudioFileChange}
-                          />
-                        </FormControl>
-                        <div className="flex justify-end">
-                          {fileUpload.isPending && (
-                            <p className="text-green-600 text-xs">
-                              {t('UPLOADING')}
-                            </p>
-                          )}
-                          {fileUpload.isError && (
-                            <p className="text-red-600 text-xs">{t('UPLOAD_ERROR')}</p>
-                          )}
-                          {fileUpload.isSuccess && (
-                            <p className="text-green-600 text-xs">
-                              {t('UPLOAD_COMPLETE')}
-                            </p>
-                          )}
-                        </div>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </TabsContent>
-                <TabsContent value="record">
-                  <FormField
-                    control={form.control}
-                    name="audioURL"
-                    render={() => {
-                      return (
-                        <FormItem>
-                          <FormControl>
-                            <AudioRecorder
-                              isRecording={isRecording}
-                              isFinished={isFinished}
-                              timer={`${hh}:${mm}:${ss}`}
-                              recordedFile={recordedFile}
-                              chunks={chunks}
-                              setChunks={setChunks}
-                              startRecording={startRecording}
-                              stopRecording={stopRecording}
-                              resetRecording={resetRecording}
-                              animationRef={animationRef}
-                              analyserRef={analyserRef}
-                              resumeRecording={resumeRecording}
-                              pauseRecording={pauseRecording}
-                              isPaused={isPaused}
-                              handleUpload={() => {
-                                setShowConfirmDialog(true);
-                              }}
-                              canvasRef={canvasRef}
-                              fileUploadPending={fileUpload.isPending}
-                            />
-                          </FormControl>
-                          <div className="flex justify-end">
-                            {fileUpload.isPending && (
-                              <p className="text-green-600 text-xs">
-                                {t('UPLOADING')}
-                              </p>
-                            )}
-
-                            {fileUpload.isError && (
-                              <p className="text-red-600 text-xs">
-                                {t('UPLOAD_ERROR')}
-                              </p>
-                            )}
-
-                            {fileUpload.isSuccess && (
-                              <p className="text-green-600 text-xs">
-                                {t('UPLOAD_COMPLETE')}
-                              </p>
-                            )}
-                          </div>
-
-                          <FormMessage />
-                        </FormItem>
-                      );
-                    }}
-                  />
-                </TabsContent>
-              </Tabs>
-              {errors.audioURL && (
-                <FormMessage>{errors.audioURL.message}</FormMessage>
-              )}
-            </div>
-          )}
-
-          {contentType === ValidationContent.URL &&
-            audioFile?.fileName &&
-            audioFile?.mediaURL && (
-              <div className="pt-2 w-full">
-                <h3 className="text-sm font-medium mb-2">
-                  {audioFile?.fileName}
-                </h3>
-                <div className="flex gap-2 items-center justify-center">
-                  <audio
-                    src={audioFile?.mediaURL}
-                    controls
-                    className="w-full h-10 bg-none"
-                  />
-                  <Trash2
-                    onClick={removeFile}
-                    className="h-5 w-5s hover:cursor-pointer"
-                    color="red"
-                  />
-                </div>
-              </div>
-            )}
-
-          {transportData?.name === 'EMAIL' && (
+          {isEmail && (
             <FormField
               control={form.control}
               name="subject"
               render={({ field }) => (
-                <FormItem className="col-span-2">
-                  <FormLabel required>{t('SUBJECT')}</FormLabel>
+                <FormItem className="space-y-2">
+                  <FormLabel required>{t('EMAIL_SUBJECT')}</FormLabel>
                   <FormControl>
-                    <FormInput placeholder={t('ENTER_SUBJECT')} {...field} />
+                    <FormInput
+                      placeholder={t('EMAIL_SUBJECT_PLACEHOLDER')}
+                      {...field}
+                    />
                   </FormControl>
-                  {errors.subject && (
-                    <FormMessage>{errors.subject.message}</FormMessage>
-                  )}
+                  <FormMessage />
                 </FormItem>
               )}
             />
           )}
 
-          {contentType === ValidationContent.TEXT && (
+          <TargetAudienceSelector
+            beneficiaryGroups={beneficiaryAudienceOptions}
+            stakeholderGroups={stakeholderAudienceOptions}
+            isLoading={isLoading}
+          />
+
+          {isVoice && (
+            <div className="space-y-4">
+              <div className="flex flex-col space-y-1">
+                <Label className="text-base font-semibold">
+                  {t('VOICE_MESSAGE_SOURCE')}
+                </Label>
+                {errors.audioURL && (
+                  <p className="text-sm font-medium text-destructive">
+                    {errors.audioURL.message as string}
+                  </p>
+                )}
+              </div>
+              <Tabs
+                defaultValue="upload"
+                className="w-full border rounded-md p-4 bg-slate-50"
+              >
+                <TabsList className="mb-4">
+                  <TabsTrigger
+                    value="upload"
+                    disabled={fileUpload.isPending}
+                    className="gap-2"
+                  >
+                    <CloudUpload className="w-4 h-4" />
+                    {t('UPLOAD_AUDIO')}
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="record"
+                    disabled={fileUpload.isPending}
+                    className="gap-2"
+                  >
+                    <Mic className="w-4 h-4" />
+                    {t('RECORD_AUDIO')}
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="upload" className="space-y-4">
+                  <div className="space-y-2">
+                    <Input
+                      type="file"
+                      accept="audio/*"
+                      disabled={fileUpload.isPending}
+                      className={cn(
+                        errors.audioURL &&
+                        'shadow-[inset_4px_0_0_0_hsl(var(--destructive))] bg-red-50 focus-visible:ring-2 focus-visible:ring-destructive',
+                        !errors.audioURL &&
+                        Boolean(audioFile?.mediaURL) &&
+                        'shadow-[inset_4px_0_0_0_hsl(var(--primary))] bg-blue-50 pl-2',
+                      )}
+                      onChange={handleAudioFileChange}
+                    />
+                    {fileUpload.isPending && (
+                      <p className="text-xs text-muted-foreground">
+                        {t('UPLOADING_AUDIO')}
+                      </p>
+                    )}
+                    {Boolean(audioFile?.fileName) && !fileUpload.isError && (
+                      <p className="text-xs text-muted-foreground">
+                        {audioFile?.fileName}
+                      </p>
+                    )}
+                    {fileUpload.isError && (
+                      <p className="text-xs text-destructive">
+                        {t('UPLOAD_ERROR')}
+                      </p>
+                    )}
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="record" className="space-y-4">
+                  <AudioRecorder
+                    isRecording={isRecording}
+                    isFinished={isFinished}
+                    timer={`${hh}:${mm}:${ss}`}
+                    recordedFile={recordedFile}
+                    chunks={chunks}
+                    setChunks={setChunks}
+                    startRecording={startRecording}
+                    stopRecording={stopRecording}
+                    resetRecording={resetRecording}
+                    animationRef={animationRef}
+                    analyserRef={analyserRef}
+                    resumeRecording={resumeRecording}
+                    pauseRecording={pauseRecording}
+                    isPaused={isPaused}
+                    handleUpload={() => {
+                      setShowConfirmDialog(true);
+                    }}
+                    canvasRef={canvasRef}
+                    fileUploadPending={fileUpload.isPending}
+                  />
+                  {fileUpload.isError && isFinished && (
+                    <p className="text-xs text-destructive">
+                      {t('UPLOAD_ERROR')}
+                    </p>
+                  )}
+                </TabsContent>
+              </Tabs>
+
+              {Boolean(audioFile?.fileName && audioFile?.mediaURL) && (
+                <div className="p-3 rounded-md border bg-white space-y-2">
+                  <h3 className="text-sm font-medium">
+                    {audioFile?.fileName}
+                  </h3>
+                  <div className="flex gap-2 items-center justify-between">
+                    <audio
+                      src={audioFile?.mediaURL}
+                      controls
+                      className="w-full h-10 bg-none"
+                    />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={removeFile}
+                      type="button"
+                      className="text-destructive hover:text-destructive shrink-0"
+                    >
+                      <Trash2 className="h-5 w-5" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {isText && (
             <FormField
               control={form.control}
               name="message"
@@ -788,33 +797,45 @@ export default function AddCommunicationForm({
                     ? getSmsInfo(field.value)
                     : null;
                 return (
-                  <FormItem className="col-span-2">
-                    <FormLabel required>{tg('MESSAGE')}</FormLabel>
+                  <FormItem className="space-y-2">
+                    <FormLabel required>{t('MESSAGE_CONTENT')}</FormLabel>
 
                     <FormControl>
                       <FormTextarea
-                        placeholder={t('WRITE_MESSAGE')}
+                        placeholder={
+                          transportData?.name === 'EMAIL'
+                            ? t('EMAIL_BODY_PLACEHOLDER')
+                            : t('SMS_MESSAGE_PLACEHOLDER')
+                        }
                         {...field}
-                        className="rounded"
+                        className="h-32 resize-none"
                         maxLength={maxLen}
                       />
                     </FormControl>
-                    <div className="flex justify-between items-center">
-                      {errors.message && (
-                        <FormMessage>{errors.message.message}</FormMessage>
-                      )}
+                    <div className="flex flex-wrap justify-between items-start gap-2 mt-1 min-w-0">
+                      <div className="min-w-0 flex-1">
+                        <FormMessage />
+                      </div>
 
-                      <div className="ml-auto flex text-xs text-muted-foreground gap-4">
-                        {smsInfo && (
-                          <p className="text-xs text-muted-foreground">
+                      <div className="ml-auto flex flex-wrap items-center text-xs text-muted-foreground gap-3 pt-1 shrink-0">
+                        {smsInfo && smsInfo.smsCredits > 0 && (
+                          <p className="text-xs text-muted-foreground whitespace-nowrap">
                             <span className="font-medium text-foreground">
                               {formatNum(smsInfo.smsCredits)}
                             </span>{' '}
-                            {smsInfo.smsCredits === 1 ? t('SMS_CREDIT') : t('SMS_CREDITS')}
+                            {smsInfo.smsCredits === 1
+                              ? t('SMS_CREDIT')
+                              : t('SMS_CREDITS')}
                           </p>
                         )}
-                        <p>
-                          {formatNum(field.value?.length ?? 0)} / {formatNum(maxLen)} {charactersText}
+                        <p
+                          className={`whitespace-nowrap ${(field.value?.length ?? 0) > maxLen
+                            ? 'text-destructive font-medium'
+                            : ''
+                            }`}
+                        >
+                          {formatNum(field.value?.length ?? 0)} / {formatNum(maxLen)}{' '}
+                          {charactersText}
                         </p>
                       </div>
                     </div>
@@ -823,25 +844,24 @@ export default function AddCommunicationForm({
               }}
             />
           )}
-        </div>
+        </CardContent>
 
-        <div className="flex justify-end mt-4 gap-4">
+        <CardFooter className="flex flex-wrap justify-end gap-3 border-t p-4 sm:p-6">
           <Button
             variant="outline"
             onClick={clearCommunicationForm}
             type="button"
           >
-            {editMode?.value ? t('RESET') : tg('CLEAR')}
+            {editMode?.value ? tg('CANCEL') : tg('CLEAR')}
           </Button>
           <Button
-            variant="outline"
             onClick={handleSave}
             type="button"
             disabled={fileUpload.isPending}
           >
             {tg('SAVE')}
           </Button>
-        </div>
+        </CardFooter>
 
         <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
           <DialogContent
@@ -886,7 +906,7 @@ export default function AddCommunicationForm({
             </div>
           </DialogContent>
         </Dialog>
-      </div>
+      </Card>
     </Form>
   );
 }

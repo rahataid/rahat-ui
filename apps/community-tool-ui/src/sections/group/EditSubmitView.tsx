@@ -15,9 +15,9 @@ import {
   PopoverTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/popover';
 import { ArrowLeft, Columns, X } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
-import { PaginatedResult } from '@rumsan/sdk/types';
-import InlinePagination from '../../components/inlinePagination';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import type { GroupBeneficiaryColumnFilter } from '@rahataid/community-tool-sdk/groups';
+import ColumnFilterPopover from './ColumnFilterPopover';
 
 const READ_ONLY_FIELDS = new Set([
   'uuid',
@@ -66,18 +66,24 @@ type Props = {
   addedColumns: Set<string>;
   availableColumns: string[];
   isLoading?: boolean;
-  page: number;
-  perPage: number;
-  total: number;
-  meta: PaginatedResult<unknown>['meta'];
-  onPageChange: (page: number) => void;
-  onPerPageChange: (value: string | number) => void;
+  hasNextPage?: boolean;
+  isFetchingNextPage?: boolean;
+  fetchNextPage: () => void;
   onCellChange: (rowUuid: string, field: string, value: string) => void;
   onAddColumn: (colKey: string) => void;
   onRemoveColumn: (colKey: string) => void;
   onSubmit: () => void;
   onCancel: () => void;
   isSubmitting?: boolean;
+  /** Group uuid — used by the column filter's distinct-values lookup. */
+  groupUuid: string;
+  /** Active column filters (applied on the server by the search API). */
+  filters: GroupBeneficiaryColumnFilter[];
+  onFiltersChange: (filters: GroupBeneficiaryColumnFilter[]) => void;
+  /** Total beneficiaries matching the filters (not just loaded rows). */
+  totalRows?: number;
+  /** True while a filter change is being fetched. */
+  isFiltering?: boolean;
 };
 
 export default function EditSubmitView({
@@ -88,18 +94,20 @@ export default function EditSubmitView({
   addedColumns,
   availableColumns,
   isLoading = false,
-  page,
-  perPage,
-  total,
-  meta,
-  onPageChange,
-  onPerPageChange,
+  hasNextPage = false,
+  isFetchingNextPage = false,
+  fetchNextPage,
   onCellChange,
   onAddColumn,
   onRemoveColumn,
   onSubmit,
   onCancel,
   isSubmitting = false,
+  groupUuid,
+  filters,
+  onFiltersChange,
+  totalRows = 0,
+  isFiltering = false,
 }: Props) {
   const presentSet = new Set(presentColumns);
   const allColumns = [
@@ -165,10 +173,9 @@ export default function EditSubmitView({
     });
   };
 
-  const getRowUuid = (row: BeneficiaryRow): string => {
-    const bene = row.beneficiary as Record<string, unknown> | undefined;
-    return ((bene?.uuid ?? row.uuid) as string | undefined) ?? '';
-  };
+  // Rows are flat beneficiaries from the search API.
+  const getRowUuid = (row: BeneficiaryRow): string =>
+    (row.uuid as string | undefined) ?? '';
 
   const formatCellValue = (raw: unknown): string => {
     const s = String(raw ?? '');
@@ -182,11 +189,10 @@ export default function EditSubmitView({
     if (dirty && Object.prototype.hasOwnProperty.call(dirty, col)) {
       return String(dirty[col] ?? '');
     }
-    const bene = row.beneficiary as Record<string, unknown> | undefined;
     if (TOP_LEVEL_FIELDS.has(col)) {
-      return formatCellValue(bene?.[col]);
+      return formatCellValue(row[col]);
     }
-    const extras = bene?.extras as Record<string, unknown> | undefined;
+    const extras = row.extras as Record<string, unknown> | null | undefined;
     return formatCellValue(extras?.[col]);
   };
 
@@ -195,6 +201,31 @@ export default function EditSubmitView({
     const dirty = dirtyRows.get(rowUuid);
     return !!dirty && Object.prototype.hasOwnProperty.call(dirty, col);
   };
+
+  // ── Column filters (server-side, via search + distinct APIs) ─────────────
+
+  const isColFiltered = (col: string): boolean =>
+    filters.some((f) => f.field === col);
+
+  const setColumnFilter = (
+    col: string,
+    filter: GroupBeneficiaryColumnFilter | null,
+  ) => {
+    const others = filters.filter((f) => f.field !== col);
+    onFiltersChange(filter ? [...others, filter] : others);
+  };
+
+  const clearColumnFilter = (col: string) => {
+    if (isColFiltered(col)) setColumnFilter(col, null);
+  };
+
+  const handleRemoveColumn = (col: string) => {
+    clearColumnFilter(col);
+    onRemoveColumn(col);
+  };
+
+  // Filtering happens on the server, so every loaded row already matches.
+  const filteredRows = pageRows;
 
   // ── Fill-drag handlers ────────────────────────────────────────────────────
 
@@ -227,7 +258,7 @@ export default function EditSubmitView({
     const end = Math.max(dragFill.startRowIdx, dragFillEndIdx);
     for (let i = start; i <= end; i++) {
       if (i === dragFill.startRowIdx) continue; // source cell already has value
-      const row = pageRows[i];
+      const row = filteredRows[i];
       if (!row) continue;
       const rowUuid = getRowUuid(row);
       onCellChange(rowUuid, dragFill.col, dragFill.value);
@@ -245,11 +276,34 @@ export default function EditSubmitView({
     return rowIdx >= start && rowIdx <= end && rowIdx !== dragFill.startRowIdx;
   };
 
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const LOAD_THRESHOLD_PX = 200;
+
+  const maybeLoadMore = useCallback(() => {
+    const el = scrollContainerRef.current;
+    if (!el || !hasNextPage || isFetchingNextPage) return;
+    const distanceToBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+    if (distanceToBottom <= LOAD_THRESHOLD_PX) fetchNextPage();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  // After each batch renders, if the rows still don't overflow the container
+  // (no scrollbar yet), load the next batch automatically — otherwise the
+  // user would have nothing to scroll to trigger further loads. Only fires
+  // while content is shorter than the container; once it overflows, further
+  // loads happen from onScroll instead.
+  useEffect(() => {
+    const el = scrollContainerRef.current;
+    if (isLoading || !el) return;
+    if (el.scrollHeight <= el.clientHeight) maybeLoadMore();
+  }, [pageRows.length, isLoading, maybeLoadMore]);
+
   return (
-    // onMouseUp on the outer div catches mouse-up anywhere in the table area
-    <div className="flex flex-col w-full" onMouseUp={onMouseUp}>
+    <div
+      className="absolute inset-0 flex flex-col bg-background"
+      onMouseUp={onMouseUp}
+    >
       {/* Toolbar */}
-      <div className="flex items-center gap-2 px-4 py-2 border-b bg-background flex-wrap">
+      <div className="flex items-center gap-2 px-4 py-2 border-b bg-background flex-wrap shrink-0">
         <Button
           variant="ghost"
           size="sm"
@@ -365,8 +419,36 @@ export default function EditSubmitView({
         )}
       </div>
 
+      {/* Filter status bar */}
+      {filters.length > 0 && (
+        <div className="px-4 py-1 text-xs text-muted-foreground border-b flex items-center gap-2 shrink-0">
+          {isFiltering
+            ? 'Filtering...'
+            : `${totalRows} matching row${totalRows !== 1 ? 's' : ''}`}
+          <span>
+            · {filters.length} filter{filters.length !== 1 ? 's' : ''} (
+            {filters.map((f) => f.field).join(', ')})
+          </span>
+          <button
+            onClick={() => onFiltersChange([])}
+            className="text-primary hover:underline"
+          >
+            Clear all filters
+          </button>
+          {dirtyRows.size > 0 && (
+            <span className="ml-auto">
+              Filters match saved values; unsaved edits stay pending.
+            </span>
+          )}
+        </div>
+      )}
+
       {/* Table */}
-      <div className="import-container overflow-x-auto">
+      <div
+        ref={scrollContainerRef}
+        onScroll={maybeLoadMore}
+        className="relative flex-1 min-h-0 min-w-0 overflow-auto"
+      >
         {isLoading ? (
           <div className="flex items-center justify-center py-12 text-sm text-muted-foreground">
             Loading...
@@ -376,9 +458,9 @@ export default function EditSubmitView({
             className="text-sm border-collapse select-none"
             style={{ minWidth: 'max-content' }}
           >
-            <thead>
+            <thead className="sticky top-0 z-20">
               <tr>
-                {visibleColumns.map((col) => (
+                {visibleColumns.map((col, colIdx) => (
                   <th
                     key={col}
                     draggable
@@ -386,17 +468,28 @@ export default function EditSubmitView({
                     onDragOver={(e) => handleDragOver(e, col)}
                     onDrop={() => handleDrop(col)}
                     onDragEnd={handleDragEnd}
-                    className={`border px-2 py-1 bg-secondary text-left text-xs whitespace-nowrap select-none cursor-grab active:cursor-grabbing transition-colors ${
+                    className={`group/th ${
+                      colIdx === 0 ? 'sticky left-0 z-30 ' : ''
+                    } border px-2 py-1 bg-secondary text-left text-xs whitespace-nowrap select-none cursor-grab active:cursor-grabbing transition-colors ${
                       dragOverCol === col
                         ? 'border-l-2 border-l-primary bg-primary/10'
                         : ''
                     } ${draggedCol === col ? 'opacity-40' : ''}`}
                   >
                     <div className="flex items-center gap-1">
-                      {col}
+                      <span>{col}</span>
+                      {!READ_ONLY_FIELDS.has(col) && (
+                        <ColumnFilterPopover
+                          groupUuid={groupUuid}
+                          col={col}
+                          filters={filters}
+                          active={isColFiltered(col)}
+                          onApply={setColumnFilter}
+                        />
+                      )}
                       {addedColumns.has(col) && (
                         <button
-                          onClick={() => onRemoveColumn(col)}
+                          onClick={() => handleRemoveColumn(col)}
                           className="ml-1 text-muted-foreground hover:text-destructive"
                         >
                           <X size={10} strokeWidth={2} />
@@ -408,21 +501,38 @@ export default function EditSubmitView({
               </tr>
             </thead>
             <tbody>
-              {pageRows.map((row, rowIdx) => {
+              {filteredRows.map((row, rowIdx) => {
                 const rowUuid = getRowUuid(row);
+                const isDuplicate = row.isDuplicate === true;
                 return (
                   <tr
                     key={rowUuid}
-                    className="odd:bg-white even:bg-muted/30"
+                    className={
+                      isDuplicate
+                        ? 'bg-orange-100'
+                        : 'odd:bg-white even:bg-muted/30'
+                    }
+                    title={
+                      isDuplicate
+                        ? 'Duplicate data — phone number already exists'
+                        : undefined
+                    }
                     onMouseEnter={() => onRowMouseEnter(rowIdx)}
                   >
-                    {visibleColumns.map((col) => {
+                    {visibleColumns.map((col, colIdx) => {
+                      // First visible column stays pinned while scrolling right
+                      const pinCls =
+                        colIdx === 0
+                          ? `sticky left-0 z-10 ${
+                              isDuplicate ? 'bg-orange-100' : 'bg-white'
+                            }`
+                          : '';
                       const fillHighlight = isFillHighlighted(rowIdx, col);
                       if (READ_ONLY_FIELDS.has(col)) {
                         return (
                           <td
                             key={col}
-                            className="border px-2 py-1 text-xs text-muted-foreground whitespace-nowrap"
+                            className={`${pinCls} border px-2 py-1 text-xs text-muted-foreground whitespace-nowrap`}
                           >
                             {getCellValue(row, col)}
                           </td>
@@ -432,7 +542,9 @@ export default function EditSubmitView({
                       return (
                         <td
                           key={col}
-                          className={`border px-1 py-1 relative group ${
+                          className={`${pinCls} border px-1 py-1 ${
+                            colIdx === 0 ? '' : 'relative'
+                          } group ${
                             fillHighlight
                               ? 'bg-blue-100'
                               : isDirtyCell(row, col)
@@ -465,16 +577,19 @@ export default function EditSubmitView({
             </tbody>
           </table>
         )}
+        {!isLoading && !isFiltering && pageRows.length === 0 && (
+          <div className="sticky left-0 py-8 text-center text-xs text-muted-foreground">
+            {filters.length > 0
+              ? 'No beneficiaries match the current filters.'
+              : 'No beneficiaries in this group.'}
+          </div>
+        )}
+        {isFetchingNextPage && (
+          <div className="sticky left-0 py-2 text-center text-xs text-muted-foreground">
+            Loading more...
+          </div>
+        )}
       </div>
-
-      <InlinePagination
-        page={page}
-        perPage={perPage}
-        total={total}
-        meta={meta}
-        onPageChange={onPageChange}
-        onPerPageChange={onPerPageChange}
-      />
     </div>
   );
 }

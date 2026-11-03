@@ -170,10 +170,16 @@ function createInvalidFieldError(errFields: any, isDuplicate: boolean) {
 export const splitValidAndInvalid = (payload: any[], errors: []) => {
   const invalidData = [] as any;
   const validData = [] as any;
+  // Group errors by row uuid once (was errors.find + errors.filter per row).
+  const errorsByUuid = new Map<string, any[]>();
+  for (const err of errors as any[]) {
+    const list = errorsByUuid.get(err.uuid);
+    if (list) list.push(err);
+    else errorsByUuid.set(err.uuid, [err]);
+  }
   payload.forEach((p: any) => {
-    const error = errors.find((error: any) => error.uuid === p.uuid);
-    if (error || p.isDuplicate) {
-      const errFields = errors.filter((err: any) => err.uuid === p.uuid);
+    const errFields = errorsByUuid.get(p.uuid) ?? [];
+    if (errFields.length || p.isDuplicate) {
       if (p.uuid) delete p.uuid;
       if (p.rawData) delete p.rawData;
       if (errFields.length) {

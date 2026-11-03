@@ -33,10 +33,10 @@ export default function ProjectNavConfigEditor({ submitRef }: IProps) {
   const initialTitlesRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
-    const navsettings = currentSetting?.value?.navsettings;
-    const titles = navsettings
-      ? navsettings.map((item: any) => item.title)
-      : defaultNavConfig.navsettings.map((item) => item.title);
+    // navigation only enables after the admin ticks items and saves.
+    const titles = (currentSetting?.value?.navsettings ?? []).map(
+      (item: any) => item.title,
+    );
     const initial = new Set<string>(titles);
     initialTitlesRef.current = initial;
     setCheckedTitles(initial);

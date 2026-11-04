@@ -10,7 +10,6 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { DataCard, TableLoader, NoResult } from 'apps/rahat-ui/src/common';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
-import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import {
   CommunicationOverviewData,
   classifyTransportString,
@@ -282,7 +281,7 @@ type AudienceProgressRowProps = {
   failed: number;
   pending: number;
   formatNum: (v: number | string) => string;
-  t: any;
+  t: (key: string) => string;
   borderTop?: boolean;
   channelBreakdown?: Record<string, TransportDeliveryCounts>;
   activeChannel?: string;
@@ -393,9 +392,7 @@ const AudienceProgressRow = React.memo(function AudienceProgressRow({
                     channel={chName}
                     className="h-3.5 w-3.5 text-muted-foreground shrink-0"
                   />
-                  <span className="font-semibold">
-                    {translateValue(t, chName, { fallback: chName })}:
-                  </span>
+                  <span className="font-semibold">{chName}:</span>
                   <span className="tabular-nums font-mono text-muted-foreground">
                     {formatNum(chDelivered)}/{formatNum(chTotal)}
                   </span>
@@ -481,13 +478,13 @@ export const CommunicationBreakdowns = React.memo(
     const channelPieData = React.useMemo(
       () => ({
         series: channelKeys.map((k, idx) => ({
-          label: translateValue(t, k, { fallback: k }),
+          label: k,
           value: channelSeriesData[idx] || 0,
         })),
         colors: channelKeys.map((k, idx) => getChannelColor(k, idx)),
         options: buildDonutOptions(formatNum, totalLabel, channelTotal),
       }),
-      [channelKeys, channelSeriesData, channelTotal, formatNum, totalLabel, t],
+      [channelKeys, channelSeriesData, channelTotal, formatNum, totalLabel],
     );
 
     const barSeries = React.useMemo(() => {
@@ -593,9 +590,7 @@ export const CommunicationBreakdowns = React.memo(
                 ) : (
                   <ChartColumnStacked
                     series={barSeries}
-                    categories={channelKeys.map((k) =>
-                      translateValue(t, k, { fallback: k }),
-                    )}
+                    categories={channelKeys}
                     height={300}
                     width="100%"
                     custom

@@ -20,6 +20,7 @@ import {
   User,
 } from 'lucide-react';
 import { PriorityChip, StatusChip, TypeChip } from '../components';
+import { DocumentList } from 'apps/rahat-ui/src/sections/projects/aa-2/activities/components/documentCard';
 import { TooltipText } from 'apps/rahat-ui/src/components/tootltip.text';
 import { GrievanceStatus } from '@rahat-ui/query/lib/grievance/types/grievance';
 
@@ -182,6 +183,9 @@ const GrievanceInfo = ({ grievance }: IProps) => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Uploaded Documents */}
+      <DocumentList documents={grievance?.grievanceDocuments} />
 
       <div className="flex flex-row w-full gap-[16px] rounded-xl">
         {/* Reporter Information Section */}

@@ -75,4 +75,5 @@ export const EVENT_QUERY_MAP: Record<
   ],
   'beneficiary.event': () => [[TAGS.GET_BENEFICIARIES], [TAGS.GET_BENEFICIARY]],
   'beneficiary.group.event': () => [[TAGS.GET_BENEFICIARIES_GROUPS]],
+  'project.event': () => [[TAGS.GET_ALL_PROJECTS]],
 };

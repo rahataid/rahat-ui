@@ -3,6 +3,7 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import {
   Dialog,
   DialogContent,
@@ -49,6 +50,7 @@ export function CommunicationConfirmDialog({
 }: CommunicationConfirmDialogProps) {
   const t = useTranslations('AA_PROJECT');
   const formatDigits = useLabelDigits();
+  const formatDate = useDateFormat();
 
   const beneficiaries = values.beneficiaries ?? [];
   const stakeholders = values.stakeholders ?? [];
@@ -137,6 +139,12 @@ export function CommunicationConfirmDialog({
               <SummaryRow
                 label={credits === 1 ? t('SMS_CREDIT') : t('SMS_CREDITS')}
                 value={formatDigits(credits)}
+              />
+            )}
+            {values.isScheduled && values.scheduleDate && values.scheduleTime && (
+              <SummaryRow
+                label={t('SCHEDULED_FOR')}
+                value={`${formatDate(values.scheduleDate, 'PPP')}, ${formatDate(values.scheduleTime, 'hh:mm a')}`}
               />
             )}
           </div>

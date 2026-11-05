@@ -3,12 +3,25 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { useParams, useRouter } from 'next/navigation';
 import { Heading, Back } from 'apps/rahat-ui/src/common';
-import { useListAllTransports, useBeneficiariesGroups, useStakeholdersGroups, useCreateCommunication, useUploadFile } from '@rahat-ui/query';
-import { Plus } from 'lucide-react';
+import {
+  useListAllTransports,
+  useBeneficiariesGroups,
+  useStakeholdersGroups,
+  useCreateCommunication,
+  useTriggerCommunicationBroadcast,
+  useUploadFile,
+} from '@rahat-ui/query';
+import { Plus, CalendarClock, Calendar as CalendarIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
+import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@rahat-ui/shadcn/src/components/ui/popover';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { cn } from '@rahat-ui/shadcn/src';
 import { FormInput, FormTextarea, FormSelectTrigger } from 'apps/rahat-ui/src/common/form-fields';
 import {
   Select,
@@ -18,6 +31,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { TargetAudienceSelector, AudienceGroupOption } from '../components/target-audience-selector';
 import { VoiceMessageSource } from '../components/voice-message-source';
+import { ScheduleTimePicker } from '../components/schedule-time-picker';
 import {
   Form,
   FormControl,
@@ -45,12 +59,14 @@ const toAudienceOptions = (groups: any[], countOf: (g: any) => number): Audience
 export default function AddCommunicationView() {
   const t = useTranslations('AA_PROJECT');
   const formatDigits = useLabelDigits();
+  const formatDate = useDateFormat();
   const router = useRouter();
   const { id: projectId } = useParams();
   const uuid = projectId as UUID;
   const appTransports = useListAllTransports();
   const { form } = useBroadcastForm();
   const createCommunication = useCreateCommunication();
+  const triggerBroadcast = useTriggerCommunicationBroadcast();
   const uploadFile = useUploadFile();
   const confirmDialog = useBoolean();
   const pendingBroadcast = React.useRef<BroadcastFormValues | null>(null);
@@ -82,6 +98,7 @@ export default function AddCommunicationView() {
   const { watch, handleSubmit, control } = form;
   const channel = watch('channel');
   const message = watch('message') || '';
+  const isScheduled = watch('isScheduled');
 
   const selectedTransport = React.useMemo(
     () => resolveTransportByChannel(appTransports, channel),
@@ -93,7 +110,10 @@ export default function AddCommunicationView() {
   const maxChars = isUnicode ? 350 : 700;
   const charsCount = smsInfo?.characterCount ?? message.length;
   const credits = smsInfo?.smsCredits ?? 0;
-  const isSubmitting = createCommunication.isPending || uploadFile.isPending;
+  const isSubmitting =
+    createCommunication.isPending ||
+    uploadFile.isPending ||
+    triggerBroadcast.isPending;
 
   const onSubmit = (data: BroadcastFormValues) => {
     if (!selectedTransport?.cuid) return;
@@ -136,6 +156,17 @@ export default function AddCommunicationView() {
           ...(data.channel !== 'voice' && data.message ? { message: data.message } : {}),
           ...(data.channel === 'email' && data.subject ? { subject: data.subject } : {}),
           ...(data.channel === 'voice' && audioURL ? { audioURL } : {}),
+          ...(data.isScheduled && data.scheduleDate && data.scheduleTime
+            ? {
+                isScheduled: true,
+                scheduledAt: (() => {
+                  const [hours, minutes] = data.scheduleTime.split(':').map(Number);
+                  const d = new Date(data.scheduleDate);
+                  d.setHours(hours, minutes, 0, 0);
+                  return d.toISOString();
+                })(),
+              }
+            : {}),
           transportId: selectedTransport.cuid,
           xrefId: uuid,
         },
@@ -146,6 +177,27 @@ export default function AddCommunicationView() {
         toast.error(t('ERROR'));
         return;
       }
+
+      const hasSession = (created?.data?.targets ?? created?.targets ?? []).some(
+        (tr: any) => Boolean(tr.sessionId),
+      );
+
+      if (data.isScheduled && !hasSession) {
+        try {
+          await triggerBroadcast.mutateAsync({
+            projectUUID: uuid,
+            communicationUUID,
+          });
+        } catch {
+          // Fall back gracefully if trigger fails
+        }
+      }
+
+      toast.success(
+        data.isScheduled
+          ? t('COMMUNICATION_SCHEDULED_SUCCESS') || 'Communication scheduled successfully'
+          : t('COMMUNICATION_CREATED_SUCCESS') || 'Communication created successfully',
+      );
 
       router.push(`/projects/aa/${projectId}/communications`);
     } catch {
@@ -274,14 +326,131 @@ export default function AddCommunicationView() {
                     )}
                   />
                 )}
+
+                <div className="border rounded-md p-4 bg-slate-50 space-y-4">
+                  <FormField
+                    control={control}
+                    name="isScheduled"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                        <FormControl>
+                          <Checkbox
+                            id="schedule-later"
+                            checked={field.value}
+                            onCheckedChange={(checked) => {
+                              field.onChange(checked);
+                              if (!checked) {
+                                form.setValue('scheduleDate', undefined);
+                                form.setValue('scheduleTime', '');
+                                form.clearErrors(['scheduleDate', 'scheduleTime']);
+                              }
+                            }}
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel
+                            htmlFor="schedule-later"
+                            className="text-sm font-semibold cursor-pointer flex items-center gap-2"
+                          >
+                            <CalendarClock className="w-4 h-4 text-primary" />
+                            {t('SCHEDULE_LATER')}
+                          </FormLabel>
+                          <p className="text-xs text-muted-foreground">
+                            {t('SCHEDULE_LATER_DESCRIPTION')}
+                          </p>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+
+                  {isScheduled && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2 border-t">
+                      <FormField
+                        control={control}
+                        name="scheduleDate"
+                        render={({ field }) => (
+                          <FormItem className="space-y-2 flex flex-col">
+                            <FormLabel required>{t('SCHEDULE_DATE')}</FormLabel>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <FormControl>
+                                  <Button
+                                    variant="outline"
+                                    className={cn(
+                                      'w-full pl-3 text-left font-normal bg-white justify-between',
+                                      !field.value && 'text-muted-foreground',
+                                    )}
+                                  >
+                                    {field.value ? (
+                                      formatDate(field.value, 'PPP')
+                                    ) : (
+                                      <span>{t('PICK_SCHEDULE_DATE')}</span>
+                                    )}
+                                    <CalendarIcon className="h-4 w-4 opacity-50" />
+                                  </Button>
+                                </FormControl>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar
+                                  mode="single"
+                                  selected={field.value}
+                                  onSelect={(date) => {
+                                    field.onChange(date);
+                                    form.trigger(['scheduleDate', 'scheduleTime']);
+                                  }}
+                                  disabled={(date) => {
+                                    const today = new Date();
+                                    today.setHours(0, 0, 0, 0);
+                                    return date < today;
+                                  }}
+                                  initialFocus
+                                />
+                              </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={control}
+                        name="scheduleTime"
+                        render={({ field }) => (
+                          <FormItem className="space-y-2 flex flex-col">
+                            <FormLabel required>{t('SCHEDULE_TIME')}</FormLabel>
+                            <FormControl>
+                              <ScheduleTimePicker
+                                value={field.value}
+                                onChange={(val) => {
+                                  field.onChange(val);
+                                  form.trigger(['scheduleDate', 'scheduleTime']);
+                                }}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  )}
+                </div>
               </CardContent>
               <CardFooter className="flex flex-wrap justify-end gap-3 border-t p-4 sm:p-6">
                 <Button type="button" variant="outline" onClick={() => router.push(`/projects/aa/${projectId}/communications`)}>
                   {t("CANCEL")}
                 </Button>
                 <Button type="submit" disabled={isSubmitting || !selectedTransport}>
-                  <Plus className="w-4 h-4 mr-2" />
-                  {t("CREATE_COMMUNICATION")}
+                  {isScheduled ? (
+                    <>
+                      <CalendarClock className="w-4 h-4 mr-2" />
+                      {t('SCHEDULE_COMMUNICATION')}
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="w-4 h-4 mr-2" />
+                      {t("CREATE_COMMUNICATION")}
+                    </>
+                  )}
                 </Button>
               </CardFooter>
             </Card>
@@ -293,10 +462,10 @@ export default function AddCommunicationView() {
         isOpen={confirmDialog.value}
         onClose={confirmDialog.onFalse}
         onConfirm={handleConfirmCreate}
-        dialogTitle={t('CREATE_COMMUNICATION')}
+        dialogTitle={isScheduled ? t('SCHEDULE_COMMUNICATION') : t('CREATE_COMMUNICATION')}
         isPending={isSubmitting}
-        confirmLabel={t('CREATE_COMMUNICATION')}
-        description={t('CREATE_COMMUNICATION_CONFIRM')}
+        confirmLabel={isScheduled ? t('SCHEDULE_COMMUNICATION') : t('CREATE_COMMUNICATION')}
+        description={isScheduled ? t('SCHEDULE_COMMUNICATION_CONFIRM') : t('CREATE_COMMUNICATION_CONFIRM')}
         values={watch()}
         credits={credits}
       />

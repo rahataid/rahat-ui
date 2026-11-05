@@ -10,6 +10,7 @@ import {
   useGetCommunication,
   useUpdateCommunication,
   useUploadFile,
+  useSessionBroadCastCount,
 } from '@rahat-ui/query';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { BroadcastFormValues, CommunicationChannel } from '../types';
@@ -116,13 +117,37 @@ export function useEditCommunication({
     return [...new Set(ids)];
   }, [targets]);
 
+  const { data: broadcastCounts } = useSessionBroadCastCount(sessionIds);
+  const rawBroadcastCounts =
+    (broadcastCounts as any)?.data?.data ??
+    (broadcastCounts as any)?.data ??
+    broadcastCounts;
+
+  const isFutureScheduled = Boolean(
+    raw?.isScheduled &&
+      raw?.scheduledAt &&
+      new Date(raw.scheduledAt as string).getTime() > Date.now(),
+  );
+
+  const isStillScheduled = useMemo(() => {
+    if (!raw?.isScheduled && (rawBroadcastCounts?.SCHEDULED ?? 0) === 0) return false;
+    const hasActiveDeliveries =
+      (rawBroadcastCounts?.SUCCESS ?? 0) > 0 ||
+      (rawBroadcastCounts?.FAIL ?? 0) > 0 ||
+      (rawBroadcastCounts?.PENDING ?? 0) > 0;
+    if (hasActiveDeliveries) return false;
+    return isFutureScheduled || (rawBroadcastCounts?.SCHEDULED ?? 0) > 0;
+  }, [raw?.isScheduled, raw?.scheduledAt, rawBroadcastCounts, isFutureScheduled]);
+
   const isTriggered = useMemo(() => {
+    if (isStillScheduled) return false;
+
     const hasSessions = sessionIds.length > 0;
     const hasNonPending = targets.some(
       (tgt) => tgt?.status && tgt?.status !== 'PENDING' && tgt?.status !== 'NEW',
     );
     return hasSessions || hasNonPending;
-  }, [targets, sessionIds]);
+  }, [targets, sessionIds, isStillScheduled]);
 
   const hasAudio = useMemo(() => {
     if (!raw?.audioURL) return false;
@@ -239,6 +264,16 @@ export function useEditCommunication({
       populatedCommIdRef.current !== raw.uuid
     ) {
       populatedCommIdRef.current = raw.uuid as string;
+      let scheduleDate: Date | undefined = undefined;
+      let scheduleTime = '';
+      if ((raw.isScheduled || raw.scheduledAt) && raw.scheduledAt) {
+        const d = new Date(raw.scheduledAt as string);
+        if (!Number.isNaN(d.getTime())) {
+          scheduleDate = d;
+          scheduleTime = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+        }
+      }
+
       form.reset({
         title: (raw.title as string) || '',
         channel: resolvedChannel,
@@ -247,6 +282,9 @@ export function useEditCommunication({
         beneficiaries: initialBeneficiaries,
         stakeholders: initialStakeholders,
         audioFile: (raw.audioURL as { fileName: string; mediaURL: string }) || undefined,
+        isScheduled: Boolean(raw.isScheduled || raw.scheduledAt),
+        scheduleDate,
+        scheduleTime,
       });
       setIsFormPopulated(true);
     }
@@ -256,6 +294,8 @@ export function useEditCommunication({
     raw?.subject,
     raw?.message,
     raw?.audioURL,
+    raw?.isScheduled,
+    raw?.scheduledAt,
     resolvedChannel,
     initialBeneficiaries,
     initialStakeholders,
@@ -307,6 +347,17 @@ export function useEditCommunication({
         ...(data.channel === 'voice' && audioURL ? { audioURL } : {}),
       };
 
+      if (data.isScheduled && data.scheduleDate && data.scheduleTime) {
+        const [hours, minutes] = data.scheduleTime.split(':').map(Number);
+        const d = new Date(data.scheduleDate);
+        d.setHours(hours, minutes, 0, 0);
+        updatePayload.isScheduled = true;
+        updatePayload.scheduledAt = d.toISOString();
+      } else {
+        updatePayload.isScheduled = false;
+        updatePayload.scheduledAt = null;
+      }
+
       if (!isTriggered) {
         updatePayload.targets = [
           ...(data.beneficiaries ?? []).map((g) => ({
@@ -344,6 +395,7 @@ export function useEditCommunication({
     isLoading,
     isSubmitting: updateCommunication.isPending || uploadFile.isPending,
     isTriggered,
+    isStillScheduled,
     beneficiaryGroups,
     stakeholderGroups,
     isLoadingGroups: isLoadingBeneficiaries || isLoadingStakeholders,
@@ -355,5 +407,6 @@ export function useEditCommunication({
     handleConfirmUpdate,
     uploadFile,
     appTransports,
+    scheduledAt: (raw?.scheduledAt as string) || null,
   };
 }

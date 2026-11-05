@@ -1,7 +1,9 @@
 import { useTranslations } from 'next-intl';
 import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
-import { Mail, MessageSquare, PencilIcon, Phone, Trash2 } from 'lucide-react';
+import { Mail, MessageSquare, PencilIcon, Phone, Trash2, CalendarClock } from 'lucide-react';
 import React, { Dispatch, SetStateAction } from 'react';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { Transport } from '@rumsan/connect/src/types';
 import {
   useBeneficiariesGroupStore,
@@ -40,6 +42,7 @@ const CommunicationDataCard = ({
 }: CommunicationDataCardProps) => {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
+  const formatDate = useDateFormat();
   const stakeholdersGroups = useStakeholdersGroupsStore(
     (state) => state.stakeholdersGroups,
   );
@@ -60,10 +63,22 @@ const CommunicationDataCard = ({
       communicationId: itemData.communicationId,
       groupId: itemData.groupId,
       groupType: itemData.groupType,
-      message: itemData.message,
+      message: typeof itemData.message === 'string' ? itemData.message : '',
       subject: itemData.subject,
       transportId: itemData.transportId,
-      audioURL: itemData.audioURL,
+      audioURL:
+        typeof itemData.audioURL === 'object' && itemData.audioURL !== null
+          ? itemData.audioURL
+          : {
+              fileName: '',
+              mediaURL:
+                typeof itemData.audioURL === 'string'
+                  ? itemData.audioURL
+                  : '',
+            },
+      isScheduled: itemData.isScheduled || false,
+      scheduleDate: itemData.scheduleDate,
+      scheduleTime: itemData.scheduleTime || '',
     });
   };
 
@@ -108,12 +123,12 @@ const CommunicationDataCard = ({
                             (g) => g.cuid === comm.transportId,
                           )?.name;
                           return transportName
-                            ? tg(transportName as any)
+                            ? translateValue(tg, transportName)
                             : '';
                         })()}
                       </span>
                       <span>•</span>
-                      <span>{tg(comm?.groupType as any)}</span>
+                      <span>{translateValue(tg, comm?.groupType)}</span>
 
                       {/* Group names container */}
                       <div className="flex flex-wrap gap-2 w-auto">
@@ -135,6 +150,15 @@ const CommunicationDataCard = ({
                           );
                         })}
                       </div>
+
+                      {comm?.isScheduled && (
+                        <div className="flex items-center gap-1 text-xs text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full font-medium">
+                          <CalendarClock className="h-3 w-3" />
+                          <span>
+                            {t('SCHEDULED_FOR')}: {comm.scheduleDate ? formatDate(comm.scheduleDate, 'PPP') : ''} {comm.scheduleTime ? formatDate(comm.scheduleTime, 'hh:mm a') : ''}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
                   {comm?.subject && (
@@ -142,16 +166,18 @@ const CommunicationDataCard = ({
                       {comm?.subject}
                     </p>
                   )}
-                  <p className="text-sm text-gray-700 mt-1 break-all">
-                    {comm?.message}
-                  </p>
-                  {comm?.audioURL?.mediaURL && (
+                  {typeof comm?.message === 'string' && comm.message && (
+                    <p className="text-sm text-gray-700 mt-1 break-all">
+                      {comm.message}
+                    </p>
+                  )}
+                  {typeof comm?.audioURL === 'object' && comm.audioURL?.mediaURL && (
                     <div className="pt-2">
                       <h3 className="text-sm font-medium mb-2">
-                          {comm?.audioURL?.fileName}
+                        {comm.audioURL.fileName}
                       </h3>
                       <audio
-                        src={comm?.audioURL?.mediaURL}
+                        src={comm.audioURL.mediaURL}
                         controls
                         className="w-full h-10 "
                       />

@@ -103,6 +103,7 @@ export type TargetAggregateStatus =
   | 'PENDING'
   | 'SENT'
   | 'COMPLETED'
+  | 'SCHEDULED'
   | 'NOT_STARTED';
 
 /**
@@ -133,8 +134,9 @@ export type CommunicationLifecycleInput = {
   hasPendingTargets?: boolean;
   hasSession?: boolean;
   isRetrying?: boolean;
+  isScheduled?: boolean;
+  scheduledAt?: string | null;
 };
-
 
 export const resolveCommunicationLifecycleStatus = ({
   channel = 'SMS',
@@ -144,6 +146,8 @@ export const resolveCommunicationLifecycleStatus = ({
   hasPendingTargets = false,
   hasSession = false,
   isRetrying = false,
+  isScheduled = false,
+  scheduledAt,
 }: CommunicationLifecycleInput): string => {
   if (isRetrying) return 'IN_PROGRESS';
 
@@ -174,6 +178,13 @@ export const resolveCommunicationLifecycleStatus = ({
   }
 
   if (hasActiveTargets) return 'IN_PROGRESS';
+  if (
+    isScheduled &&
+    scheduledAt &&
+    new Date(scheduledAt).getTime() > Date.now()
+  ) {
+    return 'SCHEDULED';
+  }
   if (hasPendingTargets && !hasSession) return 'NOT_STARTED';
 
   const normalized = (rawStatus || '').toUpperCase();
@@ -230,16 +241,24 @@ export const aggregateTargetStatus = (
   let hasPending = false;
   let hasSuccess = false;
   let hasActive = false;
+  let hasScheduled = false;
 
   for (const target of list) {
-    const counts = target.sessionId && countsMap ? countsMap[target.sessionId] : null;
-    const eff = resolveTargetEffectiveStatus(target.status, counts, channel, !!target.sessionId);
+    const counts =
+      target.sessionId && countsMap
+        ? countsMap[target.sessionId]
+        : (target as any).counts || null;
+    const statusToUse =
+      (target as any).sessionStatus || target.status;
+    const eff = resolveTargetEffectiveStatus(statusToUse, counts, channel, !!target.sessionId);
 
     if (eff === 'FAILED' || eff === 'FAIL' || eff === 'NO ANSWER' || eff === 'BUSY' || eff === 'REJECTED') {
       hasFailed = true;
     } else if (eff === 'IN_PROGRESS' || eff === 'PROCESSING') {
       hasActive = true;
-    } else if (eff === 'PENDING' || eff === 'SCHEDULED' || eff === 'NOT_STARTED') {
+    } else if (eff === 'SCHEDULED') {
+      hasScheduled = true;
+    } else if (eff === 'PENDING' || eff === 'NOT_STARTED') {
       hasPending = true;
     } else if (eff === 'DELIVERED' || eff === 'SUCCESS' || eff === 'COMPLETED' || eff === 'ANSWERED') {
       hasSuccess = true;
@@ -247,6 +266,7 @@ export const aggregateTargetStatus = (
   }
 
   if (hasActive || ((hasSuccess || hasFailed) && hasPending)) return 'IN_PROGRESS';
+  if (hasScheduled && !hasActive && !hasSuccess && !hasFailed) return 'SCHEDULED';
   if (hasPending && !hasSuccess && !hasFailed) return 'NOT_STARTED';
   if (hasFailed) return 'FAILED';
   if (hasSuccess) return 'COMPLETED';

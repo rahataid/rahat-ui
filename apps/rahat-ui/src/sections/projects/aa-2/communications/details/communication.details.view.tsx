@@ -159,6 +159,8 @@ export default function CommunicationDetailsView() {
       hasPendingTargets: targets.some((t: any) => t?.status === 'PENDING' || !t?.status),
       hasSession: sessionIds.length > 0,
       isRetrying: isRetrying || retryFailedSession.isPending || triggerBroadcast.isPending,
+      isScheduled: raw?.isScheduled,
+      scheduledAt: raw?.scheduledAt,
     });
   }, [
     record?.channel,
@@ -413,7 +415,9 @@ export default function CommunicationDetailsView() {
                 disabled={isMutating}
               >
                 <SendHorizontal className="w-4 h-4 text-primary" />
-                {t('SEND_COMMUNICATION') || 'Send Communication'}
+                {raw?.isScheduled
+                  ? t('SEND_NOW') || 'Send Now'
+                  : t('SEND_COMMUNICATION') || 'Send Communication'}
               </Button>
             )}
 
@@ -439,12 +443,18 @@ export default function CommunicationDetailsView() {
         {/* Title & Channel Header Card */}
         <Card className="p-3.5 sm:p-4 rounded-sm bg-white border border-gray-200/90 shadow-none flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="space-y-1">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center flex-wrap gap-2">
               <span className="bg-slate-100 text-slate-700 text-xs font-medium px-2 py-0.5 rounded border border-slate-200/80 flex items-center gap-1.5">
                 <CommunicationChannelIcon channel={record?.channel || 'SMS'} className="h-3.5 w-3.5 text-slate-600" />
                 {t(record?.channel || 'SMS')}
               </span>
               <CommunicationStatusBadge status={effectiveOverallStatus} isLoading={isBroadcastResolving} />
+              {raw?.isScheduled && raw?.scheduledAt && (
+                <span className="bg-amber-50 text-amber-700 text-xs font-medium px-2 py-0.5 rounded border border-amber-200/80 flex items-center gap-1.5">
+                  <CalendarClock className="h-3.5 w-3.5 text-amber-600" />
+                  {t('SCHEDULED_FOR') || 'Scheduled for'}: {formatDate(raw.scheduledAt, 'MMM d, yyyy, h:mm a')}
+                </span>
+              )}
             </div>
             <div className="pt-0.5 min-w-0">
               <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">{t('COMMUNICATION_TITLE')}:</span>

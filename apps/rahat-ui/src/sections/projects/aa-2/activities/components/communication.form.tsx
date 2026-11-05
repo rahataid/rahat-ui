@@ -41,13 +41,22 @@ import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import { AudioRecorder } from './recorder';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import { MicIcon, Trash2, UploadIcon } from 'lucide-react';
+import { MicIcon, Trash2, UploadIcon, CalendarClock, Calendar as CalendarIcon } from 'lucide-react';
+import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
+import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/popover';
+import { ScheduleTimePicker } from '../../communications/components/schedule-time-picker';
 import {
   Dialog,
   DialogContent,
@@ -102,6 +111,7 @@ export default function AddCommunicationForm({
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
   const { id: projectId } = useParams();
   const [contentType, setContentType] = useState<ValidationContent | ''>('');
   const [customFileName, setCustomFileName] = useState('');
@@ -357,6 +367,7 @@ export default function AddCommunicationForm({
 
   const transportId = form.watch('transportId');
   const audioFile = form.watch('audioURL');
+  const isScheduled = form.watch('isScheduled');
 
   const isLoading = useMemo(
     () => stakeholdersGroupLoading || beneficiaryGroupLoading,
@@ -568,7 +579,7 @@ export default function AddCommunicationForm({
                     value={field.value?.[0] || ''}
                   >
                     <FormControl>
-                      <FormSelectTrigger value={field.value}>
+                      <FormSelectTrigger value={field.value?.[0]}>
                         <SelectValue
                           placeholder={
                             groupType
@@ -838,6 +849,114 @@ export default function AddCommunicationForm({
               }}
             />
           )}
+
+          <div className="col-span-2 rounded-md border p-4 bg-muted/20 space-y-4">
+            <FormField
+              control={form.control}
+              name="isScheduled"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                  <FormControl>
+                    <Checkbox
+                      id="activity-schedule-later"
+                      checked={field.value}
+                      onCheckedChange={(checked) => {
+                        field.onChange(checked);
+                        if (!checked) {
+                          form.setValue('scheduleDate', undefined);
+                          form.setValue('scheduleTime', '');
+                          form.clearErrors(['scheduleDate', 'scheduleTime']);
+                        }
+                      }}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel
+                      htmlFor="activity-schedule-later"
+                      className="text-sm font-semibold cursor-pointer flex items-center gap-2"
+                    >
+                      <CalendarClock className="w-4 h-4 text-primary" />
+                      {t('SCHEDULE_LATER')}
+                    </FormLabel>
+                    <p className="text-xs text-muted-foreground">
+                      {t('SCHEDULE_LATER_DESCRIPTION')}
+                    </p>
+                  </div>
+                </FormItem>
+              )}
+            />
+
+            {isScheduled && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t">
+                <FormField
+                  control={form.control}
+                  name="scheduleDate"
+                  render={({ field }) => (
+                    <FormItem className="space-y-2 flex flex-col">
+                      <FormLabel required>{t('SCHEDULE_DATE')}</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                'w-full pl-3 text-left font-normal flex justify-between items-center bg-white',
+                                !field.value && 'text-muted-foreground',
+                              )}
+                            >
+                              {field.value ? (
+                                formatDate(field.value, 'PPP')
+                              ) : (
+                                <span>{t('PICK_SCHEDULE_DATE')}</span>
+                              )}
+                              <CalendarIcon className="h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={(date) => {
+                              field.onChange(date);
+                              form.trigger(['scheduleDate', 'scheduleTime']);
+                            }}
+                            disabled={(date) => {
+                              const today = new Date();
+                              today.setHours(0, 0, 0, 0);
+                              return date < today;
+                            }}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="scheduleTime"
+                  render={({ field }) => (
+                    <FormItem className="space-y-2 flex flex-col">
+                      <FormLabel required>{t('SCHEDULE_TIME')}</FormLabel>
+                      <FormControl>
+                        <ScheduleTimePicker
+                          value={field.value}
+                          onChange={(val) => {
+                            field.onChange(val);
+                            form.trigger(['scheduleDate', 'scheduleTime']);
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="flex justify-end mt-4 gap-4">

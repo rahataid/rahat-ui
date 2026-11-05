@@ -279,6 +279,17 @@ export default function EditActivity() {
       },
       sessionId: communicationFormData?.sessionId || '',
       communicationId: communicationFormData?.communicationId || '',
+      isScheduled: communicationFormData?.isScheduled,
+      scheduleDate: communicationFormData?.scheduleDate,
+      scheduleTime: communicationFormData?.scheduleTime,
+      scheduledAt: communicationFormData?.isScheduled && communicationFormData?.scheduleDate && communicationFormData?.scheduleTime
+        ? (() => {
+            const [hours, minutes] = communicationFormData.scheduleTime.split(':').map(Number);
+            const d = new Date(communicationFormData.scheduleDate);
+            d.setHours(hours, minutes, 0, 0);
+            return d.toISOString();
+          })()
+        : undefined,
     };
 
     if (editBackup) {

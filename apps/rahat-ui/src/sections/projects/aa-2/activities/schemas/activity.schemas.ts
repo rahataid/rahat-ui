@@ -30,6 +30,12 @@ export const buildActivityFormSchema = (t: Translator) =>
   });
 
 
+const audienceGroupSchema = z.object({
+  id: z.string().min(1),
+  name: z.string(),
+  count: z.number().optional(),
+});
+
 const buildBaseCommunicationFormSchema = (t: Translator) =>
   z.object({
     communicationTitle: z
@@ -38,12 +44,11 @@ const buildBaseCommunicationFormSchema = (t: Translator) =>
       .min(2, {
         message: t('COMMUNICATION_TITLE_MIN_2_CHARACTERS'),
       }),
-    groupType: z
-      .string()
-      .min(1, { message: t('PLEASE_SELECT_GROUP_AT_LEAST_ONE') }),
-    groupId: z
-      .array(z.string())
-      .min(1, { message: t('PLEASE_SELECT_GROUP_AT_LEAST_ONE') }),
+    groupType: z.string().optional(),
+    groupId: z.array(z.string()).optional(),
+    beneficiaries: z.array(audienceGroupSchema).default([]),
+    stakeholders: z.array(audienceGroupSchema).default([]),
+    targetAudience: z.any().optional(),
     transportId: z
       .string()
       .min(1, { message: t('PLEASE_SELECT_COMMUNICATION_TYPE') }),
@@ -64,6 +69,23 @@ export const createCommunicationFormSchema = (
   appTransports?: Transport[],
 ) => {
   return buildBaseCommunicationFormSchema(t).superRefine((data, ctx) => {
+    const hasBeneficiaries =
+      Array.isArray(data.beneficiaries) && data.beneficiaries.length > 0;
+    const hasStakeholders =
+      Array.isArray(data.stakeholders) && data.stakeholders.length > 0;
+    const hasLegacyGroup =
+      Array.isArray(data.groupId) && data.groupId.length > 0;
+
+    if (!hasBeneficiaries && !hasStakeholders && !hasLegacyGroup) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message:
+          t('TARGET_AUDIENCE_REQUIRED') ||
+          t('PLEASE_SELECT_GROUP_AT_LEAST_ONE'),
+        path: ['targetAudience'],
+      });
+    }
+
     // Skip validation if transportId is not provided
     if (!data.transportId) {
       return;

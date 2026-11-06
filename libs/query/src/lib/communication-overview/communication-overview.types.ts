@@ -1,5 +1,3 @@
-import { Project } from '@rahataid/sdk/project/project.types';
-
 export type CommunicationLogsFilterParams = {
   project?: string;
   from?: string;
@@ -12,8 +10,6 @@ export type CommunicationLogsFilterParams = {
   perPage?: number;
   search?: string;
 };
-
-export type CommunicationOverviewFilterParams = CommunicationLogsFilterParams;
 
 export type GroupDeliveryStats = {
   total: number;
@@ -46,20 +42,19 @@ export type RecipientWiseStats = {
 
 export type ChannelWiseStats = Record<string, GroupDeliveryStats>;
 
-export type OverallCommunicationStats = {
-  totalCommunications: number;
-  successful: number;
-  failed: number;
-  pending: number;
-  totalRecipients: number;
-  successRate: number;
-};
-
 export type CommunicationOverviewData = {
-  overall: OverallCommunicationStats;
+  overall: {
+    totalCommunications: number;
+    totalCampaigns?: number;
+    successful: number;
+    failed: number;
+    pending: number;
+    totalRecipients: number;
+    successRate: number;
+  };
   recipientWise: RecipientWiseStats;
   channelWise: ChannelWiseStats;
-  rawGroupStats: Record<string, unknown>;
+  rawGroupStats: GroupTransportStats | Record<string, unknown>;
 };
 
 export type DeliveryStatus =
@@ -70,6 +65,7 @@ export type DeliveryStatus =
   | 'FAILED'
   | 'CANCELLED'
   | (string & Record<never, never>);
+
 export type CommunicationChannel = 'SMS' | 'VOICE' | 'EMAIL' | 'WHATSAPP';
 
 export type CommunicationActivityItem = {
@@ -94,27 +90,9 @@ export type CommunicationActivityItem = {
   subject?: string;
   message?: string;
   failReason?: string;
-  targetBreakdown?: {
-    beneficiary?: { delivered: number; failed: number; pending: number; total: number };
-    stakeholder?: { delivered: number; failed: number; pending: number; total: number };
-  };
-};
-
-export type ResolvedTransportInfo = {
-  channel: CommunicationChannel;
-  transportName: string;
-};
-
-export type TransportEntry = {
-  cuid?: string;
-  id?: string;
-  name?: string;
-  type?: string;
 };
 
 export type TargetProject = {
   uuid: string;
   name: string;
 };
-
-export type { Project };

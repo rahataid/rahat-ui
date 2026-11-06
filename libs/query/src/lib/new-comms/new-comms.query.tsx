@@ -10,7 +10,7 @@ type RetryFailedPayload = {
   includeFailed?: boolean;
 };
 
-const normalizeTransportList = (value: unknown): Transport[] | undefined => {
+export const normalizeTransportList = (value: unknown): Transport[] | undefined => {
   if (Array.isArray(value)) return value;
   if (
     value &&

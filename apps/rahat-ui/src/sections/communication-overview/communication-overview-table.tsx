@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@rahat-ui/shadcn/src/c
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { DemoTable, SearchInput, CustomPagination } from 'apps/rahat-ui/src/common';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import {
   CommunicationActivityItem,
   classifyTransportString,
@@ -35,6 +35,18 @@ type CommunicationOverviewTableProps = {
   isLoading?: boolean;
   searchTerm?: string;
   onSearchChange?: (val: string) => void;
+  meta?: {
+    total?: number;
+    lastPage?: number;
+    currentPage?: number;
+    perPage?: number;
+    prev?: number | null;
+    next?: number | null;
+  } | null;
+  page?: number;
+  perPage?: number;
+  onPageChange?: (page: number) => void;
+  onPerPageChange?: (perPage: number) => void;
 };
 
 export const CommunicationOverviewTable = React.memo(
@@ -43,20 +55,29 @@ export const CommunicationOverviewTable = React.memo(
     isLoading = false,
     searchTerm: externalSearchTerm,
     onSearchChange,
+    meta,
+    page: externalPage,
+    perPage: externalPerPage,
+    onPageChange,
+    onPerPageChange,
   }: CommunicationOverviewTableProps) {
     const t = useTranslations('USAGE');
     const formatDate = useDateFormat();
-    const formatNum = useNumberFormat();
 
     const [internalSearchTerm, setInternalSearchTerm] = useState('');
     const searchTerm =
       externalSearchTerm !== undefined
         ? externalSearchTerm
         : internalSearchTerm;
-    const [currentPage, setCurrentPage] = useState(1);
-    const [perPage, setPerPage] = useState(10);
+    const [internalPage, setInternalPage] = useState(1);
+    const [internalPerPage, setInternalPerPage] = useState(10);
+
+    const isServerPaginated = Boolean(meta);
+    const currentPage = isServerPaginated ? (externalPage ?? 1) : internalPage;
+    const perPage = isServerPaginated ? (externalPerPage ?? 10) : internalPerPage;
 
     const filteredData = useMemo(() => {
+      if (isServerPaginated) return activities;
       const q = searchTerm.trim().toLowerCase();
       if (!q) return activities;
       const tokens = q.split(/\s+/).filter(Boolean);
@@ -75,20 +96,26 @@ export const CommunicationOverviewTable = React.memo(
           ].some((field) => field && field.toLowerCase().includes(token)),
         ),
       );
-    }, [activities, searchTerm]);
+    }, [activities, searchTerm, isServerPaginated]);
 
-    const totalPages = Math.ceil(filteredData.length / perPage) || 1;
+    const totalPages = isServerPaginated
+      ? meta?.lastPage || 1
+      : Math.ceil(filteredData.length / perPage) || 1;
+    const totalItems = isServerPaginated
+      ? meta?.total ?? activities.length
+      : filteredData.length;
 
     useEffect(() => {
-      if (currentPage > totalPages) {
-        setCurrentPage(1);
+      if (!isServerPaginated && internalPage > totalPages) {
+        setInternalPage(1);
       }
-    }, [currentPage, totalPages]);
+    }, [isServerPaginated, internalPage, totalPages]);
 
-    const paginatedData = useMemo(() => {
+    const tableData = useMemo(() => {
+      if (isServerPaginated) return activities;
       const start = (currentPage - 1) * perPage;
       return filteredData.slice(start, start + perPage);
-    }, [filteredData, currentPage, perPage]);
+    }, [isServerPaginated, activities, filteredData, currentPage, perPage]);
 
     const handleSearchChange = React.useCallback(
       (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -97,31 +124,61 @@ export const CommunicationOverviewTable = React.memo(
           onSearchChange(val);
         } else {
           setInternalSearchTerm(val);
+          setInternalPage(1);
         }
-        setCurrentPage(1);
       },
       [onSearchChange],
     );
 
     const handleNextPage = React.useCallback(() => {
-      setCurrentPage((p) => Math.min(p + 1, totalPages));
-    }, [totalPages]);
+      if (isServerPaginated) {
+        if (currentPage < totalPages && onPageChange) {
+          onPageChange(currentPage + 1);
+        }
+      } else {
+        setInternalPage((p) => Math.min(p + 1, totalPages));
+      }
+    }, [isServerPaginated, currentPage, totalPages, onPageChange]);
 
     const handlePrevPage = React.useCallback(() => {
-      setCurrentPage((p) => Math.max(p - 1, 1));
-    }, []);
+      if (isServerPaginated) {
+        if (currentPage > 1 && onPageChange) {
+          onPageChange(currentPage - 1);
+        }
+      } else {
+        setInternalPage((p) => Math.max(p - 1, 1));
+      }
+    }, [isServerPaginated, currentPage, onPageChange]);
 
-    const handleSetPagination = React.useCallback((updater: any) => {
-      setCurrentPage((prev) => {
-        const nextVal = typeof updater === 'function' ? updater({ page: prev }) : updater;
-        return typeof nextVal?.page === 'number' ? nextVal.page : prev;
-      });
-    }, []);
+    const handleSetPagination = React.useCallback(
+      (updater: unknown) => {
+        if (isServerPaginated) {
+          if (onPageChange) {
+            const nextVal = typeof updater === 'function' ? updater({ page: currentPage }) : updater;
+            if (typeof nextVal?.page === 'number') onPageChange(nextVal.page);
+          }
+        } else {
+          setInternalPage((prev) => {
+            const nextVal = typeof updater === 'function' ? updater({ page: prev }) : updater;
+            return typeof nextVal?.page === 'number' ? nextVal.page : prev;
+          });
+        }
+      },
+      [isServerPaginated, currentPage, onPageChange],
+    );
 
-    const handlePageSizeChange = React.useCallback((size: string | number) => {
-      setPerPage(Number(size));
-      setCurrentPage(1);
-    }, []);
+    const handlePageSizeChange = React.useCallback(
+      (size: string | number) => {
+        const nextSize = Number(size);
+        if (isServerPaginated) {
+          if (onPerPageChange) onPerPageChange(nextSize);
+        } else {
+          setInternalPerPage(nextSize);
+          setInternalPage(1);
+        }
+      },
+      [isServerPaginated, onPerPageChange],
+    );
 
     const columns = useMemo<ColumnDef<CommunicationActivityItem>[]>(
       () => [
@@ -169,7 +226,14 @@ export const CommunicationOverviewTable = React.memo(
             const ch = row.original.channel || 'SMS';
             const transport = row.original.transportName;
             const canonical = classifyTransportString(ch);
-            const displayChannel = CHANNEL_T_KEYS[canonical] ? t(CHANNEL_T_KEYS[canonical]) : ch;
+            const displayChannel = translateValue(t, canonical, {
+              fallback: CHANNEL_T_KEYS[canonical] ? t(CHANNEL_T_KEYS[canonical]) : ch,
+            });
+            const isCustomTransport =
+              typeof transport === 'string' &&
+              transport.trim().length > 0 &&
+              transport.toUpperCase().trim() !== canonical &&
+              transport.toUpperCase().trim() !== ch.toUpperCase().trim();
 
             return (
               <div className="flex items-center gap-2 whitespace-nowrap">
@@ -181,15 +245,16 @@ export const CommunicationOverviewTable = React.memo(
                   <span className="text-xs font-semibold text-foreground">
                     {displayChannel}
                   </span>
-                  {transport &&
-                    transport.toUpperCase() !== displayChannel.toUpperCase() && (
-                      <span
-                        className="text-[10px] text-muted-foreground font-medium truncate max-w-[110px]"
-                        title={transport}
-                      >
-                        {capitalizeFirstLetter(transport)}
-                      </span>
-                    )}
+                  {isCustomTransport && (
+                    <span
+                      className="text-[10px] text-muted-foreground font-medium truncate max-w-[110px]"
+                      title={transport}
+                    >
+                      {translateValue(t, transport, {
+                        fallback: capitalizeFirstLetter(transport),
+                      })}
+                    </span>
+                  )}
                 </div>
               </div>
             );
@@ -255,7 +320,7 @@ export const CommunicationOverviewTable = React.memo(
                   colorClass || 'text-muted-foreground'
                 }`}
               >
-                {phase}
+                {translateValue(t, `PHASE_${phase.toUpperCase()}`, { fallback: phase })}
               </Badge>
             );
           },
@@ -298,7 +363,7 @@ export const CommunicationOverviewTable = React.memo(
     );
 
     const table = useReactTable({
-      data: paginatedData,
+      data: tableData,
       columns,
       getCoreRowModel: getCoreRowModel(),
     });
@@ -334,11 +399,12 @@ export const CommunicationOverviewTable = React.memo(
 
           <div className="p-3 border-t">
             <CustomPagination
+              key={`pagination-${perPage}`}
               currentPage={currentPage}
               perPage={perPage}
-              total={filteredData.length}
+              total={totalItems}
               meta={{
-                total: filteredData.length,
+                total: totalItems,
                 lastPage: totalPages,
                 currentPage,
                 perPage,

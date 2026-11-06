@@ -2,6 +2,7 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Heading, NoResult } from 'apps/rahat-ui/src/common';
 import TriggerCard from './trigger.card';
 import { useTranslations } from 'next-intl';
+import { getManualSources } from '../utils';
 
 type IProps = {
   projectId: string;
@@ -26,7 +27,9 @@ export default function TriggersListCard({ projectId, triggers }: IProps) {
                 projectId={projectId}
                 triggerId={trigger?.uuid}
                 phase={trigger?.phase?.name || t('N_A')}
-                type={trigger?.source === 'MANUAL' ? t('MANUAL') : t('AUTOMATED')}
+                type={
+                  trigger?.source === 'MANUAL' ? t('MANUAL') : t('AUTOMATED')
+                }
                 isTriggered={trigger?.isTriggered}
                 title={trigger?.title || t('N_A')}
                 dataSource={trigger?.source === 'MANUAL' ? '' : trigger?.source}
@@ -35,6 +38,7 @@ export default function TriggersListCard({ projectId, triggers }: IProps) {
                 triggeredAt={trigger?.triggeredAt}
                 triggerStatement={trigger?.triggerStatement}
                 leadTime={trigger?.leadTime}
+                manualSources={getManualSources(trigger)}
               />
             ))
           ) : (

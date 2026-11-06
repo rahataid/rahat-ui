@@ -270,6 +270,8 @@ export default function EditActivity() {
       communicationTitle: communicationFormData?.communicationTitle || '',
       groupType: (communicationFormData?.groupType || '') as GroupType,
       groupId: communicationFormData?.groupId || [],
+      beneficiaries: communicationFormData?.beneficiaries || [],
+      stakeholders: communicationFormData?.stakeholders || [],
       transportId: communicationFormData?.transportId || '',
       message: communicationFormData?.message || '',
       subject: communicationFormData?.subject || '',
@@ -282,14 +284,19 @@ export default function EditActivity() {
       isScheduled: communicationFormData?.isScheduled,
       scheduleDate: communicationFormData?.scheduleDate,
       scheduleTime: communicationFormData?.scheduleTime,
-      scheduledAt: communicationFormData?.isScheduled && communicationFormData?.scheduleDate && communicationFormData?.scheduleTime
-        ? (() => {
-            const [hours, minutes] = communicationFormData.scheduleTime.split(':').map(Number);
-            const d = new Date(communicationFormData.scheduleDate);
-            d.setHours(hours, minutes, 0, 0);
-            return d.toISOString();
-          })()
-        : undefined,
+      scheduledAt:
+        communicationFormData?.isScheduled &&
+        communicationFormData?.scheduleDate &&
+        communicationFormData?.scheduleTime
+          ? (() => {
+              const [hours, minutes] = communicationFormData.scheduleTime
+                .split(':')
+                .map(Number);
+              const d = new Date(communicationFormData.scheduleDate);
+              d.setHours(hours, minutes, 0, 0);
+              return d.toISOString();
+            })()
+          : undefined,
     };
 
     if (editBackup) {
@@ -560,7 +567,9 @@ export default function EditActivity() {
                     render={({ field }) => {
                       return (
                         <FormItem>
-                          <FormLabel required>{t('RESPONSIBLE_STATION')}</FormLabel>
+                          <FormLabel required>
+                            {t('RESPONSIBLE_STATION')}
+                          </FormLabel>
                           <FormControl>
                             <FormInput
                               type="text"
@@ -678,9 +687,7 @@ export default function EditActivity() {
                                 className="col-span-3 rounded-r-none "
                                 value={formatDigits(lead)}
                                 onChange={(e) => {
-                                  const newLead = toAsciiDigits(
-                                    e.target.value,
-                                  );
+                                  const newLead = toAsciiDigits(e.target.value);
                                   field.onChange(
                                     newLead ? `${newLead} ${unit}` : '',
                                   );
@@ -757,7 +764,9 @@ export default function EditActivity() {
                               />
                               <p className="text-sm font-medium">
                                 {t('DROP_FILES_TO_UPLOAD')}, {t('OR')}{' '}
-                                <span className="text-primary">{t('BROWSE')}</span>
+                                <span className="text-primary">
+                                  {t('BROWSE')}
+                                </span>
                               </p>
                             </div>
                             <Input

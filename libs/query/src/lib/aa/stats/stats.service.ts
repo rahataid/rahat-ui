@@ -216,7 +216,8 @@ export const useTransportSessionStats = (uuid: UUID) => {
         return mutate.data;
       } catch (error: any) {
         const rawMessage =
-          error?.response?.data?.message || t('FAILED_TO_FETCH_TRANSPORT_STATS');
+          error?.response?.data?.message ||
+          t('FAILED_TO_FETCH_TRANSPORT_STATS');
         const errorMessage = resolveBackendErrorMessage(
           tb,
           error?.response?.data?.code,
@@ -233,34 +234,6 @@ export const useTransportSessionStats = (uuid: UUID) => {
       }
     },
     staleTime: 60 * 60 * 1000,
-  });
-
-  return query;
-};
-
-export const useProjectDashboardBeneficiaryMapLocation = (
-  uuid: UUID,
-  payload: any,
-) => {
-  const q = useProjectAction();
-
-  const query = useQuery({
-    queryKey: ['projectDashboardBenefMap', payload, uuid],
-    staleTime: 1000 * 60 * 60 * 4,
-    queryFn: async () => {
-      console.log('payload', payload);
-      const mutate = await q.mutateAsync({
-        uuid,
-        data: {
-          action: 'aaProject.stats.getMapLocation',
-          payload: {
-            appId: uuid,
-            ...payload,
-          },
-        },
-      });
-      return mutate.data;
-    },
   });
 
   return query;

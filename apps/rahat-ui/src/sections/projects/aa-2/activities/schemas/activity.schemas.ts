@@ -10,8 +10,12 @@ const activityDocumentSchema = z.object({
 
 export const buildActivityFormSchema = (t: Translator) =>
   z.object({
-    title: z.string().min(2, { message: t('TITLE_MUST_BE_AT_LEAST_4_CHARACTER') }),
-    responsibility: z.string().min(2, { message: t('PLEASE_ENTER_RESPONSIBILITY') }),
+    title: z
+      .string()
+      .min(2, { message: t('TITLE_MUST_BE_AT_LEAST_4_CHARACTER') }),
+    responsibility: z
+      .string()
+      .min(2, { message: t('PLEASE_ENTER_RESPONSIBILITY') }),
     responsibleStation: z
       .string()
       .min(2, { message: t('PLEASE_ENTER_RESPONSIBLE_STATION') }),
@@ -29,6 +33,11 @@ export const buildActivityFormSchema = (t: Translator) =>
     activityDocuments: z.array(activityDocumentSchema).optional(),
   });
 
+const audienceGroupSchema = z.object({
+  id: z.string().min(1),
+  name: z.string(),
+  count: z.number().optional(),
+});
 
 const buildBaseCommunicationFormSchema = (t: Translator) =>
   z.object({
@@ -38,12 +47,11 @@ const buildBaseCommunicationFormSchema = (t: Translator) =>
       .min(2, {
         message: t('COMMUNICATION_TITLE_MIN_2_CHARACTERS'),
       }),
-    groupType: z
-      .string()
-      .min(1, { message: t('PLEASE_SELECT_GROUP_AT_LEAST_ONE') }),
-    groupId: z
-      .array(z.string())
-      .min(1, { message: t('PLEASE_SELECT_GROUP_AT_LEAST_ONE') }),
+    groupType: z.string().optional(),
+    groupId: z.array(z.string()).optional(),
+    beneficiaries: z.array(audienceGroupSchema).default([]),
+    stakeholders: z.array(audienceGroupSchema).default([]),
+    targetAudience: z.any().optional(),
     transportId: z
       .string()
       .min(1, { message: t('PLEASE_SELECT_COMMUNICATION_TYPE') }),
@@ -67,6 +75,23 @@ export const createCommunicationFormSchema = (
   appTransports?: Transport[],
 ) => {
   return buildBaseCommunicationFormSchema(t).superRefine((data, ctx) => {
+    const hasBeneficiaries =
+      Array.isArray(data.beneficiaries) && data.beneficiaries.length > 0;
+    const hasStakeholders =
+      Array.isArray(data.stakeholders) && data.stakeholders.length > 0;
+    const hasLegacyGroup =
+      Array.isArray(data.groupId) && data.groupId.length > 0;
+
+    if (!hasBeneficiaries && !hasStakeholders && !hasLegacyGroup) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message:
+          t('TARGET_AUDIENCE_REQUIRED') ||
+          t('PLEASE_SELECT_GROUP_AT_LEAST_ONE'),
+        path: ['targetAudience'],
+      });
+    }
+
     // Skip validation if transportId is not provided
     if (!data.transportId) {
       return;
@@ -135,14 +160,20 @@ export const createCommunicationFormSchema = (
       if (!data.scheduleDate) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: getMsg('SCHEDULE_DATE_REQUIRED', 'Schedule date is required'),
+          message: getMsg(
+            'SCHEDULE_DATE_REQUIRED',
+            'Schedule date is required',
+          ),
           path: ['scheduleDate'],
         });
       }
       if (!data.scheduleTime?.trim()) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: getMsg('SCHEDULE_TIME_REQUIRED', 'Schedule time is required'),
+          message: getMsg(
+            'SCHEDULE_TIME_REQUIRED',
+            'Schedule time is required',
+          ),
           path: ['scheduleTime'],
         });
       }
@@ -153,7 +184,10 @@ export const createCommunicationFormSchema = (
         if (isNaN(hours) || isNaN(minutes)) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: getMsg('SCHEDULE_TIME_REQUIRED', 'Schedule time is required'),
+            message: getMsg(
+              'SCHEDULE_TIME_REQUIRED',
+              'Schedule time is required',
+            ),
             path: ['scheduleTime'],
           });
         } else {
@@ -162,7 +196,10 @@ export const createCommunicationFormSchema = (
           if (scheduledDateTime.getTime() <= Date.now()) {
             ctx.addIssue({
               code: z.ZodIssueCode.custom,
-              message: getMsg('SCHEDULE_DATE_MUST_BE_FUTURE', 'Scheduled date and time must be in the future'),
+              message: getMsg(
+                'SCHEDULE_DATE_MUST_BE_FUTURE',
+                'Scheduled date and time must be in the future',
+              ),
               path: ['scheduleTime'],
             });
           }

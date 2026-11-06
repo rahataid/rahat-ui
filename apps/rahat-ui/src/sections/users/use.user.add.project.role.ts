@@ -1,5 +1,5 @@
 import { UUID } from 'crypto';
-import { useAssignRoleInProject } from '@rahat-ui/query';
+import { useAssignRoleInProjects, useBulkProjectAssign } from '@rahat-ui/query';
 import { AssignRole } from '@rumsan/sdk/types';
 
 type AssignRolePayload = {
@@ -19,12 +19,23 @@ const toMutationArgs = ({ uuid, name, expiry, xrefId }: AssignRolePayload) => {
 };
 
 export const useUserAssignRole = () => {
-  const { mutate, mutateAsync, ...rest } = useAssignRoleInProject();
+  const { mutate, mutateAsync, ...rest } = useAssignRoleInProjects();
 
   return {
     ...rest,
     mutate: (payload: AssignRolePayload) => mutate(toMutationArgs(payload)),
     mutateAsync: (payload: AssignRolePayload) =>
       mutateAsync(toMutationArgs(payload)),
+  };
+};
+
+export const useAssigToMultipleProjects = () => {
+  const { mutateAsync, ...rest } = useBulkProjectAssign();
+  return {
+    ...rest,
+    mutateAsync: (payload: {
+      uuid: UUID;
+      data: { roles: Pick<AssignRole, 'name' | 'xrefId'>[] };
+    }) => mutateAsync(payload),
   };
 };

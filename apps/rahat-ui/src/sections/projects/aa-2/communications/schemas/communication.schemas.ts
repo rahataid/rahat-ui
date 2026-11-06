@@ -17,6 +17,7 @@ export const buildBroadcastSchema = (t: (key: string) => string) =>
       message: z.string().optional(),
       beneficiaries: z.array(audienceGroupSchema).default([]),
       stakeholders: z.array(audienceGroupSchema).default([]),
+      targetAudience: z.any().optional(),
       audioFile: z.any().optional(),
       isScheduled: z.boolean().default(false),
       scheduleDate: z.date().optional(),
@@ -36,14 +37,20 @@ export const buildBroadcastSchema = (t: (key: string) => string) =>
         if (!data.scheduleDate) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: getMsg('SCHEDULE_DATE_REQUIRED', 'Schedule date is required'),
+            message: getMsg(
+              'SCHEDULE_DATE_REQUIRED',
+              'Schedule date is required',
+            ),
             path: ['scheduleDate'],
           });
         }
         if (!data.scheduleTime?.trim()) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: getMsg('SCHEDULE_TIME_REQUIRED', 'Schedule time is required'),
+            message: getMsg(
+              'SCHEDULE_TIME_REQUIRED',
+              'Schedule time is required',
+            ),
             path: ['scheduleTime'],
           });
         }
@@ -54,7 +61,10 @@ export const buildBroadcastSchema = (t: (key: string) => string) =>
           if (isNaN(hours) || isNaN(minutes)) {
             ctx.addIssue({
               code: z.ZodIssueCode.custom,
-              message: getMsg('SCHEDULE_TIME_REQUIRED', 'Schedule time is required'),
+              message: getMsg(
+                'SCHEDULE_TIME_REQUIRED',
+                'Schedule time is required',
+              ),
               path: ['scheduleTime'],
             });
           } else {
@@ -63,7 +73,10 @@ export const buildBroadcastSchema = (t: (key: string) => string) =>
             if (scheduledDateTime.getTime() <= Date.now()) {
               ctx.addIssue({
                 code: z.ZodIssueCode.custom,
-                message: getMsg('SCHEDULE_DATE_MUST_BE_FUTURE', 'Scheduled date and time must be in the future'),
+                message: getMsg(
+                  'SCHEDULE_DATE_MUST_BE_FUTURE',
+                  'Scheduled date and time must be in the future',
+                ),
                 path: ['scheduleTime'],
               });
             }
@@ -117,4 +130,3 @@ export const buildBroadcastSchema = (t: (key: string) => string) =>
     });
 
 export const buildCommunicationSchema = buildBroadcastSchema;
-

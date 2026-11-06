@@ -59,8 +59,35 @@ export const buildCommunicationPayload = (
     return [];
   }
 
-  // If no group IDs, return empty array
-  if (!communication.groupId || communication.groupId.length === 0) {
+  // Extract target groups from beneficiaries/stakeholders or fallback to legacy groupId
+  const targetGroups: Array<{ groupId: string; groupType: string }> = [];
+
+  const hasBeneficiaries =
+    Array.isArray(communication.beneficiaries) &&
+    communication.beneficiaries.length > 0;
+  const hasStakeholders =
+    Array.isArray(communication.stakeholders) &&
+    communication.stakeholders.length > 0;
+
+  if (hasBeneficiaries || hasStakeholders) {
+    communication.beneficiaries?.forEach((b) => {
+      if (b.id) targetGroups.push({ groupId: b.id, groupType: 'BENEFICIARY' });
+    });
+    communication.stakeholders?.forEach((s) => {
+      if (s.id) targetGroups.push({ groupId: s.id, groupType: 'STAKEHOLDERS' });
+    });
+  } else if (
+    Array.isArray(communication.groupId) &&
+    communication.groupId.length > 0 &&
+    communication.groupType
+  ) {
+    const groupType = communication.groupType;
+    communication.groupId.forEach((id) => {
+      targetGroups.push({ groupId: id, groupType });
+    });
+  }
+
+  if (targetGroups.length === 0) {
     return [];
   }
 
@@ -79,13 +106,13 @@ export const buildCommunicationPayload = (
     messagePayload.message = communication.message;
   }
 
-  // Create one payload per group ID
-  return communication.groupId.map((groupId) => {
+  // Create one payload per group
+  return targetGroups.map(({ groupId, groupType }) => {
     const payload: CommunicationPayload = {
       communicationTitle: communication.communicationTitle,
-      groupType: communication.groupType,
+      groupType,
       transportId: communication.transportId,
-      groupId: groupId, // Each payload has a single group ID as a string
+      groupId: groupId,
       ...messagePayload,
     };
 
@@ -101,7 +128,9 @@ export const buildCommunicationPayload = (
     if (communication.isScheduled) {
       payload.isScheduled = true;
       if (communication.scheduleDate && communication.scheduleTime) {
-        const [hours, minutes] = communication.scheduleTime.split(':').map(Number);
+        const [hours, minutes] = communication.scheduleTime
+          .split(':')
+          .map(Number);
         const d = new Date(communication.scheduleDate);
         d.setHours(hours, minutes, 0, 0);
         payload.scheduledAt = d.toISOString();
@@ -114,7 +143,6 @@ export const buildCommunicationPayload = (
       selectedTransport.name === 'SMS' &&
       typeof communication.message === 'string'
     ) {
-      console.log('inside SMS');
       payload.extras = getSmsInfo(communication.message);
     }
 

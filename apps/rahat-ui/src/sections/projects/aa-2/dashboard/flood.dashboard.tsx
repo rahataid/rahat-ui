@@ -2,7 +2,6 @@
 
 import BeneficiaryDemographics from './component/beneficiaryDemographics';
 import CommunicationAnalytics from './component/communicationAnalytics';
-import MapView from './component/mapView';
 import ResilienceOverview from './component/resilienceOverview';
 import SocialProtectionBenefits from './component/socialProtectionBenefits';
 import DigitalAccessOverview from './component/digitalAccessOverview';
@@ -16,7 +15,12 @@ type Props = {
   projectId: string;
 };
 
-export default function FloodDashboard({ benefStats, triggeersStats, tokenStats, projectId }: Props) {
+export default function FloodDashboard({
+  benefStats,
+  triggeersStats,
+  tokenStats,
+  projectId,
+}: Props) {
   return (
     <div className="space-y-3">
       <TokenStatsCard tokenStats={tokenStats} />
@@ -42,9 +46,6 @@ export default function FloodDashboard({ benefStats, triggeersStats, tokenStats,
         triggeersStats={triggeersStats}
         projectId={projectId}
       />
-      <div className="mb-2 h-full w-full">
-        <MapView projectId={projectId} benefStats={benefStats} />
-      </div>
     </div>
   );
 }

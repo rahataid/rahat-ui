@@ -7,10 +7,18 @@ export interface AudioFile {
   mediaURL: string;
 }
 
+export type AudienceOption = {
+  id: string;
+  name: string;
+  count?: number;
+};
+
 export interface CommunicationData {
   communicationTitle?: string;
-  groupType: GroupType;
-  groupId: string[];
+  groupType?: GroupType;
+  groupId?: string[];
+  beneficiaries?: AudienceOption[];
+  stakeholders?: AudienceOption[];
   transportId: string;
   message?: string | AudioFile;
   subject?: string;

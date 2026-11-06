@@ -22,12 +22,14 @@ import {
 import { DurationData } from '../../activities/add/add.activity.view';
 import { getLeadTimeParts } from '../utils';
 import { useState, useEffect } from 'react';
+import ManualSourcesInput from './manual.sources.input';
 type IProps = {
   form: UseFormReturn<{
     title: string;
     isMandatory?: boolean;
     description?: string;
     leadTime?: string;
+    manualSources?: string[];
   }>;
   phase: any;
   stationHeading?: string;
@@ -89,11 +91,7 @@ export default function AddManualTriggerForm({
               name="title"
               render={({ field }) => {
                 return (
-                  <FormItem
-                    className={
-                      phase?.isRequiredLeadTime ? 'w-full' : 'col-span-2 w-full'
-                    }
-                  >
+                  <FormItem className="w-full">
                     <FormLabel>{t('TRIGGER_TITLE')}</FormLabel>
                     <FormControl>
                       <Input
@@ -107,6 +105,7 @@ export default function AddManualTriggerForm({
                 );
               }}
             />
+            <ManualSourcesInput form={form} className="w-full" />
             {phase?.isRequiredLeadTime && (
               <FormField
                 control={form.control}

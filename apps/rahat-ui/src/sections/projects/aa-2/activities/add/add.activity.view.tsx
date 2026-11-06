@@ -380,6 +380,8 @@ export default function AddActivities() {
       communicationTitle: communicationFormData?.communicationTitle || '',
       groupType: (communicationFormData?.groupType || '') as GroupType,
       groupId: communicationFormData?.groupId || [],
+      beneficiaries: communicationFormData?.beneficiaries || [],
+      stakeholders: communicationFormData?.stakeholders || [],
       transportId: communicationFormData?.transportId || '',
       message: communicationFormData?.message || '',
       subject: communicationFormData?.subject || '',
@@ -392,14 +394,19 @@ export default function AddActivities() {
       isScheduled: communicationFormData?.isScheduled,
       scheduleDate: communicationFormData?.scheduleDate,
       scheduleTime: communicationFormData?.scheduleTime,
-      scheduledAt: communicationFormData?.isScheduled && communicationFormData?.scheduleDate && communicationFormData?.scheduleTime
-        ? (() => {
-            const [hours, minutes] = communicationFormData.scheduleTime.split(':').map(Number);
-            const d = new Date(communicationFormData.scheduleDate);
-            d.setHours(hours, minutes, 0, 0);
-            return d.toISOString();
-          })()
-        : undefined,
+      scheduledAt:
+        communicationFormData?.isScheduled &&
+        communicationFormData?.scheduleDate &&
+        communicationFormData?.scheduleTime
+          ? (() => {
+              const [hours, minutes] = communicationFormData.scheduleTime
+                .split(':')
+                .map(Number);
+              const d = new Date(communicationFormData.scheduleDate);
+              d.setHours(hours, minutes, 0, 0);
+              return d.toISOString();
+            })()
+          : undefined,
     };
     setCommunicationData([...communicationData, newCommunication]);
 

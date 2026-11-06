@@ -32,7 +32,7 @@ import { formatEnumString } from 'apps/rahat-ui/src/utils/string';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { useRouter } from 'next/navigation';
-import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
+import { SendCommunicationConfirmDialog } from '../../communications/components/send-communication-confirm-dialog';
 
 interface BaseCommunication {
   communicationTitle?: string;
@@ -117,9 +117,11 @@ export function CommunicationCard({
 
   const redirectLink = useMemo(
     () =>
-      `/projects/aa/${projectId}/communication-logs/commsdetails/${activityCommunication?.communicationId
-      }@${activityId}@${activityCommunication?.sessionId || ''}?from=activities${redirectTo ? `&backFrom=${redirectTo}` : ''
-      }`,
+      `/projects/aa/${projectId}/communication-logs/commsdetails/${
+        activityCommunication?.communicationId
+      }@${activityId}@${
+        activityCommunication?.sessionId || ''
+      }?from=activities${redirectTo ? `&backFrom=${redirectTo}` : ''}`,
     [activityCommunication, redirectTo, activityId, projectId],
   );
 
@@ -139,11 +141,15 @@ export function CommunicationCard({
   };
 
   const handleConfirmSend = async () => {
-    confirmationDialog.onFalse();
-    await triggerCommunication(
-      activityId,
-      activityCommunication?.communicationId,
-    );
+    try {
+      await triggerCommunication(
+        activityId,
+        activityCommunication?.communicationId,
+      );
+      confirmationDialog.onFalse();
+    } catch {
+      // Error handled by query hook
+    }
   };
 
   return (
@@ -159,8 +165,9 @@ export function CommunicationCard({
             {/* Title */}
             <div className="flex items-center gap-2 mb-1">
               <TooltipWrapper
-                tip={`${t('COMMUNICATION_TITLE')}: ${activityCommunication?.communicationTitle
-                  }`}
+                tip={`${t('COMMUNICATION_TITLE')}: ${
+                  activityCommunication?.communicationTitle
+                }`}
               >
                 <h3 className="font-medium text-gray-900 truncate w-[360px]">
                   {activityCommunication?.communicationTitle}
@@ -174,11 +181,14 @@ export function CommunicationCard({
                 iconStyle="text-primary"
               />
               <TooltipWrapper
-                tip={`${t('COMMUNICATION_STATUS')}: ${
-                  translateValue(tg, activityCommunication?.sessionStatus, {
-                    fallback: activityCommunication?.sessionStatus || tg('UNKNOWN'),
-                  })
-                }`}
+                tip={`${t('COMMUNICATION_STATUS')}: ${translateValue(
+                  tg,
+                  activityCommunication?.sessionStatus,
+                  {
+                    fallback:
+                      activityCommunication?.sessionStatus || tg('UNKNOWN'),
+                  },
+                )}`}
               >
                 <Badge
                   className={`text-xs font-normal ${getSessionStatusBadgeClass(
@@ -186,7 +196,8 @@ export function CommunicationCard({
                   )}`}
                 >
                   {translateValue(tg, activityCommunication?.sessionStatus, {
-                    fallback: activityCommunication?.sessionStatus || tg('UNKNOWN'),
+                    fallback:
+                      activityCommunication?.sessionStatus || tg('UNKNOWN'),
                   })}
                 </Badge>
               </TooltipWrapper>
@@ -194,25 +205,31 @@ export function CommunicationCard({
 
             <div className="flex items-center gap-2 text-sm text-gray-500">
               <TooltipWrapper
-                tip={`${t('COMMUNICATION_CHANNEL')}: ${
-                  translateValue(tg, activityCommunication?.transportName, {
-                    fallback: activityCommunication?.transportName || tg('UNKNOWN'),
-                  })
-                }`}
+                tip={`${t('COMMUNICATION_CHANNEL')}: ${translateValue(
+                  tg,
+                  activityCommunication?.transportName,
+                  {
+                    fallback:
+                      activityCommunication?.transportName || tg('UNKNOWN'),
+                  },
+                )}`}
               >
                 <span>
                   {translateValue(tg, activityCommunication?.transportName, {
-                    fallback: activityCommunication?.transportName || tg('UNKNOWN'),
+                    fallback:
+                      activityCommunication?.transportName || tg('UNKNOWN'),
                   })}
                 </span>
               </TooltipWrapper>
               <span>•</span>
               <TooltipWrapper
-                tip={`${t('GROUP_TYPE')}: ${
-                  translateValue(tg, activityCommunication?.groupType, {
+                tip={`${t('GROUP_TYPE')}: ${translateValue(
+                  tg,
+                  activityCommunication?.groupType,
+                  {
                     fallback: activityCommunication?.groupType || tg('UNKNOWN'),
-                  })
-                }`}
+                  },
+                )}`}
               >
                 <span>
                   {translateValue(tg, activityCommunication?.groupType, {
@@ -230,10 +247,11 @@ export function CommunicationCard({
                 <>
                   <span>•</span>
                   <TooltipWrapper
-                    tip={`${activityCommunication?.extras.smsCredits === 1
+                    tip={`${
+                      activityCommunication?.extras.smsCredits === 1
                         ? t('SMS_CREDIT')
                         : t('SMS_CREDITS')
-                      }: ${formatNum(activityCommunication?.extras.smsCredits)}`}
+                    }: ${formatNum(activityCommunication?.extras.smsCredits)}`}
                   >
                     <span>
                       {formatNum(activityCommunication?.extras.smsCredits)}{' '}
@@ -274,8 +292,9 @@ export function CommunicationCard({
         {/* Subject for Email */}
         {activityCommunication?.subject && (
           <TooltipWrapper
-            tip={`${t('COMMUNICATION_SUBJECT')}: ${activityCommunication?.subject
-              }`}
+            tip={`${t('COMMUNICATION_SUBJECT')}: ${
+              activityCommunication?.subject
+            }`}
           >
             <h4 className="font-medium text-sm mt-3 break-words">
               {activityCommunication?.subject}
@@ -285,26 +304,28 @@ export function CommunicationCard({
 
         {(activityCommunication?.transportName === 'EMAIL' ||
           activityCommunication?.transportName === 'SMS') && (
-            <TooltipWrapper
-              tip={`${t(
-                'COMMUNICATION_MESSAGE',
-              )}: ${activityCommunication?.message?.substring(0, 50)}${activityCommunication?.message?.length > 50 ? '...' : ''
-                }`}
-            >
-              <div className="mt-2 overflow-hidden break-words">
-                <MessageWithToggle
-                  message={activityCommunication?.message ?? ''}
-                />
-              </div>
-            </TooltipWrapper>
-          )}
+          <TooltipWrapper
+            tip={`${t(
+              'COMMUNICATION_MESSAGE',
+            )}: ${activityCommunication?.message?.substring(0, 50)}${
+              activityCommunication?.message?.length > 50 ? '...' : ''
+            }`}
+          >
+            <div className="mt-2 overflow-hidden break-words">
+              <MessageWithToggle
+                message={activityCommunication?.message ?? ''}
+              />
+            </div>
+          </TooltipWrapper>
+        )}
 
         {/* Voice Content */}
         {activityCommunication?.transportName === 'VOICE' &&
           Object.keys(activityCommunication?.message || {}).length !== 0 && (
             <TooltipWrapper
-              tip={`${t('VOICE_FILE')}: ${activityCommunication?.message?.fileName
-                }`}
+              tip={`${t('VOICE_FILE')}: ${
+                activityCommunication?.message?.fileName
+              }`}
             >
               <div className="bg-gray-50 p-3 rounded-sm mt-3">
                 <p className="text-center mb-2 text-sm font-medium">
@@ -381,26 +402,20 @@ export function CommunicationCard({
         </div>
       </CardContent>
 
-      <ConfirmationDialog
-        isConfirmationDialogOpen={confirmationDialog.value}
-        onCancel={confirmationDialog.onFalse}
+      <SendCommunicationConfirmDialog
+        isOpen={confirmationDialog.value}
+        onClose={confirmationDialog.onFalse}
         onConfirm={handleConfirmSend}
-        dialogTitle={t('SEND_COMMUNICATION')}
-      >
-        <div>
-          {t('SEND_COMMUNICATION_CONFIRM')}
-          <span className="font-bold mx-1">
-            {translateValue(tg, activityCommunication?.transportName, {
-              fallback: activityCommunication?.transportName,
-            })}
-          </span>
-          {t('COMMUNICATION_TO_THE')}
-          <span className="font-bold mx-1">
-            {activityCommunication?.groupName}
-          </span>
-          {t('GROUP_QUESTION')}
-        </div>
-      </ConfirmationDialog>
+        isPending={loadingButtons.includes(
+          activityCommunication?.communicationId,
+        )}
+        title={activityCommunication?.communicationTitle}
+        channel={translateValue(tg, activityCommunication?.transportName, {
+          fallback: activityCommunication?.transportName,
+        })}
+        groupName={activityCommunication?.groupName}
+        credits={activityCommunication?.extras?.smsCredits}
+      />
     </Card>
   );
 }

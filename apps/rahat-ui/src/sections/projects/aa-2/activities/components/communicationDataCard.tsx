@@ -1,6 +1,14 @@
 import { useTranslations } from 'next-intl';
 import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
-import { Mail, MessageSquare, PencilIcon, Phone, Trash2, CalendarClock } from 'lucide-react';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import {
+  Mail,
+  MessageSquare,
+  PencilIcon,
+  Phone,
+  Trash2,
+  CalendarClock,
+} from 'lucide-react';
 import React, { Dispatch, SetStateAction } from 'react';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
@@ -57,27 +65,31 @@ const CommunicationDataCard = ({
     setOpen(true);
 
     const itemData = communicationData[i];
+    const audioObj =
+      typeof itemData.audioURL === 'object' && itemData.audioURL !== null
+        ? itemData.audioURL
+        : {
+            fileName: '',
+            mediaURL:
+              typeof itemData.audioURL === 'string' ? itemData.audioURL : '',
+          };
+
     form.reset({
       communicationTitle: itemData.communicationTitle || '',
-      sessionId: itemData.sessionId,
-      communicationId: itemData.communicationId,
-      groupId: itemData.groupId,
-      groupType: itemData.groupType,
+      sessionId: itemData.sessionId || '',
+      communicationId: itemData.communicationId || '',
+      groupId: itemData.groupId || [],
+      groupType: itemData.groupType || '',
+      beneficiaries: itemData.beneficiaries || [],
+      stakeholders: itemData.stakeholders || [],
       message: typeof itemData.message === 'string' ? itemData.message : '',
-      subject: itemData.subject,
-      transportId: itemData.transportId,
-      audioURL:
-        typeof itemData.audioURL === 'object' && itemData.audioURL !== null
-          ? itemData.audioURL
-          : {
-              fileName: '',
-              mediaURL:
-                typeof itemData.audioURL === 'string'
-                  ? itemData.audioURL
-                  : '',
-            },
+      subject: itemData.subject || '',
+      transportId: itemData.transportId || '',
+      audioURL: audioObj,
       isScheduled: itemData.isScheduled || false,
-      scheduleDate: itemData.scheduleDate,
+      scheduleDate: itemData.scheduleDate
+        ? new Date(itemData.scheduleDate)
+        : undefined,
       scheduleTime: itemData.scheduleTime || '',
     });
   };
@@ -93,6 +105,13 @@ const CommunicationDataCard = ({
     <>
       <div className="grid grid-cols-1 gap-2 mt-4">
         {communicationData?.map((comm, i) => {
+          const audio =
+            typeof comm?.audioURL === 'object' && comm?.audioURL !== null
+              ? comm.audioURL
+              : typeof comm?.audioURL === 'string' && comm.audioURL
+              ? { fileName: '', mediaURL: comm.audioURL }
+              : null;
+
           return (
             <Card className="p-4 shadow-sm rounded-sm overflow-hidden" key={i}>
               <div className="flex items-start gap-4 min-w-0">
@@ -127,35 +146,86 @@ const CommunicationDataCard = ({
                             : '';
                         })()}
                       </span>
-                      <span>•</span>
-                      <span>{translateValue(tg, comm?.groupType)}</span>
+                      {!comm?.beneficiaries?.length &&
+                        !comm?.stakeholders?.length &&
+                        comm?.groupType && (
+                          <>
+                            <span>•</span>
+                            <span>{translateValue(tg, comm?.groupType)}</span>
+                          </>
+                        )}
 
                       {/* Group names container */}
                       <div className="flex flex-wrap gap-2 w-auto">
-                        {comm?.groupId?.map((uuid) => {
-                          const groupName =
-                            stakeholdersGroups?.find(
-                              (g: StakeholdersGroup) => g.uuid === uuid,
-                            )?.name ||
-                            beneficiaryGroups?.find(
-                              (g: BeneficiariesGroup) => g.uuid === uuid,
-                            )?.name ||
-                            t('UNKNOWN_GROUP');
+                        {comm?.beneficiaries?.length ||
+                        comm?.stakeholders?.length ? (
+                          <>
+                            {comm.beneficiaries?.map((b) => (
+                              <div
+                                key={b.id}
+                                className="flex items-center gap-1"
+                              >
+                                <span>•</span>
+                                <Badge
+                                  variant="secondary"
+                                  className="text-xs font-normal"
+                                >
+                                  {tg('BENEFICIARY')}:{' '}
+                                  <TruncatedCell text={b.name} maxLength={10} />
+                                </Badge>
+                              </div>
+                            ))}
+                            {comm.stakeholders?.map((s) => (
+                              <div
+                                key={s.id}
+                                className="flex items-center gap-1"
+                              >
+                                <span>•</span>
+                                <Badge
+                                  variant="outline"
+                                  className="text-xs font-normal"
+                                >
+                                  {tg('STAKEHOLDERS')}:{' '}
+                                  <TruncatedCell text={s.name} maxLength={10} />
+                                </Badge>
+                              </div>
+                            ))}
+                          </>
+                        ) : (
+                          comm?.groupId?.map((uuid) => {
+                            const groupName =
+                              stakeholdersGroups?.find(
+                                (g: StakeholdersGroup) => g.uuid === uuid,
+                              )?.name ||
+                              beneficiaryGroups?.find(
+                                (g: BeneficiariesGroup) => g.uuid === uuid,
+                              )?.name ||
+                              t('UNKNOWN_GROUP');
 
-                          return (
-                            <div key={uuid} className="flex items-center gap-2">
-                              <span>•</span>
-                              <TruncatedCell text={groupName} maxLength={8} />
-                            </div>
-                          );
-                        })}
+                            return (
+                              <div
+                                key={uuid}
+                                className="flex items-center gap-2"
+                              >
+                                <span>•</span>
+                                <TruncatedCell text={groupName} maxLength={8} />
+                              </div>
+                            );
+                          })
+                        )}
                       </div>
 
                       {comm?.isScheduled && (
                         <div className="flex items-center gap-1 text-xs text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full font-medium">
                           <CalendarClock className="h-3 w-3" />
                           <span>
-                            {t('SCHEDULED_FOR')}: {comm.scheduleDate ? formatDate(comm.scheduleDate, 'PPP') : ''} {comm.scheduleTime ? formatDate(comm.scheduleTime, 'hh:mm a') : ''}
+                            {t('SCHEDULED_FOR')}:{' '}
+                            {comm.scheduleDate
+                              ? formatDate(comm.scheduleDate, 'PPP')
+                              : ''}{' '}
+                            {comm.scheduleTime
+                              ? formatDate(comm.scheduleTime, 'hh:mm a')
+                              : ''}
                           </span>
                         </div>
                       )}
@@ -166,18 +236,20 @@ const CommunicationDataCard = ({
                       {comm?.subject}
                     </p>
                   )}
-                  {typeof comm?.message === 'string' && comm.message && (
+                  {typeof comm?.message === 'string' && comm?.message && (
                     <p className="text-sm text-gray-700 mt-1 break-all">
                       {comm.message}
                     </p>
                   )}
-                  {typeof comm?.audioURL === 'object' && comm.audioURL?.mediaURL && (
+                  {audio?.mediaURL && (
                     <div className="pt-2">
-                      <h3 className="text-sm font-medium mb-2">
-                        {comm.audioURL.fileName}
-                      </h3>
+                      {audio?.fileName && (
+                        <h3 className="text-sm font-medium mb-2">
+                          {audio.fileName}
+                        </h3>
+                      )}
                       <audio
-                        src={comm.audioURL.mediaURL}
+                        src={audio.mediaURL}
                         controls
                         className="w-full h-10 "
                       />

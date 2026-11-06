@@ -9,6 +9,9 @@ import { useProjectList } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import AssignRoleDialog from './assign.role.dialog';
 import { useUserActiveRoles } from './use.user.active.roles';
+import ConfirmationDialog from '../../common/confirmationDialog';
+import { useBoolean } from '../../hooks/use-boolean';
+import { useState } from 'react';
 
 type IProps = {
   userDetail: User;
@@ -18,6 +21,11 @@ export default function UsersRolesTabSplitView({ userDetail }: IProps) {
   const t = useTranslations('USERS_DETAIL');
   const user = useUserStore((state) => state.user);
   const loggedUserRoles = React.useMemo(() => user?.data?.roles, [user]);
+  const deleteRoleConfirmDialog = useBoolean(false);
+  const [roleToDelete, setRoleToDelete] = useState<{
+    name: string;
+    xrefId?: string | null;
+  } | null>(null);
 
   const { data: roleList, isLoading } = useUserActiveRoles(
     userDetail?.uuid as UUID,
@@ -34,10 +42,23 @@ export default function UsersRolesTabSplitView({ userDetail }: IProps) {
     return map;
   }, [projectList]);
 
-  const columns = useUsersRolesTableColumns({
+  const handleDelete = (roleName: string, xrefId?: string | null) => {
+    setRoleToDelete({ name: roleName, xrefId });
+    deleteRoleConfirmDialog.onTrue();
+  };
+
+  const deleteConfirmation = async () => {
+    if (!roleToDelete) return;
+
+    await deleteUserRole([roleToDelete.name], roleToDelete.xrefId);
+    setRoleToDelete(null);
+    deleteRoleConfirmDialog.onFalse();
+  };
+  const { columns, deleteUserRole, isDeleting } = useUsersRolesTableColumns({
     loggedUserRoles,
     userUUID: userDetail?.uuid as UUID,
     projectNameByUuid,
+    handleDelete,
   });
   const table = useReactTable({
     manualPagination: true,
@@ -59,6 +80,15 @@ export default function UsersRolesTabSplitView({ userDetail }: IProps) {
         table={table}
         tableHeight="h-[calc(100vh-400px)]"
         loading={isLoading}
+      />
+      <ConfirmationDialog
+        isConfirmationDialogOpen={deleteRoleConfirmDialog.value}
+        onCancel={() => deleteRoleConfirmDialog.onFalse()}
+        onConfirm={deleteConfirmation}
+        dialogTitle={t('DELETE_ROLE')}
+        dialogMessage={t('DELTE_ROLE_COMFIRMATION')}
+        isDestructive
+        isPending={isDeleting}
       />
     </div>
   );

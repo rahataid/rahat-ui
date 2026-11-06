@@ -216,7 +216,8 @@ export const useTransportSessionStats = (uuid: UUID) => {
         return mutate.data;
       } catch (error: any) {
         const rawMessage =
-          error?.response?.data?.message || t('FAILED_TO_FETCH_TRANSPORT_STATS');
+          error?.response?.data?.message ||
+          t('FAILED_TO_FETCH_TRANSPORT_STATS');
         const errorMessage = resolveBackendErrorMessage(
           tb,
           error?.response?.data?.code,

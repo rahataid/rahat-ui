@@ -15,7 +15,12 @@ type Props = {
   projectId: string;
 };
 
-export default function FloodDashboard({ benefStats, triggeersStats, tokenStats, projectId }: Props) {
+export default function FloodDashboard({
+  benefStats,
+  triggeersStats,
+  tokenStats,
+  projectId,
+}: Props) {
   return (
     <div className="space-y-3">
       <TokenStatsCard tokenStats={tokenStats} />

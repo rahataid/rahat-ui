@@ -34,6 +34,9 @@ export const useActivityForm = (appTransports?: Transport[]) => {
     },
     sessionId: '',
     communicationId: '',
+    isScheduled: false,
+    scheduleDate: undefined,
+    scheduleTime: '',
   };
 
   const communicationForm = useForm<z.infer<typeof CommunicationFormSchema>>({

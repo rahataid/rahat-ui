@@ -27,7 +27,9 @@ export default function TriggersListCard({ projectId, triggers }: IProps) {
                 projectId={projectId}
                 triggerId={trigger?.uuid}
                 phase={trigger?.phase?.name || t('N_A')}
-                type={trigger?.source === 'MANUAL' ? t('MANUAL') : t('AUTOMATED')}
+                type={
+                  trigger?.source === 'MANUAL' ? t('MANUAL') : t('AUTOMATED')
+                }
                 isTriggered={trigger?.isTriggered}
                 title={trigger?.title || t('N_A')}
                 dataSource={trigger?.source === 'MANUAL' ? '' : trigger?.source}

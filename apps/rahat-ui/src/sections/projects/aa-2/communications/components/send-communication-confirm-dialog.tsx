@@ -81,7 +81,12 @@ export function SendCommunicationConfirmDialog({
           </DialogDescription>
         </DialogHeader>
 
-        {(title || channel || recipientsCount != null || groupsCount != null || groupName || (credits != null && credits > 0)) && (
+        {(title ||
+          channel ||
+          recipientsCount != null ||
+          groupsCount != null ||
+          groupName ||
+          (credits != null && credits > 0)) && (
           <div className="my-2 rounded-md border bg-muted/30 p-3 text-xs sm:text-sm space-y-2 min-w-0">
             {title && (
               <div className="min-w-0">
@@ -96,21 +101,30 @@ export function SendCommunicationConfirmDialog({
 
             <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-muted/60">
               {channel && (
-                <Badge variant="secondary" className="gap-1 text-xs py-0.5 px-2">
-                  <CommunicationChannelIcon channel={channel} className="h-3 w-3" />
+                <Badge
+                  variant="secondary"
+                  className="gap-1 text-xs py-0.5 px-2"
+                >
+                  <CommunicationChannelIcon
+                    channel={channel}
+                    className="h-3 w-3"
+                  />
                   {t(channel.toUpperCase())}
                 </Badge>
               )}
 
               {groupName && (
                 <span className="text-xs text-muted-foreground font-medium">
-                  {channel ? '• ' : ''}{groupName}
+                  {channel ? '• ' : ''}
+                  {groupName}
                 </span>
               )}
 
               {recipientsCount != null && recipientsCount > 0 && (
                 <span className="text-xs text-muted-foreground">
-                  {channel || groupName ? '• ' : ''}{formatDigits(recipientsCount)} {t('INDIVIDUALS') || 'individuals'}
+                  {channel || groupName ? '• ' : ''}
+                  {formatDigits(recipientsCount)}{' '}
+                  {t('INDIVIDUALS') || 'individuals'}
                 </span>
               )}
 
@@ -123,7 +137,9 @@ export function SendCommunicationConfirmDialog({
               {credits != null && credits > 0 && (
                 <span className="text-xs text-muted-foreground">
                   • {formatDigits(credits)}{' '}
-                  {credits === 1 ? t('SMS_CREDIT') || 'SMS credit' : t('SMS_CREDITS') || 'SMS credits'}
+                  {credits === 1
+                    ? t('SMS_CREDIT') || 'SMS credit'
+                    : t('SMS_CREDITS') || 'SMS credits'}
                 </span>
               )}
             </div>

@@ -102,7 +102,9 @@ export function EditButton({
           </AlertDialog>
         </TooltipTrigger>
         <TooltipContent className="bg-secondary">
-          <p className="text-[clamp(10px,0.9vw,12px)] font-medium">{t('EDIT')}</p>
+          <p className="text-[clamp(10px,0.9vw,12px)] font-medium">
+            {t('EDIT')}
+          </p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

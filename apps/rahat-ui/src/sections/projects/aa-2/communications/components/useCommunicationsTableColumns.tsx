@@ -41,6 +41,8 @@ export type CommunicationRecord = {
   sender?: string;
   status: 'DELIVERED' | 'IN_PROGRESS' | 'FAILED' | 'PENDING' | 'COMPLETED' | 'SENT' | string;
   date: string;
+  isScheduled?: boolean;
+  scheduledAt?: string | null;
   targets?: {
     uuid: string;
     groupId: string;
@@ -58,6 +60,8 @@ export type BackendCommunication = {
   audioURL?: { mediaURL?: string; fileName?: string } | null;
   transportId?: string | null;
   createdBy?: string | null;
+  isScheduled?: boolean;
+  scheduledAt?: string | null;
   createdAt: string;
   updatedAt: string;
   targets?: {
@@ -80,15 +84,32 @@ export const toCommunicationRecord = (
   const stakeholders = targets
     .filter((target) => target?.groupType === 'STAKEHOLDERS' || target?.groupType === 'STAKEHOLDER')
     .map((target) => target.groupId);
-  const delivered = targets.filter(
-    (target) =>
-      target?.status === 'DELIVERED' ||
-      target?.status === 'SUCCESS' ||
-      target?.status === 'COMPLETED',
-  ).length;
-  const failed = targets.filter(
-    (target) => target?.status === 'FAILED' || target?.status === 'FAIL',
-  ).length;
+
+  let targetDelivered = 0;
+  let targetFailed = 0;
+  let hasAnyTargetCounts = false;
+
+  for (const t of targets as any[]) {
+    if (t?.counts) {
+      hasAnyTargetCounts = true;
+      targetDelivered += Number(t.counts.SUCCESS ?? 0);
+      targetFailed += Number(t.counts.FAIL ?? 0);
+    }
+  }
+
+  const delivered = hasAnyTargetCounts
+    ? targetDelivered
+    : targets.filter(
+        (target) =>
+          target?.status === 'DELIVERED' ||
+          target?.status === 'SUCCESS' ||
+          target?.status === 'COMPLETED',
+      ).length;
+  const failed = hasAnyTargetCounts
+    ? targetFailed
+    : targets.filter(
+        (target) => target?.status === 'FAILED' || target?.status === 'FAIL',
+      ).length;
   const message =
     typeof item?.message === 'string'
       ? item.message
@@ -101,9 +122,16 @@ export const toCommunicationRecord = (
       t?.group?._count?.stakeholders ??
       t?.group?.beneficiaries?.length ??
       t?.group?.stakeholders?.length ??
+      t?.counts?.TOTAL ??
       t?.count;
     return directCount != null && directCount > 0 ? acc + directCount : acc;
   }, 0);
+
+  const isFutureScheduled = Boolean(
+    item?.isScheduled &&
+      item?.scheduledAt &&
+      new Date(item.scheduledAt).getTime() > Date.now(),
+  );
 
   return {
     id: item.uuid,
@@ -115,8 +143,12 @@ export const toCommunicationRecord = (
     delivered,
     failed,
     sender: item.createdBy ?? undefined,
-    status: aggregateTargetStatus(targets),
+    status: isFutureScheduled && !targets.some((t) => t.sessionId)
+      ? 'SCHEDULED'
+      : aggregateTargetStatus(targets),
     date: item.createdAt,
+    isScheduled: item?.isScheduled,
+    scheduledAt: item?.scheduledAt,
     targets,
   };
 };
@@ -135,11 +167,34 @@ export function CommunicationRowStatusCell({
       .filter(Boolean) as string[];
   }, [record.targets]);
 
+  const targetCounts = useMemo(() => {
+    let aggregated: any = null;
+    for (const t of (record.targets ?? []) as any[]) {
+      if (t?.counts) {
+        if (!aggregated) {
+          aggregated = {
+            SUCCESS: 0,
+            FAIL: 0,
+            PENDING: 0,
+            SCHEDULED: 0,
+            TOTAL: 0,
+          };
+        }
+        aggregated.SUCCESS += Number(t.counts.SUCCESS ?? 0);
+        aggregated.FAIL += Number(t.counts.FAIL ?? 0);
+        aggregated.PENDING += Number(t.counts.PENDING ?? 0);
+        aggregated.SCHEDULED += Number(t.counts.SCHEDULED ?? 0);
+        aggregated.TOTAL += Number(t.counts.TOTAL ?? 0);
+      }
+    }
+    return aggregated;
+  }, [record.targets]);
+
   const effStatus = useMemo(() => {
     return resolveCommunicationLifecycleStatus({
       channel: record.channel || 'SMS',
       rawStatus: record.status,
-      counts: entry?.data ?? undefined,
+      counts: targetCounts ?? entry?.data ?? undefined,
       hasActiveTargets: (record.targets ?? []).some(
         (t) => t.status === 'SENT' || t.status === 'PROCESSING',
       ),
@@ -147,8 +202,19 @@ export function CommunicationRowStatusCell({
         (t) => t.status === 'PENDING',
       ),
       hasSession: sessionIds.length > 0,
+      isScheduled: record.isScheduled,
+      scheduledAt: record.scheduledAt,
     });
-  }, [record.channel, record.status, entry?.data, record.targets, sessionIds.length]);
+  }, [
+    record.channel,
+    record.status,
+    targetCounts,
+    entry?.data,
+    record.targets,
+    sessionIds.length,
+    record.isScheduled,
+    record.scheduledAt,
+  ]);
 
   return <CommunicationStatusBadge status={effStatus} isLoading={false} />;
 }
@@ -183,6 +249,28 @@ export function CommunicationRowDeliveryStatusCell({
   }, [record.targets, groupCountMap]);
 
   const { delivered, total } = useMemo(() => {
+    let targetDelivered = 0;
+    let targetTotal = 0;
+    let hasTargetCounts = false;
+
+    for (const t of (record.targets ?? []) as any[]) {
+      if (t?.counts) {
+        hasTargetCounts = true;
+        targetDelivered += Number(t.counts.SUCCESS ?? 0);
+        const s = Number(t.counts.SUCCESS ?? 0);
+        const f = Number(t.counts.FAIL ?? 0);
+        const p = Number(t.counts.PENDING ?? 0);
+        const sc = Number(t.counts.SCHEDULED ?? 0);
+        const tTot = Number(t.counts.TOTAL ?? (s + f + p + sc));
+        targetTotal += tTot;
+      }
+    }
+
+    if (hasTargetCounts) {
+      const tot = totalAudience > 0 ? totalAudience : targetTotal > 0 ? targetTotal : record.recipients;
+      return { delivered: targetDelivered, total: tot };
+    }
+
     if (entry?.data) {
       const counts = entry.data;
       const d = counts.SUCCESS ?? 0;
@@ -323,7 +411,11 @@ function CommunicationRowActionsCell({
           <span onClick={() => setIsConfirmOpen(true)}>
             <TooltipComponent
               Icon={SendHorizontal}
-              tip={t('SEND_COMMUNICATION') || 'Send Communication'}
+              tip={
+                record.isScheduled
+                  ? t('SEND_NOW') || 'Send Now'
+                  : t('SEND_COMMUNICATION') || 'Send Communication'
+              }
               iconStyle="hover:text-primary cursor-pointer text-muted-foreground"
             />
           </span>
@@ -457,7 +549,7 @@ export default function useCommunicationsTableColumns() {
                 variant="outline"
                 className="text-[10px] px-1.5 py-0 font-medium truncate max-w-full w-max bg-white"
               >
-                {`${formatDigits(stakeCount)} ${t('STAKEHOLDER_GROUPS').replace(/[:ः]$/, '')}`}
+                {`${formatDigits(stakeCount)} ${t('STAKEHOLDER_GROUPS').replace(/(?::|ः)$/, '')}`}
               </Badge>
             )}
             {benCount === 0 && stakeCount === 0 && (

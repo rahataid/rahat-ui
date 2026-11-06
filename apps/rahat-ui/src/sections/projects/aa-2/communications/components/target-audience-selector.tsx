@@ -8,7 +8,7 @@ import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@rahat-ui/shadcn/src/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@rahat-ui/shadcn/src/components/ui/command';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { Check, ChevronsUpDown } from 'lucide-react';
+import { Check, ChevronsUpDown, Lock } from 'lucide-react';
 import { cn } from '@rahat-ui/shadcn/src/utils';
 
 export type AudienceGroupOption = {
@@ -21,12 +21,14 @@ type TargetAudienceSelectorProps = {
   beneficiaryGroups: AudienceGroupOption[];
   stakeholderGroups: AudienceGroupOption[];
   isLoading?: boolean;
+  disabled?: boolean;
 };
 
 export function TargetAudienceSelector({
   beneficiaryGroups,
   stakeholderGroups,
   isLoading,
+  disabled = false,
 }: TargetAudienceSelectorProps) {
   const t = useTranslations("AA_PROJECT");
   const formatDigits = useLabelDigits();
@@ -74,8 +76,18 @@ export function TargetAudienceSelector({
   return (
     <div className="space-y-4 border rounded-md p-4 bg-slate-50">
       <div className="flex flex-col space-y-1">
-        <Label className="text-base font-semibold">{t("TARGET_AUDIENCE")}</Label>
-        {errors.targetAudience && (
+        <div className="flex items-center gap-2">
+          <Label className={cn("text-base font-semibold", disabled && "text-muted-foreground")}>
+            {t("TARGET_AUDIENCE")}
+          </Label>
+          {disabled && (
+            <span className="text-[11px] font-normal text-muted-foreground bg-muted px-1.5 py-0.5 rounded flex items-center gap-1 border border-border/50">
+              <Lock className="w-3 h-3" />
+              {t("LOCKED") || "Locked"}
+            </span>
+          )}
+        </div>
+        {!disabled && errors.targetAudience && (
           <p className="text-sm font-medium text-destructive">{errors.targetAudience.message as string}</p>
         )}
       </div>
@@ -83,17 +95,18 @@ export function TargetAudienceSelector({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
         <div className="space-y-2 flex flex-col">
           <Label className="text-muted-foreground block mb-2">{t("BENEFICIARY_GROUP")}</Label>
-          <Popover open={openBen} onOpenChange={setOpenBen}>
+          <Popover open={disabled ? false : openBen} onOpenChange={disabled ? undefined : setOpenBen}>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
                 role="combobox"
                 aria-expanded={openBen}
-                disabled={isLoading}
+                disabled={isLoading || disabled}
                 className={cn(
                   "w-full justify-between font-normal text-left",
-                  errors.targetAudience && "shadow-[inset_4px_0_0_0_hsl(var(--destructive))] bg-red-50 focus-visible:ring-2 focus-visible:ring-destructive",
-                  !errors.targetAudience && selectedBeneficiaries.length > 0 && "shadow-[inset_4px_0_0_0_hsl(var(--primary))] bg-blue-50"
+                  disabled && "opacity-70 cursor-not-allowed bg-muted/40 shadow-none",
+                  !disabled && errors.targetAudience && "shadow-[inset_4px_0_0_0_hsl(var(--destructive))] bg-red-50 focus-visible:ring-2 focus-visible:ring-destructive",
+                  !disabled && !errors.targetAudience && selectedBeneficiaries.length > 0 && "shadow-[inset_4px_0_0_0_hsl(var(--primary))] bg-blue-50"
                 )}
               >
                 {selectedBeneficiaries.length > 0
@@ -126,17 +139,18 @@ export function TargetAudienceSelector({
 
         <div className="space-y-2 flex flex-col">
           <Label className="text-muted-foreground block mb-2">{t("STAKEHOLDER_GROUP")}</Label>
-          <Popover open={openStake} onOpenChange={setOpenStake}>
+          <Popover open={disabled ? false : openStake} onOpenChange={disabled ? undefined : setOpenStake}>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
                 role="combobox"
                 aria-expanded={openStake}
-                disabled={isLoading}
+                disabled={isLoading || disabled}
                 className={cn(
                   "w-full justify-between font-normal text-left",
-                  errors.targetAudience && "shadow-[inset_4px_0_0_0_hsl(var(--destructive))] bg-red-50 focus-visible:ring-2 focus-visible:ring-destructive",
-                  !errors.targetAudience && selectedStakeholders.length > 0 && "shadow-[inset_4px_0_0_0_hsl(var(--primary))] bg-blue-50"
+                  disabled && "opacity-70 cursor-not-allowed bg-muted/40 shadow-none",
+                  !disabled && errors.targetAudience && "shadow-[inset_4px_0_0_0_hsl(var(--destructive))] bg-red-50 focus-visible:ring-2 focus-visible:ring-destructive",
+                  !disabled && !errors.targetAudience && selectedStakeholders.length > 0 && "shadow-[inset_4px_0_0_0_hsl(var(--primary))] bg-blue-50"
                 )}
               >
                 {selectedStakeholders.length > 0
@@ -195,7 +209,15 @@ export function TargetAudienceSelector({
                       <span className={cn("ml-1 shrink-0 font-medium", group.count === 0 ? "text-amber-700" : "opacity-70")}>
                         ({formatDigits(group.count)})
                       </span>
-                      <button type="button" onClick={() => removeBeneficiary(group.id)} className="ml-2 text-muted-foreground hover:text-foreground transition-colors shrink-0">×</button>
+                      {!disabled && (
+                        <button
+                          type="button"
+                          onClick={() => removeBeneficiary(group.id)}
+                          className="ml-2 text-muted-foreground hover:text-foreground transition-colors shrink-0"
+                        >
+                          ×
+                        </button>
+                      )}
                     </Badge>
                   ))
                 )}
@@ -222,7 +244,15 @@ export function TargetAudienceSelector({
                       <span className={cn("ml-1 shrink-0 font-medium", group.count === 0 ? "text-amber-700" : "opacity-70")}>
                         ({formatDigits(group.count)})
                       </span>
-                      <button type="button" onClick={() => removeStakeholder(group.id)} className="ml-2 text-muted-foreground hover:text-foreground transition-colors shrink-0">×</button>
+                      {!disabled && (
+                        <button
+                          type="button"
+                          onClick={() => removeStakeholder(group.id)}
+                          className="ml-2 text-muted-foreground hover:text-foreground transition-colors shrink-0"
+                        >
+                          ×
+                        </button>
+                      )}
                     </Badge>
                   ))
                 )}

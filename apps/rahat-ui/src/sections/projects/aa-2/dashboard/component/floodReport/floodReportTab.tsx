@@ -215,11 +215,7 @@ export default function FloodReportTab({
 
   return (
     <div className="flex flex-col">
-      <Heading
-        title={t(tab.title)}
-        titleStyle="text-lg"
-        description=""
-      />
+      <Heading title={t(tab.title)} titleStyle="text-lg" description="" />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {charts.map(({ chart, report }) => (
           <div

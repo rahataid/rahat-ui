@@ -49,14 +49,20 @@ export default function CommunicationList({
   const t = useTranslations('AA_PROJECT');
   const defaultTab = useMemo(() => {
     const active = activityCommunication?.some(
-      (d) => d.sessionStatus === 'NEW' || d.sessionStatus === 'PENDING',
+      (d) =>
+        d.sessionStatus === 'NEW' ||
+        d.sessionStatus === 'PENDING' ||
+        d.sessionStatus === 'SCHEDULED',
     );
     return active ? 'communications' : 'history';
   }, [activityCommunication]);
 
   const pendingCommunications = useMemo(() => {
     return activityCommunication?.filter(
-      (d) => d?.sessionStatus === 'NEW' || d?.sessionStatus === 'PENDING',
+      (d) =>
+        d?.sessionStatus === 'NEW' ||
+        d?.sessionStatus === 'PENDING' ||
+        d?.sessionStatus === 'SCHEDULED',
     );
   }, [activityCommunication]);
 

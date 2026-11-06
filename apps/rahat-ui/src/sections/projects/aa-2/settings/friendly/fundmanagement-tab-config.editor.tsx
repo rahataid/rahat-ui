@@ -82,7 +82,9 @@ export default function FundManagementTabConfigEditor({ submitRef }: IProps) {
   });
 
   if (isLoading) {
-    return <div className="p-4 text-sm text-muted-foreground">{g('LOADING')}</div>;
+    return (
+      <div className="p-4 text-sm text-muted-foreground">{g('LOADING')}</div>
+    );
   }
 
   return (

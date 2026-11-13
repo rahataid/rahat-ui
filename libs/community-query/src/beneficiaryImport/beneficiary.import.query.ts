@@ -28,11 +28,35 @@ export const useExistingFieldMappings = () => {
   });
 };
 
+// CompressionStream.
+const gzipJson = async (payload: any): Promise<Blob | null> => {
+  if (typeof CompressionStream === 'undefined') return null;
+  try {
+    const stream = new Blob([JSON.stringify(payload)], {
+      type: 'application/json',
+    })
+      .stream()
+      .pipeThrough(new CompressionStream('gzip'));
+    return await new Response(stream).blob();
+  } catch (e) {
+    return null;
+  }
+};
+
 export const useCreateImportSource = () => {
   const { rumsanService } = useRSQuery();
   const myClient = getSourceClient(rumsanService.client);
   return useMutation({
-    mutationFn: (payload: any) => myClient.create(payload),
+    mutationFn: async (payload: any) => {
+      const gzipped = await gzipJson(payload);
+      if (!gzipped) return myClient.create(payload);
+      return myClient.create(gzipped as any, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Encoding': 'gzip',
+        },
+      });
+    },
     onSuccess: () => {},
     onError: (err: any) => {
       const msg = err?.response?.data?.message || 'Something went wrong!';

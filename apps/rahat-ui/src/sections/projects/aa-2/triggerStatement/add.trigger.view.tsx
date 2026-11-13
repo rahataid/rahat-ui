@@ -141,6 +141,7 @@ export default function AddTriggerView() {
     description: z.string().optional(),
     isMandatory: z.boolean().optional(),
     leadTime: z.string().optional(),
+    manualSources: z.array(z.string().trim().min(1)).optional(),
   });
 
   const manualForm = useForm<z.infer<typeof ManualFormSchema>>({
@@ -150,6 +151,7 @@ export default function AddTriggerView() {
       isMandatory: false,
       description: '',
       leadTime: '',
+      manualSources: [],
     },
   });
 

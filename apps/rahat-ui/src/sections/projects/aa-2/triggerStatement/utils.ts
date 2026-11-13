@@ -153,6 +153,18 @@ export const filterSourceOptionsByProjectType = (
 
 export const SEP = ' • ';
 
+// Triggers are written with a top-level `manualSources`, but the backend
+// stores them under `extra` (`extra.manualSources`, or `extra` itself as the array).
+export const getManualSources = (trigger: any): string[] => {
+  const extra = trigger?.extra;
+  const sources = Array.isArray(extra)
+    ? extra
+    : extra?.manualSources ?? trigger?.manualSources;
+  return Array.isArray(sources)
+    ? sources.filter((s): s is string => typeof s === 'string')
+    : [];
+};
+
 export const calculateRemainingTriggers = (
   totalRequiredTriggers: number,
   totalTriggered: number,

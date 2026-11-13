@@ -1,4 +1,5 @@
 'use client';
+import { MS_ACTIONS } from '@rahataid/sdk';
 import { getBeneficiaryClient } from '@rahataid/sdk/clients';
 import { useRSQuery } from '@rumsan/react-query';
 import { Pagination } from '@rumsan/sdk/types';
@@ -391,15 +392,39 @@ export const useUpdateGroupPropose = () => {
     mutationFn: (payload: any) =>
       updateGroupPropose(payload.uuid, payload.selectedPurpose),
     onSuccess: async (_data, variables) => {
-      // TODO: This needs to be fixed
       qc.removeQueries({
         queryKey: [GET_BENEFICIARY_GROUP, variables?.uuid],
         exact: true,
       });
       await qc.invalidateQueries({
-        queryKey: ['GET_BENEFICIARY_GROUP', variables?.uuid],
-        exact: false,
+        queryKey: [GET_BENEFICIARY_GROUP, variables?.uuid],
       });
+
+      // platform lists
+      qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES_GROUPS] });
+      qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
+
+      // project side lists (group purpose is synced to project service async)
+      qc.invalidateQueries({ queryKey: ['beneficiaryGroups'] });
+      qc.invalidateQueries({
+        queryKey: ['beneficiaryGroup', variables?.uuid],
+      });
+      qc.invalidateQueries({
+        queryKey: [MS_ACTIONS.BENEFICIARY.LIST_BY_PROJECT],
+      });
+
+      // project service updates the purpose via a queued sync job, so a single
+      // immediate refetch may still return the old value. re-invalidate once.
+      window.setTimeout(() => {
+        qc.invalidateQueries({ queryKey: ['beneficiaryGroups'] });
+        qc.invalidateQueries({
+          queryKey: ['beneficiaryGroup', variables?.uuid],
+        });
+        qc.invalidateQueries({
+          queryKey: [MS_ACTIONS.BENEFICIARY.LIST_BY_PROJECT],
+        });
+      }, 5000);
+
       toast.success(
         variables?.successMessage || tg('GROUP_PROPOSE_UPDATED_SUCCESSFULLY'),
       );

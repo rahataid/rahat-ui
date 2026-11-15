@@ -9,7 +9,6 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { flexRender, Table } from '@tanstack/react-table';
 import { NoResult, SpinnerLoader } from 'apps/rahat-ui/src/common';
 
@@ -28,80 +27,74 @@ export default function CommsLogsTable({
   const t = useTranslations('AA_PROJECT');
   return (
     <>
-      <div className="mt-1">
-        <TableComponent>
-          <ScrollArea className="h-[calc(400px)]">
-            <TableHeader className="top-0 sticky bg-gray-100">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead
-                        key={header.id}
-                        className={
-                          (
-                            header.column.columnDef.meta as
-                              | ColumnMeta
-                              | undefined
-                          )?.className
-                        }
-                      >
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
-                      </TableHead>
-                    );
-                  })}
+      <div className="mt-1 h-[400px] overflow-auto">
+        <TableComponent className="min-w-[700px]">
+          <TableHeader className="top-0 sticky bg-gray-100">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead
+                      key={header.id}
+                      className={
+                        (header.column.columnDef.meta as ColumnMeta | undefined)
+                          ?.className
+                      }
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                    </TableHead>
+                  );
+                })}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && 'selected'}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell
+                      key={cell.id}
+                      className={
+                        (cell.column.columnDef.meta as ColumnMeta | undefined)
+                          ?.className
+                      }
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </TableCell>
+                  ))}
                 </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && 'selected'}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell
-                        key={cell.id}
-                        className={
-                          (cell.column.columnDef.meta as ColumnMeta | undefined)
-                            ?.className
-                        }
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={table.getAllColumns().length}
-                    className="h-24 text-center"
-                  >
-                    {isLoading ? (
-                      <SpinnerLoader />
-                    ) : (
-                      <NoResult
-                        message={
-                          noResultMessage ||
-                          t('NO_COMMUNICATIONS_LOGS_AVAILABLE')
-                        }
-                      />
-                    )}
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </ScrollArea>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={table.getAllColumns().length}
+                  className="h-24 text-center"
+                >
+                  {isLoading ? (
+                    <SpinnerLoader />
+                  ) : (
+                    <NoResult
+                      message={
+                        noResultMessage || t('NO_COMMUNICATIONS_LOGS_AVAILABLE')
+                      }
+                    />
+                  )}
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
         </TableComponent>
         {/* <ClientSidePagination table={table} /> */}
       </div>

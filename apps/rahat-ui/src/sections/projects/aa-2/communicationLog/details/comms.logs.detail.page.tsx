@@ -308,7 +308,7 @@ export default function CommsLogsDetailPage() {
               description={t('DETAILED_VIEW_OF_COMMUNICATION')}
             />
           </div>
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
             {latestBroadcastUpdatedAt ? (
               <p className="text-sm text-muted-foreground">
                 {t('UPDATED_AT')}: {formatDate(latestBroadcastUpdatedAt)}
@@ -467,7 +467,7 @@ export default function CommsLogsDetailPage() {
               </div>
 
               {/* Right Section (Data Cards) — 2/3 on large screens */}
-              <div className="flex-1 grid grid-cols-2 gap-4">
+              <div className="flex-1 grid grid-cols-1 min-[400px]:grid-cols-2 gap-4">
                 <DataCard
                   title={t('SUCCESSFULLY_DELIVERED')}
                   smallNumber={formatNum(count?.data?.data?.SUCCESS ?? 0)}
@@ -700,8 +700,8 @@ export default function CommsLogsDetailPage() {
                 </div>
               </CardContent>
             </Card>
-            <Card className="col-span-1 md:col-span-2 w-full rounded-sm">
-              <CardHeader className="flex flex-row items-center justify-center gap-2 pb-0 pt-0.5 space-y-0 px-2">
+            <Card className="col-span-1 md:col-span-2 min-w-0 w-full rounded-sm">
+              <CardHeader className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2 pb-0 pt-0.5 space-y-0 px-2">
                 <SearchInput
                   className="w-full"
                   value={filters.address}
@@ -731,7 +731,7 @@ export default function CommsLogsDetailPage() {
                   isLoading={isLoadingSessionLogs}
                 />
               </CardContent>
-              <CardFooter className="justify-end pt-0 pb-0">
+              <CardFooter className="justify-end pt-0 pb-0 [&>div]:min-w-0 [&>div]:w-full [&>div]:flex-wrap [&>div>div:first-child]:basis-full sm:[&>div>div:first-child]:basis-auto">
                 <CustomPagination
                   meta={
                     logsMeta || {

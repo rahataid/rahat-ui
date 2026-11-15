@@ -26,8 +26,9 @@ import {
   useTabConfiguration,
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
-import { useMemo } from 'react';
+import { useEffect } from 'react';
 import { InkindRedemptionList } from './tabs/inkind.redemption.list';
+import { getEnabledVendorModules, resolveVendorTab } from './vendor-tabs';
 
 const TabsTriggerStats = (t: any) => [
   { title: t('VENDOR_OVERVIEW'), value: 'vendorOverview', module: 'all' },
@@ -56,33 +57,27 @@ export default function Detail() {
   );
 
   // Get nav tabs configuration to check which modules are enabled
-  const { data: navTabsConfig } = useTabConfiguration(
+  const { data: navTabsConfig, isLoading: isNavLoading } = useTabConfiguration(
     id as UUID,
     PROJECT_SETTINGS_KEYS.PROJECT_NAV_CONFIG,
   );
 
-  // Check which modules are enabled in the nav configuration
-  const hasFundManagement = useMemo(() => {
-    return navTabsConfig?.value?.navsettings?.some(
-      (tab: { title: string }) => tab.title === 'Fund Management',
-    );
-  }, [navTabsConfig]);
-
-  const hasInkindManagement = useMemo(() => {
-    return navTabsConfig?.value?.navsettings?.some(
-      (tab: { title: string }) => tab.title === 'Inkind Management',
-    );
-  }, [navTabsConfig]);
-
-  // Filter tabs based on enabled modules
-  const visibleTabs = useMemo(() => {
-    return TabsTriggerStats(t).filter((tab) => {
-      if (tab.module === 'all') return true;
-      if (tab.module === 'fund') return hasFundManagement;
-      if (tab.module === 'inkind') return hasInkindManagement;
-      return false;
-    });
-  }, [hasFundManagement, hasInkindManagement]);
+  const modules = getEnabledVendorModules(navTabsConfig);
+  const visibleTabs = TabsTriggerStats(t).filter(
+    (tab) =>
+      tab.module === 'all' ||
+      (tab.module === 'fund' && modules.fund) ||
+      (tab.module === 'inkind' && modules.inkind),
+  );
+  const resolvedTab = resolveVendorTab(
+    activeTab,
+    visibleTabs,
+    'vendorOverview',
+    isNavLoading,
+  );
+  useEffect(() => {
+    if (resolvedTab !== activeTab) setActiveTab(resolvedTab);
+  }, [activeTab, resolvedTab, setActiveTab]);
 
   // Helper to check if tab should be rendered
   const shouldRenderTab = (tabValue: string) =>
@@ -128,7 +123,7 @@ export default function Detail() {
         title={t('VENDOR_DETAILS')}
         description={t('VENDOR_DETAIL_DESC', { name: vendor?.name })}
       />
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
+      <Tabs value={resolvedTab} onValueChange={setActiveTab}>
         <TabsList className="border bg-secondary rounded">
           {visibleTabs.map((tab) => (
             <TabsTrigger

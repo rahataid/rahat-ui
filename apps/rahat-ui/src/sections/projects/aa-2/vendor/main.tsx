@@ -13,7 +13,8 @@ import { VendorList } from './tabs/vendor.list';
 import { VendorRedemptionList } from './tabs/vendor.redemption.list';
 import { InkindRedemptionList } from './tabs/inkind.redemption.list';
 import { PROJECT_SETTINGS_KEYS, useTabConfiguration } from '@rahat-ui/query';
-import { useMemo } from 'react';
+import { useEffect } from 'react';
+import { getEnabledVendorModules, resolveVendorTab } from './vendor-tabs';
 
 export default function VendorsView() {
   const t = useTranslations('AA_PROJECT');
@@ -21,7 +22,7 @@ export default function VendorsView() {
   const { id } = useParams() as { id: UUID };
   const { activeTab, setActiveTab } = useActiveTab('vendorList');
 
-  const { data: navTabsConfig } = useTabConfiguration(
+  const { data: navTabsConfig, isLoading: isNavLoading } = useTabConfiguration(
     id as UUID,
     PROJECT_SETTINGS_KEYS.PROJECT_NAV_CONFIG,
   );
@@ -40,26 +41,22 @@ export default function VendorsView() {
     },
   ];
 
-  const hasInkindManagement = useMemo(() => {
-    return navTabsConfig?.value?.navsettings?.some(
-      (tab: { title: string }) => tab.title === 'Inkind Management',
-    );
-  }, [navTabsConfig]);
-
-  const hasFundManagement = useMemo(() => {
-    return navTabsConfig?.value?.navsettings?.some(
-      (tab: { title: string }) => tab.title === 'Fund Management',
-    );
-  }, [navTabsConfig]);
-
-  const visibleTabs = useMemo(() => {
-    return VendorsTabs.filter((tab) => {
-      if (tab.module === 'all') return true;
-      if (tab.module === 'inkind') return hasInkindManagement;
-      if (tab.module === 'fund') return hasFundManagement;
-      return false;
-    });
-  }, [hasInkindManagement]);
+  const modules = getEnabledVendorModules(navTabsConfig);
+  const visibleTabs = VendorsTabs.filter(
+    (tab) =>
+      tab.module === 'all' ||
+      (tab.module === 'fund' && modules.fund) ||
+      (tab.module === 'inkind' && modules.inkind),
+  );
+  const resolvedTab = resolveVendorTab(
+    activeTab,
+    visibleTabs,
+    'vendorList',
+    isNavLoading,
+  );
+  useEffect(() => {
+    if (resolvedTab !== activeTab) setActiveTab(resolvedTab);
+  }, [activeTab, resolvedTab, setActiveTab]);
 
   return (
     <>
@@ -69,7 +66,7 @@ export default function VendorsView() {
           description={t('TRACK_ALL_THE_VENDOR_REPORTS_HERE')}
         />
 
-        <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
+        <Tabs value={resolvedTab} onValueChange={setActiveTab}>
           <TabsList className="border bg-secondary rounded">
             {visibleTabs.map((tab) => (
               <TabsTrigger
@@ -84,12 +81,16 @@ export default function VendorsView() {
           <TabsContent value="vendorList">
             <VendorList id={id} />
           </TabsContent>
-          <TabsContent value="vendorRedemptionList">
-            <VendorRedemptionList id={id} />
-          </TabsContent>
-          <TabsContent value="inkindRedemptionList">
-            <InkindRedemptionList id={id} showActions={true} />
-          </TabsContent>
+          {modules.fund && (
+            <TabsContent value="vendorRedemptionList">
+              <VendorRedemptionList id={id} />
+            </TabsContent>
+          )}
+          {modules.inkind && (
+            <TabsContent value="inkindRedemptionList">
+              <InkindRedemptionList id={id} showActions={true} />
+            </TabsContent>
+          )}
         </Tabs>
       </div>
     </>

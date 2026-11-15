@@ -1,7 +1,6 @@
 import { useTranslations } from 'next-intl';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import React from 'react';
-import { RxCrossCircled } from 'react-icons/rx';
 import { format } from 'date-fns';
 import {
   ScrollArea,

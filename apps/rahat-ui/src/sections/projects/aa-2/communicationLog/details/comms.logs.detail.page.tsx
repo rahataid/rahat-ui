@@ -58,7 +58,7 @@ import { toast } from 'react-toastify';
 import { downloadLogsCsv, exportFailedLogs } from './comms.logs.export.utils';
 import CommsLogsTable from '../table/comms.logs.table';
 import useCommsLogsTableColumns from '../table/useCommsLogsTableColumns';
-import { getPhaseColor } from 'apps/rahat-ui/src/utils/getPhaseColor';
+import { PhaseBadge } from 'apps/rahat-ui/src/components/phase-badge';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
@@ -402,13 +402,9 @@ export default function CommsLogsDetailPage() {
                         { fallbackStyle: 'raw', silent: true },
                       )}`}
                     >
-                      <Badge
-                        className={`${getPhaseColor(
-                          activityDetail?.phase?.name,
-                        )}`}
-                      >
+                      <PhaseBadge phase={activityDetail?.phase?.name}>
                         {activityDetail?.phase?.name || tg('N_A')}
-                      </Badge>
+                      </PhaseBadge>
                     </TooltipWrapper>
                     <TooltipWrapper
                       tip={`${t('ACTIVITY_STATUS')}: ${

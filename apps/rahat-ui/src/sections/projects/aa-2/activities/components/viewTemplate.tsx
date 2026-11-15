@@ -38,6 +38,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/accordion';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
+import { PhaseBadge } from 'apps/rahat-ui/src/components/phase-badge';
 
 interface ViewTemplateProps {
   open: boolean;
@@ -316,12 +317,12 @@ const ViewTemplate = ({
 
                         <div className="flex flex-wrap gap-2 mt-3">
                           {item.phase?.name && (
-                            <Badge variant="secondary" className="text-xs">
+                            <PhaseBadge phase={item.phase.name}>
                               {translateValue(tg, item.phase.name, {
                                 fallbackStyle: 'raw',
                                 silent: true,
                               })}
-                            </Badge>
+                            </PhaseBadge>
                           )}
                           {item.category?.name && (
                             <Badge variant="outline" className="text-xs">

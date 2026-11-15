@@ -7,6 +7,7 @@ import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { SEP, toLabel, TriggerStatement } from '../utils';
 import { getSourceSubTypeLabel } from '../trigger.statement.schema';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
+import { PhaseBadge } from 'apps/rahat-ui/src/components/phase-badge';
 type IProps = {
   projectId: string;
   triggerId: string;
@@ -27,17 +28,6 @@ type IProps = {
 };
 
 const MAX_VISIBLE_SOURCES = 3;
-
-const renderPhaseBadgeColor = (phase: string) => {
-  switch (phase) {
-    case 'READINESS':
-      return 'bg-yellow-50 text-yellow-500';
-    case 'ACTIVATION':
-      return 'bg-red-50 text-red-500';
-    default:
-      return 'bg-green-50 text-green-500';
-  }
-};
 
 export default function TriggerCard({
   projectId,
@@ -83,14 +73,12 @@ export default function TriggerCard({
     >
       <div className="flex justify-between items-center space-x-4 mb-2">
         <div className="flex items-center space-x-4">
-          <Badge
-            className={`font-medium ${phase && renderPhaseBadgeColor(phase)}`}
-          >
+          <PhaseBadge phase={phase}>
             <TruncatedCell
               text={phase ? phase : triggerType || ''}
               maxLength={10}
             />
-          </Badge>
+          </PhaseBadge>
           <Badge className="font-medium">{capitalizeFirstLetter(type)}</Badge>
           {!!version && <Badge className="font-medium">V{version}</Badge>}
         </div>

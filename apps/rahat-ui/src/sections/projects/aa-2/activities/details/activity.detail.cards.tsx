@@ -8,6 +8,7 @@ import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
+import { PhaseBadge } from 'apps/rahat-ui/src/components/phase-badge';
 type ActivityDetailCardsProps = {
   activityDetail?: any;
   loading?: boolean;
@@ -52,9 +53,9 @@ export default function ActivityDetailCards({
             <TooltipWrapper
               tip={`${t('PHASE')}: ${activityDetail?.phase?.name || tg('N_A')}`}
             >
-              <span className="bg-green-100 text-green-700 text-xs font-normal px-2 py-1 rounded-sm cursor-pointer">
+              <PhaseBadge phase={activityDetail?.phase?.name}>
                 {activityDetail?.phase?.name || tg('N_A')}
-              </span>
+              </PhaseBadge>
             </TooltipWrapper>
 
             <TooltipWrapper

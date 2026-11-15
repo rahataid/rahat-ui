@@ -183,7 +183,7 @@ function GrievancesTable() {
   }, [filters, setPagination]);
 
   return (
-    <div className="p-4 rounded-sm border">
+    <div className="min-w-0 p-4 rounded-sm border">
       <div className="flex flex-col space-y-2 mb-4">
         {/* Active filters */}
         {hasActiveFilters && (
@@ -213,9 +213,9 @@ function GrievancesTable() {
             </button>
           </div>
         )}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col items-stretch gap-2 md:flex-row md:items-center">
           <SearchInput
-            className="flex-1"
+            className="w-full min-w-0 md:flex-1"
             name={t('TITLE')}
             onSearch={(e) => handleSearch(e, 'title')}
             value={filters?.title || ''}
@@ -224,7 +224,7 @@ function GrievancesTable() {
             value={filters?.status || 'all'}
             onValueChange={(value) => handleFilterChange('status', value)}
           >
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-full md:w-[180px]">
               <SelectValue placeholder={tg('STATUS')} />
             </SelectTrigger>
             <SelectContent>
@@ -240,7 +240,7 @@ function GrievancesTable() {
             value={filters?.type || 'all'}
             onValueChange={(value) => handleFilterChange('type', value)}
           >
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-full md:w-[180px]">
               <SelectValue placeholder={t('GRIEVANCE_TYPE')} />
             </SelectTrigger>
             <SelectContent>
@@ -256,7 +256,7 @@ function GrievancesTable() {
             value={filters?.priority || 'all'}
             onValueChange={(value) => handleFilterChange('priority', value)}
           >
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-full md:w-[180px]">
               <SelectValue placeholder={t('PRIORITY')} />
             </SelectTrigger>
             <SelectContent>
@@ -270,9 +270,14 @@ function GrievancesTable() {
           </Select>
         </div>
       </div>
-      <DemoTable table={table} loading={projectGrievances.isLoading} />
+      <DemoTable
+        table={table}
+        loading={projectGrievances.isLoading}
+        tableClassName="min-w-[900px]"
+      />
 
       <CustomPagination
+        className="flex-wrap justify-start sm:justify-end [&>div:first-child]:basis-full sm:[&>div:first-child]:basis-auto"
         currentPage={pagination.page}
         handleNextPage={setNextPage}
         handlePrevPage={setPrevPage}

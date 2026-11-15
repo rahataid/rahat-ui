@@ -63,14 +63,14 @@ const GrievancesDetail = () => {
       <div className="mb-2 flex flex-col space-y-0">
         <Back path={navRoute} />
 
-        <div className="mt-4 flex justify-between items-center">
+        <div className="mt-4 flex flex-col items-start gap-3 sm:flex-row sm:justify-between sm:items-center">
           <div>
             <Heading
               title={t('GRIEVANCE_DETAILS_TITLE')}
               description={t('DETAILED_VIEW_OF_THE_SELECTED_GRIEVANCE')}
             />
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button

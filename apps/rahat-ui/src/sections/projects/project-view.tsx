@@ -5,12 +5,25 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useTranslations } from 'next-intl';
 import { CirclePlus } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useBoolean } from '../../hooks/use-boolean';
 import { ProjectCard } from '../../sections/projects';
 import AddProjectConfirmModal from './addProject.confirm';
+import { SpinnerLoader } from '../../common';
+import { Project } from '@rahataid/sdk/project/project.types';
+import { UUID } from 'crypto';
 
 const PROJECT_PIN_KEY = 'PROJECT_PIN';
+
+type DisplayProject = Project & {
+  uuid: UUID;
+  name: string;
+  type: string;
+};
+
+function isDisplayProject(project: Project): project is DisplayProject {
+  return !!(project.uuid && project.name && project.type);
+}
 
 const loadPinnedProjects = (): string[] => {
   try {
@@ -33,9 +46,10 @@ const savePinnedProjects = (ids: string[]) => {
 
 export default function ProjectListView() {
   const t = useTranslations('PROJECTS_LIST');
-  const { data } = useProjectList();
+  const g = useTranslations('GLOBAL');
+  const { data, isLoading, isError } = useProjectList();
   const AddProjectModal = useBoolean();
-  const [filterValue, setFilterValue] = useState([]);
+  const [searchValue, setSearchValue] = useState('');
   const [pinnedIds, setPinnedIds] = useState<string[]>(() =>
     loadPinnedProjects(),
   );
@@ -48,29 +62,20 @@ export default function ProjectListView() {
     AddProjectModal.onFalse();
   };
 
-  const handleFilterChange = (event) => {
-    const name = event.target.value;
-    const project = data?.data?.filter((project) => {
-      if (
-        project.name?.toLowerCase().includes(name.toLowerCase()) ||
-        name.length === 0
-      )
-        return project;
-    });
-    setFilterValue(project as any);
-  };
-
-  useEffect(() => {
-    setFilterValue(data?.data as any);
-  }, [data?.data]);
-
   const sortedProjects = useMemo(() => {
-    if (!filterValue?.length) return [];
+    const filterValue = (data?.data ?? [])
+      .filter(isDisplayProject)
+      .filter((project) =>
+        project.name.toLowerCase().includes(searchValue.toLowerCase()),
+      );
     return [
       ...filterValue.filter((p) => pinnedIds.includes(p.uuid)),
       ...filterValue.filter((p) => !pinnedIds.includes(p.uuid)),
     ];
-  }, [filterValue, pinnedIds]);
+  }, [data?.data, searchValue, pinnedIds]);
+  const hasInvalidProjects = !!data?.data?.some(
+    (project) => !isDisplayProject(project),
+  );
 
   const togglePin = (projectId: string) => {
     setPinnedIds((prev) => {
@@ -97,7 +102,8 @@ export default function ProjectListView() {
           <Input
             placeholder={t('SEARCH_PROJECT_BY_NAME')}
             className="rounded"
-            onChange={handleFilterChange}
+            value={searchValue}
+            onChange={(event) => setSearchValue(event.target.value)}
           />
           {/* <Button
             onClick={() => openAddProjectModal()}
@@ -109,7 +115,18 @@ export default function ProjectListView() {
           </Button> */}
         </div>
         <ScrollArea className="pb-2 h-[calc(100vh-253px)]">
-          {sortedProjects.length > 0 ? (
+          {isLoading ? (
+            <SpinnerLoader />
+          ) : isError || hasInvalidProjects ? (
+            <div
+              className="h-[calc(100vh-190px)] grid place-items-center"
+              role="alert"
+            >
+              <p className="text-muted-foreground text-xl">
+                {g('SOMETHING_WENT_WRONG')}
+              </p>
+            </div>
+          ) : sortedProjects.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
               {sortedProjects.map((project) => (
                 <ProjectCard
@@ -120,9 +137,9 @@ export default function ProjectListView() {
                     (project as any).extras?.project_image ||
                     getImageForProjectType((project as any).type)
                   }
-                  subTitle={project.description as string}
+                  subTitle={project.description ?? ''}
                   badge={project.type}
-                  status={project.status}
+                  status={project.status ?? ''}
                   extras={project.extras}
                   isPinned={pinnedIds.includes(project.uuid)}
                   onTogglePin={() => togglePin(project.uuid)}

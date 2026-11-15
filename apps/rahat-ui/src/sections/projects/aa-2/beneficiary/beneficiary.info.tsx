@@ -35,6 +35,9 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
   const [viewMore, setViewMore] = useState(false);
 
   const bankAccount = beneficiary?.projectData?.bankAccount;
+  const location =
+    beneficiary?.projectData?.location || beneficiary?.extras?.location;
+  const wardNumber = beneficiary?.extras?.ward_no;
 
   const { data: tokenData, isPending } = useTokenDetails({
     projectUUID: projectId,
@@ -103,16 +106,11 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
         <div>
           <h1 className="text-lg text-black">{tg('ADDRESS')}</h1>
           <div className=" text-sm text-muted-foreground font-medium flex gap-1 capitalize">
-            <p>{beneficiary?.projectData?.location || ''}</p>
-            {beneficiary?.extras?.ward_no && (
-              <p>{t('WARD')} {t('NO')} - {formatDigits(beneficiary.extras.ward_no)}</p>
+            {location && <p>{location}</p>}
+            {wardNumber && (
+              <p>{t('WARD')} {t('NO')} - {formatDigits(wardNumber)}</p>
             )}
-            <p>
-              {!beneficiary?.extras?.location &&
-                !beneficiary?.projectData?.location &&
-                !beneficiary?.extras?.ward_no &&
-                tg('N_A')}
-            </p>
+            {!location && !wardNumber && <p>{tg('N_A')}</p>}
           </div>
         </div>
         <DataItem

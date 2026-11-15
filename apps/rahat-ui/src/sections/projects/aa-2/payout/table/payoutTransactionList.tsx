@@ -116,10 +116,10 @@ export default function PayoutTransactionList() {
       </div>
 
       <ProjectPermissionGuard action={ACTIONS.READ} subject={SUBJECTS.PAYOUT}>
-        <div className="rounded-sm border border-gray-100 space-y-2 p-4">
-          <div className="flex gap-2">
+        <div className="min-w-0 rounded-sm border border-gray-100 space-y-2 p-4">
+          <div className="flex flex-col gap-2 sm:flex-row">
             <SearchInput
-              className="w-full flex-[4]"
+              className="w-full sm:flex-[4]"
               name={tv('GROUP_NAME')}
               onSearch={(e) => handleSearch(e, 'groupName')}
               value={filters?.groupName || ''}
@@ -138,25 +138,29 @@ export default function PayoutTransactionList() {
                   ? 'CVA'
                   : filters?.payoutType || ''
               }
-              className="flex-[1]"
+              className="w-full sm:flex-[1]"
             />
           </div>
-          <DemoTable table={table} loading={isLoading} />
-          <CustomPagination
-            currentPage={pagination.page}
-            handleNextPage={setNextPage}
-            handlePrevPage={setPrevPage}
-            handlePageSizeChange={setPerPage}
-            setPagination={setPagination}
-            meta={
-              (payouts?.response?.meta as any) || {
-                total: 0,
-                currentPage: 0,
+          <div className="min-w-0 [&_table]:min-w-[900px]">
+            <DemoTable table={table} loading={isLoading} />
+          </div>
+          <div className="[&>div]:flex-wrap">
+            <CustomPagination
+              currentPage={pagination.page}
+              handleNextPage={setNextPage}
+              handlePrevPage={setPrevPage}
+              handlePageSizeChange={setPerPage}
+              setPagination={setPagination}
+              meta={
+                (payouts?.response?.meta as any) || {
+                  total: 0,
+                  currentPage: 0,
+                }
               }
-            }
-            perPage={pagination?.perPage}
-            total={payouts?.response?.meta?.total || 0}
-          />
+              perPage={pagination?.perPage}
+              total={payouts?.response?.meta?.total || 0}
+            />
+          </div>
         </div>
       </ProjectPermissionGuard>
     </div>

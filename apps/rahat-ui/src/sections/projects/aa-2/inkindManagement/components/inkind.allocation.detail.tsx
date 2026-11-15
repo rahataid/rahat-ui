@@ -38,6 +38,7 @@ import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
+import { buildRedemptionLogSheet } from './inkind.export';
 
 type LogRow = {
   uuid: string;
@@ -173,28 +174,10 @@ export default function InkindAllocationDetail() {
     const exportInkindName = groupInkindMeta?.inkindName ?? inkindName;
     const exportGroupName = groupInkindMeta?.groupName ?? groupName;
 
-    const sheet1Headers = [
-      'quantity',
-      'redeemedAt',
-      'txHash',
-      'beneficiary name',
-      'beneficiary walletAddress',
-      'beneficiary phone',
-      'vendor name',
-    ];
-
-    const sheet1Data = [
-      sheet1Headers,
-      ...raw.map((r: any) => [
-        String(r.quantity ?? r.quantityDisbursed ?? 0),
-        r.redeemedAt ?? r.createdAt ?? 'N/A',
-        r.txHash ?? 'N/A',
-        r.beneficiary?.name ?? 'N/A',
-        r.beneficiary?.walletAddress ?? r.walletAddress ?? 'N/A',
-        r.beneficiary?.phone ?? 'N/A',
-        r.vendor?.name ?? 'N/A',
-      ]),
-    ];
+    const sheet1Data = buildRedemptionLogSheet(
+      raw,
+      groupInkindMeta?.mode ?? sp.get('from'),
+    );
 
     const sheet2Headers = [
       'Inkind name',
@@ -233,6 +216,7 @@ export default function InkindAllocationDetail() {
     quantityRedeemed,
     inkindName,
     groupName,
+    sp,
   ]);
 
   const handleDownloadReport = () => {

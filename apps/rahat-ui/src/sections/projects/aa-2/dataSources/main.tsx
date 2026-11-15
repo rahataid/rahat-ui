@@ -73,7 +73,7 @@ function DatePicker({
   const t = useTranslations('AA_PROJECT');
   const formatDate = useDateFormat();
   return (
-    <div className="flex items-center">
+    <div className="flex flex-wrap items-center gap-2">
       <Popover>
         <PopoverTrigger asChild>
           <Button
@@ -100,7 +100,7 @@ function DatePicker({
       {date && (
         <Button
           variant="outline"
-          className="ml-2 text-red-500 border-red-300 hover:bg-red-50 hover:border-red-400"
+          className="text-red-500 border-red-300 hover:bg-red-50 hover:border-red-400"
           onClick={() => setDate(null)}
         >
           <Trash2 className="w-4 h-4 mr-2" /> {t('CLEAR_DATE')}
@@ -187,16 +187,16 @@ export default function DataSources() {
   const isLoading = isTabLoading || isProjectLoading;
 
   return (
-    <div className="p-4">
-      <div className="flex">
+    <div className="min-w-0 p-4">
+      <div className="flex flex-col gap-2 sm:flex-row">
         <Heading
           title={t('FORECAST_DATA')}
           description={t('TRACK_ALL_THE_DATA_SOURCES_REPORTS')}
         />
-        <div className='flex gap-4 ml-auto '>
+        <div className="flex flex-wrap gap-2 sm:ml-auto sm:gap-4">
           <IconLabelBtn
             Icon={Activity}
-            className="px-4 text-xs mt-5"
+            className="px-4 text-xs sm:mt-5"
             variant="outline"
             name={t('DATA_HEALTH_MONITOR')}
             size="xs"
@@ -208,7 +208,7 @@ export default function DataSources() {
           />
           <IconLabelBtn
             Icon={CloudCheck}
-            className="px-4  cursor-pointer text-xs mt-5 "
+            className="px-4 cursor-pointer text-xs sm:mt-5"
             variant="outline"
             name={syncData.isPending ? t('SYNCING_DATA') : t('SYNC_DATA')}
             size="xs"
@@ -220,22 +220,22 @@ export default function DataSources() {
 
       {isLoading ? (
         <>
-          <Skeleton className="h-12 w-96 rounded-sm" />
+          <Skeleton className="h-12 w-full max-w-96 rounded-sm" />
           <div className="h-[70vh] flex items-center justify-center">
             <Loader />
           </div>
         </>
       ) : (
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <div className="flex justify-between">
+          <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
             {/* Tab Triggers */}
-            <TabsList className="border bg-secondary rounded mb-2">
+            <TabsList className="h-auto max-w-full flex-wrap justify-start gap-1 border bg-secondary rounded mb-2">
               {availableTabsConfig.map((tab) => (
                 <TabsTrigger
                   key={tab.value}
                   value={tab.value}
                   disabled={tab.disabled}
-                  className="w-full data-[state=active]:bg-white data-[state=active]:text-gray-700"
+                  className="data-[state=active]:bg-white data-[state=active]:text-gray-700"
                 >
                   {translateValue(t, tab.label, { fallbackStyle: 'raw' })}
                 </TabsTrigger>

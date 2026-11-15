@@ -69,6 +69,7 @@ import {
 import { Can } from 'apps/rahat-ui/src/components/can';
 import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
+import { PayoutProgress } from './payout-progress';
 
 export default function BeneficiaryGroupTransactionDetailsList() {
   const t = useTranslations('AA_PROJECT');
@@ -357,12 +358,13 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                 .replace(/_/g, ' ')
                 .replace(/^./, (char: string) => char.toUpperCase())}
               badgeClassName={isCompleteBgStatus(payout?.status)}
-              totalBeneficiaries={
+            />
+            <PayoutProgress
+              successful={payout?.totalSuccessRequests}
+              total={
                 payout?.beneficiaryGroupToken?.beneficiaryGroup?._count
                   ?.beneficiaries
               }
-              totalSuccessAmount={payout?.totalSuccessAmount}
-              isShowStats={true}
             />
           </div>
           {

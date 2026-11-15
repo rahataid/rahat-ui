@@ -114,4 +114,14 @@ describe('project list loading', () => {
     render(<ProjectListView />);
     expect(screen.getByText('NO_PROJECTS_FOUND')).toBeTruthy();
   });
+
+  it('still displays a project whose status is unavailable', () => {
+    mockUseProjectList.mockReturnValue({
+      isLoading: false,
+      isError: false,
+      data: { data: [{ uuid: '1', name: 'Alpha', type: 'aa' }] },
+    });
+    render(<ProjectListView />);
+    expect(screen.getByText('Alpha')).toBeTruthy();
+  });
 });

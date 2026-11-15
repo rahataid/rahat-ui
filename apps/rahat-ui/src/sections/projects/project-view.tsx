@@ -19,11 +19,10 @@ type DisplayProject = Project & {
   uuid: UUID;
   name: string;
   type: string;
-  status: NonNullable<Project['status']>;
 };
 
 function isDisplayProject(project: Project): project is DisplayProject {
-  return !!(project.uuid && project.name && project.type && project.status);
+  return !!(project.uuid && project.name && project.type);
 }
 
 const loadPinnedProjects = (): string[] => {
@@ -140,7 +139,7 @@ export default function ProjectListView() {
                   }
                   subTitle={project.description ?? ''}
                   badge={project.type}
-                  status={project.status}
+                  status={project.status ?? ''}
                   extras={project.extras}
                   isPinned={pinnedIds.includes(project.uuid)}
                   onTogglePin={() => togglePin(project.uuid)}

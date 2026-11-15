@@ -74,7 +74,7 @@ export default function CommsActivitiesTable() {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between gap-2">
+      <div className="flex flex-col justify-between gap-2 sm:flex-row">
         <SearchInput
           name={tGlobal('TITLE')}
           className="w-[100%]"
@@ -86,6 +86,7 @@ export default function CommsActivitiesTable() {
         />
         <SelectComponent
           name="Phase"
+          className="w-full sm:w-auto"
           options={['ALL', ...phases.map((p) => p.name)]}
           labels={Object.fromEntries(
             ['ALL', ...phases.map((p) => p.name)].map((name) => [
@@ -117,32 +118,34 @@ export default function CommsActivitiesTable() {
             value={filters?.status || ''}
           /> */}
       </div>
-      <div className=" bg-card border rounded p-4">
+      <div className="min-w-0 bg-card border rounded p-4 [&_table]:min-w-[800px]">
         <DemoTable
           table={table}
           tableHeight={'h-[calc(100vh-320px)]'}
           loading={isLoading}
           message={t('NO_ACTIVITIES_FOUND')}
         />
-        <CustomPagination
-          meta={
-            activitiesMeta || {
-              total: 0,
-              currentPage: 0,
-              lastPage: 0,
-              perPage: 0,
-              next: null,
-              prev: null,
+        <div className="[&>div]:flex-wrap [&>div>div:first-child]:basis-full sm:[&>div>div:first-child]:basis-auto">
+          <CustomPagination
+            meta={
+              activitiesMeta || {
+                total: 0,
+                currentPage: 0,
+                lastPage: 0,
+                perPage: 0,
+                next: null,
+                prev: null,
+              }
             }
-          }
-          handleNextPage={setNextPage}
-          handlePrevPage={setPrevPage}
-          setPagination={setPagination}
-          handlePageSizeChange={setPerPage}
-          currentPage={pagination.page}
-          perPage={pagination.perPage}
-          total={activitiesMeta?.lastPage || 0}
-        />
+            handleNextPage={setNextPage}
+            handlePrevPage={setPrevPage}
+            setPagination={setPagination}
+            handlePageSizeChange={setPerPage}
+            currentPage={pagination.page}
+            perPage={pagination.perPage}
+            total={activitiesMeta?.lastPage || 0}
+          />
+        </div>
       </div>
     </div>
   );

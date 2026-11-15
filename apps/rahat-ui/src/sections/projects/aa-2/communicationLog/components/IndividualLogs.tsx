@@ -93,37 +93,39 @@ export function IndividualLogTab() {
         value={subTab}
         onValueChange={handleSubTabChange}
       >
-        <TabsList className="grid w-fit grid-cols-3 mb-4">
-          {mergedStats.map((stat: TransportStat) => {
-            const tabValue = stat.transportName.toLowerCase();
-            return (
-              <TabsTrigger
-                key={stat.transportId}
-                value={tabValue}
-                className="font-inter font-medium text-[14px] leading-[24px] tracking-[0%] flex items-center gap-2"
-              >
-                <span
-                  className={
-                    subTab === tabValue
-                      ? 'underline decoration-[2px] decoration-[#297AD6]'
-                      : ''
-                  }
+        <div className="max-w-full">
+          <TabsList className="mb-4 flex h-auto w-full flex-wrap sm:w-fit">
+            {mergedStats.map((stat: TransportStat) => {
+              const tabValue = stat.transportName.toLowerCase();
+              return (
+                <TabsTrigger
+                  key={stat.transportId}
+                  value={tabValue}
+                  className="flex flex-1 items-center gap-2 font-inter font-medium text-[14px] leading-[24px] tracking-[0%]"
                 >
-                  {translateValue(g, stat.transportName, {
-                    fallback: capitalizeFirstLetter(stat.transportName),
-                  })}
-                </span>
-                <Badge
-                  className={`h-6 w-6 justify-center text-white px-2 py-0 ${
-                    subTab === tabValue ? 'bg-blue-500' : 'bg-gray-500'
-                  }`}
-                >
-                  {formatNum(stat.total)}
-                </Badge>
-              </TabsTrigger>
-            );
-          })}
-        </TabsList>
+                  <span
+                    className={
+                      subTab === tabValue
+                        ? 'underline decoration-[2px] decoration-[#297AD6]'
+                        : ''
+                    }
+                  >
+                    {translateValue(g, stat.transportName, {
+                      fallback: capitalizeFirstLetter(stat.transportName),
+                    })}
+                  </span>
+                  <Badge
+                    className={`h-6 w-6 justify-center text-white px-2 py-0 ${
+                      subTab === tabValue ? 'bg-blue-500' : 'bg-gray-500'
+                    }`}
+                  >
+                    {formatNum(stat.total)}
+                  </Badge>
+                </TabsTrigger>
+              );
+            })}
+          </TabsList>
+        </div>
         {mergedStats.map((stat: TransportStat) => {
           const tabValue = stat.transportName.toLowerCase();
           return (

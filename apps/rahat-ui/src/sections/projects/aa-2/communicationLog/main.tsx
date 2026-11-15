@@ -69,7 +69,7 @@ export default function CommunicationMainLogsView() {
   const hasData = hasCommsData(data);
 
   return (
-    <div className="flex flex-col p-4">
+    <div className="flex min-w-0 flex-col p-4">
       <Heading
         title={t('COMMUNICATIONS_LOGS')}
         description={t('TRACK_ALL_THE_ACTIVITY_BASED_LOGS')}
@@ -79,41 +79,43 @@ export default function CommunicationMainLogsView() {
         onValueChange={setActiveTab}
         className="items-center mt-4"
       >
-        <div className="flex items-center justify-between gap-4">
-          <TabsList className="grid grid-cols-3 gap-1.5 w-[414px] h-[40px] bg-[#F0F1F3] rounded-md p-1">
-            <TabsTrigger
-              value="overview"
-              className={`${
-                activeTab === 'overview'
-                  ? 'bg-white no-underline text-black'
-                  : 'text-black'
-              } h-full w-full p-1 font-inter text-[14px] leading-[24px] tracking-[0%]`}
-            >
-              {t('OVERVIEW')}
-            </TabsTrigger>
-            <TabsTrigger
-              value="communicationLog"
-              className={`${
-                activeTab === 'communicationLog'
-                  ? 'bg-white no-underline text-black'
-                  : 'text-black'
-              } h-full w-full p-1 font-inter text-[14px] leading-[24px] tracking-[0%]`}
-            >
-              {t('ACTIVITY_BASED_LOG')}
-            </TabsTrigger>
-            <TabsTrigger
-              value="individualLog"
-              className={`${
-                activeTab === 'individualLog'
-                  ? 'bg-white no-underline text-black'
-                  : 'text-black'
-              } h-full w-full p-1 font-inter text-[14px] leading-[24px] tracking-[0%]`}
-            >
-              {t('INDIVIDUAL_LOGS')}
-            </TabsTrigger>
-          </TabsList>
+        <div className="flex flex-col items-stretch justify-between gap-4 xl:flex-row xl:items-center">
+          <div className="max-w-full">
+            <TabsList className="flex h-auto w-full flex-col items-stretch gap-1.5 rounded-md bg-[#F0F1F3] p-1 sm:grid sm:w-[414px] sm:max-w-full sm:grid-cols-3">
+              <TabsTrigger
+                value="overview"
+                className={`${
+                  activeTab === 'overview'
+                    ? 'bg-white no-underline text-black'
+                    : 'text-black'
+                } h-full w-full p-1 font-inter text-[14px] leading-[24px] tracking-[0%]`}
+              >
+                {t('OVERVIEW')}
+              </TabsTrigger>
+              <TabsTrigger
+                value="communicationLog"
+                className={`${
+                  activeTab === 'communicationLog'
+                    ? 'bg-white no-underline text-black'
+                    : 'text-black'
+                } h-full w-full p-1 font-inter text-[14px] leading-[24px] tracking-[0%]`}
+              >
+                {t('ACTIVITY_BASED_LOG')}
+              </TabsTrigger>
+              <TabsTrigger
+                value="individualLog"
+                className={`${
+                  activeTab === 'individualLog'
+                    ? 'bg-white no-underline text-black'
+                    : 'text-black'
+                } h-full w-full p-1 font-inter text-[14px] leading-[24px] tracking-[0%]`}
+              >
+                {t('INDIVIDUAL_LOGS')}
+              </TabsTrigger>
+            </TabsList>
+          </div>
           {activeTab === 'overview' && (
-            <div className="flex gap-2 items-center">
+            <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
               <TooltipWrapper
                 tip={hasData ? '' : tg('NO_COMMUNICATION_DATA_TO_EXPORT')}
               >
@@ -128,6 +130,7 @@ export default function CommunicationMainLogsView() {
               </TooltipWrapper>
               <SelectComponent
                 name="Phase"
+                className="w-full sm:w-auto"
                 options={['ALL', ...phases.map((p) => p.name)]}
                 onChange={(value) =>
                   setPhase(value === 'ALL' ? undefined : value)
@@ -139,7 +142,7 @@ export default function CommunicationMainLogsView() {
                 handleDateChange={handleDateChange}
                 handleClearDate={handleClearDate}
                 type="range"
-                className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)] "
+                className="w-full sm:w-auto h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)] "
               />
             </div>
           )}

@@ -79,17 +79,15 @@ export default function CommonLogsTable<T>({
 
   return (
     <>
-      <div className="flex justify-between gap-2 mb-2">
+      <div className="grid grid-cols-1 gap-2 mb-2 sm:grid-cols-2 xl:grid-cols-4">
         <SearchInput
           name={tGlobal('TITLE')}
-          
           className="w-[100%]"
           value={filters.title}
           onSearch={(event) => handleFilterChange(event)}
         />
         <SearchInput
           name={tGlobal('GROUP_NAME')}
-          
           className="w-[100%]"
           value={filters.groupName}
           onSearch={(event) => handleFilterChange(event)}
@@ -127,36 +125,38 @@ export default function CommonLogsTable<T>({
           value={filters?.sessionStatus || ''}
         />
       </div>
-      <div className=" border-gray-100 rounded-lg border ">
+      <div className="min-w-0 border-gray-100 rounded-lg border [&_table]:min-w-[800px]">
         <DemoTable
           table={table}
           tableHeight="h-[calc(100vh-340px)]"
           loading={isLoading}
         />
-        <CustomPagination
-          meta={
-            meta || {
-              total: 0,
-              currentPage: 0,
-              lastPage: 0,
-              perPage: 0,
-              next: null,
-              prev: null,
+        <div className="[&>div]:flex-wrap [&>div>div:first-child]:basis-full sm:[&>div>div:first-child]:basis-auto">
+          <CustomPagination
+            meta={
+              meta || {
+                total: 0,
+                currentPage: 0,
+                lastPage: 0,
+                perPage: 0,
+                next: null,
+                prev: null,
+              }
             }
-          }
-          handleNextPage={() =>
-            setPagination({ ...pagination, page: pagination.page + 1 })
-          }
-          handlePrevPage={() =>
-            setPagination({ ...pagination, page: pagination.page - 1 })
-          }
-          handlePageSizeChange={(value) =>
-            setPagination({ ...pagination, perPage: Number(value), page: 1 })
-          }
-          currentPage={pagination.page}
-          perPage={pagination.perPage}
-          total={meta?.total || 0}
-        />
+            handleNextPage={() =>
+              setPagination({ ...pagination, page: pagination.page + 1 })
+            }
+            handlePrevPage={() =>
+              setPagination({ ...pagination, page: pagination.page - 1 })
+            }
+            handlePageSizeChange={(value) =>
+              setPagination({ ...pagination, perPage: Number(value), page: 1 })
+            }
+            currentPage={pagination.page}
+            perPage={pagination.perPage}
+            total={meta?.total || 0}
+          />
+        </div>
       </div>
     </>
   );

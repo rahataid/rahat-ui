@@ -65,18 +65,18 @@ function BeneficiaryView() {
         {t('TRACK_ALL_THE_BENEFICIARIES_IN_THE')}
       </p>
 
-      <div className="flex justify-between items-center p-4">
-        <TabsList className="border bg-secondary rounded">
+      <div className="flex flex-col items-start gap-3 p-4 sm:flex-row sm:justify-between sm:items-center">
+        <TabsList className="h-auto max-w-full flex-wrap justify-start gap-1 border bg-secondary rounded">
           <TabsTrigger
             id="beneficiary"
-            className="w-full data-[state=active]:bg-primary data-[state=active]:text-white "
+            className="data-[state=active]:bg-primary data-[state=active]:text-white"
             value="beneficiary"
           >
             {tg('BENEFICIARY')}
           </TabsTrigger>
           <TabsTrigger
             id="beneficiaryGroups"
-            className="w-full data-[state=active]:bg-primary data-[state=active]:text-white"
+            className="data-[state=active]:bg-primary data-[state=active]:text-white"
             value="beneficiaryGroups"
           >
             {t('BENEFICIARY_GROUPS')}

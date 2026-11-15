@@ -63,14 +63,14 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
 
   return (
     <>
-      <div className="flex items-center">
-        <div className="h-24 w-24 rounded-md bg-gray-700 flex justify-center items-center">
+      <div className="flex min-w-0 items-center">
+        <div className="h-24 w-24 shrink-0 rounded-md bg-gray-700 flex justify-center items-center">
           <User color="white" />
         </div>
 
-        <div className="flex flex-col ml-6">
-          <div className="flex items-center">
-            <div className="text-lg text-muted-foreground truncate w-48 overflow-hidden mr-2">
+        <div className="flex min-w-0 flex-col ml-4 sm:ml-6">
+          <div className="flex min-w-0 items-center">
+            <div className="min-w-0 text-lg text-muted-foreground truncate sm:w-48 overflow-hidden mr-2">
               {beneficiary?.walletAddress || tg('N_A')}
             </div>
             <button
@@ -83,7 +83,7 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-6 py-4">
+      <div className="grid grid-cols-1 gap-6 py-4 sm:grid-cols-3">
         <DataItem
           label={tg('ESTIMATED_AGE')}
           value={
@@ -147,7 +147,7 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
       )}
 
       {viewMore && bankAccount && (
-        <div className="grid grid-cols-3 gap-6 mb-6">
+        <div className="grid grid-cols-1 gap-6 mb-6 sm:grid-cols-3">
           <DataItem label={tg('BANK_NAME')} value={bankAccount?.bankName || tg('N_A')} />
           <DataItem
             label={tg('ACCOUNT_NAME')}

@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { cn } from 'libs/shadcn/src';
 type IProps = {
   handleNextPage: () => void;
 
@@ -33,6 +34,7 @@ type IProps = {
   showChevrons?: boolean;
   isShowTotalCount?: boolean;
   pageSizes?: string[];
+  className?: string;
 };
 
 const defaultPageSizes = [
@@ -62,6 +64,7 @@ export function CustomPagination({
   showChevrons,
   isShowTotalCount = true,
   pageSizes = defaultPageSizes,
+  className,
 }: IProps) {
   const t = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
@@ -87,7 +90,12 @@ export function CustomPagination({
     'h-[clamp(28px,3vw,36px)] w-[clamp(28px,3vw,36px)] p-0 [&_svg]:size-[clamp(14px,1.4vw,18px)]';
 
   return (
-    <div className="flex items-center justify-end gap-[clamp(8px,1.2vw,16px)] p-[clamp(2px,0.4vw,4px)] px-[clamp(4px,0.6vw,8px)] bg-card text-[clamp(11px,1vw,14px)]">
+    <div
+      className={cn(
+        'flex items-center justify-end gap-[clamp(8px,1.2vw,16px)] p-[clamp(2px,0.4vw,4px)] px-[clamp(4px,0.6vw,8px)] bg-card text-[clamp(11px,1vw,14px)]',
+        className,
+      )}
+    >
       {/* <div className="flex-1 text-sm text-muted-foreground">
         {currentPage} of {total} row(s) selected.
       </div> */}

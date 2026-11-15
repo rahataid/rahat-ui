@@ -36,9 +36,9 @@ const GrievanceInfo = ({ grievance }: IProps) => {
   return (
     <div className="flex flex-col gap-[16px] w-full">
       {/* Overview Cards Row */}
-      <div className="flex flex-row gap-[16px]">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-[16px]">
         {/* Grievance ID Card */}
-        <Card className="border border-gray-200 bg-white border rounded-xl w-[25%]">
+        <Card className="min-w-0 border border-gray-200 bg-white rounded-xl">
           <CardContent className="p-4">
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-gray-100 border rounded-[8px]">
@@ -61,7 +61,7 @@ const GrievanceInfo = ({ grievance }: IProps) => {
         </Card>
 
         {/* Grievance Type Card */}
-        <Card className="border border-gray-200 bg-white border rounded-xl w-[25%]">
+        <Card className="min-w-0 border border-gray-200 bg-white rounded-xl">
           <CardContent className="p-4">
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-gray-100 border rounded-[8px]">
@@ -80,7 +80,7 @@ const GrievanceInfo = ({ grievance }: IProps) => {
         </Card>
 
         {/* Priority Card */}
-        <Card className="border border-gray-200 bg-white border rounded-xl w-[25%]">
+        <Card className="min-w-0 border border-gray-200 bg-white rounded-xl">
           <CardContent className="p-4">
             <div className="flex items-center space-x-3">
               <div className="p-2 border rounded-[8px] bg-[#FAEFE5]">
@@ -102,7 +102,7 @@ const GrievanceInfo = ({ grievance }: IProps) => {
         </Card>
 
         {/* Status Card */}
-        <Card className="border border-gray-200 bg-white border rounded-xl w-[25%]">
+        <Card className="min-w-0 border border-gray-200 bg-white rounded-xl">
           <CardContent className="p-4">
             <div className="flex items-center space-x-3">
               <div className="p-2 border rounded-[8px] bg-[#E5F2FF]">
@@ -152,7 +152,7 @@ const GrievanceInfo = ({ grievance }: IProps) => {
               <label className="font-inter font-normal text-[14px] leading-[16px] tracking-normal text-[#505868]">
                 {t('DESCRIPTION')}
               </label>
-              <p className="font-inter font-medium text-[14px] leading-[24px] tracking-normal text-[#3D3D51]">
+              <p className="break-words font-inter font-medium text-[14px] leading-[24px] tracking-normal text-[#3D3D51]">
                 {grievance?.description || tg('N_A')}
               </p>
             </div>
@@ -183,9 +183,9 @@ const GrievanceInfo = ({ grievance }: IProps) => {
         </CardContent>
       </Card>
 
-      <div className="flex flex-row w-full gap-[16px] rounded-xl">
+      <div className="grid grid-cols-1 lg:grid-cols-2 w-full gap-[16px] rounded-xl">
         {/* Reporter Information Section */}
-        <div className="flex flex-col gap-[12px] w-[50%]   p-4 gap-2 rounded-[12px] border border-[#F0F1F3] bg-white shadow-[0px_1px_2px_0px_#0000000F] opacity-100">
+        <div className="min-w-0 flex flex-col gap-[12px] p-4 rounded-[12px] border border-[#F0F1F3] bg-white shadow-[0px_1px_2px_0px_#0000000F] opacity-100">
           <div className="flex">
             <div className="flex mr-2">
               <User className="w-4 h-4 text-[#434956]" />
@@ -194,8 +194,8 @@ const GrievanceInfo = ({ grievance }: IProps) => {
               {t('REPORTER_INFORMATION')}
             </div>
           </div>
-          <div className="flex gap-[16px]">
-            <div className="flex flex-col w-[50%] px-3 py-2 gap-1 rounded-[12px] opacity-100 bg-[#FAFAFA]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-[16px]">
+            <div className="min-w-0 flex flex-col px-3 py-2 gap-1 rounded-[12px] opacity-100 bg-[#FAFAFA]">
               <div className="font-inter font-normal text-[14px] leading-[24px] tracking-[0em] text-[#3D3D51]">
                 {t('REPORTED_BY')}
               </div>
@@ -207,7 +207,7 @@ const GrievanceInfo = ({ grievance }: IProps) => {
                 />
               </div>
             </div>
-            <div className="flex flex-col w-[50%] px-3 py-2 gap-1 rounded-[12px] opacity-100 bg-[#FAFAFA]">
+            <div className="min-w-0 flex flex-col px-3 py-2 gap-1 rounded-[12px] opacity-100 bg-[#FAFAFA]">
               <div className="font-inter font-normal text-[14px] leading-[24px] tracking-[0em] text-[#3D3D51]">
                 {t('REPORTER_CONTACT')}
               </div>
@@ -223,7 +223,7 @@ const GrievanceInfo = ({ grievance }: IProps) => {
         </div>
 
         {/* Timeline Section */}
-        <div className="flex flex-col gap-[12px] w-[50%] p-4 gap-2 rounded-[12px] border border-[#F0F1F3] bg-white shadow-[0px_1px_2px_0px_#0000000F] opacity-100">
+        <div className="min-w-0 flex flex-col gap-[12px] p-4 rounded-[12px] border border-[#F0F1F3] bg-white shadow-[0px_1px_2px_0px_#0000000F] opacity-100">
           <div className="flex">
             <div className="mr-2">
               <Clock className="w-4 h-4 text-[#434956]" />
@@ -233,8 +233,8 @@ const GrievanceInfo = ({ grievance }: IProps) => {
             </div>
           </div>
 
-          <div className="flex gap-[16px]">
-            <div className="flex w-[50%] px-3 py-2 gap-4 rounded-[8px] opacity-100 bg-[#FAFAFA]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-[16px]">
+            <div className="min-w-0 flex px-3 py-2 gap-4 rounded-[8px] opacity-100 bg-[#FAFAFA]">
               <div className="flex items-center justify-center h-[100%]">
                 <Calendar className="w-6 h-6 text-[#434956]" />
               </div>
@@ -249,7 +249,7 @@ const GrievanceInfo = ({ grievance }: IProps) => {
                 </div>
               </div>
             </div>
-            <div className="flex w-[50%] px-3 py-2 gap-4 rounded-[8px] opacity-100 bg-[#FAFAFA]">
+            <div className="min-w-0 flex px-3 py-2 gap-4 rounded-[8px] opacity-100 bg-[#FAFAFA]">
               <div className="flex items-center justify-center h-[100%]">
                 <Calendar className="w-6 h-6 text-[#434956]" />
               </div>

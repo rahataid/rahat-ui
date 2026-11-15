@@ -76,12 +76,12 @@ function GrievancesView() {
 
   return (
     <div>
-      <div className="p-4 pb-2 flex justify-between items-center space-x-4">
+      <div className="p-4 pb-2 flex flex-col items-start gap-3 sm:flex-row sm:justify-between sm:items-center">
         <Heading
           title={t('GRIEVANCES')}
           description={t('TRACK_ALL_THE_GRIEVANCES_IN_THE')}
         />
-        <div className="flex flex-end gap-2">
+        <div className="flex flex-wrap gap-2">
           <RoleAuth
             roles={[AARoles.ADMIN, AARoles.Municipality]}
             hasContent={false}

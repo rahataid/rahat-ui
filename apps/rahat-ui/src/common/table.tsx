@@ -19,6 +19,7 @@ type IProps = {
   message?: string;
   height?: string;
   fixedLayout?: boolean;
+  tableClassName?: string;
 };
 
 type ColumnMeta = {
@@ -32,6 +33,7 @@ export function DemoTable({
   message,
   height = '340px',
   fixedLayout = true,
+  tableClassName = '',
 }: IProps) {
   const hasRows = table.getRowModel().rows.length > 0;
   const containerClass = tableHeight ?? `h-[max(280px,calc(100vh-${height}))]`;
@@ -46,7 +48,7 @@ export function DemoTable({
   return (
     <div className={`overflow-auto ${containerClass}`}>
       <TableComponent
-        className={`w-full ${fixedLayout ? 'table-fixed' : 'table-auto'}`}
+        className={`w-full ${fixedLayout ? 'table-fixed' : 'table-auto'} ${tableClassName}`}
       >
         <TableHeader className="sticky top-0 z-10 border-b [&_th]:bg-muted">
           {table.getHeaderGroups().map((headerGroup) => (

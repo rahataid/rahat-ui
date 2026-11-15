@@ -40,10 +40,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import { ChevronDown, CloudDownload, RefreshCw } from 'lucide-react';
+import { ChevronDown, CloudDownload, Loader2, RefreshCw } from 'lucide-react';
 import { QrOtpConfirmValues, QrOtpDialog } from './qr-otp.dialog';
 import { exportToExcel } from 'apps/rahat-ui/src/utils/exportToExcle';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { isQrPdfInProgress } from 'libs/query/src/lib/aa/beneficiaries/qr-pdf-status';
+import { downloadQrPdf } from './qr-pdf-download';
+import { toast } from 'react-toastify';
 
 const BeneficiaryGroupsDetails = () => {
   const tGlobal = useTranslations('GLOBAL');
@@ -55,10 +58,12 @@ const BeneficiaryGroupsDetails = () => {
   const { data: groupDetails, isPending: isGroupLoading } =
     useSingleBeneficiaryGroup(projectId, groupId);
 
-  const { data: qrDetails, isPending: isQrLoading } = useGetBeneficiariesQr({
-    projectUuid: projectId,
-    groupId,
-  });
+  const {
+    data: qrDetails,
+    isPending: isQrLoading,
+    isError: isQrError,
+    refetch: refetchQr,
+  } = useGetBeneficiariesQr({ projectUuid: projectId, groupId });
 
   const { mutate: generateQr, isPending: isGeneratingQr } =
     useGenerateQrPdf(projectId);
@@ -66,6 +71,7 @@ const BeneficiaryGroupsDetails = () => {
     useRegenerateQrPdf(projectId);
   const [isQrOptionsOpen, setIsQrOptionsOpen] = useState(false);
   const [isExcelOptionsOpen, setIsExcelOptionsOpen] = useState(false);
+  const [isDownloadingQr, setIsDownloadingQr] = useState(false);
   // Tracks which action the dialog's confirm button should trigger --
   // the initial generate, or a re-generate of an already-completed QR.
   const [qrDialogMode, setQrDialogMode] = useState<'generate' | 'regenerate'>(
@@ -75,13 +81,30 @@ const BeneficiaryGroupsDetails = () => {
     useExportBeneficiariesExcel(projectId);
 
   const isSubmittingQr = isGeneratingQr || isRegeneratingQr;
+  const isQrProcessing = isSubmittingQr || isQrPdfInProgress(qrDetails?.status);
+
+  const handleDownloadQr = async () => {
+    if (!qrDetails?.fileUrl || isDownloadingQr) return;
+    setIsDownloadingQr(true);
+    try {
+      const { data: latestQr, isError } = await refetchQr();
+      if (isError || latestQr?.status !== 'completed' || !latestQr.fileUrl) {
+        throw new Error('QR PDF is not available');
+      }
+      await downloadQrPdf(latestQr.fileUrl, `beneficiaries-${groupId}-qr.pdf`);
+    } catch {
+      toast.error(t('FAILED_TO_DOWNLOAD_QR_PDF'));
+    } finally {
+      setIsDownloadingQr(false);
+    }
+  };
 
   const handleGenerateQr = ({
     includeOtp,
     onlyUnphonedBeneficiaries,
     pdfFields,
   }: QrOtpConfirmValues) => {
-    if (isSubmittingQr) return;
+    if (isQrProcessing) return;
     const mutate = qrDialogMode === 'regenerate' ? regenerateQr : generateQr;
     mutate(
       { groupId, includeOtp, onlyUnphonedBeneficiaries, pdfFields },
@@ -192,33 +215,50 @@ const BeneficiaryGroupsDetails = () => {
             <CloudDownload className="mr-1" />
             {t('DOWNLOAD_EXCEL')}
           </Button>
-          {qrDetails?.status === 'completed' ? (
+          {isQrError ? (
+            <Button variant="outline" onClick={() => refetchQr()}>
+              {tGlobal('RETRY')}
+            </Button>
+          ) : isQrProcessing ? (
+            <Button variant="outline" disabled aria-live="polite">
+              <Loader2 className="mr-1 animate-spin" />
+              {t('GENERATING')}
+            </Button>
+          ) : qrDetails?.status === 'completed' && qrDetails.fileUrl ? (
             <div className="flex">
               <Button
                 variant="outline"
-                onClick={() => window.open(qrDetails.fileUrl, '_blank')}
+                onClick={handleDownloadQr}
                 className="cursor-pointer rounded-r-none border-r-0"
-                disabled={isSubmittingQr}
+                disabled={isDownloadingQr}
               >
-                <CloudDownload className="mr-1" />
-                {t('DOWNLOAD_QR')}
+                {isDownloadingQr ? (
+                  <Loader2 className="mr-1 animate-spin" />
+                ) : (
+                  <CloudDownload className="mr-1" />
+                )}
+                {isDownloadingQr ? t('DOWNLOADING_QR') : t('DOWNLOAD_QR')}
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="outline"
                     className="cursor-pointer rounded-l-none px-2"
-                    disabled={isSubmittingQr}
+                    disabled={isDownloadingQr}
                   >
                     <ChevronDown size={16} />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem
-                    onSelect={() => window.open(qrDetails.fileUrl, '_blank')}
-                  >
-                    <CloudDownload className="mr-2 h-4 w-4" />
-                    {t('DOWNLOAD_QR')}
+                  <DropdownMenuItem asChild>
+                    <a
+                      href={qrDetails.fileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <CloudDownload className="mr-2 h-4 w-4" />
+                      {t('OPEN_QR_PDF')}
+                    </a>
                   </DropdownMenuItem>
                   <DropdownMenuItem onSelect={() => openQrDialog('regenerate')}>
                     <RefreshCw className="mr-2 h-4 w-4" />
@@ -230,12 +270,18 @@ const BeneficiaryGroupsDetails = () => {
           ) : (
             <Button
               variant="outline"
-              onClick={() => openQrDialog('generate')}
+              onClick={() =>
+                openQrDialog(
+                  qrDetails?.status === 'completed' ? 'regenerate' : 'generate',
+                )
+              }
               className="cursor-pointer"
-              disabled={isQrLoading || isSubmittingQr}
+              disabled={isQrLoading || isQrProcessing}
             >
               <CloudDownload className="mr-1" />
-              {t('GENERATE_QR')}
+              {qrDetails?.status === 'completed'
+                ? t('REGENERATE_QR')
+                : t('GENERATE_QR')}
             </Button>
           )}
           {sponsorshipStatus?.isStellarChain && (
@@ -249,6 +295,22 @@ const BeneficiaryGroupsDetails = () => {
             </Button>
           )}
         </div>
+        {isQrError && (
+          <p role="alert" className="mb-3 text-sm text-red-600">
+            {t('FAILED_TO_LOAD_QR_STATUS')}
+          </p>
+        )}
+        {qrDetails?.status === 'failed' && (
+          <p role="alert" className="mb-3 text-sm text-red-600">
+            {t('FAILED_TO_GENERATE_QR_PDF')}
+            {qrDetails.error ? `: ${qrDetails.error}` : ''}
+          </p>
+        )}
+        {!isQrError && qrDetails?.status === 'completed' && !qrDetails?.fileUrl && (
+          <p role="alert" className="mb-3 text-sm text-red-600">
+            {t('QR_PDF_UNAVAILABLE')}
+          </p>
+        )}
       </div>
       {sponsorshipStatus?.isStellarChain ? (
         <div className="flex items-center gap-4 mb-3 text-sm">

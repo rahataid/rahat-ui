@@ -12,15 +12,15 @@ export function DHMSection() {
   const t = useTranslations('AA_PROJECT');
   return (
     <Tabs defaultValue="riverWatch">
-      <TabsList className="mb-2">
+      <TabsList className="mb-2 h-auto max-w-full flex-wrap justify-start">
         <TabsTrigger
-          className="w-full data-[state=active]:bg-white data-[state=active]:rounded-none data-[state=active]:border-b data-[state=active]:border-b-primary"
+          className="data-[state=active]:bg-white data-[state=active]:rounded-none data-[state=active]:border-b data-[state=active]:border-b-primary"
           value="riverWatch"
         >
           {t('RIVER_WATCH')}
         </TabsTrigger>
         <TabsTrigger
-          className="w-full data-[state=active]:bg-white data-[state=active]:rounded-none data-[state=active]:border-b data-[state=active]:border-b-primary"
+          className="data-[state=active]:bg-white data-[state=active]:rounded-none data-[state=active]:border-b data-[state=active]:border-b-primary"
           value="rainfallWatch"
         >
           {t('RAINFALL_WATCH')}

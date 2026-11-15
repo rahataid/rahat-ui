@@ -95,11 +95,11 @@ const BeneficiaryGroups = () => {
             value={filters?.search || ''}
           />
         </div>
-        <ScrollArea className="h-[calc(100vh-305px)] mb-2">
+        <ScrollArea className="h-[max(280px,calc(100vh-305px))] mb-2">
           {isLoading ? (
             <SpinnerLoader />
           ) : visibleGroups.length > 0 ? (
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
               {visibleGroups.map((i: any, index: number) => {
                 const groupPurposeName = i?.groupPurpose
                   ? translateValue(tg, i.groupPurpose, {
@@ -126,7 +126,7 @@ const BeneficiaryGroups = () => {
                       </div>
 
                       <div className="flex justify-between items-center gap-2">
-                        <p className="text-base capitalize">
+                        <p className="min-w-0 break-words text-base capitalize">
                           {i?.name ?? tg('N_A')}
                         </p>
                         {(i?.groupPurpose === GroupPurpose.BANK_TRANSFER ||
@@ -142,7 +142,7 @@ const BeneficiaryGroups = () => {
                         )}
                       </div>
 
-                      <div className="flex text-sm text-gray-500 justify-between items-center">
+                      <div className="flex flex-wrap gap-2 text-sm text-gray-500 justify-between items-center">
                         <div className="flex items-center gap-1">
                           <Users size={18} strokeWidth={2} />
                           {formatNum(i?._count?.beneficiaries || 0)} {t('BENEFICIARIES')}

@@ -90,7 +90,7 @@ function BeneficiaryTable() {
     }
   }, [searchParams]);
   return (
-    <div className="p-4 rounded-sm border">
+    <div className="min-w-0 p-4 rounded-sm border">
       <div className="flex mb-2 gap-2">
         <SearchInput
           className="w-full"
@@ -99,27 +99,31 @@ function BeneficiaryTable() {
           value={filters?.search || ''}
         />
       </div>
-      <DemoTable
-        table={table}
-        loading={projectBeneficiaries.isLoading}
-        message={t('NO_BENEFICIARIES_AVAILABLE')}
-      />
+      <div className="min-w-0 [&_table]:min-w-[600px]">
+        <DemoTable
+          table={table}
+          loading={projectBeneficiaries.isLoading}
+          message={t('NO_BENEFICIARIES_AVAILABLE')}
+        />
+      </div>
 
-      <CustomPagination
-        currentPage={pagination.page}
-        handleNextPage={setNextPage}
-        handlePrevPage={setPrevPage}
-        handlePageSizeChange={setPerPage}
-        setPagination={setPagination}
-        meta={
-          (projectBeneficiaries?.data?.response?.meta as any) || {
-            total: 0,
-            currentPage: 0,
+      <div className="[&>div]:flex-wrap">
+        <CustomPagination
+          currentPage={pagination.page}
+          handleNextPage={setNextPage}
+          handlePrevPage={setPrevPage}
+          handlePageSizeChange={setPerPage}
+          setPagination={setPagination}
+          meta={
+            (projectBeneficiaries?.data?.response?.meta as any) || {
+              total: 0,
+              currentPage: 0,
+            }
           }
-        }
-        perPage={pagination?.perPage}
-        total={projectBeneficiaries?.data?.response?.meta?.total || 0}
-      />
+          perPage={pagination?.perPage}
+          total={projectBeneficiaries?.data?.response?.meta?.total || 0}
+        />
+      </div>
     </div>
   );
 }

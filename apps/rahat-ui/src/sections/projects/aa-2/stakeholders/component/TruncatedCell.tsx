@@ -1,10 +1,10 @@
 import { cn } from '@rahat-ui/shadcn/src';
 import {
   Tooltip,
-  TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { ReadableTooltipContent } from 'apps/rahat-ui/src/components/readable-tooltip-content';
 
 interface TruncatedCellProps {
   text: string;
@@ -23,18 +23,21 @@ export function TruncatedCell({
 
   if (truncateByWidth) {
     return (
-      <TooltipProvider >
+      <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <span className={cn('block truncate cursor-pointer', className)}>
+            <span
+              tabIndex={0}
+              className={cn('block truncate cursor-pointer', className)}
+            >
               {text}
             </span>
           </TooltipTrigger>
-          <TooltipContent className="rounded-sm max-w-[400px]">
-            <p className="whitespace-pre-line flex wrap break-words text-[clamp(10px,0.9vw,14px)] font-normal leading-snug">
+          <ReadableTooltipContent className="rounded-sm">
+            <p className="text-[clamp(10px,0.9vw,14px)] font-normal leading-snug">
               {text}
             </p>
-          </TooltipContent>
+          </ReadableTooltipContent>
         </Tooltip>
       </TooltipProvider>
     );
@@ -51,15 +54,18 @@ export function TruncatedCell({
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <span className={cn('block cursor-pointer truncate', className)}>
+          <span
+            tabIndex={0}
+            className={cn('block cursor-pointer truncate', className)}
+          >
             {displayText}
           </span>
         </TooltipTrigger>
-        <TooltipContent className="rounded-sm max-w-[200px]">
-          <p className="whitespace-pre-line flex wrap break-words text-[clamp(10px,0.9vw,14px)] font-normal leading-snug">
+        <ReadableTooltipContent className="rounded-sm">
+          <p className="text-[clamp(10px,0.9vw,14px)] font-normal leading-snug">
             {text}
           </p>
-        </TooltipContent>
+        </ReadableTooltipContent>
       </Tooltip>
     </TooltipProvider>
   );

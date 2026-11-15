@@ -1,10 +1,10 @@
 import {
   Tooltip,
-  TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/components/tooltip';
 import { ReactNode } from 'react';
+import { ReadableTooltipContent } from './readable-tooltip-content';
 
 interface TooltipWrapperProps {
   tip: string;
@@ -26,9 +26,9 @@ export default function TooltipWrapper({
         <TooltipTrigger asChild>
           <div>{children}</div>
         </TooltipTrigger>
-        <TooltipContent className="bg-secondary" side="top">
+        <ReadableTooltipContent className="bg-secondary" side="top">
           <p className="text-xs font-medium">{tip}</p>
-        </TooltipContent>
+        </ReadableTooltipContent>
       </Tooltip>
     </TooltipProvider>
   );

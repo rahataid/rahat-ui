@@ -32,6 +32,7 @@ import {
 } from '../../hooks/el/contracts/el-contracts';
 import { useRouter } from 'next/navigation';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
+import { userPhoneSchema } from './user-phone';
 import HeaderWithBack from '../projects/components/header.with.back';
 import { Wallet } from 'lucide-react';
 import {
@@ -53,7 +54,7 @@ export default function AddUser() {
     email: z.string().email({ message: t('INVALID_EMAIL_ADDRESS') }),
     gender: z.string().min(1, { message: t('PLEASE_SELECT_GENDER') }),
     roles: z.array(z.string()).length(1, { message: t('PLEASE_SELECT_ROLE') }),
-    phone: z.string(),
+    phone: userPhoneSchema(tg('INVALID_PHONE')),
     wallet: z
       .string()
       .optional()

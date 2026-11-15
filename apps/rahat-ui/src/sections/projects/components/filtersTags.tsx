@@ -1,6 +1,6 @@
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import React from 'react';
-import { RxCrossCircled } from 'react-icons/rx';
+import { CircleX } from 'lucide-react';
 import { format } from 'date-fns';
 import {
   ScrollArea,
@@ -24,7 +24,7 @@ const FiltersTags = ({ filters, setFilters, total }: any) => {
         <ScrollArea className="w-full py-2">
           <div className="flex gap-4 items-center">
             {filterArray.map((filter) => (
-              <div className="flex items-center gap-2">
+              <div key={filter.key} className="flex items-center gap-2">
                 {filter?.key.charAt(0).toUpperCase() + filter?.key.slice(1)}:{' '}
                 <span
                   onClick={() =>
@@ -37,7 +37,7 @@ const FiltersTags = ({ filters, setFilters, total }: any) => {
                   ) : (
                     <>{filter.value}</>
                   )}
-                  <RxCrossCircled />
+                  <CircleX size="1em" strokeWidth={1.5} />
                 </span>
               </div>
             ))}

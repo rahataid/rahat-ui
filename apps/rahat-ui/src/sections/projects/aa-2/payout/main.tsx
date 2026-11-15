@@ -84,8 +84,8 @@ export default function PayoutView() {
   }, [statsPayout]);
 
   return (
-    <div className="p-4 ">
-      <div className="flex justify-between">
+    <div className="min-w-0 p-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:justify-between">
         <Heading
           title={t('PAYOUT2')}
           description={tv('TRACK_ALL_THE_PAYOUT_REPORTS_HERE')}
@@ -106,21 +106,21 @@ export default function PayoutView() {
           </Can>
         </div>
       </div>
-      <div className="flex justify-between items-center space-x-4 ">
+      <div className="min-w-0">
         <Tabs
           defaultValue={activeTab}
           onValueChange={setActiveTab}
           className="w-full"
         >
-          <TabsList className="border bg-secondary rounded">
+          <TabsList className="h-auto max-w-full flex-wrap justify-start gap-1 border bg-secondary rounded">
             <TabsTrigger
-              className="w-full data-[state=active]:bg-white"
+              className="data-[state=active]:bg-white"
               value="payoutOverview"
             >
               {tv('PAYOUT_OVERVIEW')}
             </TabsTrigger>
             <TabsTrigger
-              className="w-full data-[state=active]:bg-white"
+              className="data-[state=active]:bg-white"
               value="payoutList"
             >
               {tv('PAYOUT_LIST')}

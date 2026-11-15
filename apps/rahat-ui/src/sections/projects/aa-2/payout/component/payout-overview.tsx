@@ -62,13 +62,13 @@ export default function PayoutOverview({
   }
   return (
     <div className="mt-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <Heading
           title={tv('PAYOUT_OVERVIEW')}
           description={tv('OVERVIEW_OF_YOUR_PAYOUTS')}
           titleStyle="font-medium text-lg"
         />
-        <div className="flex gap-2 items-center">
+        <div className="flex flex-wrap gap-2 items-center">
           <TooltipWrapper
             tip={hasData ? '' : tg('NO_PAYOUT_DATA_TO_EXPORT')}
           >
@@ -105,8 +105,8 @@ export default function PayoutOverview({
           );
         })}
       </div>
-      <div className="flex flex-wrap mt-4 gap-4">
-        <div className="flex-1 border rounded-sm p-4">
+      <div className="grid grid-cols-1 gap-4 mt-4 md:grid-cols-2 xl:grid-cols-4">
+        <div className="min-w-0 border rounded-sm p-4">
           <h1 className="text-lg font-medium mb-4">{tv('PAYOUT_TYPE')}</h1>
           <div className="w-full aspect-square">
             <DynamicPieChart
@@ -117,7 +117,7 @@ export default function PayoutOverview({
           </div>
         </div>
 
-        <div className="flex-1 border rounded-sm p-4">
+        <div className="min-w-0 border rounded-sm p-4">
           <h1 className="text-lg font-medium mb-4">{tv('PAYOUT_STATUS')}</h1>
           <div className="w-full aspect-square">
             <DynamicPieChart
@@ -128,7 +128,7 @@ export default function PayoutOverview({
           </div>
         </div>
 
-        <div className="flex-[2] border rounded-sm p-4">
+        <div className="min-w-0 border rounded-sm p-4 md:col-span-2">
           <RecentPayout payouts={payouts?.data} />
         </div>
       </div>

@@ -39,17 +39,17 @@ export default function RecentPaymentCard({
   const formatDate = useDateFormat();
   return (
     <div
-      className={`flex items-center justify-between p-1  bg-white ${
+      className={`flex flex-wrap items-center justify-between gap-2 p-1 bg-white ${
         status === 'NOT_STARTED' && 'hidden'
       }`}
     >
       {/* Left Icon + Title + Description */}
-      <div className="flex items-center gap-4">
-        <div className="p-2 rounded-full bg-muted">
+      <div className="flex min-w-0 items-center gap-4">
+        <div className="shrink-0 p-2 rounded-full bg-muted">
           <ArrowLeftRight className="text-muted-foreground w-8 h-8" />
         </div>
-        <div className="flex flex-col">
-          <div className="flex gap-2">
+        <div className="flex min-w-0 flex-col">
+          <div className="flex flex-wrap gap-2">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -75,7 +75,7 @@ export default function RecentPaymentCard({
             </Badge>
           </div>
 
-          <div className=" flex text-sm text-muted-foreground mt-2">
+          <div className="flex flex-wrap items-center text-sm text-muted-foreground mt-2">
             {translateValue(tg, actions, { fallbackStyle: 'raw' })}
             {actions === 'CVA' && merchentName === 'OFFLINE' && (
               <>

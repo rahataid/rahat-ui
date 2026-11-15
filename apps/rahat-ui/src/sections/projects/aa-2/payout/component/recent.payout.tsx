@@ -20,7 +20,7 @@ const RecentPayout = ({ payouts }: RecentPayoutProps) => {
         <h1 className="text-lg font-medium">{tv('RECENT_PAYOUT')}</h1>
       </div>
 
-      <div className="h-[calc(100vh-400px)] overflow-y-scroll overflow-x-hidden scrollbar-hidden">
+      <div className="h-[max(160px,calc(100vh-400px))] overflow-y-scroll overflow-x-hidden scrollbar-hidden">
         {payouts?.length ? (
           payouts?.map((item, index) => (
             <div key={item.id}>

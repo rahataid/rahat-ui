@@ -8,7 +8,6 @@ import {
   useActivitiesStore,
   usePagination,
   usePhases,
-  usePhasesStore,
 } from '@rahat-ui/query';
 import useActivitiesTableColumn from './useActivitiesTableColumn';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
@@ -26,6 +25,7 @@ import {
   DemoTable,
   Heading,
   IconLabelBtn,
+  NoResult,
   TableLoader,
 } from 'apps/rahat-ui/src/common';
 import { CloudDownloadIcon, Plus, Upload } from 'lucide-react';
@@ -36,6 +36,7 @@ import {
   ACTIONS,
   SUBJECTS,
 } from 'apps/rahat-ui/src/constants/ability.constants';
+import { findActivityPhase } from '../activity-navigation';
 
 // TODO:Remove this table if used nowhere
 // import ActivitiesTable from './activities.table';
@@ -45,9 +46,12 @@ export default function ActivitiesList() {
   const tg = useTranslations('GLOBAL');
   const { id: projectID, title } = useParams();
   const searchParams = useSearchParams();
-  const [filtersApplied, setFiltersApplied] = React.useState(false);
   useActivitiesCategories(projectID as UUID);
-  usePhases(projectID as UUID);
+  const { data: phases, isError: phasesError } = usePhases(projectID as UUID);
+  const phaseTitle = Array.isArray(title) ? title[0] : title;
+  const selectedPhase = phases && findActivityPhase(phases, phaseTitle);
+  const selectedPhaseId = selectedPhase?.uuid;
+  const isBackFromDetail = searchParams.get('backFromDetail') === 'true';
   const [activitySearchText, setActivitySearchText] =
     React.useState<string>('');
   const [responsibilitySearchText, setResponsibilitySearchText] =
@@ -60,9 +64,6 @@ export default function ActivitiesList() {
   const { categories } = useActivitiesStore((state) => ({
     categories: state.categories,
   }));
-  const { phases } = usePhasesStore((state) => ({
-    phases: state.phases,
-  }));
   const {
     pagination,
     setNextPage,
@@ -73,23 +74,18 @@ export default function ActivitiesList() {
     filters,
   } = usePagination();
   React.useEffect(() => {
-    const titleStr = Array.isArray(title) ? title[0] : title;
-    const decodedTitle = decodeURIComponent(titleStr);
-    const formattedTitle = decodedTitle.toUpperCase();
-
-    const isBackFromDetail = searchParams.get('backFromDetail') === 'true';
-    const prevPagination = getPaginationFromLocalStorage(isBackFromDetail);
-
-    setFilters((prev) => ({
-      ...prev,
-      phase: phases.find((p) => p.name === formattedTitle)?.uuid,
-    }));
-
-    setPagination(prevPagination);
-    setFiltersApplied(true);
-  }, [phases, title]);
+    if (selectedPhaseId && filters.phase !== selectedPhaseId) {
+      setFilters({ ...filters, phase: selectedPhaseId });
+    }
+  }, [selectedPhaseId, filters, setFilters]);
+  React.useEffect(() => {
+    if (selectedPhaseId) {
+      setPagination(getPaginationFromLocalStorage(isBackFromDetail));
+    }
+  }, [selectedPhaseId, isBackFromDetail, setPagination]);
 
   const router = useRouter();
+  const filtersApplied = !!selectedPhase && filters.phase === selectedPhase.uuid;
 
   const { activitiesData, activitiesMeta, isLoading } = useActivities(
     projectID as UUID,
@@ -185,7 +181,20 @@ export default function ActivitiesList() {
       }),
   );
 
-  if (isLoading) {
+  if (!phases && !phasesError) {
+    return <TableLoader />;
+  }
+  if (phasesError || !selectedPhase) {
+    return (
+      <div className="p-4">
+        <Back path={`/projects/aa/${projectID}/activities`} />
+        <NoResult
+          message={t(phasesError ? 'ERROR_LOADING_DATA' : 'NO_PHASES_AVAILABLE_SHORT')}
+        />
+      </div>
+    );
+  }
+  if (isLoading || !filtersApplied) {
     return <TableLoader />;
   }
   return (
@@ -194,9 +203,7 @@ export default function ActivitiesList() {
         <div className="flex flex-col gap-2">
           <Back path={`/projects/aa/${projectID}/activities`} />
           <Heading
-            title={decodeURIComponent(
-              Array.isArray(title) ? title[0] : title,
-            ).toUpperCase()}
+            title={phaseTitle.toUpperCase()}
             description={t('LIST_OF_ALL_THE_ACTIVITIES_IN')}
           />
         </div>
@@ -214,15 +221,14 @@ export default function ActivitiesList() {
             <IconLabelBtn
               Icon={Upload}
               handleClick={() => {
-                const phase = phases.find(
-                  (p) =>
-                    p.name ===
-                    decodeURIComponent(title as string).toUpperCase(),
-                );
+                const phase = selectedPhase;
+                const params = new URLSearchParams({
+                  isRequiredLeadTime: String(!!phase.isRequiredLeadTime),
+                  isAutomatedActivity: String(!!phase.isAutomatedActivity),
+                  phase: phaseTitle,
+                });
                 router.push(
-                  `/projects/aa/${projectID}/activities/bulk-upload?isRequiredLeadTime=${!!phase?.isRequiredLeadTime}&isAutomatedActivity=${!!phase?.isAutomatedActivity}&phase=${decodeURIComponent(
-                    title as string,
-                  )}`,
+                  `/projects/aa/${projectID}/activities/bulk-upload?${params}`,
                 );
               }}
               name={t('BULK_UPLOAD')}
@@ -233,17 +239,15 @@ export default function ActivitiesList() {
           <Can action={ACTIONS.CREATE} subject={SUBJECTS.ACTIVITY}>
             <IconLabelBtn
               Icon={Plus}
-              handleClick={() =>
+              handleClick={() => {
+                const params = new URLSearchParams({
+                  phaseId: selectedPhase.uuid,
+                  from: phaseTitle,
+                });
                 router.push(
-                  `/projects/aa/${projectID}/activities/add?phaseId=${
-                    phases.find(
-                      (p) =>
-                        p.name ===
-                        decodeURIComponent(title as string).toUpperCase(),
-                    )?.uuid
-                  }`,
-                )
-              }
+                  `/projects/aa/${projectID}/activities/add?${params}`,
+                );
+              }}
               name={t('ADD_ACTIVITY')}
               className="rounded w-full"
             />

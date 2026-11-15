@@ -15,6 +15,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { PhaseContentProps } from 'apps/rahat-ui/src/types/activities';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { getActivitiesListPath } from '../activity-navigation';
 
 export default function PhaseContent({
   title,
@@ -33,7 +34,6 @@ export default function PhaseContent({
   );
   const router = useRouter();
 
-  const lowerTitle = title.toLowerCase();
   const handleUpdateStatus = (id: string) => {
     router.push(`/projects/aa/${projectID}/activities/${id}/update-status`);
   };
@@ -81,7 +81,7 @@ export default function PhaseContent({
                 className="w-5 h-5 cursor-pointer hover:shadow-md active:scale-95 focus:ring-2 focus:ring-blue-500 transition-transform"
                 onClick={() => {
                   router.push(
-                    `/projects/aa/${projectID}/activities/list/${lowerTitle}`,
+                    getActivitiesListPath(projectID as string, title),
                   );
                 }}
               />

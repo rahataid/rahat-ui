@@ -1,17 +1,24 @@
 import { useTranslations } from 'next-intl';
 import { TOKEN_TO_AMOUNT_MULTIPLIER } from '@rahat-ui/query';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
-import { trimDecimalZeros } from 'apps/rahat-ui/src/utils/string';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
-import { ChartDonut } from 'libs/shadcn/src/components/charts';
 import React from 'react';
 
 type Props = {
-  data: any;
+  data?: { vendorAssignedBalance?: number | string | null };
   loading: boolean;
-  redemptionStats: any;
+  redemptionStats?: { totalTokensApproved?: number | string | null };
   redemptionStatsLoading: boolean;
 };
+
+function parseAmount(value: number | string | null | undefined) {
+  if (value == null || (typeof value === 'string' && !value.trim())) {
+    return undefined;
+  }
+  const amount = Number(value);
+  return Number.isFinite(amount) ? amount : undefined;
+}
+
 export default function OverviewCard({
   data,
   loading,
@@ -20,20 +27,14 @@ export default function OverviewCard({
 }: Props) {
   const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
-  const isBalanceError = data?.balances?.name === 'NotFoundError';
-
-  const balance =
-    !isBalanceError && Array.isArray(data?.balances)
-      ? data?.balances?.filter((a: any) => a?.asset_code)
-      : [];
-
-  // const series = [10, 20];
-
-  const vendorBalance = isBalanceError
-    ? '-'
-    : balance?.[0]?.balance
-    ? trimDecimalZeros(balance?.[0]?.balance)
-    : '0';
+  const disbursed = parseAmount(data?.vendorAssignedBalance);
+  const redeemed = parseAmount(redemptionStats?.totalTokensApproved);
+  const metrics = [
+    { label: t('TOKEN_DISBURSED'), amount: disbursed, loading, color: 'bg-blue-50' },
+    { label: t('TOKEN_REDEEMED'), amount: redeemed, loading: redemptionStatsLoading, color: 'bg-blue-50' },
+    { label: t('AMOUNT_DISBURSED'), amount: disbursed, loading, color: 'bg-green-50', currency: true },
+    { label: t('AMOUNT_REDEEMED'), amount: redeemed, loading: redemptionStatsLoading, color: 'bg-red-50', currency: true },
+  ];
 
   return (
     <div className="border rounded-sm p-4">
@@ -43,62 +44,23 @@ export default function OverviewCard({
           {t('TOKEN_AMOUNT_DISBURSED_SUMMARY')}
         </p>
       </div>
-      <div className="grid grid-cols-1 gap-4">
-        {/* <div className="flex flex-col items-center justify-center">
-          {loading ? (
-            <Skeleton className="h-[200px] w-[200px] rounded-full" />
-          ) : (
-            <ChartDonut
-              series={series}
-              labels={['Online', 'Offline']}
-              donutSize="80%"
-              width={250}
-              height={200}
-              showLegend={true}
-              colors={['#2A9D90', '#CFD4DB']}
-            />
-          )}
-        </div> */}
-        <div className="flex flex-col space-y-2">
-          <div className="border rounded-sm p-4 bg-blue-50">
-            <p className="text-xs">{t('TOKEN_DISBURSED')}</p>
-            <p className="text-2xl font-semibold">
-              {data?.vendorAssignedBalance
-                ? formatNum(Number(data?.vendorAssignedBalance))
-                : t('N_A')}
-            </p>
+      <div className="flex flex-col space-y-2">
+        {metrics.map((metric) => (
+          <div key={metric.label} className={`border rounded-sm p-4 ${metric.color}`}>
+            <p className="text-xs">{metric.label}</p>
+            {metric.loading ? (
+              <Skeleton className="h-8 w-24" />
+            ) : (
+              <p className="text-2xl font-semibold">
+                {metric.amount === undefined
+                  ? t('N_A')
+                  : metric.currency
+                  ? `${t('RS')} ${formatNum(metric.amount * TOKEN_TO_AMOUNT_MULTIPLIER)}`
+                  : formatNum(metric.amount)}
+              </p>
+            )}
           </div>
-          <div className="border rounded-sm p-4 bg-blue-50">
-            <p className="text-xs">{t('TOKEN_REDEEMED')}</p>
-            <p className="text-2xl font-semibold">
-              {redemptionStats?.totalTokensApproved
-                ? formatNum(Number(redemptionStats?.totalTokensApproved))
-                : t('N_A')}
-            </p>
-          </div>
-          <div className="border rounded-sm p-4 bg-green-50">
-            <p className="text-xs">{t('AMOUNT_DISBURSED')}</p>
-            <p className="text-2xl font-semibold">
-              {data?.vendorAssignedBalance
-                ? `${t('RS')} ${formatNum(
-                    Number(data?.vendorAssignedBalance) *
-                      TOKEN_TO_AMOUNT_MULTIPLIER,
-                  )}`
-                : t('N_A')}
-            </p>
-          </div>
-          <div className="border rounded-sm p-4 bg-red-50">
-            <p className="text-xs">{t('AMOUNT_REDEEMED')}</p>
-            <p className="text-2xl font-semibold">
-              {redemptionStats?.totalTokensApproved
-                ? `${t('RS')} ${formatNum(
-                    Number(redemptionStats?.totalTokensApproved) *
-                      TOKEN_TO_AMOUNT_MULTIPLIER,
-                  )}`
-                : t('N_A')}
-            </p>
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );

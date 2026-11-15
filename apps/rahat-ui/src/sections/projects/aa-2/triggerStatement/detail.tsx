@@ -31,6 +31,7 @@ import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 import { AlertCircleIcon } from 'lucide-react';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
+import { PhaseBadge } from 'apps/rahat-ui/src/components/phase-badge';
 import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
 import { TruncatedCell } from '../stakeholders/component/TruncatedCell';
 import { useTranslations } from 'next-intl';
@@ -236,15 +237,9 @@ export default function TriggerStatementDetail() {
             </div>
             <div>
               <p className="mb-1">{t('PHASE')}</p>
-              <Badge
-                className={`${
-                  trigger?.phase?.name === 'READINESS'
-                    ? 'text-yellow-500 bg-yellow-100'
-                    : 'text-red-500 bg-red-100'
-                } text-xs`}
-              >
+              <PhaseBadge phase={trigger?.phase?.name}>
                 {trigger?.phase?.name || 'N/A'}
-              </Badge>
+              </PhaseBadge>
             </div>
             <div>
               <p className="mb-1">{t('TRIGGER_TYPE')}</p>

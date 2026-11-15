@@ -1,5 +1,4 @@
 import { useSingleActivity } from '@rahat-ui/query';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useTranslations } from 'next-intl';
 import { Back, Heading, SpinnerLoader } from 'apps/rahat-ui/src/common';
@@ -7,7 +6,7 @@ import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import { CommunicationDetailCard } from './communication.card';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
-import { getPhaseColor } from 'apps/rahat-ui/src/utils/getPhaseColor';
+import { PhaseBadge } from 'apps/rahat-ui/src/components/phase-badge';
 const activityDetail = {
   id: 4,
   uuid: '7b21ae50-41e2-4d68-8ba1-0b127f5d5af1',
@@ -164,14 +163,12 @@ const CommunicationDetailsView = () => {
             <Label className="text-muted-foreground mb-2 text-xs">
               {t('ACTIVITY_TITLE')}:
             </Label>
-            <p className="text-base break-all">
-              {activityDetail?.title}
-              <span>
-                <Badge className={getPhaseColor(activityDetail?.phase?.name)}>
-                  {activityDetail?.phase?.name}
-                </Badge>
-              </span>
-            </p>
+            <div className="text-base break-all">
+              {activityDetail?.title}{' '}
+              <PhaseBadge phase={activityDetail?.phase?.name}>
+                {activityDetail?.phase?.name}
+              </PhaseBadge>
+            </div>
           </div>
         </div>
 

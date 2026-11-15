@@ -1,6 +1,5 @@
 import { useTranslations } from 'next-intl';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { cn } from '@rahat-ui/shadcn/src/utils';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
@@ -8,6 +7,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
+import { PhaseBadge } from 'apps/rahat-ui/src/components/phase-badge';
 function getStatusBg(status: string | undefined) {
   if (status === 'Not Started') {
     return 'bg-gray-200 text-black';
@@ -24,18 +24,6 @@ function getStatusBg(status: string | undefined) {
   return 'bg-red-200 text-red-600';
 }
 
-function getPhaseColor(phase: string) {
-  if (phase === 'PREPAREDNESS') {
-    return 'bg-green-200 text-green-500';
-  }
-  if (phase === 'ACTIVATION') {
-    return 'bg-red-200 text-red-500';
-  }
-  if (phase === 'READINESS') {
-    return 'bg-yellow-200 text-yellow-500';
-  }
-  return '';
-}
 export default function useCommsActivitiesTableColumns() {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
@@ -70,17 +58,15 @@ export default function useCommsActivitiesTableColumns() {
       meta: { className: 'w-[15%]' },
       cell: ({ row }) => {
         const phase = row.getValue('phase') as string;
-        const className = getPhaseColor(phase);
         // Phase names come from the API and admins can create new ones, so an
         // unmapped phase must render as-is rather than throwing MISSING_MESSAGE.
         return (
-          (
-          <Badge className={cn(className, 'max-w-full overflow-hidden')}>
-            <TruncatedCell text=
-            {translateValue(tg, phase, { fallbackStyle: 'raw' })}
-           truncateByWidth={true} />
-          </Badge>
-        )
+          <PhaseBadge phase={phase} className="max-w-full overflow-hidden">
+            <TruncatedCell
+              text={translateValue(tg, phase, { fallbackStyle: 'raw' })}
+              truncateByWidth
+            />
+          </PhaseBadge>
         );
       },
     },

@@ -26,7 +26,7 @@ import {
   TemplateDetailsDialogProps,
 } from '../types';
 import Link from 'next/link';
-import { getPhaseColor } from 'apps/rahat-ui/src/utils/getPhaseColor';
+import { PhaseBadge } from 'apps/rahat-ui/src/components/phase-badge';
 import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
@@ -112,11 +112,9 @@ export function TemplateDetailsDialog({
             </InfoItem>
 
             <InfoItem label={t('PHASE')}>
-              <Badge
-                className={`${getPhaseColor(template?.phase?.name)} border`}
-              >
+              <PhaseBadge phase={template?.phase?.name}>
                 {template.phase?.name}
-              </Badge>
+              </PhaseBadge>
             </InfoItem>
 
             <InfoItem label={t('CATEGORY')}>{template.category?.name}</InfoItem>

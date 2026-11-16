@@ -25,6 +25,8 @@ export type SendCommunicationConfirmDialogProps = {
   channel?: string;
   recipientsCount?: number;
   groupsCount?: number;
+  groupName?: string;
+  credits?: number;
   dialogTitle?: string;
   dialogDescription?: string;
 };
@@ -38,6 +40,8 @@ export function SendCommunicationConfirmDialog({
   channel,
   recipientsCount,
   groupsCount,
+  groupName,
+  credits,
   dialogTitle,
   dialogDescription,
 }: SendCommunicationConfirmDialogProps) {
@@ -77,7 +81,7 @@ export function SendCommunicationConfirmDialog({
           </DialogDescription>
         </DialogHeader>
 
-        {(title || channel || recipientsCount != null || groupsCount != null) && (
+        {(title || channel || recipientsCount != null || groupsCount != null || groupName || (credits != null && credits > 0)) && (
           <div className="my-2 rounded-md border bg-muted/30 p-3 text-xs sm:text-sm space-y-2 min-w-0">
             {title && (
               <div className="min-w-0">
@@ -98,15 +102,28 @@ export function SendCommunicationConfirmDialog({
                 </Badge>
               )}
 
+              {groupName && (
+                <span className="text-xs text-muted-foreground font-medium">
+                  {channel ? '• ' : ''}{groupName}
+                </span>
+              )}
+
               {recipientsCount != null && recipientsCount > 0 && (
                 <span className="text-xs text-muted-foreground">
-                  {formatDigits(recipientsCount)} {t('INDIVIDUALS') || 'individuals'}
+                  {channel || groupName ? '• ' : ''}{formatDigits(recipientsCount)} {t('INDIVIDUALS') || 'individuals'}
                 </span>
               )}
 
               {groupsCount != null && groupsCount > 0 && (
                 <span className="text-xs text-muted-foreground">
                   • {formatDigits(groupsCount)} {t('GROUPS') || 'groups'}
+                </span>
+              )}
+
+              {credits != null && credits > 0 && (
+                <span className="text-xs text-muted-foreground">
+                  • {formatDigits(credits)}{' '}
+                  {credits === 1 ? t('SMS_CREDIT') || 'SMS credit' : t('SMS_CREDITS') || 'SMS credits'}
                 </span>
               )}
             </div>

@@ -114,11 +114,11 @@ importers:
         specifier: ^1.0.125
         version: 1.0.133(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@rumsan/react-query':
-        specifier: 0.0.45
-        version: 0.0.45(@types/react@18.3.23)(bufferutil@4.0.9)(immer@10.1.1)(typescript@5.4.5)(zod@3.25.67)
+        specifier: 0.0.45-rc.1
+        version: 0.0.45-rc.1(@types/react@18.3.23)(bufferutil@4.0.9)(immer@10.1.1)(typescript@5.4.5)(zod@3.25.67)
       '@rumsan/sdk':
-        specifier: 0.0.47-rc.3
-        version: 0.0.47-rc.3
+        specifier: 0.0.47-rc.5
+        version: 0.0.47-rc.5
       '@rumsan/user':
         specifier: 3.0.169
         version: 3.0.169(amqplib@0.10.8)(bufferutil@4.0.9)(passport@0.7.0)(reflect-metadata@0.2.2)(typescript@5.4.5)(zod@3.25.67)
@@ -3421,17 +3421,14 @@ packages:
   '@rumsan/prisma@1.0.133':
     resolution: {integrity: sha512-rz7IxtFT5D1NPi4vhngkMQtnRq0z8hK+xCEcNSc/eVm6OZQfRLPhWiKT8agOH24z9iDQ44MMlNBSzH7chyykTw==}
 
-  '@rumsan/react-query@0.0.45':
-    resolution: {integrity: sha512-v6Vr5FdcpNp/c3X9Nt1g3nA5Tg0leS88v916i3wPjz1XGhcRM+1aEi5WKPWAj68HiWpm2/zWtiOM4f3+xF2KSQ==}
+  '@rumsan/react-query@0.0.45-rc.1':
+    resolution: {integrity: sha512-97NcmhZD6+7YYJoJ6EFjFb2PpFLJVg/ti0W8uSmImMdUT48Sr9E19FBx3Z9mmUs1fCLm+xfuyc3lOn8BwDKSsw==}
 
   '@rumsan/sdk@0.0.46':
     resolution: {integrity: sha512-USObythpmrA0kjLlzyGMW5+nmWx/lZX4FeUVXF7JQxgau7tmpNOKypQs10VgFMPG4JlifuutZQaG0GDYMRhg7w==}
 
-  '@rumsan/sdk@0.0.47':
-    resolution: {integrity: sha512-EHbRkUwkbbCfRIzjjnLaMSVi/GPqt827gNvU1qf5G2RL0Jo3bFDgXuzxUJB1ACXiQRa8GrLFOGLvYLbE1Ldmpw==}
-
-  '@rumsan/sdk@0.0.47-rc.3':
-    resolution: {integrity: sha512-j4Ux0/a+jKw6Ur/pvj0QoSqm+mEno4XTNj36xEFpjqxmNwTX92ZZnJorZx/rePMBOjJcVwxLf1AS5TnOMYwyEg==}
+  '@rumsan/sdk@0.0.47-rc.5':
+    resolution: {integrity: sha512-pWSB0WV+/zCKWw07HwQGQpm73kDukgVsRBalN79ejY6cJ69Lz342jZAeYREElyTN4Pg4dtAguYhJLlDavbA7sg==}
 
   '@rumsan/user@3.0.169':
     resolution: {integrity: sha512-hUPsJCynuqFewmWFyu1n4ayXvtYVZxt2ERIBtPPcGq/4R9hqfE3/y5dreRfc4Rpn26NHECHOPUSforB+gZW/Zw==}
@@ -16347,10 +16344,10 @@ snapshots:
       - rxjs
       - supports-color
 
-  '@rumsan/react-query@0.0.45(@types/react@18.3.23)(bufferutil@4.0.9)(immer@10.1.1)(typescript@5.4.5)(zod@3.25.67)':
+  '@rumsan/react-query@0.0.45-rc.1(@types/react@18.3.23)(bufferutil@4.0.9)(immer@10.1.1)(typescript@5.4.5)(zod@3.25.67)':
     dependencies:
       '@rumsan/communication': 0.0.24
-      '@rumsan/sdk': 0.0.47
+      '@rumsan/sdk': 0.0.47-rc.5
       '@tanstack/react-query': 5.22.2(react@18.3.1)
       axios: 1.10.0
       http-status-codes: 2.3.0
@@ -16373,14 +16370,7 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  '@rumsan/sdk@0.0.47':
-    dependencies:
-      axios: 1.10.0
-      http-status-codes: 2.3.0
-    transitivePeerDependencies:
-      - debug
-
-  '@rumsan/sdk@0.0.47-rc.3':
+  '@rumsan/sdk@0.0.47-rc.5':
     dependencies:
       axios: 1.10.0
       http-status-codes: 2.3.0

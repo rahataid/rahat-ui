@@ -30,7 +30,7 @@ import { formatEnumString } from 'apps/rahat-ui/src/utils/string';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { useRouter } from 'next/navigation';
-import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
+import { SendCommunicationConfirmDialog } from '../../communications/components/send-communication-confirm-dialog';
 
 interface BaseCommunication {
   communicationTitle?: string;
@@ -135,11 +135,15 @@ export function CommunicationCard({
   };
 
   const handleConfirmSend = async () => {
-    confirmationDialog.onFalse();
-    await triggerCommunication(
-      activityId,
-      activityCommunication?.communicationId,
-    );
+    try {
+      await triggerCommunication(
+        activityId,
+        activityCommunication?.communicationId,
+      );
+      confirmationDialog.onFalse();
+    } catch {
+      // Error handled by query hook
+    }
   };
 
   return (
@@ -357,24 +361,18 @@ export function CommunicationCard({
         </div>
       </CardContent>
 
-      <ConfirmationDialog
-        isConfirmationDialogOpen={confirmationDialog.value}
-        onCancel={confirmationDialog.onFalse}
+      <SendCommunicationConfirmDialog
+        isOpen={confirmationDialog.value}
+        onClose={confirmationDialog.onFalse}
         onConfirm={handleConfirmSend}
-        dialogTitle={t('SEND_COMMUNICATION')}
-      >
-        <div>
-          {t('SEND_COMMUNICATION_CONFIRM')}
-          <span className="font-bold mx-1">
-            {activityCommunication?.transportName}
-          </span>
-          {t('COMMUNICATION_TO_THE')}
-          <span className="font-bold mx-1">
-            {activityCommunication?.groupName}
-          </span>
-          {t('GROUP_QUESTION')}
-        </div>
-      </ConfirmationDialog>
+        isPending={loadingButtons.includes(
+          activityCommunication?.communicationId,
+        )}
+        title={activityCommunication?.communicationTitle}
+        channel={activityCommunication?.transportName}
+        groupName={activityCommunication?.groupName}
+        credits={activityCommunication?.extras?.smsCredits}
+      />
     </Card>
   );
 }

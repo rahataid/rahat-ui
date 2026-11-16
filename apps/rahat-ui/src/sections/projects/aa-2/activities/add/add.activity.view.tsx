@@ -380,6 +380,8 @@ export default function AddActivities() {
       communicationTitle: communicationFormData?.communicationTitle || '',
       groupType: (communicationFormData?.groupType || '') as GroupType,
       groupId: communicationFormData?.groupId || [],
+      beneficiaries: communicationFormData?.beneficiaries || [],
+      stakeholders: communicationFormData?.stakeholders || [],
       transportId: communicationFormData?.transportId || '',
       message: communicationFormData?.message || '',
       subject: communicationFormData?.subject || '',

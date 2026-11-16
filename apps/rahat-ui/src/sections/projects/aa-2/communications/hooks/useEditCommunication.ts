@@ -10,7 +10,6 @@ import {
   useGetCommunication,
   useUpdateCommunication,
   useUploadFile,
-  useSessionBroadCastCount,
 } from '@rahat-ui/query';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { BroadcastFormValues, CommunicationChannel } from '../types';
@@ -117,11 +116,31 @@ export function useEditCommunication({
     return [...new Set(ids)];
   }, [targets]);
 
-  const { data: broadcastCounts } = useSessionBroadCastCount(sessionIds);
-  const rawBroadcastCounts =
-    (broadcastCounts as any)?.data?.data ??
-    (broadcastCounts as any)?.data ??
-    broadcastCounts;
+  const rawBroadcastCounts = useMemo(() => {
+    let success = 0;
+    let fail = 0;
+    let pending = 0;
+    let scheduled = 0;
+    let total = 0;
+
+    for (const t of (targets || []) as any[]) {
+      if (t?.counts) {
+        success += Number(t.counts.SUCCESS || 0);
+        fail += Number(t.counts.FAIL || 0);
+        pending += Number(t.counts.PENDING || 0);
+        scheduled += Number(t.counts.SCHEDULED || 0);
+        total += Number(t.counts.TOTAL || 0);
+      }
+    }
+
+    return {
+      SUCCESS: success,
+      FAIL: fail,
+      PENDING: pending,
+      SCHEDULED: scheduled,
+      TOTAL: total,
+    };
+  }, [targets]);
 
   const isFutureScheduled = Boolean(
     raw?.isScheduled &&
@@ -407,6 +426,5 @@ export function useEditCommunication({
     handleConfirmUpdate,
     uploadFile,
     appTransports,
-    scheduledAt: (raw?.scheduledAt as string) || null,
   };
 }

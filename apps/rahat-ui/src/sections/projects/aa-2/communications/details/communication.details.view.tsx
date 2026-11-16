@@ -1,10 +1,9 @@
 'use client';
 
-import Swal from 'sweetalert2';
 import React, { useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { useLabelDigits, useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { Heading, Back, SearchInput } from 'apps/rahat-ui/src/common';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
@@ -23,7 +22,6 @@ import {
 } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import {
   useDeleteCommunication,
@@ -32,7 +30,6 @@ import {
   useTriggerCommunicationBroadcast,
   useBeneficiariesGroups,
   useStakeholdersGroups,
-  useSessionBroadCastCount,
   useSessionRetryFailed,
 } from '@rahat-ui/query';
 import { toCommunicationRecord } from '../components/useCommunicationsTableColumns';
@@ -41,8 +38,7 @@ import { CommunicationChannelIcon } from '../components/communication-channel-ic
 import { SendCommunicationConfirmDialog } from '../components/send-communication-confirm-dialog';
 import {
   resolveChannelByTransportId,
-  resolveTargetEffectiveStatus,
-  resolveCommunicationLifecycleStatus,
+  toDisplayStatus,
 } from '../utils/communications.utils';
 import { UUID } from 'crypto';
 
@@ -121,25 +117,38 @@ export default function CommunicationDetailsView() {
     return { name: groupId || (isBeneficiary ? t('BENEFICIARY_GROUP') : t('STAKEHOLDER_GROUP')), count: 0 };
   };
 
-  const failedTargetsAudienceCount = targets
-    .filter((t: any) => t?.status === 'FAILED')
-    .reduce((sum: number, target: any) => {
-      const info = getGroupDetails(target.groupId, target.groupType, target.group);
-      return sum + (info.count || 0);
-    }, 0);
+  const isBroadcastResolving = isLoading;
 
-  const { data: broadcastCounts, isLoading: isBroadcastLoading } = useSessionBroadCastCount(sessionIds);
-  const isBroadcastResolving = sessionIds.length > 0 && (isBroadcastLoading || broadcastCounts === undefined);
+  const rawBroadcastCounts = useMemo(() => {
+    let success = 0;
+    let fail = 0;
+    let pending = 0;
+    let scheduled = 0;
+    let total = 0;
 
-  const rawBroadcastCounts =
-    (broadcastCounts as any)?.data?.data ??
-    (broadcastCounts as any)?.data ??
-    broadcastCounts;
+    for (const t of (targets || []) as any[]) {
+      if (t?.counts) {
+        success += Number(t.counts.SUCCESS || 0);
+        fail += Number(t.counts.FAIL || 0);
+        pending += Number(t.counts.PENDING || 0);
+        scheduled += Number(t.counts.SCHEDULED || 0);
+        total += Number(t.counts.TOTAL || 0);
+      }
+    }
 
-  const deliveredCount = rawBroadcastCounts?.SUCCESS ?? 0;
-  const scheduledCount = rawBroadcastCounts?.SCHEDULED ?? 0;
-  const failedCount = rawBroadcastCounts?.FAIL ?? 0;
-  const pendingCountBroadcast = rawBroadcastCounts?.PENDING ?? 0;
+    return {
+      SUCCESS: success,
+      FAIL: fail,
+      PENDING: pending,
+      SCHEDULED: scheduled,
+      TOTAL: total,
+    };
+  }, [targets]);
+
+  const deliveredCount = rawBroadcastCounts.SUCCESS;
+  const scheduledCount = rawBroadcastCounts.SCHEDULED;
+  const failedCount = rawBroadcastCounts.FAIL;
+  const pendingCountBroadcast = rawBroadcastCounts.PENDING;
 
   const record = useMemo(() => {
     if (!raw) return null;
@@ -150,26 +159,13 @@ export default function CommunicationDetailsView() {
   }, [raw, appTransports]);
 
   const effectiveOverallStatus = useMemo(() => {
-    return resolveCommunicationLifecycleStatus({
-      channel: record?.channel || raw?.channel || 'SMS',
-      rawStatus: record?.status || raw?.status,
-      counts: sessionIds.length > 0 ? rawBroadcastCounts : undefined,
-      hasActiveTargets:
-        targets.some((t: any) => t?.status === 'PROCESSING'),
-      hasPendingTargets: targets.some((t: any) => t?.status === 'PENDING' || !t?.status),
-      hasSession: sessionIds.length > 0,
-      isRetrying: isRetrying || retryFailedSession.isPending || triggerBroadcast.isPending,
-      isScheduled: raw?.isScheduled,
-      scheduledAt: raw?.scheduledAt,
-    });
+    if (isRetrying || retryFailedSession.isPending || triggerBroadcast.isPending) {
+      return 'IN_PROGRESS';
+    }
+    return raw?.status || record?.status;
   }, [
-    record?.channel,
-    raw?.channel,
     record?.status,
     raw?.status,
-    rawBroadcastCounts,
-    sessionIds.length,
-    targets,
     isRetrying,
     retryFailedSession.isPending,
     triggerBroadcast.isPending,
@@ -224,9 +220,6 @@ export default function CommunicationDetailsView() {
 
 
   const hasFailedTargets = targets.some((target: any) => target?.status === 'FAILED');
-  const hasPendingTargets = targets.some(
-    (target: any) => target?.status === 'PENDING' || target?.status === 'PROCESSING',
-  );
 
   const canSend =
     targets.length > 0 &&
@@ -642,19 +635,14 @@ function TargetGroupCardItem({
   const projectId = params.id as string;
   const commId = params.commId as string;
 
-  const { data: broadcastCounts, isLoading: isGroupBroadcastLoading } = useSessionBroadCastCount(target?.sessionId ? [target.sessionId] : []);
   const mutateRetry = useSessionRetryFailed();
   const triggerBroadcast = useTriggerCommunicationBroadcast();
 
-  const isTargetResolving = !!target?.sessionId && (isGroupBroadcastLoading || broadcastCounts === undefined);
+  const isTargetResolving = false;
+  const rawGroupCounts = target?.counts ?? null;
 
-  const rawGroupCounts =
-    (broadcastCounts as any)?.data?.data ??
-    (broadcastCounts as any)?.data ??
-    broadcastCounts;
-
-  const delivered = rawGroupCounts?.SUCCESS ?? 0;
-  const failed = rawGroupCounts?.FAIL ?? 0;
+  const delivered = Number(rawGroupCounts?.SUCCESS || 0);
+  const failed = Number(rawGroupCounts?.FAIL || 0);
   const audioURL = typeof raw?.audioURL === 'object' ? raw.audioURL : null;
   const messageText =
     typeof raw?.message === 'string' && raw.message.trim()
@@ -664,16 +652,9 @@ function TargetGroupCardItem({
   const isRetrying = mutateRetry.isPending || triggerBroadcast.isPending;
 
   const effectiveTargetStatus = useMemo(() => {
-    return resolveCommunicationLifecycleStatus({
-      channel: record.channel,
-      rawStatus: target?.status,
-      counts: target?.sessionId ? rawGroupCounts : undefined,
-      hasActiveTargets: target?.status === 'PROCESSING',
-      hasPendingTargets: target?.status === 'PENDING' || !target?.status,
-      hasSession: !!target?.sessionId,
-      isRetrying: (failed > 0 || target?.status === 'FAILED') && isRetrying,
-    });
-  }, [target?.status, target?.sessionId, rawGroupCounts, record.channel, isRetrying, failed]);
+    if ((failed > 0 || target?.status === 'FAILED') && isRetrying) return 'IN_PROGRESS';
+    return toDisplayStatus(target?.sessionStatus || target?.status);
+  }, [target?.sessionStatus, target?.status, isRetrying, failed]);
 
   const handleRetry = async () => {
     if (isRetrying) return;

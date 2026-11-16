@@ -20,7 +20,6 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@rahat-ui/shadcn/src/components/ui/popover';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { cn } from '@rahat-ui/shadcn/src';
 import { FormInput, FormTextarea, FormSelectTrigger } from 'apps/rahat-ui/src/common/form-fields';
 import {

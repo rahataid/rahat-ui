@@ -10,7 +10,6 @@ import { Save, Loader2, CalendarClock, Calendar as CalendarIcon, Lock } from 'lu
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@rahat-ui/shadcn/src/components/ui/popover';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { cn } from '@rahat-ui/shadcn/src';
 import {
   Card,
@@ -71,7 +70,6 @@ export default function EditCommunicationView() {
     onSubmit,
     handleConfirmUpdate,
     uploadFile,
-    scheduledAt,
   } = useEditCommunication({ projectId, commId, form });
 
   const channel = watch('channel');

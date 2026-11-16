@@ -20,15 +20,20 @@ import {
   AlertCircle,
   CalendarClock,
   Hourglass,
+  CloudDownload,
+  LoaderCircle,
 } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
+import { toast } from 'react-toastify';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import {
   useDeleteCommunication,
   useGetCommunication,
   useListAllTransports,
+  useListSessionLogs,
   useTriggerCommunicationBroadcast,
   useBeneficiariesGroups,
   useStakeholdersGroups,
@@ -43,6 +48,8 @@ import {
   resolveChannelByTransportId,
   resolveTargetEffectiveStatus,
   resolveCommunicationLifecycleStatus,
+  exportCommunicationLogs,
+  exportCommunicationTargetSummary,
 } from '../utils/communications.utils';
 import { UUID } from 'crypto';
 
@@ -638,6 +645,20 @@ function TargetGroupCardItem({
 
   const isTargetResolving = !!target?.sessionId && (isGroupBroadcastLoading || broadcastCounts === undefined);
 
+  const { data: sessionLogs, isLoading: isLoadingSessionLogs } =
+    useListSessionLogs(target?.sessionId || '', {
+      page: 1,
+      perPage: 1000,
+    });
+
+  const sessionLogsList = useMemo(() => {
+    const raw =
+      (sessionLogs as any)?.data ??
+      (sessionLogs as any)?.httpReponse?.data?.data ??
+      [];
+    return Array.isArray(raw) ? raw : [];
+  }, [sessionLogs]);
+
   const rawGroupCounts =
     (broadcastCounts as any)?.data?.data ??
     (broadcastCounts as any)?.data ??
@@ -682,6 +703,86 @@ function TargetGroupCardItem({
     }
   };
 
+  const [isExportingAll, setIsExportingAll] = useState(false);
+  const [isExportingFailed, setIsExportingFailed] = useState(false);
+
+  const hasNoFailedDeliveries =
+    failed === 0 &&
+    sessionLogsList.filter(
+      (l: any) =>
+        (l?.status || '').toUpperCase() === 'FAIL' ||
+        (l?.status || '').toUpperCase() === 'FAILED',
+    ).length === 0;
+
+  const hasNoLogsForExport =
+    !target?.sessionId ||
+    (delivered === 0 &&
+      failed === 0 &&
+      sessionLogsList.length === 0 &&
+      (rawGroupCounts?.TOTAL ?? 0) === 0);
+
+  const handleExportFailed = async () => {
+    if (isExportingFailed || hasNoFailedDeliveries) return;
+    setIsExportingFailed(true);
+    try {
+      const logs = sessionLogsList.length > 0 ? sessionLogsList : [];
+      const success = await exportCommunicationLogs(logs, {
+        title: record?.title || raw?.title,
+        groupName: groupInfo.name,
+        groupType: target?.groupType,
+        channel: record?.channel,
+        onlyFailed: true,
+        message: typeof raw?.message === 'string' ? raw.message : undefined,
+        subject: raw?.subject,
+        sessionStartedAt: target?.createdAt || raw?.createdAt,
+        sessionEndedAt: target?.updatedAt || raw?.updatedAt,
+        formatDate: (d) => formatDate(d, 'MMMM d, yyyy, h:mm:ss a'),
+        naLabel: tg('N_A'),
+      });
+      if (success) {
+        toast.success(t('LOGS_EXPORTED_SUCCESSFULLY') || 'Logs exported successfully');
+      } else {
+        toast.info(t('NO_FAILED_DELIVERIES_TO_EXPORT') || 'No failed deliveries to export');
+      }
+    } catch (error) {
+      console.error('Error exporting failed logs:', error);
+      toast.error(t('FAILED_EXPORT_LOGS') || 'Failed to export logs');
+    } finally {
+      setIsExportingFailed(false);
+    }
+  };
+
+  const handleExportAll = async () => {
+    if (isExportingAll || hasNoLogsForExport) return;
+    setIsExportingAll(true);
+    try {
+      const logs = sessionLogsList.length > 0 ? sessionLogsList : [];
+      const success = await exportCommunicationLogs(logs, {
+        title: record?.title || raw?.title,
+        groupName: groupInfo.name,
+        groupType: target?.groupType,
+        channel: record?.channel,
+        onlyFailed: false,
+        message: typeof raw?.message === 'string' ? raw.message : undefined,
+        subject: raw?.subject,
+        sessionStartedAt: target?.createdAt || raw?.createdAt,
+        sessionEndedAt: target?.updatedAt || raw?.updatedAt,
+        formatDate: (d) => formatDate(d, 'MMMM d, yyyy, h:mm:ss a'),
+        naLabel: tg('N_A'),
+      });
+      if (success) {
+        toast.success(t('LOGS_EXPORTED_SUCCESSFULLY') || 'Logs exported successfully');
+      } else {
+        toast.info(t('NO_COMMUNICATION_LOGS_AVAILABLE_TO_EXPORT') || 'No communication logs available to export');
+      }
+    } catch (error) {
+      console.error('Error exporting logs:', error);
+      toast.error(t('FAILED_EXPORT_LOGS') || 'Failed to export logs');
+    } finally {
+      setIsExportingAll(false);
+    }
+  };
+
   return (
     <Card className="bg-white border border-gray-200/90 rounded-sm shadow-none flex flex-col justify-between p-3.5 sm:p-4 space-y-3 hover:border-gray-300 transition-colors">
       <div className="space-y-2.5">
@@ -705,7 +806,13 @@ function TargetGroupCardItem({
         {record.channel === 'VOICE' && audioURL?.mediaURL ? (
           <div className="bg-slate-50/80 p-2 sm:p-2.5 rounded border border-gray-200/80 space-y-1">
             <p className="text-[11px] font-medium text-gray-600 truncate">{audioURL.fileName || 'recording.wav'}</p>
-            <audio src={audioURL.mediaURL} controls className="w-full h-8 rounded" />
+            <audio
+              src={audioURL.mediaURL}
+              controls
+              aria-label={audioURL.fileName || t('VOICE_RECORDING') || 'Voice recording'}
+              title={audioURL.fileName || 'Audio recording'}
+              className="w-full h-8 rounded"
+            />
           </div>
         ) : messageText ? (
           <div className="bg-slate-50/80 p-2 sm:p-2.5 rounded border border-gray-200/80 text-xs text-gray-800 leading-relaxed whitespace-pre-wrap max-h-24 overflow-y-auto font-sans break-words break-all [overflow-wrap:anywhere]">
@@ -724,12 +831,25 @@ function TargetGroupCardItem({
       </div>
 
       {/* Footer Section: Timestamps on Left + Buttons on Right */}
-      <div className="pt-2.5 border-t border-gray-100 flex flex-wrap items-end justify-between gap-2">
-        <div className="text-[11px] text-gray-500 space-y-0.5">
-          {(effectiveTargetStatus === 'COMPLETED' || target?.status === 'COMPLETED') && (
-            <p>{t('COMPLETED_AT') || 'Completed At'}: {formatDate(target?.updatedAt || raw?.updatedAt, 'MMMM d, yyyy at h:mm:ss a')}</p>
+      <div className="pt-2.5 border-t border-gray-100 flex flex-wrap items-center justify-between gap-2">
+        <div className="text-[11px] text-gray-500">
+          {effectiveTargetStatus === 'COMPLETED' || target?.status === 'COMPLETED' ? (
+            <p>
+              {t('COMPLETED_AT') || 'Completed At'}:{' '}
+              {formatDate(
+                target?.completedAt || target?.updatedAt || raw?.updatedAt,
+                'MMMM d, yyyy at h:mm:ss a',
+              )}
+            </p>
+          ) : (
+            <p>
+              {t('UPDATED_AT') || 'Updated at'}:{' '}
+              {formatDate(
+                target?.updatedAt || raw?.updatedAt,
+                'MMMM d, yyyy at h:mm:ss a',
+              )}
+            </p>
           )}
-          <p>{t('UPDATED_AT') || 'Updated at'}: {formatDate(target?.updatedAt || raw?.updatedAt, 'MMMM d, yyyy at h:mm:ss a')}</p>
         </div>
 
         <div className="flex items-center flex-wrap gap-2 ml-auto">
@@ -746,6 +866,42 @@ function TargetGroupCardItem({
               variant="outline"
             />
           )}
+
+          <TooltipWrapper
+            tip={t('NO_FAILED_DELIVERIES_TO_EXPORT')}
+            disable={!hasNoFailedDeliveries}
+          >
+            <DialogComponent
+              buttonIcon={CloudDownload}
+              buttonText={isExportingFailed ? t('EXPORTING') || 'Exporting...' : t('FAILED_EXPORTS') || 'Failed Exports'}
+              dialogTitle={t('EXPORT_FAILED_COMMUNICATION_LOGS') || 'Export Failed Communication Logs'}
+              dialogDescription={t('EXPORT_FAILED_COMMUNICATION_LOGS_CONFIRM') || 'Are you sure you want to export failed communication logs for this group?'}
+              confirmButtonText={t('CONFIRM') || 'Confirm'}
+              handleClick={handleExportFailed}
+              buttonClassName="h-8 text-xs font-medium px-3 gap-1.5 rounded-sm shrink-0 whitespace-nowrap"
+              confirmButtonClassName="rounded-sm bg-primary"
+              variant="outline"
+              data={{ _count: { Activity: hasNoFailedDeliveries || isExportingFailed ? 1 : 0 } }}
+            />
+          </TooltipWrapper>
+
+          <TooltipWrapper
+            tip={t('NO_COMMUNICATION_LOGS_AVAILABLE_TO_EXPORT')}
+            disable={!hasNoLogsForExport}
+          >
+            <DialogComponent
+              buttonIcon={CloudDownload}
+              buttonText={isExportingAll ? t('EXPORTING') || 'Exporting...' : t('EXPORT_ALL_LOGS') || 'Export All Logs'}
+              dialogTitle={t('EXPORT_COMMUNICATION_LOGS') || 'Export Communication Logs'}
+              dialogDescription={t('EXPORT_COMMUNICATION_LOGS_CONFIRM') || 'Are you sure you want to export all communication logs for this group?'}
+              confirmButtonText={t('CONFIRM') || 'Confirm'}
+              handleClick={handleExportAll}
+              buttonClassName="h-8 text-xs font-medium px-3 gap-1.5 rounded-sm shrink-0 whitespace-nowrap"
+              confirmButtonClassName="rounded-sm bg-primary"
+              variant="outline"
+              data={{ _count: { Activity: hasNoLogsForExport || isExportingAll ? 1 : 0 } }}
+            />
+          </TooltipWrapper>
 
           <Button
             variant="outline"

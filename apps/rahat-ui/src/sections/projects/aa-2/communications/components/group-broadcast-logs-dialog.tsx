@@ -19,7 +19,15 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { DialogComponent } from '../../activities/details/dialog.reuse';
-import { TriangleAlertIcon, RefreshCcw, ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  TriangleAlertIcon,
+  RefreshCcw,
+  ChevronLeft,
+  ChevronRight,
+  CloudDownload,
+  LoaderCircle,
+} from 'lucide-react';
+import { toast } from 'react-toastify';
 import {
   useListSessionLogs,
   useSessionBroadCastCount,
@@ -37,6 +45,7 @@ import {
   resolveTargetEffectiveStatus,
   resolveBroadcastLogStatus,
   resolveCommunicationLifecycleStatus,
+  exportCommunicationLogs,
 } from '../utils/communications.utils';
 
 type GroupBroadcastLogsDialogProps = {
@@ -111,6 +120,33 @@ export function GroupBroadcastLogsDialog({
   const logsList = sessionLogsData?.httpReponse?.data?.data ?? [];
   const meta = sessionLogsData?.httpReponse?.data?.meta ?? { total: 0, lastPage: 1 };
 
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handleExport = async () => {
+    if (isExporting || logsList.length === 0) return;
+    setIsExporting(true);
+    try {
+      const success = await exportCommunicationLogs(logsList, {
+        title: groupName,
+        groupName: groupName,
+        groupType: target?.groupType,
+        channel,
+        formatDate: (d) => formatDate(d, 'MMMM d, yyyy, h:mm:ss a'),
+        naLabel: tg('N_A'),
+      });
+      if (success) {
+        toast.success(t('LOGS_EXPORTED_SUCCESSFULLY') || 'Logs exported successfully');
+      } else {
+        toast.info(t('NO_LOGS_TO_EXPORT') || 'No logs available to export');
+      }
+    } catch (error) {
+      console.error('Export error:', error);
+      toast.error(t('FAILED_EXPORT_LOGS') || 'Failed to export');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   const handleRetry = async () => {
     if (!sessionId || mutateRetry.isPending) return;
     try {
@@ -122,8 +158,6 @@ export function GroupBroadcastLogsDialog({
       Swal.fire(t('RETRY_FAILED') || 'Retry failed', '', 'error');
     }
   };
-
-
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -139,25 +173,42 @@ export function GroupBroadcastLogsDialog({
                 <span>— {t('MEMBER_LOGS') || 'Member Communication Logs'}</span>
               </DialogTitle>
               <div className="flex flex-wrap items-center gap-2 mt-1">
-                <span className="text-xs text-muted-foreground">
+                <DialogDescription className="text-xs text-muted-foreground">
                   {target?.groupType === 'BENEFICIARY' ? t('BENEFICIARY_GROUP') : t('STAKEHOLDER_GROUP')} • {t('SESSION_ID')}: {sessionId || tg('N_A')}
-                </span>
+                </DialogDescription>
                 <CommunicationStatusBadge status={effectiveStatus} />
               </div>
             </div>
-            {counts.FAIL > 0 && (
-              <DialogComponent
-                buttonIcon={RefreshCcw}
-                buttonText={t('RETRY_FAILED') || 'Retry Failed'}
-                dialogTitle={t('RETRY_COMMUNICATION') || 'Retry Communication'}
-                dialogDescription={t('RETRY_COMMUNICATION_CONFIRM') || 'Are you sure you want to retry this communication?'}
-                confirmButtonText={t('CONFIRM') || 'Confirm'}
-                handleClick={handleRetry}
-                buttonClassName="h-8 gap-1.5 text-xs border-red-300 text-red-600 hover:bg-red-50"
-                confirmButtonClassName="rounded-sm bg-primary"
+            <div className="flex items-center gap-2">
+              <Button
                 variant="outline"
-              />
-            )}
+                size="sm"
+                className="h-8 gap-1.5 text-xs text-gray-700 border-gray-200 hover:bg-gray-50 font-medium shrink-0"
+                onClick={handleExport}
+                disabled={isExporting || logsList.length === 0}
+              >
+                {isExporting ? (
+                  <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <CloudDownload className="h-3.5 w-3.5" />
+                )}
+                <span>{isExporting ? t('EXPORTING') || 'Exporting...' : t('EXPORT') || 'Export'}</span>
+              </Button>
+
+              {counts.FAIL > 0 && (
+                <DialogComponent
+                  buttonIcon={RefreshCcw}
+                  buttonText={t('RETRY_FAILED') || 'Retry Failed'}
+                  dialogTitle={t('RETRY_COMMUNICATION') || 'Retry Communication'}
+                  dialogDescription={t('RETRY_COMMUNICATION_CONFIRM') || 'Are you sure you want to retry this communication?'}
+                  confirmButtonText={t('CONFIRM') || 'Confirm'}
+                  handleClick={handleRetry}
+                  buttonClassName="h-8 gap-1.5 text-xs border-red-300 text-red-600 hover:bg-red-50"
+                  confirmButtonClassName="rounded-sm bg-primary"
+                  variant="outline"
+                />
+              )}
+            </div>
           </div>
         </DialogHeader>
 
@@ -217,11 +268,11 @@ export function GroupBroadcastLogsDialog({
             <table className="w-full text-xs text-left">
               <thead className="bg-slate-50 border-b border-gray-200 text-gray-600 font-semibold uppercase">
                 <tr>
-                  <th className="py-2.5 px-3.5">{t('RECIPIENT') || 'Recipient'}</th>
-                  <th className="py-2.5 px-3.5">{t('STATUS') || 'Status'}</th>
-                  <th className="py-2.5 px-3.5 text-center">{t('ATTEMPTS') || 'Attempts'}</th>
-                  <th className="py-2.5 px-3.5 text-center">{t('DURATION') || 'Duration'}</th>
-                  <th className="py-2.5 px-3.5 text-right">{t('TIMESTAMP') || 'Timestamp'}</th>
+                  <th scope="col" className="py-2.5 px-3.5">{t('RECIPIENT') || 'Recipient'}</th>
+                  <th scope="col" className="py-2.5 px-3.5">{t('STATUS') || 'Status'}</th>
+                  <th scope="col" className="py-2.5 px-3.5 text-center">{t('ATTEMPTS') || 'Attempts'}</th>
+                  <th scope="col" className="py-2.5 px-3.5 text-center">{t('DURATION') || 'Duration'}</th>
+                  <th scope="col" className="py-2.5 px-3.5 text-right">{t('TIMESTAMP') || 'Timestamp'}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -259,7 +310,11 @@ export function GroupBroadcastLogsDialog({
                               <TooltipProvider>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
-                                    <TriangleAlertIcon className="w-4 h-4 text-rose-500 cursor-pointer" />
+                                    <TriangleAlertIcon
+                                      className="w-4 h-4 text-rose-500 cursor-pointer"
+                                      role="img"
+                                      aria-label={t('FAIL_REASON') || 'Failure reason'}
+                                    />
                                   </TooltipTrigger>
                                   <TooltipContent side="top" className="max-w-xs text-xs p-2 bg-gray-900 text-white">
                                     <p className="font-semibold">{t('FAIL_REASON') || 'Failure Reason'}:</p>
@@ -299,6 +354,7 @@ export function GroupBroadcastLogsDialog({
               variant="outline"
               size="icon"
               className="h-7 w-7"
+              aria-label={t('PREVIOUS_PAGE') || 'Previous page'}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page <= 1}
             >
@@ -308,6 +364,7 @@ export function GroupBroadcastLogsDialog({
               variant="outline"
               size="icon"
               className="h-7 w-7"
+              aria-label={t('NEXT_PAGE') || 'Next page'}
               onClick={() => setPage((p) => Math.min(meta?.lastPage || 1, p + 1))}
               disabled={page >= (meta?.lastPage || 1)}
             >

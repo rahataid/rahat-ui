@@ -30,6 +30,7 @@ import { CommunicationTooltip } from '../components/communication-tooltip';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import {
   CloudDownload,
+  LoaderCircle,
   RefreshCcw,
   SendHorizontal,
   Clock,
@@ -58,6 +59,7 @@ import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import {
   resolveChannelByTransportId,
   resolveCommunicationLifecycleStatus,
+  exportCommunicationLogs,
 } from '../utils/communications.utils';
 import { CommunicationChannelIcon } from '../components/communication-channel-icon';
 import { SendCommunicationConfirmDialog } from '../components/send-communication-confirm-dialog';
@@ -67,6 +69,7 @@ import useCommsLogsTableColumns from '../../communicationLog/table/useCommsLogsT
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { UUID } from 'crypto';
+import { toast } from 'react-toastify';
 
 export function CommunicationSessionLogsView() {
   const tGlobal = useTranslations('GLOBAL');
@@ -74,6 +77,9 @@ export function CommunicationSessionLogsView() {
   const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
   const formatDate = useDateFormat();
+
+  const [isExportingAll, setIsExportingAll] = useState(false);
+  const [isExportingFailed, setIsExportingFailed] = useState(false);
 
   const router = useRouter();
   const params = useParams();
@@ -135,9 +141,9 @@ export function CommunicationSessionLogsView() {
     if (found) {
       const count = isBeneficiary
         ? found._count?.beneficiaries ??
-          found?.groupedBeneficiaries?.length ??
-          found?.beneficiaries?.length ??
-          0
+        found?.groupedBeneficiaries?.length ??
+        found?.beneficiaries?.length ??
+        0
         : found._count?.stakeholders ?? found?.stakeholders?.length ?? 0;
       return { name: found.name, count };
     }
@@ -529,6 +535,69 @@ export function CommunicationSessionLogsView() {
       ? rawComm.message
       : rawComm?.subject || null;
 
+  //export logs
+  const handleExportAllLogs = async () => {
+    if (isExportingAll) return;
+    setIsExportingAll(true);
+    try {
+      const rows = logsList.length > 0 ? logsList : audienceList;
+      const success = await exportCommunicationLogs(rows, {
+        title: rawComm?.title,
+        groupName: groupInfo.name,
+        groupType: targetGroup?.groupType,
+        channel,
+        message:
+          typeof rawComm?.message === 'string' ? rawComm.message : undefined,
+        subject: rawComm?.subject,
+        sessionStartedAt: targetGroup?.createdAt || rawComm?.createdAt,
+        sessionEndedAt: targetGroup?.updatedAt || rawComm?.updatedAt,
+        formatDate: (d) => formatDate(d, 'MMMM d, yyyy, h:mm:ss a'),
+        naLabel: tg('N_A'),
+      });
+      if (success) {
+        toast.success(t('LOGS_EXPORTED_SUCCESSFULLY') || 'Logs exported successfully');
+      } else {
+        toast.info(t('NO_LOGS_TO_EXPORT') || 'No logs available to export');
+      }
+    } catch (error) {
+      console.error('Error exporting logs:', error);
+      toast.error(t('FAILED_EXPORT_LOGS') || 'Failed to export logs');
+    } finally {
+      setIsExportingAll(false);
+    }
+  };
+
+  const handleExportFailedLogs = async () => {
+    if (isExportingFailed) return;
+    setIsExportingFailed(true);
+    try {
+      const success = await exportCommunicationLogs(logsList, {
+        title: rawComm?.title,
+        groupName: groupInfo.name,
+        groupType: targetGroup?.groupType,
+        channel,
+        onlyFailed: true,
+        message:
+          typeof rawComm?.message === 'string' ? rawComm.message : undefined,
+        subject: rawComm?.subject,
+        sessionStartedAt: targetGroup?.createdAt || rawComm?.createdAt,
+        sessionEndedAt: targetGroup?.updatedAt || rawComm?.updatedAt,
+        formatDate: (d) => formatDate(d, 'MMMM d, yyyy, h:mm:ss a'),
+        naLabel: tg('N_A'),
+      });
+      if (success) {
+        toast.success(t('LOGS_EXPORTED_SUCCESSFULLY') || 'Logs exported successfully');
+      } else {
+        toast.info(t('NO_FAILED_DELIVERIES_TO_EXPORT') || 'No failed deliveries to export');
+      }
+    } catch (error) {
+      console.error('Error exporting failed logs:', error);
+      toast.error(t('FAILED_EXPORT_LOGS') || 'Failed to export logs');
+    } finally {
+      setIsExportingFailed(false);
+    }
+  };
+
   return (
     <div className="p-3 sm:p-4 space-y-3">
       {/* ── Header Section ── */}
@@ -553,21 +622,64 @@ export function CommunicationSessionLogsView() {
             </p>
 
             <div className="flex flex-wrap items-center gap-2">
-              <Button
+              <DialogComponent
+                buttonIcon={CloudDownload}
+                buttonText={
+                  isExportingAll
+                    ? t('EXPORTING') || 'Exporting...'
+                    : t('EXPORT_ALL_LOGS') || 'Export All Logs'
+                }
+                dialogTitle={
+                  t('EXPORT_COMMUNICATION_LOGS') || 'Export Communication Logs'
+                }
+                dialogDescription={
+                  t('EXPORT_COMMUNICATION_LOGS_CONFIRM') ||
+                  'Are you sure you want to export all communication logs for this group?'
+                }
+                confirmButtonText={t('CONFIRM') || 'Confirm'}
+                handleClick={() => handleExportAllLogs()}
+                buttonClassName="gap-2 h-8 text-xs font-medium rounded-sm"
+                confirmButtonClassName="rounded-sm bg-primary"
                 variant="outline"
-                className="gap-2 h-8 text-xs font-medium"
-              >
-                <CloudDownload className="h-3.5 w-3.5" />
-                {t('EXPORT_ALL_LOGS')}
-              </Button>
+                data={{
+                  _count: {
+                    Activity:
+                      isExportingAll ||
+                        (logsList.length === 0 && audienceList.length === 0)
+                        ? 1
+                        : 0,
+                  },
+                }}
+              />
 
-              <Button
+              <DialogComponent
+                buttonIcon={CloudDownload}
+                buttonText={
+                  isExportingFailed
+                    ? t('EXPORTING') || 'Exporting...'
+                    : t('FAILED_EXPORTS') ||
+                    t('FAILED_EXPORTS_ATTEMPTS') ||
+                    'Failed Exports'
+                }
+                dialogTitle={
+                  t('EXPORT_FAILED_COMMUNICATION_LOGS') ||
+                  'Export Failed Communication Logs'
+                }
+                dialogDescription={
+                  t('EXPORT_FAILED_COMMUNICATION_LOGS_CONFIRM') ||
+                  'Are you sure you want to export failed communication logs for this group?'
+                }
+                confirmButtonText={t('CONFIRM') || 'Confirm'}
+                handleClick={() => handleExportFailedLogs()}
+                buttonClassName="gap-2 h-8 text-xs font-medium rounded-sm"
+                confirmButtonClassName="rounded-sm bg-primary"
                 variant="outline"
-                className="gap-2 h-8 text-xs font-medium"
-              >
-                <CloudDownload className="h-3.5 w-3.5" />
-                {t('FAILED_EXPORTS_ATTEMPTS')}
-              </Button>
+                data={{
+                  _count: {
+                    Activity: isExportingFailed || counts.FAIL === 0 ? 1 : 0,
+                  },
+                }}
+              />
 
               {canRetry && (
                 <DialogComponent
@@ -625,9 +737,8 @@ export function CommunicationSessionLogsView() {
                     {t('COMMUNICATION_TITLE')}:
                   </span>
                   <CommunicationTooltip
-                    content={`${t('COMMUNICATION_TITLE')}: ${
-                      rawComm?.title || ''
-                    }`}
+                    content={`${t('COMMUNICATION_TITLE')}: ${rawComm?.title || ''
+                      }`}
                   >
                     <h2 className="text-sm sm:text-base font-bold text-gray-900 leading-snug break-all cursor-default">
                       {rawComm?.title || t('COMMUNICATION')}
@@ -636,11 +747,10 @@ export function CommunicationSessionLogsView() {
                   <p className="text-[11px] sm:text-xs text-muted-foreground mt-0.5">
                     {t(channel)}
                     {targetGroup?.groupType
-                      ? ` • ${
-                          targetGroup.groupType === 'BENEFICIARY'
-                            ? t('BENEFICIARY')
-                            : t('STAKEHOLDER')
-                        }`
+                      ? ` • ${targetGroup.groupType === 'BENEFICIARY'
+                        ? t('BENEFICIARY')
+                        : t('STAKEHOLDER')
+                      }`
                       : ''}
                     {groupInfo.name ? ` • ${groupInfo.name}` : ''}
                   </p>
@@ -661,6 +771,8 @@ export function CommunicationSessionLogsView() {
                     <audio
                       src={audioURL.mediaURL}
                       controls
+                      aria-label={audioURL.fileName || t('VOICE_RECORDING') || 'Voice recording'}
+                      title={audioURL.fileName || 'Audio recording'}
                       className="w-full h-7 rounded"
                     />
                   </div>
@@ -816,14 +928,14 @@ export function CommunicationSessionLogsView() {
                       <p className="text-sm text-gray-500">
                         {targetGroup?.groupType
                           ? translateValue(
-                              tg,
-                              targetGroup.groupType,
-                              {
-                                fallbackStyle: 'raw',
-                              },
-                            ) +
-                            ' ' +
-                            t('GROUP')
+                            tg,
+                            targetGroup.groupType,
+                            {
+                              fallbackStyle: 'raw',
+                            },
+                          ) +
+                          ' ' +
+                          t('GROUP')
                           : tg('N_A')}
                       </p>
                       <p className="font-medium">{groupInfo.name}</p>
@@ -906,9 +1018,8 @@ export function CommunicationSessionLogsView() {
                       </TooltipWrapper>
                       {rawComm?.subject && (
                         <TooltipWrapper
-                          tip={`${t('COMMUNICATION_SUBJECT')}: ${
-                            rawComm.subject
-                          }`}
+                          tip={`${t('COMMUNICATION_SUBJECT')}: ${rawComm.subject
+                            }`}
                         >
                           <div>
                             <p className="font-medium">

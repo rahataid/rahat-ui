@@ -185,11 +185,6 @@ export const broadcastCountsQueryOptions = (
   queryFn: () => service.session.broadcastCount({ sessions }),
   enabled: Array.isArray(sessions) && sessions.length > 0,
   staleTime: 60 * 60 * 1000,
-  refetchInterval: (query: any) => {
-    const data = query.state.data;
-    const hasActive = data?.data?.SCHEDULED || data?.data?.PENDING;
-    return hasActive ? 3000 : false;
-  },
 });
 
 export const useSessionBroadCastCount = (sessions: string[]) => {

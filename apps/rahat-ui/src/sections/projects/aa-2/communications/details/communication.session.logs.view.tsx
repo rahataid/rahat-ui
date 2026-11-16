@@ -41,7 +41,6 @@ import {
 } from 'lucide-react';
 import {
   useListSessionLogs,
-  useSessionBroadCastCount,
   useSessionRetryFailed,
   useGetCommunication,
   useListAllTransports,
@@ -57,7 +56,7 @@ import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import {
   resolveChannelByTransportId,
-  resolveCommunicationLifecycleStatus,
+  toDisplayStatus,
 } from '../utils/communications.utils';
 import { CommunicationChannelIcon } from '../components/communication-channel-icon';
 import { SendCommunicationConfirmDialog } from '../components/send-communication-confirm-dialog';
@@ -315,24 +314,16 @@ export function CommunicationSessionLogsView() {
     groupFromList,
   ]);
 
-  const { data: broadcastCounts, isLoading: isBroadcastLoading } =
-    useSessionBroadCastCount(actualSessionId ? [actualSessionId] : []);
-
-  const isBroadcastResolving =
-    !!actualSessionId && (isBroadcastLoading || broadcastCounts === undefined);
+  const isBroadcastResolving = isLoadingComm;
 
   const counts = useMemo(() => {
-    const rawCounts =
-      (broadcastCounts as any)?.data?.data ??
-      (broadcastCounts as any)?.data ??
-      broadcastCounts;
-    if (actualSessionId && rawCounts) {
+    if (targetGroup?.counts) {
       return {
-        SUCCESS: rawCounts.SUCCESS ?? 0,
-        FAIL: rawCounts.FAIL ?? 0,
-        PENDING: rawCounts.PENDING ?? 0,
-        SCHEDULED: rawCounts.SCHEDULED ?? 0,
-        TOTAL: rawCounts.TOTAL ?? 0,
+        SUCCESS: Number(targetGroup.counts.SUCCESS ?? 0),
+        FAIL: Number(targetGroup.counts.FAIL ?? 0),
+        PENDING: Number(targetGroup.counts.PENDING ?? 0),
+        SCHEDULED: Number(targetGroup.counts.SCHEDULED ?? 0),
+        TOTAL: Number(targetGroup.counts.TOTAL ?? 0),
       };
     }
     return {
@@ -342,7 +333,7 @@ export function CommunicationSessionLogsView() {
       SCHEDULED: 0,
       TOTAL: 0,
     };
-  }, [actualSessionId, broadcastCounts]);
+  }, [targetGroup?.counts]);
 
   const mutateRetry = useSessionRetryFailed();
   const triggerBroadcast = useTriggerCommunicationBroadcast();
@@ -350,22 +341,13 @@ export function CommunicationSessionLogsView() {
   const [isSendConfirmOpen, setIsSendConfirmOpen] = useState(false);
 
   const effectiveStatus = useMemo(() => {
-    return resolveCommunicationLifecycleStatus({
-      channel,
-      rawStatus: targetGroup?.status,
-      counts: actualSessionId ? counts : undefined,
-      hasActiveTargets: targetGroup?.status === 'PROCESSING',
-      hasPendingTargets:
-        targetGroup?.status === 'PENDING' || !targetGroup?.status || !actualSessionId,
-      hasSession: !!actualSessionId,
-      isRetrying:
-        mutateRetry.isPending || triggerBroadcast.isPending || isRetrying,
-    });
+    if (mutateRetry.isPending || triggerBroadcast.isPending || isRetrying) {
+      return 'IN_PROGRESS';
+    }
+    return toDisplayStatus(targetGroup?.sessionStatus || targetGroup?.status);
   }, [
-    channel,
+    targetGroup?.sessionStatus,
     targetGroup?.status,
-    counts,
-    actualSessionId,
     mutateRetry.isPending,
     triggerBroadcast.isPending,
     isRetrying,

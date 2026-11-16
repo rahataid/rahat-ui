@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from 'next/navigation';
 
-import React, { useContext, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { useLabelDigits, translateValue } from 'apps/rahat-ui/src/utils/i18n';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
@@ -12,10 +12,6 @@ import { Eye, SendHorizontal } from 'lucide-react';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { CommunicationTooltip } from './communication-tooltip';
 import {
-  aggregateTargetStatus,
-  resolveCommunicationLifecycleStatus,
-} from '../utils/communications.utils';
-import {
   useTriggerCommunicationBroadcast,
   useBeneficiariesGroups,
   useStakeholdersGroups,
@@ -23,7 +19,6 @@ import {
 import { UUID } from 'crypto';
 import { CommunicationStatusBadge } from './communication-status-badge';
 import { CommunicationChannelIcon } from './communication-channel-icon';
-import { BroadcastCountsContext } from './communications.table';
 import { SendCommunicationConfirmDialog } from './send-communication-confirm-dialog';
 
 export type CommunicationRecord = {
@@ -62,6 +57,7 @@ export type BackendCommunication = {
   createdBy?: string | null;
   isScheduled?: boolean;
   scheduledAt?: string | null;
+  status?: string;
   createdAt: string;
   updatedAt: string;
   targets?: {
@@ -127,12 +123,6 @@ export const toCommunicationRecord = (
     return directCount != null && directCount > 0 ? acc + directCount : acc;
   }, 0);
 
-  const isFutureScheduled = Boolean(
-    item?.isScheduled &&
-      item?.scheduledAt &&
-      new Date(item.scheduledAt).getTime() > Date.now(),
-  );
-
   return {
     id: item.uuid,
     title: item.title,
@@ -143,9 +133,7 @@ export const toCommunicationRecord = (
     delivered,
     failed,
     sender: item.createdBy ?? undefined,
-    status: isFutureScheduled && !targets.some((t) => t.sessionId)
-      ? 'SCHEDULED'
-      : aggregateTargetStatus(targets),
+    status: item.status ?? 'NOT_STARTED',
     date: item.createdAt,
     isScheduled: item?.isScheduled,
     scheduledAt: item?.scheduledAt,
@@ -158,65 +146,7 @@ export function CommunicationRowStatusCell({
 }: {
   record: CommunicationRecord;
 }) {
-  const countsMap = useContext(BroadcastCountsContext);
-  const entry = countsMap.get(record.id);
-
-  const sessionIds = useMemo(() => {
-    return (record.targets ?? [])
-      .map((t) => t.sessionId)
-      .filter(Boolean) as string[];
-  }, [record.targets]);
-
-  const targetCounts = useMemo(() => {
-    let aggregated: any = null;
-    for (const t of (record.targets ?? []) as any[]) {
-      if (t?.counts) {
-        if (!aggregated) {
-          aggregated = {
-            SUCCESS: 0,
-            FAIL: 0,
-            PENDING: 0,
-            SCHEDULED: 0,
-            TOTAL: 0,
-          };
-        }
-        aggregated.SUCCESS += Number(t.counts.SUCCESS ?? 0);
-        aggregated.FAIL += Number(t.counts.FAIL ?? 0);
-        aggregated.PENDING += Number(t.counts.PENDING ?? 0);
-        aggregated.SCHEDULED += Number(t.counts.SCHEDULED ?? 0);
-        aggregated.TOTAL += Number(t.counts.TOTAL ?? 0);
-      }
-    }
-    return aggregated;
-  }, [record.targets]);
-
-  const effStatus = useMemo(() => {
-    return resolveCommunicationLifecycleStatus({
-      channel: record.channel || 'SMS',
-      rawStatus: record.status,
-      counts: targetCounts ?? entry?.data ?? undefined,
-      hasActiveTargets: (record.targets ?? []).some(
-        (t) => t.status === 'SENT' || t.status === 'PROCESSING',
-      ),
-      hasPendingTargets: (record.targets ?? []).some(
-        (t) => t.status === 'PENDING',
-      ),
-      hasSession: sessionIds.length > 0,
-      isScheduled: record.isScheduled,
-      scheduledAt: record.scheduledAt,
-    });
-  }, [
-    record.channel,
-    record.status,
-    targetCounts,
-    entry?.data,
-    record.targets,
-    sessionIds.length,
-    record.isScheduled,
-    record.scheduledAt,
-  ]);
-
-  return <CommunicationStatusBadge status={effStatus} isLoading={false} />;
+  return <CommunicationStatusBadge status={record.status} isLoading={false} />;
 }
 
 export function CommunicationRowDeliveryStatusCell({
@@ -228,8 +158,6 @@ export function CommunicationRowDeliveryStatusCell({
 }) {
   const t = useTranslations('AA_PROJECT');
   const formatDigits = useLabelDigits();
-  const countsMap = useContext(BroadcastCountsContext);
-  const entry = countsMap.get(record.id);
 
   const totalAudience = useMemo(() => {
     return (record.targets ?? []).reduce((acc: number, t: any) => {
@@ -271,16 +199,6 @@ export function CommunicationRowDeliveryStatusCell({
       return { delivered: targetDelivered, total: tot };
     }
 
-    if (entry?.data) {
-      const counts = entry.data;
-      const d = counts.SUCCESS ?? 0;
-      const f = counts.FAIL ?? 0;
-      const p = (counts.PENDING ?? 0) + (counts.SCHEDULED ?? 0);
-      const sessionTotal = counts.TOTAL ?? (d + f + p);
-      const tot = totalAudience > 0 ? totalAudience : sessionTotal > 0 ? sessionTotal : 0;
-      return { delivered: d, total: tot };
-    }
-
     const deliveredCount = (record.targets ?? []).reduce((acc: number, t: any) => {
       if (
         t?.status === 'COMPLETED' ||
@@ -303,7 +221,7 @@ export function CommunicationRowDeliveryStatusCell({
 
     const tot = totalAudience > 0 ? totalAudience : record.recipients;
     return { delivered: deliveredCount, total: tot };
-  }, [entry?.data, totalAudience, record.targets, record.recipients, groupCountMap]);
+  }, [totalAudience, record.targets, record.recipients, groupCountMap]);
 
   const groupsCount = (record.targets ?? []).length;
   const tooltipContent = (

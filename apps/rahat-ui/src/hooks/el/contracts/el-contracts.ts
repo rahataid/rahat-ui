@@ -85,7 +85,7 @@ export const useMintVouchers = () => {
     },
     onSuccess: async (result, variables) => {
       toastMixin.fire('Voucher Minted Successfully');
-        route.push(`/projects/el/${variables.id}`);
+      route.push(`/projects/el/${variables.id}`);
     },
     onError: (err) => {
       toastMixin.fire({
@@ -95,7 +95,7 @@ export const useMintVouchers = () => {
       });
     },
   });
-  return functionCall
+  return functionCall;
   // return useWriteRahatDonorMintTokenAndApproveDescription({
   //   mutation: {
 
@@ -221,6 +221,7 @@ export const useAddManager = () => {
   const contract = useWriteAccessManagerUpdateProjectManager();
   const addUser = useUserCreate();
   const alert = useAlert();
+  const route = useRouter();
 
   const functionCall = useMutation({
     mutationFn: ({

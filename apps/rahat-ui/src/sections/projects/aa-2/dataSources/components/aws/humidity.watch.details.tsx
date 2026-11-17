@@ -6,7 +6,11 @@ import { useDhmSingleSeriesHumidityLevels } from '@rahat-ui/query';
 import { Back, Heading, TableLoader, NoResult } from 'apps/rahat-ui/src/common';
 import { Globe, RadioTower } from 'lucide-react';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
-import { getHumidityColor, getLatestValue } from './utils/color.utils';
+import {
+  getHumidityColor,
+  getLatestValue,
+  roundValue,
+} from './utils/color.utils';
 import React, { useMemo } from 'react';
 import { useTemperatureTableColumns } from '../../columns/useTemperatureTableColumns';
 import TemperatureWatchMap from './temperature.watch.map';
@@ -222,7 +226,7 @@ export default function HumidityWatchDetails() {
                 })`}
                 unit={humidityInfo?.unit ?? '%'}
                 xDateFormat={'h:mm a'}
-                yAxisFormatter={(value) => formatNum(value)}
+                yAxisFormatter={(value) => formatNum(roundValue(value))}
               />
 
               <div className="h-[200px] overflow-auto ">

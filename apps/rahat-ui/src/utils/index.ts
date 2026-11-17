@@ -250,6 +250,22 @@ export type ChainSettings =
       name?: string;
     };
 
+export const resolveBeneficiaryWalletAddress = (
+  beneficiary: any,
+  chainType?: string | null,
+) => {
+  const details = beneficiary?.walletAddressDetails;
+  if (Array.isArray(details) && chainType) {
+    const match = details.find(
+      (d: any) =>
+        String(d?.chainType || '').toLowerCase() ===
+        String(chainType).toLowerCase(),
+    );
+    if (match?.address) return match.address;
+  }
+  return beneficiary?.walletAddress;
+};
+
 export const getExplorerUrl = ({
   chainSettings,
   target,

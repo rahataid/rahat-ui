@@ -610,9 +610,28 @@ type GetProjectBeneficiaries = Pagination & {
   vouchers?: any;
 };
 
+const resolveProjectWalletAddress = (
+  beneficiary: any,
+  chainType?: string | null,
+) => {
+  const details = beneficiary?.walletAddressDetails;
+  if (Array.isArray(details) && chainType) {
+    const match = details.find(
+      (d: any) =>
+        String(d?.chainType || '').toLowerCase() ===
+        String(chainType).toLowerCase(),
+    );
+    if (match?.address) return match.address;
+  }
+  return beneficiary?.walletAddress;
+};
+
 export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
   const q = useProjectAction<Beneficiary[]>();
   const { projectUUID, ...restPayload } = payload;
+  const chainType = useProjectSettingsStore(
+    (s) => s.settings?.[projectUUID]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS]?.type,
+  );
 
   const restPayloadString = JSON.stringify(restPayload);
 
@@ -645,7 +664,10 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
           ? query.data.data.map((row: any) => ({
               ...row,
               uuid: row?.uuid?.toString(),
-              walletAddress: row?.walletAddress?.toString(),
+              walletAddress: resolveProjectWalletAddress(
+                row,
+                chainType as string | undefined,
+              )?.toString(),
               voucherClaimStatus: row?.claimStatus,
               name: row?.piiData?.name || '',
               email: row?.piiData?.email || '',
@@ -659,7 +681,7 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
             }))
           : [],
       };
-    }, [query.data]),
+    }, [query.data, chainType]),
   };
 };
 

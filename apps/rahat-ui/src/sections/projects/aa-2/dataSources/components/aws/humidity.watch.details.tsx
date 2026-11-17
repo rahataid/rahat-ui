@@ -14,15 +14,6 @@ import { TemperatureValueCard, HumidityScaleBar } from './components';
 import WaterLevelTable from '../dhm/table';
 import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
-import {
-  ResponsiveContainer,
-  ComposedChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-} from 'recharts';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 import TimeSeriesChart from '../dhm/chart';
 
@@ -231,57 +222,9 @@ export default function HumidityWatchDetails() {
                 })`}
                 unit={humidityInfo?.unit ?? '%'}
                 xDateFormat={'h:mm a'}
-                yAxisFormatter={(value) => formatNum(roundValue(value))}
+                yAxisFormatter={(value) => formatNum(value)}
               />
-              {/* <div className="w-full min-w-0 mb-4 border-2">
-                <ResponsiveContainer width="100%" height={400}>
-                  <ComposedChart data={history}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis
-                      dataKey="datetime"
-                      tick={{ fontSize: 12 }}
-                      tickFormatter={(value: string) =>
-                        formatDate(value, 'h:mm a')
-                      }
-                      label={{
-                        value: 'Time Stamp',
-                        position: 'insideBottom',
-                        offset: -5,
-                      }}
-                    />
-                    <YAxis
-                      tick={{ fontSize: 12 }}
-                      tickFormatter={formatDigits}
-                      label={{
-                        value: `Relative Humidity(${
-                          humidityInfo?.unit ?? '%'
-                        })`,
-                        angle: -90,
-                        position: 'insideLeft',
-                        offset: 10,
-                      }}
-                    />
-                    <Tooltip
-                      labelFormatter={(value: string) =>
-                        formatDate(value, 'MMMM dd, yyyy, hh:mm:ss a')
-                      }
-                      formatter={(value: number) => [
-                        formatTooltipValue(value),
-                        t('RELATIVE_HUMIDITY'),
-                      ]}
-                    />
-                    <Area
-                      dataKey="value"
-                      name={t('RELATIVE_HUMIDITY')}
-                      type="monotone"
-                      stroke="#1d4ed8"
-                      fill="#93c5fd"
-                      fillOpacity={0.4}
-                      strokeWidth={2}
-                    />
-                  </ComposedChart>
-                </ResponsiveContainer>
-              </div> */}
+
               <div className="h-[200px] overflow-auto ">
                 <WaterLevelTable tableData={history} columns={columns} />
               </div>

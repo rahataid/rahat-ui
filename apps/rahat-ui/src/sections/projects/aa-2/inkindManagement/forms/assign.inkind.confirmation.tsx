@@ -4,11 +4,17 @@ import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { Button } from 'libs/shadcn/src/components/ui/button';
 import { Loader2, UserRound } from 'lucide-react';
-import { useAssignGroupInkind, useGetBeneficiaryGroup } from '@rahat-ui/query';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useAssignGroupInkind,
+  useGetBeneficiaryGroup,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import { truncatedText } from 'apps/community-tool-ui/src/utils';
 import { NoResult } from 'apps/rahat-ui/src/common';
+import { resolveBeneficiaryWalletAddress } from 'apps/rahat-ui/src/utils';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 
 interface AssignInkindSummary {
@@ -41,6 +47,11 @@ export default function AssignInkindConfirmation({
   const { id } = useParams();
   const projectUUID = id as UUID;
   const assignGroupInkind = useAssignGroupInkind(projectUUID);
+  const { settings } = useProjectSettingsStore((s) => ({
+    settings: s.settings,
+  }));
+  const projectChainType =
+    settings?.[projectUUID]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS]?.type;
 
   const group = useGetBeneficiaryGroup(formData.groupId as UUID);
   const rawData = group?.data;
@@ -100,17 +111,23 @@ export default function AssignInkindConfirmation({
             <NoResult message={tv('NO_BENEFICIARIES_FOUND')} size="small" />
           ) : (
             <div className="flex flex-col divide-y overflow-y-auto flex-1">
-              {beneficiaries.map((i: any) => (
-                <div
-                  key={i.Beneficiary?.walletAddress}
-                  className="flex items-center gap-2 py-1.5 shrink-0"
-                >
-                  <UserRound className="h-4 w-4 shrink-0 text-muted-foreground" />
-                  <p className="text-sm font-medium">
-                    {truncatedText(i.Beneficiary?.walletAddress ?? '', 10)}
-                  </p>
-                </div>
-              ))}
+              {beneficiaries.map((i: any, index: number) => {
+                const walletAddress = resolveBeneficiaryWalletAddress(
+                  i.Beneficiary,
+                  projectChainType,
+                );
+                return (
+                  <div
+                    key={walletAddress || index}
+                    className="flex items-center gap-2 py-1.5 shrink-0"
+                  >
+                    <UserRound className="h-4 w-4 shrink-0 text-muted-foreground" />
+                    <p className="text-sm font-medium">
+                      {truncatedText(walletAddress ?? '', 10)}
+                    </p>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>

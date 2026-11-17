@@ -30,6 +30,7 @@ import {
   useFundAssignmentStore,
   useGetBeneficiaryGroup,
   usePaymentProviders,
+  useProjectSettingsStore,
   useTabConfiguration,
 } from '@rahat-ui/query';
 
@@ -59,6 +60,7 @@ import {
   FundWithPayoutSchema,
 } from 'apps/rahat-ui/src/sections/projects/aa-2/payout/initiatePayout/schemas/payout.validation';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
+import { resolveBeneficiaryWalletAddress } from 'apps/rahat-ui/src/utils';
 import { WalletList } from './errorInfoPopupModel';
 import CancelPayoutConfirmModal from './cancelPayoutConfirmModal';
 import useBeneficiariesGroupTableColumn from 'apps/rahat-ui/src/sections/projects/aa-2/payout/initiatePayout/useBeneficiariesGroupTablecolumn';
@@ -128,6 +130,12 @@ export default function PayoutFundManagementForm({
     sort: 'createdAt',
   });
 
+  const { settings } = useProjectSettingsStore((s) => ({
+    settings: s.settings,
+  }));
+  const projectChainType =
+    settings?.[projectID]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS]?.type;
+
   // React Form goes here
   const form = useForm<FundWithPayoutSchema>({
     defaultValues: initialFormState,
@@ -174,10 +182,13 @@ export default function PayoutFundManagementForm({
       ? totalTokens / beneficiaries.length
       : 0;
     return beneficiaries.map((d: any) => ({
-      walletAddress: d?.Beneficiary?.walletAddress,
+      walletAddress: resolveBeneficiaryWalletAddress(
+        d?.Beneficiary,
+        projectChainType,
+      ),
       assignedTokens: tokensPerBeneficiary,
     }));
-  }, [groupDetails, assignedFundData]);
+  }, [groupDetails, assignedFundData, projectChainType]);
 
   const table = useReactTable({
     data: tableData,

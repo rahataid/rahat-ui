@@ -4,8 +4,10 @@ import { Loader2, UserRound } from 'lucide-react';
 import { NoResult } from 'apps/rahat-ui/src/common';
 import { useTranslations } from 'next-intl';
 import {
+  PROJECT_SETTINGS_KEYS,
   useFundAssignmentStore,
   useGetBeneficiaryGroup,
+  useProjectSettingsStore,
   useReserveTokenForGroups,
 } from '@rahat-ui/query';
 import { useRouter } from 'next/navigation';
@@ -16,6 +18,7 @@ import { FundWithPayoutSchema } from 'apps/rahat-ui/src/sections/projects/aa-2/p
 import { handleBuildPayoutPayload } from 'apps/rahat-ui/src/sections/projects/aa-2/fundManagement/utils/utils';
 
 const ErrorInfoPopupModel = dynamic(() => import('./errorInfoPopupModel'));
+import { resolveBeneficiaryWalletAddress } from 'apps/rahat-ui/src/utils';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
@@ -41,6 +44,11 @@ export default function Confirmation({
   }));
 
   const { projectUUID, reserveTokenPayload } = assignedFundData;
+  const { settings } = useProjectSettingsStore((s) => ({
+    settings: s.settings,
+  }));
+  const projectChainType =
+    settings?.[projectUUID]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS]?.type;
 
   // Query goes here
   const { data: group } = useGetBeneficiaryGroup(
@@ -76,11 +84,17 @@ export default function Confirmation({
 
   const benefData = useMemo(
     () =>
-      group?.data?.groupedBeneficiaries.map((i: any) => ({
-        label: truncatedText(i.Beneficiary.walletAddress, 10),
-        value: reserveTokenPayload.tokenAmountPerBenef,
-      })),
-    [group, reserveTokenPayload.tokenAmountPerBenef],
+      group?.data?.groupedBeneficiaries.map((i: any) => {
+        const walletAddress = resolveBeneficiaryWalletAddress(
+          i.Beneficiary,
+          projectChainType,
+        );
+        return {
+          label: truncatedText(walletAddress, 10),
+          value: reserveTokenPayload.tokenAmountPerBenef,
+        };
+      }),
+    [group, reserveTokenPayload.tokenAmountPerBenef, projectChainType],
   );
 
   const handleSubmit = async () => {

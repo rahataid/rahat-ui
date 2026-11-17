@@ -13,6 +13,7 @@ import {
   useBeneficiariesGroups,
   useCreatePayout,
   usePaymentProviders,
+  useProjectSettingsStore,
   useSingleBeneficiaryGroup,
   useTabConfiguration,
 } from '@rahat-ui/query';
@@ -39,6 +40,7 @@ import {
   Heading,
   SearchInput,
 } from 'apps/rahat-ui/src/common';
+import { resolveBeneficiaryWalletAddress } from 'apps/rahat-ui/src/utils';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
@@ -102,6 +104,11 @@ export default function PaymentInitiation() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   const formState = watch();
+  const { settings } = useProjectSettingsStore((s) => ({
+    settings: s.settings,
+  }));
+  const projectChainType =
+    settings?.[projectID]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS]?.type;
 
   const { data: paymentProviders, isLoading: isPaymentProvidersLoading } =
     usePaymentProviders({
@@ -142,10 +149,13 @@ export default function PaymentInitiation() {
     const tokensPerBeneficiary = totalTokens / beneficiaryCount;
 
     return groupedBeneficiaries.map((d: any) => ({
-      walletAddress: d?.Beneficiary?.walletAddress,
+      walletAddress: resolveBeneficiaryWalletAddress(
+        d?.Beneficiary,
+        projectChainType,
+      ),
       assignedTokens: tokensPerBeneficiary,
     }));
-  }, [formState.group, groupDetails]);
+  }, [formState.group, groupDetails, projectChainType]);
 
   const table = useReactTable({
     data: tableData,

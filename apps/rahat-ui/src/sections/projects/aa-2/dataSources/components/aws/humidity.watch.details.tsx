@@ -6,19 +6,25 @@ import { useDhmSingleSeriesHumidityLevels } from '@rahat-ui/query';
 import { Back, Heading, TableLoader, NoResult } from 'apps/rahat-ui/src/common';
 import { Globe, RadioTower } from 'lucide-react';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
-import {
-  getHumidityColor,
-  getLatestValue,
-  roundValue,
-} from './utils/color.utils';
+import { getHumidityColor, getLatestValue } from './utils/color.utils';
 import React, { useMemo } from 'react';
 import { useTemperatureTableColumns } from '../../columns/useTemperatureTableColumns';
 import TemperatureWatchMap from './temperature.watch.map';
 import { TemperatureValueCard, HumidityScaleBar } from './components';
-import TimeSeriesChart from '../dhm/chart';
 import WaterLevelTable from '../dhm/table';
 import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import {
+  ResponsiveContainer,
+  ComposedChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+} from 'recharts';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
+import TimeSeriesChart from '../dhm/chart';
 
 export default function HumidityWatchDetails() {
   const t = useTranslations('AA_PROJECT');
@@ -64,7 +70,11 @@ export default function HumidityWatchDetails() {
         label: t('STATION'),
         value: humidityInfo?.name || t('UNKNOWN'),
       },
-      { icon: Globe, label: t('LATITUDE'), value: humidityInfo?.latitude || '--' },
+      {
+        icon: Globe,
+        label: t('LATITUDE'),
+        value: humidityInfo?.latitude || '--',
+      },
       {
         icon: Globe,
         label: t('LONGITUDE'),
@@ -73,6 +83,9 @@ export default function HumidityWatchDetails() {
     ],
     [humidityInfo, t],
   );
+
+  const formatDigits = useLabelDigits();
+  const formatTooltipValue = (value: number) => formatDigits(String(value));
 
   const colors = useMemo(() => {
     const latestEntry = getLatestValue(history);
@@ -120,10 +133,10 @@ export default function HumidityWatchDetails() {
 
       {isNoDataError && (
         <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-sm">
-            <p className="text-sm text-yellow-800">
-              <strong>{t('NO_DATA_AVAILABLE')}:</strong>{' '}
-              {t('THERE_IS_CURRENTLY_NO_HUMIDITY')}
-            </p>
+          <p className="text-sm text-yellow-800">
+            <strong>{t('NO_DATA_AVAILABLE')}:</strong>{' '}
+            {t('THERE_IS_CURRENTLY_NO_HUMIDITY')}
+          </p>
         </div>
       )}
 
@@ -200,9 +213,11 @@ export default function HumidityWatchDetails() {
         </div>
 
         {/* Right Column - Humidity History */}
-        <div className="p-4 rounded-sm border shadow">
+        <div className="p-4 rounded-sm border shadow min-w-0">
           <div className="flex items-center justify-between mb-3">
-            <p className="text-lg/7 font-semibold">{t('RELATIVE_HUMIDITY_HISTORY')}</p>
+            <p className="text-lg/7 font-semibold">
+              {t('RELATIVE_HUMIDITY_HISTORY')}
+            </p>
           </div>
 
           {isLoading ? (
@@ -211,11 +226,62 @@ export default function HumidityWatchDetails() {
             <>
               <TimeSeriesChart
                 data={history}
-                yaxisTitle={`${t('RELATIVE_HUMIDITY')} (${humidityInfo?.unit ?? '%'})`}
+                yaxisTitle={`${t('RELATIVE_HUMIDITY')} (${
+                  humidityInfo?.unit ?? '%'
+                })`}
                 unit={humidityInfo?.unit ?? '%'}
                 xDateFormat={'h:mm a'}
                 yAxisFormatter={(value) => formatNum(roundValue(value))}
               />
+              {/* <div className="w-full min-w-0 mb-4 border-2">
+                <ResponsiveContainer width="100%" height={400}>
+                  <ComposedChart data={history}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis
+                      dataKey="datetime"
+                      tick={{ fontSize: 12 }}
+                      tickFormatter={(value: string) =>
+                        formatDate(value, 'h:mm a')
+                      }
+                      label={{
+                        value: 'Time Stamp',
+                        position: 'insideBottom',
+                        offset: -5,
+                      }}
+                    />
+                    <YAxis
+                      tick={{ fontSize: 12 }}
+                      tickFormatter={formatDigits}
+                      label={{
+                        value: `Relative Humidity(${
+                          humidityInfo?.unit ?? '%'
+                        })`,
+                        angle: -90,
+                        position: 'insideLeft',
+                        offset: 10,
+                      }}
+                    />
+                    <Tooltip
+                      labelFormatter={(value: string) =>
+                        formatDate(value, 'MMMM dd, yyyy, hh:mm:ss a')
+                      }
+                      formatter={(value: number) => [
+                        formatTooltipValue(value),
+                        t('RELATIVE_HUMIDITY'),
+                      ]}
+                    />
+                    <Area
+                      dataKey="value"
+                      name={t('RELATIVE_HUMIDITY')}
+                      type="monotone"
+                      stroke="#1d4ed8"
+                      fill="#93c5fd"
+                      fillOpacity={0.4}
+                      strokeWidth={2}
+                    />
+                  </ComposedChart>
+                </ResponsiveContainer>
+              </div> */}
               <div className="h-[200px] overflow-auto ">
                 <WaterLevelTable tableData={history} columns={columns} />
               </div>

@@ -19,9 +19,9 @@
       "notes": []
     },
     "NRCS Simulation": {
-      "description": "AA Development V2",
+      "description": "NRCS Simulation",
       "tag": "nrcs-simulation",
-      "vault_path": "github/data/rahat/rahat-ui/dev/aa/dev-v2",
+      "vault_path": "github/data/rahat/rahat-ui/main/aa/heatwave",
       "urls": {},
       "notes": []
     },

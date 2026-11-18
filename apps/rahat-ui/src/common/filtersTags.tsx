@@ -1,8 +1,6 @@
 import { useTranslations } from 'next-intl';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import React from 'react';
-import { RxCrossCircled } from 'react-icons/rx';
-import { format } from 'date-fns';
+
 import {
   ScrollArea,
   ScrollBar,
@@ -78,7 +76,6 @@ const FiltersTags = ({ filters, setFilters, total }: any) => {
           </div>
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
-        {/* <Button onClick={() => setFilters({})}>Clear filter</Button> */}
         <IconLabelBtn
           Icon={Trash2}
           name={t('CLEAR')}

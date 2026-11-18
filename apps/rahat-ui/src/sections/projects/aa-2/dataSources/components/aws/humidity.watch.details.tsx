@@ -15,10 +15,11 @@ import React, { useMemo } from 'react';
 import { useTemperatureTableColumns } from '../../columns/useTemperatureTableColumns';
 import TemperatureWatchMap from './temperature.watch.map';
 import { TemperatureValueCard, HumidityScaleBar } from './components';
-import TimeSeriesChart from '../dhm/chart';
 import WaterLevelTable from '../dhm/table';
 import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
+import TimeSeriesChart from '../dhm/chart';
 
 export default function HumidityWatchDetails() {
   const t = useTranslations('AA_PROJECT');
@@ -64,7 +65,11 @@ export default function HumidityWatchDetails() {
         label: t('STATION'),
         value: humidityInfo?.name || t('UNKNOWN'),
       },
-      { icon: Globe, label: t('LATITUDE'), value: humidityInfo?.latitude || '--' },
+      {
+        icon: Globe,
+        label: t('LATITUDE'),
+        value: humidityInfo?.latitude || '--',
+      },
       {
         icon: Globe,
         label: t('LONGITUDE'),
@@ -73,6 +78,9 @@ export default function HumidityWatchDetails() {
     ],
     [humidityInfo, t],
   );
+
+  const formatDigits = useLabelDigits();
+  const formatTooltipValue = (value: number) => formatDigits(String(value));
 
   const colors = useMemo(() => {
     const latestEntry = getLatestValue(history);
@@ -120,10 +128,10 @@ export default function HumidityWatchDetails() {
 
       {isNoDataError && (
         <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-sm">
-            <p className="text-sm text-yellow-800">
-              <strong>{t('NO_DATA_AVAILABLE')}:</strong>{' '}
-              {t('THERE_IS_CURRENTLY_NO_HUMIDITY')}
-            </p>
+          <p className="text-sm text-yellow-800">
+            <strong>{t('NO_DATA_AVAILABLE')}:</strong>{' '}
+            {t('THERE_IS_CURRENTLY_NO_HUMIDITY')}
+          </p>
         </div>
       )}
 
@@ -200,9 +208,11 @@ export default function HumidityWatchDetails() {
         </div>
 
         {/* Right Column - Humidity History */}
-        <div className="p-4 rounded-sm border shadow">
+        <div className="p-4 rounded-sm border shadow min-w-0">
           <div className="flex items-center justify-between mb-3">
-            <p className="text-lg/7 font-semibold">{t('RELATIVE_HUMIDITY_HISTORY')}</p>
+            <p className="text-lg/7 font-semibold">
+              {t('RELATIVE_HUMIDITY_HISTORY')}
+            </p>
           </div>
 
           {isLoading ? (
@@ -211,11 +221,14 @@ export default function HumidityWatchDetails() {
             <>
               <TimeSeriesChart
                 data={history}
-                yaxisTitle={`${t('RELATIVE_HUMIDITY')} (${humidityInfo?.unit ?? '%'})`}
+                yaxisTitle={`${t('RELATIVE_HUMIDITY')} (${
+                  humidityInfo?.unit ?? '%'
+                })`}
                 unit={humidityInfo?.unit ?? '%'}
                 xDateFormat={'h:mm a'}
                 yAxisFormatter={(value) => formatNum(roundValue(value))}
               />
+
               <div className="h-[200px] overflow-auto ">
                 <WaterLevelTable tableData={history} columns={columns} />
               </div>

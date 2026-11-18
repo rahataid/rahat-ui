@@ -1,10 +1,11 @@
-import { BarChart, PieChart } from '@rahat-ui/shadcn/src/components/charts';
+import { BarChart } from '@rahat-ui/shadcn/src/components/charts';
 import { Heading, NoResult } from 'apps/rahat-ui/src/common';
 import React from 'react';
 import DynamicPieChart from '../../projects/components/dynamicPieChart';
 import { useTranslations } from 'next-intl';
 import { useChartNumberOptions } from 'apps/rahat-ui/src/utils/i18n/number';
 import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
+import { buildDashboardPieChartOptions } from './pieChartOptions';
 
 // "Keypad/Brick" contains a slash, which the generic key derivation doesn't
 // normalize, so it needs an explicit override to reach BASIC_PHONE_BRICK.
@@ -28,7 +29,7 @@ const colorMap: Record<string, string> = {
 const AccessAndInclusion = ({ statsData }: { statsData: any[] }) => {
   const t = useTranslations('DASHBOARD_ACCESS_INCLUSION');
   const g = useTranslations('GLOBAL');
-  const { chartOptions: chartOpts } = useChartNumberOptions();
+  const { formatNum, chartOptions: chartOpts } = useChartNumberOptions();
   // Extract relevant stats
   const mobileAccess = findStat(statsData, 'MOBILE_ACCESS');
   const internetAccess = findStat(statsData, 'INTERNET_ACCESS');
@@ -68,7 +69,6 @@ const AccessAndInclusion = ({ statsData }: { statsData: any[] }) => {
     },
   ];
 
-
   return (
     <div className="mt-4">
       <Heading
@@ -81,6 +81,16 @@ const AccessAndInclusion = ({ statsData }: { statsData: any[] }) => {
           if (!data || data.length === 0) return null; // skip if no data
 
           const chart = buildChartData(data);
+          const total = chart.series.reduce(
+            (sum, item) => sum + Number(item.value || 0),
+            0,
+          );
+          const chartOptions = buildDashboardPieChartOptions(
+            chartOpts,
+            formatNum,
+            g('TOTAL') || 'TOTAL',
+            total,
+          );
 
           return (
             <div
@@ -89,16 +99,11 @@ const AccessAndInclusion = ({ statsData }: { statsData: any[] }) => {
             >
               <h1 className="text-sm font-medium">{title}</h1>
               <div className="w-full flex-1 p-4 pt-0">
-                <DynamicPieChart pieData={chart.series} colors={chart.colors} options={chartOpts} />
-                {/* <PieChart
-                  chart={chart}
-                  custom
-                  projectAA
-                  donutSize="80%"
-                  width="100%"
-                  height="100%"
-                  type="donut"
-                /> */}
+                <DynamicPieChart
+                  pieData={chart.series}
+                  colors={chart.colors}
+                  options={chartOptions}
+                />
               </div>
             </div>
           );

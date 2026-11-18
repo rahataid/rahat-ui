@@ -1,11 +1,29 @@
 import React, { memo } from 'react';
-import Map, { MapRef, Marker, NavigationControl, Popup } from 'react-map-gl';
+// import Map, { MapRef, Marker, NavigationControl, Popup } from 'react-map-gl';
 import { mapboxBasicConfig } from 'apps/rahat-ui/src/constants/config';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { StyledMapWrapper } from '@rahat-ui/shadcn/src/components/maps';
 import { Heading } from 'apps/rahat-ui/src/common';
 import { roundValue } from './utils/color.utils';
 import { useTranslations } from 'next-intl';
+import dynamic from 'next/dynamic';
+
+const Map = dynamic(() => import('react-map-gl'), {
+  ssr: false,
+  loading: () => <p>Loading map...</p>,
+});
+const Marker = dynamic(
+  () => import('react-map-gl').then((module) => module.Marker),
+  { ssr: false },
+);
+const NavigationControl = dynamic(
+  () => import('react-map-gl').then((module) => module.NavigationControl),
+  { ssr: false },
+);
+const Popup = dynamic(
+  () => import('react-map-gl').then((module) => module.Popup),
+  { ssr: false },
+);
 
 const DEFAULT_LAT = 28.3949;
 const DEFAULT_LNG = 84.124;
@@ -71,7 +89,9 @@ function TemperatureWatchMap({
         {/* Map Indicators */}
         <div className="absolute top-2 right-2 bg-white p-4 rounded shadow-lg z-10 text-xs">
           <div className="flex space-x-2 items-center">
-            <div className={`w-5 h-5 rounded-full bg-gradient-to-r ${indicatorGradient}`} />
+            <div
+              className={`w-5 h-5 rounded-full bg-gradient-to-r ${indicatorGradient}`}
+            />
             <p>{resolvedIndicatorTitle}</p>
           </div>
         </div>

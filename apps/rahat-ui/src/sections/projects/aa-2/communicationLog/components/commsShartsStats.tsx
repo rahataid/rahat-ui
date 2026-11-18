@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import DynamicPieChart from '../../../components/dynamicPieChart';
+import { buildDashboardPieChartOptions } from '../../../../dashboard/component/pieChartOptions';
 
 type ChannelType = 'EMAIL' | 'SMS' | 'VOICE';
 
@@ -62,6 +63,7 @@ function CommsPieCard({
   stats: ReturnType<typeof getChannelStats>;
 }) {
   const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const { formatNum, chartOptions } = useChartNumberOptions();
 
   const deliveredKey = `SUCCESSFULLY_DELIVERED_${channelLabel}` as any;
@@ -73,6 +75,20 @@ function CommsPieCard({
     { label: t('SCHEDULED'), value: formatNum(stats.SCHEDULED) },
     { label: t('PENDING'), value: formatNum(stats.PENDING) },
   ];
+  const chartData = [
+    { label: t(deliveredKey), value: stats.SUCCESS },
+    { label: t(failuresKey), value: stats.FAIL },
+  ];
+  const chartTotal = chartData.reduce(
+    (total, item) => total + Number(item.value || 0),
+    0,
+  );
+  const pieChartOptions = buildDashboardPieChartOptions(
+    chartOptions,
+    formatNum,
+    tg('TOTAL') || 'TOTAL',
+    chartTotal,
+  );
 
   return (
     <Card className="shadow-sm rounded-sm flex-1 w-full">
@@ -88,17 +104,9 @@ function CommsPieCard({
         <div className="flex justify-center xl:justify-start w-full">
           <div className="w-full max-w-[280px] aspect-square">
             <DynamicPieChart
-              pieData={[
-                { label: t(deliveredKey), value: stats.SUCCESS },
-                { label: t(failuresKey), value: stats.FAIL },
-              ]}
+              pieData={chartData}
               colors={['#43A047', '#E53935']}
-              options={{
-                tooltip: {
-                  fillSeriesColor: true,
-                  ...chartOptions.tooltip,
-                },
-              }}
+              options={pieChartOptions}
             />
           </div>
         </div>

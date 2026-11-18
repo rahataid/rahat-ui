@@ -16,10 +16,12 @@ import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { UUID } from 'crypto';
 import {
+  PROJECT_SETTINGS_KEYS,
   useExportBeneficiariesExcel,
   useGenerateQrPdf,
   useGetBeneficiariesQr,
   useGetSponsorshipStatusForGroup,
+  useProjectSettingsStore,
   useRegenerateQrPdf,
   useRetrySponsorshipForGroup,
   useSingleBeneficiaryGroup,
@@ -42,6 +44,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { ChevronDown, CloudDownload, RefreshCw } from 'lucide-react';
 import { QrOtpConfirmValues, QrOtpDialog } from './qr-otp.dialog';
+import { resolveWalletAddress } from '@rahat-ui/query';
 import { exportToExcel } from 'apps/rahat-ui/src/utils/exportToExcle';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
@@ -52,6 +55,11 @@ const BeneficiaryGroupsDetails = () => {
   const projectId = params.id as UUID;
   const groupId = params.groupId as UUID;
   const t = useTranslations('AA_PROJECT');
+  const { settings } = useProjectSettingsStore((s) => ({
+    settings: s.settings,
+  }));
+  const projectChainType =
+    settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS]?.type;
   const { data: groupDetails, isPending: isGroupLoading } =
     useSingleBeneficiaryGroup(projectId, groupId);
 
@@ -137,12 +145,16 @@ const BeneficiaryGroupsDetails = () => {
   const tableData = useMemo(() => {
     if (groupDetails) {
       return groupDetails?.groupedBeneficiaries?.map((d: any) => ({
-        walletAddress: d?.Beneficiary?.walletAddress,
+        uuid: d?.Beneficiary?.uuid ?? d?.beneficiaryId,
+        walletAddress: resolveWalletAddress(
+          d?.Beneficiary,
+          projectChainType,
+        ),
         name: d?.Beneficiary?.pii?.name,
         benefId: d?.beneficiaryId,
       }));
     } else return [];
-  }, [groupDetails]);
+  }, [groupDetails, projectChainType]);
   const table = useReactTable({
     // manualPagination: true,
     data: tableData ?? [],

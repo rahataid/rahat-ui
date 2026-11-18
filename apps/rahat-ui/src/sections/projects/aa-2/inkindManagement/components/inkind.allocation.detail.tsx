@@ -33,6 +33,7 @@ import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
+import { resolveWalletAddress } from '@rahat-ui/query';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 
@@ -74,12 +75,14 @@ function formatOtpReason(reason: string | null): string {
   return reason.split('_').join(' ').toLowerCase();
 }
 
-function formatLogs(raw: any[]): LogRow[] {
+function formatLogs(raw: any[], chainType?: string | null): LogRow[] {
   return raw.map((r) => ({
     uuid: r.uuid ?? r.id ?? '',
     beneficiaryUuid: r.beneficiary?.uuid ?? '',
     beneficiaryWalletAddress:
-      r.beneficiary?.walletAddress ?? r.walletAddress ?? 'N/A',
+      resolveWalletAddress(r.beneficiary, chainType) ??
+      r.walletAddress ??
+      'N/A',
     beneficiaryPhone: r.beneficiary?.phone ?? null,
     beneficiaryName: r.beneficiary?.name ?? null,
     vendorUuid: r.vendor?.uuid ?? '',
@@ -105,6 +108,9 @@ export default function InkindAllocationDetail() {
   const { settings } = useProjectSettingsStore((s) => ({
     settings: s.settings,
   }));
+
+  const projectChainType =
+    settings?.[projectUUID]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS]?.type;
 
   const qGroupName = sp.get('groupName') ?? 'N/A';
   const qInkindType = sp.get('inkindType') ?? '';
@@ -190,7 +196,9 @@ export default function InkindAllocationDetail() {
         r.redeemedAt ?? r.createdAt ?? 'N/A',
         r.txHash ?? 'N/A',
         r.beneficiary?.name ?? 'N/A',
-        r.beneficiary?.walletAddress ?? r.walletAddress ?? 'N/A',
+        resolveWalletAddress(r.beneficiary, projectChainType) ??
+          r.walletAddress ??
+          'N/A',
         r.beneficiary?.phone ?? 'N/A',
         r.vendor?.name ?? 'N/A',
       ]),
@@ -233,6 +241,7 @@ export default function InkindAllocationDetail() {
     quantityRedeemed,
     inkindName,
     groupName,
+    projectChainType,
   ]);
 
   const handleDownloadReport = () => {
@@ -263,8 +272,10 @@ export default function InkindAllocationDetail() {
 
   const logRows = useMemo<LogRow[]>(() => {
     const raw = logsData?.data?.logs;
-    return Array.isArray(raw) && raw.length > 0 ? formatLogs(raw) : [];
-  }, [logsData]);
+    return Array.isArray(raw) && raw.length > 0
+      ? formatLogs(raw, projectChainType)
+      : [];
+  }, [logsData, projectChainType]);
 
   const columns: ColumnDef<LogRow>[] = [
     {

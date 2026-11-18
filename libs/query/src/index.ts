@@ -35,6 +35,7 @@ export * from './lib/new-comms';
 export * from './lib/communication-overview';
 
 // utils
+export * from './utils/resolve-wallet-address';
 export * from './utils/amountFormate';
 export * from './utils/useGraphQLErrorHandler';
 export * from './utils/debounceHooks';

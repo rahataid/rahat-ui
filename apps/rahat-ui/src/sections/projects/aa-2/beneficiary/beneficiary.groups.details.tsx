@@ -44,7 +44,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { ChevronDown, CloudDownload, RefreshCw } from 'lucide-react';
 import { QrOtpConfirmValues, QrOtpDialog } from './qr-otp.dialog';
-import { resolveBeneficiaryWalletAddress } from 'apps/rahat-ui/src/utils';
+import { resolveWalletAddress } from '@rahat-ui/query';
 import { exportToExcel } from 'apps/rahat-ui/src/utils/exportToExcle';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
@@ -146,7 +146,7 @@ const BeneficiaryGroupsDetails = () => {
     if (groupDetails) {
       return groupDetails?.groupedBeneficiaries?.map((d: any) => ({
         uuid: d?.Beneficiary?.uuid ?? d?.beneficiaryId,
-        walletAddress: resolveBeneficiaryWalletAddress(
+        walletAddress: resolveWalletAddress(
           d?.Beneficiary,
           projectChainType,
         ),

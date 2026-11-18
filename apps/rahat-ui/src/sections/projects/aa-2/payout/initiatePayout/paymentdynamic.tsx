@@ -40,7 +40,7 @@ import {
   Heading,
   SearchInput,
 } from 'apps/rahat-ui/src/common';
-import { resolveBeneficiaryWalletAddress } from 'apps/rahat-ui/src/utils';
+import { resolveWalletAddress } from '@rahat-ui/query';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
@@ -149,7 +149,7 @@ export default function PaymentInitiation() {
     const tokensPerBeneficiary = totalTokens / beneficiaryCount;
 
     return groupedBeneficiaries.map((d: any) => ({
-      walletAddress: resolveBeneficiaryWalletAddress(
+      walletAddress: resolveWalletAddress(
         d?.Beneficiary,
         projectChainType,
       ),

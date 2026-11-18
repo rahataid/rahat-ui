@@ -4,8 +4,11 @@ import { Eye } from 'lucide-react';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { useParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { PROJECT_SETTINGS_KEYS, useProjectSettingsStore } from '@rahat-ui/query';
-import { resolveBeneficiaryWalletAddress } from 'apps/rahat-ui/src/utils';
+import {
+  PROJECT_SETTINGS_KEYS,
+  resolveWalletAddress,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
@@ -31,10 +34,9 @@ export const useFMDetailTableColumns = (tokensPerBeneficiary?: number) => {
       accessorKey: 'walletAddress',
       header: tg('WALLET_ADDRESS'),
       accessorFn: (row) =>
-        resolveBeneficiaryWalletAddress(row.Beneficiary, projectChainType) ??
-        'N/A',
+        resolveWalletAddress(row.Beneficiary, projectChainType) ?? 'N/A',
       cell: ({ row }) => {
-        const walletAddress = resolveBeneficiaryWalletAddress(
+        const walletAddress = resolveWalletAddress(
           row.original?.Beneficiary,
           projectChainType,
         );

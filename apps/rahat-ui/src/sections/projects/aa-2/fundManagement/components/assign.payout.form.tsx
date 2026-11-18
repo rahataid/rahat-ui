@@ -60,7 +60,7 @@ import {
   FundWithPayoutSchema,
 } from 'apps/rahat-ui/src/sections/projects/aa-2/payout/initiatePayout/schemas/payout.validation';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
-import { resolveBeneficiaryWalletAddress } from 'apps/rahat-ui/src/utils';
+import { resolveWalletAddress } from '@rahat-ui/query';
 import { WalletList } from './errorInfoPopupModel';
 import CancelPayoutConfirmModal from './cancelPayoutConfirmModal';
 import useBeneficiariesGroupTableColumn from 'apps/rahat-ui/src/sections/projects/aa-2/payout/initiatePayout/useBeneficiariesGroupTablecolumn';
@@ -182,7 +182,7 @@ export default function PayoutFundManagementForm({
       ? totalTokens / beneficiaries.length
       : 0;
     return beneficiaries.map((d: any) => ({
-      walletAddress: resolveBeneficiaryWalletAddress(
+      walletAddress: resolveWalletAddress(
         d?.Beneficiary,
         projectChainType,
       ),

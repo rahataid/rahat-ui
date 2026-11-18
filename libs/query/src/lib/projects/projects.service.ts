@@ -23,6 +23,7 @@ import { resolveBackendErrorMessage } from '../../utils/i18n/backend-error';
 import { useProjectSettingsStore, useProjectStore } from './project.store';
 import { toast } from 'react-toastify';
 import { showToast } from '../../utils/custom-toast';
+import { resolveWalletAddress } from '../../utils/resolve-wallet-address';
 
 const createProject = async (payload: CreateProjectPayload) => {
   const res = await api.post('/projects', payload);
@@ -610,22 +611,6 @@ type GetProjectBeneficiaries = Pagination & {
   vouchers?: any;
 };
 
-const resolveProjectWalletAddress = (
-  beneficiary: any,
-  chainType?: string | null,
-) => {
-  const details = beneficiary?.walletAddressDetails;
-  if (Array.isArray(details) && chainType) {
-    const match = details.find(
-      (d: any) =>
-        String(d?.chainType || '').toLowerCase() ===
-        String(chainType).toLowerCase(),
-    );
-    if (match?.address) return match.address;
-  }
-  return beneficiary?.walletAddress;
-};
-
 export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
   const q = useProjectAction<Beneficiary[]>();
   const { projectUUID, ...restPayload } = payload;
@@ -664,7 +649,7 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
           ? query.data.data.map((row: any) => ({
               ...row,
               uuid: row?.uuid?.toString(),
-              walletAddress: resolveProjectWalletAddress(
+              walletAddress: resolveWalletAddress(
                 row,
                 chainType as string | undefined,
               )?.toString(),

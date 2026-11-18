@@ -18,7 +18,7 @@ import { FundWithPayoutSchema } from 'apps/rahat-ui/src/sections/projects/aa-2/p
 import { handleBuildPayoutPayload } from 'apps/rahat-ui/src/sections/projects/aa-2/fundManagement/utils/utils';
 
 const ErrorInfoPopupModel = dynamic(() => import('./errorInfoPopupModel'));
-import { resolveBeneficiaryWalletAddress } from 'apps/rahat-ui/src/utils';
+import { resolveWalletAddress } from '@rahat-ui/query';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
@@ -85,7 +85,7 @@ export default function Confirmation({
   const benefData = useMemo(
     () =>
       group?.data?.groupedBeneficiaries.map((i: any) => {
-        const walletAddress = resolveBeneficiaryWalletAddress(
+        const walletAddress = resolveWalletAddress(
           i.Beneficiary,
           projectChainType,
         );

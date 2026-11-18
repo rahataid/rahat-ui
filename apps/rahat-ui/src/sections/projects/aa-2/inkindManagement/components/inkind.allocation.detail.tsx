@@ -32,7 +32,8 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
-import { getExplorerUrl, resolveBeneficiaryWalletAddress } from 'apps/rahat-ui/src/utils';
+import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
+import { resolveWalletAddress } from '@rahat-ui/query';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 
@@ -79,7 +80,7 @@ function formatLogs(raw: any[], chainType?: string | null): LogRow[] {
     uuid: r.uuid ?? r.id ?? '',
     beneficiaryUuid: r.beneficiary?.uuid ?? '',
     beneficiaryWalletAddress:
-      resolveBeneficiaryWalletAddress(r.beneficiary, chainType) ??
+      resolveWalletAddress(r.beneficiary, chainType) ??
       r.walletAddress ??
       'N/A',
     beneficiaryPhone: r.beneficiary?.phone ?? null,
@@ -195,7 +196,7 @@ export default function InkindAllocationDetail() {
         r.redeemedAt ?? r.createdAt ?? 'N/A',
         r.txHash ?? 'N/A',
         r.beneficiary?.name ?? 'N/A',
-        resolveBeneficiaryWalletAddress(r.beneficiary, projectChainType) ??
+        resolveWalletAddress(r.beneficiary, projectChainType) ??
           r.walletAddress ??
           'N/A',
         r.beneficiary?.phone ?? 'N/A',

@@ -14,7 +14,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import { truncatedText } from 'apps/community-tool-ui/src/utils';
 import { NoResult } from 'apps/rahat-ui/src/common';
-import { resolveBeneficiaryWalletAddress } from 'apps/rahat-ui/src/utils';
+import { resolveWalletAddress } from '@rahat-ui/query';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 
 interface AssignInkindSummary {
@@ -112,7 +112,7 @@ export default function AssignInkindConfirmation({
           ) : (
             <div className="flex flex-col divide-y overflow-y-auto flex-1">
               {beneficiaries.map((i: any, index: number) => {
-                const walletAddress = resolveBeneficiaryWalletAddress(
+                const walletAddress = resolveWalletAddress(
                   i.Beneficiary,
                   projectChainType,
                 );

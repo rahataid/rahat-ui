@@ -18,6 +18,13 @@
       "urls": {},
       "notes": []
     },
+    "NRCS Simulation": {
+      "description": "AA Development V2",
+      "tag": "nrcs-simulation",
+      "vault_path": "github/data/rahat/rahat-ui/dev/aa/dev-v2",
+      "urls": {},
+      "notes": []
+    },
     "dev-qa": {
       "description": "AA QA Development",
       "tag": "dev-qa",

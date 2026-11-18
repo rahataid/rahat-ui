@@ -82,23 +82,24 @@ export default function UsersDetailSplitView({
           tip={tg('CLOSE')}
         />
       </div>
-      <div className="p-4 flex justify-between items-center border-b">
+      <div className="flex items-center justify-between border-b bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-4">
         <div className="flex items-center gap-2">
           <Image
-            className="rounded-full"
+            className="rounded-full border-2 border-primary/20 shadow-sm"
             src="/profile.png"
             alt="profile"
             height={80}
             width={80}
           />
           <div>
-            <h1 className="font-semibold text-xl mb-1">{userDetail?.name}</h1>
-            <div className="flex space-x-4 items-center">
+            <h1 className="mb-2 text-xl font-semibold">{userDetail?.name}</h1>
+            <div className="flex flex-wrap items-center gap-2">
               <Badge>{userDetail?.extras?.status ?? tg('N_A')}</Badge>
-              <p className="text-base text-muted-foreground">
-                {translateValue(tg, userDetail?.gender, { fallbackStyle: 'raw' }) ||
-                  tg('N_A')}
-              </p>
+              <span className="rounded-full border bg-background/80 px-2.5 py-1 text-xs text-muted-foreground">
+                {translateValue(tg, userDetail?.gender, {
+                  fallbackStyle: 'raw',
+                }) || tg('N_A')}
+              </span>
             </div>
           </div>
         </div>
@@ -124,52 +125,79 @@ export default function UsersDetailSplitView({
         </div>
         <TabsContent value="general">
           <ScrollArea className="h-[calc(100vh-340px)]">
-            <div className="p-4 flex flex-col space-y-4">
-              <h1 className="font-medium">{t('GENERAL_DETAILS')}</h1>
-              <div className="flex justify-between items-center">
-                <div className="flex items-center space-x-4">
-                  <Wallet size={20} strokeWidth={1.5} />
-                  <p>{tg('WALLET_ADDRESS')}</p>
-                </div>
-                <div
-                  className="flex space-x-3 items-center"
-                  onClick={() => clickToCopy(userDetail?.wallet as string)}
-                >
-                  <p className="text-muted-foreground text-base truncate w-28">
-                    {(userDetail?.wallet as string) ?? '-'}
-                  </p>
-                  {userDetail?.wallet &&
-                    (walletAddressCopied ? (
-                      <CopyCheck size={15} strokeWidth={1.5} />
-                    ) : (
-                      <Copy
-                        className="text-muted-foreground"
-                        size={15}
+            <div className="flex flex-col gap-4 p-4">
+              <section className="rounded-sm border bg-card p-4 shadow-sm">
+                <h2 className="mb-4 border-l-4 border-primary pl-3 text-base font-semibold">
+                  {t('GENERAL_DETAILS')}
+                </h2>
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-start justify-between gap-4 rounded-md border border-border/60 bg-muted/20 px-3 py-3 transition-colors hover:bg-muted/40">
+                    <div className="flex shrink-0 items-center gap-3">
+                      <Wallet
+                        className="rounded-md bg-secondary p-1 text-primary"
+                        size={24}
                         strokeWidth={1.5}
                       />
-                    ))}
-                </div>
-              </div>
+                      <p className="text-sm font-medium">
+                        {tg('WALLET_ADDRESS')}
+                      </p>
+                    </div>
+                    <div className="flex min-w-0 items-center gap-3">
+                      <p className="w-28 truncate text-right text-sm text-muted-foreground">
+                        {(userDetail?.wallet as string) ?? '-'}
+                      </p>
+                      {userDetail?.wallet && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            clickToCopy(userDetail?.wallet as string)
+                          }
+                          className="shrink-0 text-muted-foreground transition-colors hover:text-foreground"
+                          aria-label={tg('WALLET_ADDRESS')}
+                        >
+                          {walletAddressCopied ? (
+                            <CopyCheck size={16} strokeWidth={1.5} />
+                          ) : (
+                            <Copy size={16} strokeWidth={1.5} />
+                          )}
+                        </button>
+                      )}
+                    </div>
+                  </div>
 
-              <div className="flex justify-between items-center">
-                <div className="flex items-center space-x-4">
-                  <Phone size={20} strokeWidth={1.5} />
-                  <p>{tg('PHONE_NUMBER')}</p>
-                </div>
-                <p className="text-muted-foreground text-base">
-                  {formatPhone(userDetail?.phone) || '-'}
-                </p>
-              </div>
+                  <div className="flex items-start justify-between gap-4 rounded-md border border-border/60 bg-muted/20 px-3 py-3 transition-colors hover:bg-muted/40">
+                    <div className="flex shrink-0 items-center gap-3">
+                      <Phone
+                        className="rounded-md bg-secondary p-1 text-primary"
+                        size={24}
+                        strokeWidth={1.5}
+                      />
+                      <p className="text-sm font-medium">
+                        {tg('PHONE_NUMBER')}
+                      </p>
+                    </div>
+                    <p className="break-all text-right text-sm text-muted-foreground">
+                      {formatPhone(userDetail?.phone) || '-'}
+                    </p>
+                  </div>
 
-              <div className="flex justify-between items-center">
-                <div className="flex items-center space-x-4">
-                  <Mail size={20} strokeWidth={1.5} />
-                  <p>{tg('EMAIL_ADDRESS')}</p>
+                  <div className="flex items-start justify-between gap-4 rounded-md border border-border/60 bg-muted/20 px-3 py-3 transition-colors hover:bg-muted/40">
+                    <div className="flex shrink-0 items-center gap-3">
+                      <Mail
+                        className="rounded-md bg-secondary p-1 text-primary"
+                        size={24}
+                        strokeWidth={1.5}
+                      />
+                      <p className="text-sm font-medium">
+                        {tg('EMAIL_ADDRESS')}
+                      </p>
+                    </div>
+                    <p className="break-all text-right text-sm text-muted-foreground">
+                      {userDetail?.email || '-'}
+                    </p>
+                  </div>
                 </div>
-                <p className="text-muted-foreground text-base">
-                  {userDetail?.email || '-'}
-                </p>
-              </div>
+              </section>
             </div>
           </ScrollArea>
         </TabsContent>

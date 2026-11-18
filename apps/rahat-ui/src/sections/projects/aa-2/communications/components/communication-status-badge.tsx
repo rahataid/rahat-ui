@@ -34,13 +34,15 @@ const STATUS_CONFIG: Record<
   ANSWERED: { labelKey: 'COMPLETED', defaultLabel: 'Completed', variant: 'success' },
 
   // Dispatched / Sent
-  SENT: { labelKey: 'IN_PROGRESS', defaultLabel: 'In Progress', variant: 'processing' },
+  SENT: { labelKey: 'SENT', defaultLabel: 'Sent', variant: 'info' },
 
   // Active / Processing States
-  PROCESSING: { labelKey: 'IN_PROGRESS', defaultLabel: 'In Progress', variant: 'processing' },
+  PROCESSING: { labelKey: 'PROCESSING', defaultLabel: 'Processing', variant: 'processing' },
   IN_PROGRESS: { labelKey: 'IN_PROGRESS', defaultLabel: 'In Progress', variant: 'processing' },
 
-  // Queued / Scheduled / New
+  // Queued / Scheduled / New / Not Started
+  NOT_STARTED: { labelKey: 'NOT_STARTED', defaultLabel: 'Not Started', variant: 'neutral' },
+  'NOT STARTED': { labelKey: 'NOT_STARTED', defaultLabel: 'Not Started', variant: 'neutral' },
   NEW: { labelKey: 'NEW', defaultLabel: 'New', variant: 'info' },
   PENDING: { labelKey: 'PENDING', defaultLabel: 'Pending', variant: 'warning' },
   SCHEDULED: { labelKey: 'SCHEDULED', defaultLabel: 'Scheduled', variant: 'neutral' },

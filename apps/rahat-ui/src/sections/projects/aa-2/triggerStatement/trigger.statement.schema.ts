@@ -125,6 +125,7 @@ export const buildManualFormSchema = (t: Translator) =>
     isMandatory: z.boolean().optional(),
     description: z.string().optional(),
     leadTime: z.string().optional(),
+    manualSources: z.array(z.string().trim().min(1)).optional(),
   });
 
 export const buildEditAutomatedFormSchema = (

@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { useParams, useSearchParams } from 'next/navigation';
 import {
   Tabs,
   TabsContent,
@@ -11,17 +12,17 @@ import AACategoriesView from './categories/categories.view';
 import AAProjectPhasesView from './aa.phases';
 import ProjectHealthView from './project-health/project-health.view';
 import BeneficiaryQrConfigView from './beneficiary-qr/beneficiary-qr.view';
-import { useSearchParams } from 'next/navigation';
 
 export default function AAProjectSettingsView() {
   const t = useTranslations('AA_PROJECT');
+  const params = useParams();
   const searchParams = useSearchParams();
   const tab = searchParams.get('tab') || 'categories';
 
   return (
     <div className="p-4">
       <Tabs defaultValue={tab || 'categories'}>
-        <TabsList className="border bg-secondary rounded">
+        <TabsList className="border bg-secondary rounded mb-4">
           <TabsTrigger
             className="w-full data-[state=active]:bg-white"
             value="categories"

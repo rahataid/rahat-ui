@@ -88,7 +88,7 @@ export function GroupBroadcastLogsDialog({
   const { data: broadcastCounts } = useSessionBroadCastCount(sessionId ? [sessionId] : []);
   const mutateRetry = useSessionRetryFailed();
 
-  const counts = broadcastCounts?.data ?? {
+  const counts = (broadcastCounts as any)?.data?.data ?? broadcastCounts?.data ?? {
     SUCCESS: 0,
     FAIL: 0,
     PENDING: 0,
@@ -101,8 +101,8 @@ export function GroupBroadcastLogsDialog({
       channel,
       rawStatus: target?.status,
       counts,
-      hasActiveTargets: target?.status === 'SENT' || target?.status === 'PROCESSING',
-      hasPendingTargets: target?.status === 'PENDING',
+      hasActiveTargets: target?.status === 'PROCESSING',
+      hasPendingTargets: target?.status === 'PENDING' || !target?.status,
       hasSession: !!sessionId,
       isRetrying: mutateRetry.isPending,
     });

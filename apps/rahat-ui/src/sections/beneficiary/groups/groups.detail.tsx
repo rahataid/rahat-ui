@@ -183,6 +183,7 @@ export default function GroupDetailView() {
         extras: d?.Beneficiary?.extras,
         groupPurpose: groupPurpose,
         isGroupValidForAA: group?.data?.isGroupValidForAA,
+        bankAccount: d?.Beneficiary?.bankAccount,
       }));
     } else return [];
   }, [group]);

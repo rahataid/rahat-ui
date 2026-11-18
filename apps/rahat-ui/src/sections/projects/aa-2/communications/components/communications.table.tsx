@@ -60,7 +60,7 @@ export const STATUS_FILTER_OPTIONS = [
   'ALL',
   'COMPLETED',
   'IN_PROGRESS',
-  'PENDING',
+  'NOT_STARTED',
   'SCHEDULED',
   'FAILED',
   'CANCELLED',
@@ -123,7 +123,9 @@ export function useResolvedCommunicationStatuses(records: CommunicationRecord[])
     records.forEach((record, index) => {
       const sessionIds = recordSessionIds[index] ?? [];
       const counts =
-        sessionIds.length > 0 ? results[index]?.data?.data : undefined;
+        sessionIds.length > 0
+          ? results[index]?.data?.data ?? results[index]?.data
+          : undefined;
       resolvedById.set(
         record.id,
         resolveCommunicationLifecycleStatus({
@@ -131,10 +133,10 @@ export function useResolvedCommunicationStatuses(records: CommunicationRecord[])
           rawStatus: record.status,
           counts,
           hasActiveTargets: (record.targets ?? []).some(
-            (target) => target.status === 'SENT' || target.status === 'PROCESSING',
+            (target) => target.status === 'PROCESSING',
           ),
           hasPendingTargets: (record.targets ?? []).some(
-            (target) => target.status === 'PENDING',
+            (target) => target.status === 'PENDING' || !target.status,
           ),
           hasSession: sessionIds.length > 0,
         }),
@@ -206,6 +208,14 @@ export function CommunicationsTable({
         }
         if (statusFilter === 'FAILED') {
           return resolved === 'FAILED' || resolved === 'FAIL';
+        }
+        if (statusFilter === 'NOT_STARTED' || statusFilter === 'PENDING') {
+          return (
+            resolved === 'NOT_STARTED' ||
+            resolved === 'NOT STARTED' ||
+            resolved === 'PENDING' ||
+            resolved === 'NEW'
+          );
         }
         return resolved === statusFilter;
       });
@@ -306,7 +316,7 @@ export function CommunicationsTable({
             onSearch={(e) => onSearchChange(e?.target?.value || '')}
           />
           <SelectComponent
-            name={t("CHANNEL")}
+            name={t('CHANNEL')}
             options={['ALL', 'SMS', 'VOICE', 'EMAIL']}
             labels={{
               ALL: t('ALL'),
@@ -319,24 +329,24 @@ export function CommunicationsTable({
                 val === 'ALL' ? '' : (val as 'SMS' | 'VOICE' | 'EMAIL'),
               )
             }
-            value={channelFilter || 'ALL'}
-            className="w-36 shrink-0"
+            value={channelFilter || ''}
+            className="w-44 shrink-0"
           />
           <SelectComponent
-            name={t("STATUS")}
+            name={t('STATUS')}
             options={STATUS_FILTER_OPTIONS}
             labels={{
               ALL: t('ALL'),
               COMPLETED: t('COMPLETED'),
               IN_PROGRESS: t('IN_PROGRESS'),
-              PENDING: t('PENDING'),
+              NOT_STARTED: t('NOT_STARTED') || 'Not Started',
               SCHEDULED: t('SCHEDULED'),
               FAILED: t('FAILED'),
               CANCELLED: t('CANCELLED'),
             }}
             onChange={(val) => onStatusFilterChange(val === 'ALL' ? '' : val)}
-            value={statusFilter || 'ALL'}
-            className="w-40 shrink-0"
+            value={statusFilter || ''}
+            className="w-44 shrink-0"
           />
           <DateRangePicker
             key={datePickerKey}
@@ -360,7 +370,7 @@ export function CommunicationsTable({
 
         <DemoTable
           table={table}
-          tableHeight="h-[calc(100vh-540px)]"
+          tableHeight="h-[calc(100vh-320px)]"
           message={t("NO_COMMUNICATIONS_FOUND")}
           loading={isLoading || isBroadcastLoading}
         />

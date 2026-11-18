@@ -41,7 +41,9 @@ import {
   CloudDownloadIcon,
   RefreshCcw,
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+
+const ROWS_PER_PAGE = 50;
 
 interface IProps {
   data: any;
@@ -84,9 +86,34 @@ export default function AddToQueue({
   const [groupPopoverOpen, setGroupPopoverOpen] = useState(false);
   const [localData, setLocalData] = useState<any[]>(data);
 
+  const [page, setPage] = useState(1);
+
   useEffect(() => {
     setLocalData(data);
   }, [data]);
+
+  // Back to the first page only when a new result arrives (not on cell edits).
+  useEffect(() => {
+    setPage(1);
+  }, [data]);
+
+  // Index validation errors once: uuid -> fieldName -> error.
+  // Previously every header and every cell ran invalidFields.find(), i.e.
+  // rows x columns x errors comparisons on each render / keystroke.
+  const { errorMap, invalidColumns } = useMemo(() => {
+    const errorMap = new Map<string, Map<string, any>>();
+    const invalidColumns = new Set<string>();
+    for (const err of (invalidFields ?? []) as any[]) {
+      invalidColumns.add(err.fieldName);
+      let rowErrors = errorMap.get(err.uuid);
+      if (!rowErrors) {
+        rowErrors = new Map();
+        errorMap.set(err.uuid, rowErrors);
+      }
+      if (!rowErrors.has(err.fieldName)) rowErrors.set(err.fieldName, err);
+    }
+    return { errorMap, invalidColumns };
+  }, [invalidFields]);
 
   const handleCellEdit = (rowIndex: number, key: string, value: string) => {
     const updated = localData.map((row, i) => {
@@ -110,15 +137,17 @@ export default function AddToQueue({
     ...filters,
   });
 
-  const mappedData =
+  const headerKeys =
     localData.length > 0
-      ? localData.map((d: any) => {
-          const { rawData, ...rest } = d;
-          return rest;
-        })
+      ? Object.keys(localData[0]).filter((k) => k !== 'rawData')
       : [];
 
-  const headerKeys = mappedData.length > 0 ? Object.keys(mappedData[0]) : [];
+  // Render one page at a time; 1000 rows x 160 columns of cells (with
+  // tooltips/inputs) in a single table is too heavy for the browser.
+  const totalPages = Math.max(1, Math.ceil(localData.length / ROWS_PER_PAGE));
+  const currentPage = Math.min(page, totalPages);
+  const pageStart = (currentPage - 1) * ROWS_PER_PAGE;
+  const pageRows = localData.slice(pageStart, pageStart + ROWS_PER_PAGE);
 
   function renderItemKey(item: any, key: string) {
     if (key === 'isDuplicate') {
@@ -177,7 +206,7 @@ export default function AddToQueue({
             <ArrowBigUp size={18} strokeWidth={2} /> Export Invalid
           </Button>
 
-          {(invalidFields.length > 0 || hasDuplicates) && (
+          {(invalidFields.length > 0 || hasDuplicates || hasPendingEdits) && (
             <Button
               disabled={loading}
               onClick={onRevalidate}
@@ -330,9 +359,7 @@ export default function AddToQueue({
             <tr>
               {headerKeys.map((key) => (
                 <th style={{ minWidth: 150 }} className="px-2 py-1" key={key}>
-                  {invalidFields.find(
-                    (field: any) => field.fieldName === key,
-                  ) ? (
+                  {invalidColumns.has(key) ? (
                     <span className="text-red-500">
                       {truncatedText(humanizeString(key), 40)}*
                     </span>
@@ -347,134 +374,164 @@ export default function AddToQueue({
           </thead>
 
           <tbody className="h-screen overflow-y-auto">
-            {localData.map((item: any, index: number) => (
-              <tr
-                key={index}
-                className={`${
-                  item.isDuplicate
-                    ? 'bg-orange-100 border-b'
-                    : 'odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700'
-                }`}
-              >
-                {headerKeys.map((key) => {
-                  const errorData = invalidFields.find(
-                    (err: any) =>
-                      err.uuid === item['uuid'] && key === err.fieldName,
-                  );
+            {pageRows.map((item: any, pageIndex: number) => {
+              const index = pageStart + pageIndex;
+              const rowErrors = errorMap.get(item['uuid']);
+              return (
+                <tr
+                  key={index}
+                  className={`${
+                    item.isDuplicate
+                      ? 'bg-orange-100 border-b'
+                      : 'odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700'
+                  }`}
+                >
+                  {headerKeys.map((key) => {
+                    const errorData = rowErrors?.get(key);
 
-                  const isInvalid = !!errorData;
+                    const isInvalid = !!errorData;
 
-                  const cellContent = renderItemKey(item, key);
+                    const cellContent = renderItemKey(item, key);
 
-                  const isEditableKey = key !== 'isDuplicate' && key !== 'uuid';
+                    const isEditableKey =
+                      key !== 'isDuplicate' && key !== 'uuid';
 
-                  const editableInput = (
-                    <input
-                      className="w-full bg-transparent border-b border-red-400 outline-none text-sm text-gray-800 focus:border-red-600"
-                      value={item[key] ?? ''}
-                      onChange={(e) =>
-                        handleCellEdit(index, key, e.target.value)
-                      }
-                    />
-                  );
+                    const editableInput = (
+                      <input
+                        className="w-full bg-transparent border-b border-red-400 outline-none text-sm text-gray-800 focus:border-red-600"
+                        value={item[key] ?? ''}
+                        onChange={(e) =>
+                          handleCellEdit(index, key, e.target.value)
+                        }
+                      />
+                    );
 
-                  const duplicateEditableInput = (
-                    <input
-                      className="w-full bg-transparent border-b border-orange-400 outline-none text-sm text-gray-800 focus:border-orange-600"
-                      value={item[key] ?? ''}
-                      onChange={(e) =>
-                        handleCellEdit(index, key, e.target.value)
-                      }
-                    />
-                  );
+                    const duplicateEditableInput = (
+                      <input
+                        className="w-full bg-transparent border-b border-orange-400 outline-none text-sm text-gray-800 focus:border-orange-600"
+                        value={item[key] ?? ''}
+                        onChange={(e) =>
+                          handleCellEdit(index, key, e.target.value)
+                        }
+                      />
+                    );
 
-                  // DUPLICATE + INVALID
-                  if (item.isDuplicate && isInvalid) {
-                    return (
-                      <td className="px-4 py-1.5 bg-red-100" key={key}>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <div className="w-full h-full">
-                                {isEditableKey ? editableInput : cellContent}
-                              </div>
-                            </TooltipTrigger>
-                            <TooltipContent align="start">
-                              <div className="space-y-1">
-                                <p>This row is duplicate!</p>
+                    // DUPLICATE + INVALID
+                    if (item.isDuplicate && isInvalid) {
+                      return (
+                        <td className="px-4 py-1.5 bg-red-100" key={key}>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div className="w-full h-full">
+                                  {isEditableKey ? editableInput : cellContent}
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent align="start">
+                                <div className="space-y-1">
+                                  <p>This row is duplicate!</p>
+                                  <p>{errorData?.message}</p>
+                                </div>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </td>
+                      );
+                    }
+
+                    // INVALID CELL — editable
+                    if (isInvalid) {
+                      return (
+                        <td className="px-4 py-1.5 bg-red-100" key={key}>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div className="w-full h-full">
+                                  {isEditableKey ? editableInput : cellContent}
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent align="start">
                                 <p>{errorData?.message}</p>
-                              </div>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </td>
-                    );
-                  }
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </td>
+                      );
+                    }
 
-                  // INVALID CELL — editable
-                  if (isInvalid) {
+                    // DUPLICATE ROW — only unique fields are editable
+                    if (item.isDuplicate) {
+                      const isDuplicateField = uniqueFieldSet.has(key);
+                      return (
+                        <td
+                          className={`px-4 py-1.5 ${
+                            isDuplicateField ? 'bg-orange-50' : ''
+                          }`}
+                          key={key}
+                        >
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div className="w-full h-full">
+                                  {isDuplicateField
+                                    ? duplicateEditableInput
+                                    : cellContent}
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent align="start">
+                                <p>
+                                  {isDuplicateField
+                                    ? 'Duplicate value — edit to make it unique'
+                                    : 'This row has a duplicate unique field'}
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </td>
+                      );
+                    }
+
+                    // NORMAL CELL
                     return (
-                      <td className="px-4 py-1.5 bg-red-100" key={key}>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <div className="w-full h-full">
-                                {isEditableKey ? editableInput : cellContent}
-                              </div>
-                            </TooltipTrigger>
-                            <TooltipContent align="start">
-                              <p>{errorData?.message}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                      <td className="px-4 py-1.5" key={key}>
+                        {cellContent}
                       </td>
                     );
-                  }
-
-                  // DUPLICATE ROW — only unique fields are editable
-                  if (item.isDuplicate) {
-                    const isDuplicateField = uniqueFieldSet.has(key);
-                    return (
-                      <td
-                        className={`px-4 py-1.5 ${
-                          isDuplicateField ? 'bg-orange-50' : ''
-                        }`}
-                        key={key}
-                      >
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <div className="w-full h-full">
-                                {isDuplicateField
-                                  ? duplicateEditableInput
-                                  : cellContent}
-                              </div>
-                            </TooltipTrigger>
-                            <TooltipContent align="start">
-                              <p>
-                                {isDuplicateField
-                                  ? 'Duplicate value — edit to make it unique'
-                                  : 'This row has a duplicate unique field'}
-                              </p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </td>
-                    );
-                  }
-
-                  // NORMAL CELL
-                  return (
-                    <td className="px-4 py-1.5" key={key}>
-                      {cellContent}
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
+                  })}
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-end gap-2 m-2 text-sm">
+          <span className="text-muted-foreground">
+            Rows {pageStart + 1}–{pageStart + pageRows.length} of{' '}
+            {localData.length}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={currentPage <= 1}
+            onClick={() => setPage(currentPage - 1)}
+          >
+            Previous
+          </Button>
+          <span>
+            Page {currentPage} / {totalPages}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={currentPage >= totalPages}
+            onClick={() => setPage(currentPage + 1)}
+          >
+            Next
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

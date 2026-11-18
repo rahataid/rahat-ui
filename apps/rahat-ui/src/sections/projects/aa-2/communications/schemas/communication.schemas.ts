@@ -17,6 +17,7 @@ export const buildBroadcastSchema = (t: (key: string) => string) =>
       message: z.string().optional(),
       beneficiaries: z.array(audienceGroupSchema).default([]),
       stakeholders: z.array(audienceGroupSchema).default([]),
+      targetAudience: z.any().optional(),
       audioFile: z.any().optional(),
     })
     .superRefine((data, ctx) => {

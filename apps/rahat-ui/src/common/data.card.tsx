@@ -18,7 +18,7 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 
 type CardProps = {
   title: string;
-  number?: string;
+  number?: string | React.ReactNode;
   smallNumber?: string;
   className?: string;
   subtitle?: string;
@@ -54,11 +54,11 @@ export function DataCard({
         className,
       )}
     >
-      <CardHeader className="pb-2 p-4">
-        <div className="flex items-start justify-between ">
-          <div className="flex items-center gap-3">
+      <CardHeader className="p-3.5 pb-1.5">
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-2">
             <CardTitle
-              className={`text-sm/6 font-semibold text-neutral-800 dark:text-white`}
+              className={`text-xs/5 font-semibold text-neutral-800 dark:text-white`}
             >
               {title}
             </CardTitle>
@@ -67,8 +67,8 @@ export function DataCard({
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Info
-                      size={16}
-                      className="text-muted-foreground cursor-help hover:text-primary transition-colors"
+                      size={14}
+                      className="text-muted-foreground cursor-help hover:text-primary transition-colors flex-shrink-0"
                     />
                   </TooltipTrigger>
                   <TooltipContent>
@@ -84,7 +84,7 @@ export function DataCard({
               <RefreshCcw
                 size={14}
                 strokeWidth={1.5}
-                className="text-primary cursor-pointer"
+                className="text-primary cursor-pointer flex-shrink-0"
                 onClick={refresh}
               />
             )}
@@ -93,28 +93,27 @@ export function DataCard({
           {Icon && (
             <div
               className={cn(
-                'bg-secondary rounded-full h-8 w-8 flex items-center justify-center text-primary',
+                'bg-secondary rounded-full h-7 w-7 flex items-center justify-center text-primary flex-shrink-0',
                 iconStyle,
               )}
             >
-              <Icon size={20} strokeWidth={2} />
+              <Icon size={16} strokeWidth={2} />
             </div>
           )}
         </div>
-        {/* {subtitle && (
-          <p className="text-sm text-muted-foreground p-0">{subtitle ?? ' '}</p>
-        )} */}
-        <p className="text-sm text-muted-foreground p-0 mt-0">
-          {subtitle?.trim() !== '' ? subtitle : '\u00A0'}
-        </p>
+        {subtitle && subtitle.trim() !== '' && (
+          <p className="text-xs text-muted-foreground p-0 mt-0.5">
+            {subtitle}
+          </p>
+        )}
       </CardHeader>
-      <CardContent className="flex items-center justify-between">
+      <CardContent className="p-3.5 pt-0 flex items-center justify-between">
         <div>
           {loading ? (
             <TableLoader />
           ) : (
             <>
-              {number && number?.length > 6 && truncate ? (
+              {typeof number === 'string' && number.length > 6 && truncate ? (
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -134,7 +133,7 @@ export function DataCard({
                   className={`${
                     title === 'Created By' ? 'text-xl' : 'text-3xl'
                   } font-semibold text-primary ${
-                    truncate ? 'truncate w-52' : ''
+                    truncate && typeof number === 'string' ? 'truncate w-52' : ''
                   }`}
                 >
                   {number}

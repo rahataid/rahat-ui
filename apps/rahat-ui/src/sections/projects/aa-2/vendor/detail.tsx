@@ -31,9 +31,17 @@ import { InkindRedemptionList } from './tabs/inkind.redemption.list';
 
 const TabsTriggerStats = (t: any) => [
   { title: t('VENDOR_OVERVIEW'), value: 'vendorOverview', module: 'all' },
-  { title: t('TRANSACTION_HISTORY'), value: 'transactionHistory', module: 'fund' },
+  {
+    title: t('TRANSACTION_HISTORY'),
+    value: 'transactionHistory',
+    module: 'fund',
+  },
   { title: t('BENEFICIARY_LIST'), value: 'beneficiaryList', module: 'fund' },
-  { title: t('REDEMPTION_REQUEST'), value: 'redemptionRequest', module: 'fund' },
+  {
+    title: t('REDEMPTION_REQUEST'),
+    value: 'redemptionRequest',
+    module: 'fund',
+  },
   {
     title: t('IN_KIND_BENEFICIARY_LIST'),
     value: 'inKindBeneficiaryList',
@@ -88,7 +96,7 @@ export default function Detail() {
   const shouldRenderTab = (tabValue: string) =>
     visibleTabs.some((tab) => tab.value === tabValue);
 
-  const { data: vendorsDetail } = useGetVendor(vendorId as UUID);
+  const { data: vendorsDetail } = useGetVendor(vendorId as UUID, id as UUID);
   // useGetVendor normalizes the response into a flat user object (name, wallet, phone, ...)
   const vendor = vendorsDetail?.data;
 

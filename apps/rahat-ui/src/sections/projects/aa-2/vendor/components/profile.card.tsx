@@ -29,10 +29,10 @@ export default function ProfileCard({ data }: ProfileCardProps) {
           <div className="flex items-center flex-col gap-5">
             <div className="flex">
               <div className="text-sm text-muted-foreground truncate w-24 overflow-hidden">
-                {data?.wallet || t('N_A')}
+                {data?.walletAddress || t('N_A')}
               </div>
               <button
-                onClick={() => clickToCopy(data?.wallet || '', 1)}
+                onClick={() => clickToCopy(data?.walletAddress || '', 1)}
                 className="ml-2 text-sm text-gray-500"
               >
                 {copyAction === 1 ? (
@@ -49,7 +49,9 @@ export default function ProfileCard({ data }: ProfileCardProps) {
               </div>
               <div>
                 <p className="text-sm font medium">{t('PHONE_NUMBER')}</p>
-                <p className="text-sm text-muted-foreground">{formatPhone(data?.phone)}</p>
+                <p className="text-sm text-muted-foreground">
+                  {formatPhone(data?.phone)}
+                </p>
               </div>
             </div>
           </div>

@@ -10,6 +10,7 @@ import {
   SendHorizonal,
   LoaderCircle,
   ArrowUpRightSquare,
+  Link as LinkIcon,
 } from 'lucide-react';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
@@ -26,10 +27,10 @@ import {
   ACTIONS,
   SUBJECTS,
 } from 'apps/rahat-ui/src/constants/ability.constants';
-import { formatEnumString } from 'apps/rahat-ui/src/utils/string';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { useRouter } from 'next/navigation';
+import NextLink from 'next/link';
 import { SendCommunicationConfirmDialog } from '../../communications/components/send-communication-confirm-dialog';
 
 interface BaseCommunication {
@@ -64,9 +65,11 @@ type ActivityCommunication = EmailCommunication | IVRCommunication;
 
 interface CommunicationCardProps {
   activityCommunication: ActivityCommunication;
+  linkedTriggers?: any[];
 }
 export function CommunicationCard({
   activityCommunication,
+  linkedTriggers,
 }: CommunicationCardProps) {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
@@ -265,6 +268,29 @@ export function CommunicationCard({
             </Can>
           )}
         </div>
+
+        {linkedTriggers && linkedTriggers.length > 0 && (
+          <div className="flex items-start gap-2 mb-1 mt-1">
+            <LinkIcon className="w-3.5 h-3.5 mt-0.5 text-blue-500 flex-shrink-0" />
+            <div className="flex flex-wrap gap-1">
+              {linkedTriggers.map((cb: any) => (
+                <TooltipWrapper
+                  key={cb.trigger.uuid}
+                  tip={`${t('TRIGGER')}: ${cb.trigger.title}`}
+                >
+                  <NextLink
+                    href={`/projects/aa/${projectId}/trigger-statements/${cb.trigger.uuid}`}
+                    className="bg-blue-100 text-blue-700 text-xs font-normal px-2 py-0.5 rounded-sm hover:bg-blue-200"
+                  >
+                    {cb.trigger.title?.length > 15
+                      ? `${cb.trigger.title.substring(0, 15)}...`
+                      : cb.trigger.title}
+                  </NextLink>
+                </TooltipWrapper>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Subject for Email */}
         {activityCommunication?.subject && (

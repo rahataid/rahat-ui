@@ -50,6 +50,7 @@ export default function DynamicTriggersList({
               version={t?.version}
               triggerStatement={t?.triggerStatement}
               leadTime={t?.leadTime}
+              hasTriggerCallback={t?.hasTriggerCallback}
               manualSources={getManualSources(t)}
             />
           ))

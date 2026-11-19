@@ -324,15 +324,16 @@ jobs:
 
           # Merge per-environment values over the file defaults
           CFG=$(jq -c --arg e "$ENV" '
-            .defaults as $d | .environments[$e] | {
-              description,
-              tag,
-              vault_path,
-              vault_key: (.vault_key // $d.vault_key),
-              apps:      (.apps      // $d.apps),
-              urls:      (.urls      // {}),
-              notes:     (.notes     // [])
-            }' "$FILE")
+          .defaults as $d | .environments[$e] | {
+            description,
+            tag,
+            vault_path,
+            vault_key:  (.vault_key  // $d.vault_key),
+            vault_keys: (.vault_keys // {}),
+            apps:       (.apps       // $d.apps),
+            urls:       (.urls       // {}),
+            notes:      (.notes      // [])
+          }' "$FILE")
 
           TAG=$(jq -r '.tag' <<<"$CFG")
           VAULT_PATH=$(jq -r '.vault_path' <<<"$CFG")
@@ -486,6 +487,15 @@ jobs:
           VERSION=$(jq -r --arg k "${APP}-version" '.[$k]' package.json)
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve Vault key for this app
+        id: vaultkey
+        env:
+          CFG: ${{ needs.resolve-config.outputs.env_config }}
+          APP: ${{ matrix.app }}
+        run: |
+          KEY=$(jq -r --arg a "$APP" '.vault_keys[$a] // .vault_key' <<<"$CFG")
+          echo "key=$KEY" >> "$GITHUB_OUTPUT"
 
       # -----------------------------
       # Vault Secret Import

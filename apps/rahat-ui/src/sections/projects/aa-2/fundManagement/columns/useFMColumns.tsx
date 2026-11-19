@@ -71,7 +71,6 @@ export const useFundManagementTableColumns = () => {
       cell: ({ row }) => (
         <TruncatedCell
           text={row?.original?.title || tg('N_A')}
-          // maxLength={10}
           truncateByWidth
         />
       ),
@@ -84,7 +83,6 @@ export const useFundManagementTableColumns = () => {
         return (
           <TruncatedCell
             text={row.original?.group?.name || tg('N_A')}
-            // maxLength={15}
             truncateByWidth
           />
         );

@@ -74,6 +74,9 @@ export const EVENT_QUERY_MAP: Record<
     [PAYOUT_QUERY_KEYS.PAYOUT_LIST, projectUuid],
   ],
   'beneficiary.event': () => [[TAGS.GET_BENEFICIARIES], [TAGS.GET_BENEFICIARY]],
-  'beneficiary.group.event': () => [[TAGS.GET_BENEFICIARIES_GROUPS]],
+  'beneficiary.group.event': () => [
+    [TAGS.GET_BENEFICIARIES_GROUPS],
+    ['GET_BENEFICIARY_GROUP'],
+  ],
   'project.event': () => [[TAGS.GET_ALL_PROJECTS]],
 };

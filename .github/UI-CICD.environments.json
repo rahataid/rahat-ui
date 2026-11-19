@@ -23,8 +23,8 @@
       "tag": "nrcs-simulation",
       "vault_path": "github/data/rahat/rahat-ui/main/aa/heatwave",
       "vault_keys": {
-        "rahat-ui": "ENV_RAHAT_UI",
-        "community-tool-ui": "ENV_COMMUNITY_TOOL_UI"
+        "rahat-ui": "rahat-ui",
+        "community-tool-ui": "community-tool-ui"
       },
       "urls": {},
       "notes": []
@@ -97,8 +97,8 @@
       "tag": "demo-nrcs",
       "vault_path": "github/data/rahat/rahat-ui/demo/aa/nrcs",
       "vault_keys": {
-        "rahat-ui": "ENV_RAHAT_UI",
-        "community-tool-ui": "ENV_COMMUNITY_TOOL_UI"
+        "rahat-ui": "rahat-ui",
+        "community-tool-ui": "community-tool-ui"
       },
       "urls": {},
       "notes": []

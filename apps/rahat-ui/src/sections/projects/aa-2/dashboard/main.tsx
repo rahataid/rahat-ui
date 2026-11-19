@@ -13,6 +13,7 @@ import { useParams } from 'next/navigation';
 import DashboardSkeleton from './dashboard.skeleton';
 import { RefreshCcw } from 'lucide-react';
 import DashboardTabs from './component/dashboard.tabs';
+import DownloadReportDialog from './reports/download-report-dialog';
 
 const Main = () => {
   const { id } = useParams();
@@ -40,14 +41,17 @@ const Main = () => {
           description={t('OVERVIEW_OF_YOUR_SYSTEM')}
           titleStyle="text-lg sm:text-xl xl:text-3xl"
         />
-        <IconLabelBtn
-          name={isSyncing ? t('UPDATING') : t('SYNC_STATS')}
-          Icon={RefreshCcw}
-          disabled={isSyncing}
-          handleClick={() => syncStats()}
-          variant="outline"
-          className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
-        />
+        <div className="flex flex-wrap items-center gap-2">
+          <DownloadReportDialog projectId={projectId} />
+          <IconLabelBtn
+            name={isSyncing ? t('UPDATING') : t('SYNC_STATS')}
+            Icon={RefreshCcw}
+            disabled={isSyncing}
+            handleClick={() => syncStats()}
+            variant="outline"
+            className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
+          />
+        </div>
       </div>
 
       <DashboardTabs

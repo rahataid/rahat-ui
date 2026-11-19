@@ -3085,7 +3085,15 @@
     "OVERVIEW": "अवलोकन",
     "OVERVIEW_OF_YOUR_SYSTEM": "तपाईंको प्रणालीको जानकारी",
     "YOUR_HUB_FOR_REAL_TIME_ANALYTICS": "प्रणालीको वास्तविक-समय विश्लेषण र तथ्यांक दृश्याङ्कनका लागि तपाईंको केन्द्र",
-    "DASHBOARD_TABS": "ड्यासबोर्ड ट्याबहरू"
+    "DASHBOARD_TABS": "ड्यासबोर्ड ट्याबहरू",
+    "DOWNLOAD_REPORT_DESCRIPTION": "डाउनलोड गर्न उपलब्ध रिपोर्ट र फाइल ढाँचा छान्नुहोस्।",
+    "DOWNLOAD_REPORT_FAILED": "रिपोर्ट उत्पन्न गर्न सकिएन। कृपया फेरि प्रयास गर्नुहोस्।",
+    "SELECT_REPORT": "रिपोर्ट छान्नुहोस्",
+    "SELECT_FORMAT": "ढाँचा छान्नुहोस्",
+    "EXCEL_XLSX": "Excel (.xlsx)",
+    "PDF_FILE": "PDF (.pdf)",
+    "NO_REPORTS_AVAILABLE": "यस परियोजनाको लागि कुनै रिपोर्ट उपलब्ध छैन। ड्यासबोर्ड ट्याब सक्षम गर्नुहोस् वा तथ्यांक सिङ्क गर्नुहोस्।",
+    "NO_DATA_IN_REPORT": "यस रिपोर्टमा अझै डाउनलोड गर्ने डाटा छैन।"
   },
   "DASHBOARD_ACCESS_INCLUSION": {
     "ACCESS_INCLUSION": "पहुँच र समावेशीकरण",

@@ -13,5 +13,6 @@ export * from './vendors';
 export * from './payout';
 export * from './inkinds';
 export * from './beneficiaries';
+export * from './dashboard-reports';
 export * from './groupCashTransfer';
 export * from './ivr';

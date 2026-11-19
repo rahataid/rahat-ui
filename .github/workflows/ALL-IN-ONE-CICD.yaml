@@ -509,7 +509,7 @@ jobs:
           secrets: |
             github/data/general/docker/esatya username | DOCKERHUB_USERNAME ;
             github/data/general/docker/esatya pat | DOCKERHUB_TOKEN ;
-            ${{ needs.resolve-config.outputs.vault_path }} ${{ needs.resolve-config.outputs.vault_key }} | ENV ;
+            ${{ needs.resolve-config.outputs.vault_path }} ${{ steps.vaultkey.outputs.key }} | ENV ;
 
       # -----------------------------
       # Environment Injection

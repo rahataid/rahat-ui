@@ -10,6 +10,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { DataCard, TableLoader, NoResult } from 'apps/rahat-ui/src/common';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { buildDonutOptions } from 'apps/rahat-ui/src/utils/chart/donutOptions';
 import {
   CommunicationOverviewData,
   classifyTransportString,
@@ -70,19 +71,6 @@ const DEFAULT_RECIPIENT_WISE = {
 
 const EMPTY_CHANNEL_WISE: ChannelWiseStats = {};
 
-type ApexFormatterOpts = {
-  seriesIndex?: number;
-  w?: {
-    globals?: {
-      series?: number[];
-      seriesTotals?: number[];
-    };
-    config?: {
-      series?: number[];
-    };
-  };
-};
-
 export type CommunicationOverviewStatsProps = {
   data?: CommunicationOverviewData;
   isLoading?: boolean;
@@ -92,68 +80,6 @@ export type CommunicationOverviewStatsProps = {
   activeChannel?: string;
   activeRecipient?: string;
 };
-
-function buildDonutOptions(
-  formatNum: (v: number | string) => string,
-  totalLabel: string,
-  total: number,
-) {
-  return {
-    dataLabels: {
-      enabled: true,
-      formatter: (_val: number | string, opts?: ApexFormatterOpts) => {
-        const seriesIdx = opts?.seriesIndex ?? 0;
-        const num =
-          opts?.w?.globals?.series?.[seriesIdx] ??
-          opts?.w?.config?.series?.[seriesIdx];
-        if (num === undefined || num === null || num === 0) return '';
-        return formatNum(num);
-      },
-    },
-    tooltip: {
-      fillSeriesColor: true,
-      y: {
-        formatter: (val: number, opts?: ApexFormatterOpts) => {
-          const sum =
-            opts?.w?.globals?.seriesTotals?.reduce(
-              (a: number, b: number) => a + b,
-              0,
-            ) || total;
-          const pct = sum > 0 ? ((val / sum) * 100).toFixed(1) : '0';
-          return `${formatNum(pct)}%`;
-        },
-        title: { formatter: (seriesName: string) => `${seriesName}` },
-      },
-    },
-    plotOptions: {
-      pie: {
-        donut: {
-          size: '70%',
-          labels: {
-            show: true,
-            value: {
-              formatter: (val: number | string, opts?: ApexFormatterOpts) => {
-                const num = Number(val);
-                const sum =
-                  opts?.w?.globals?.seriesTotals?.reduce(
-                    (a: number, b: number) => a + b,
-                    0,
-                  ) || total;
-                const pct = sum > 0 ? ((num / sum) * 100).toFixed(1) : '0';
-                return `${formatNum(pct)}%`;
-              },
-            },
-            total: {
-              show: true,
-              label: totalLabel,
-              formatter: () => formatNum(total),
-            },
-          },
-        },
-      },
-    },
-  };
-}
 
 function getChannelColor(channel: string, index: number) {
   const upper = channel.toUpperCase().trim();

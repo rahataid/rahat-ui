@@ -22,6 +22,10 @@
       "description": "NRCS Simulation",
       "tag": "nrcs-simulation",
       "vault_path": "github/data/rahat/rahat-ui/main/aa/heatwave",
+      "vault_keys": {
+        "rahat-ui": "ENV_RAHAT_UI",
+        "community-tool-ui": "ENV_COMMUNITY_TOOL_UI"
+      },
       "urls": {},
       "notes": []
     },

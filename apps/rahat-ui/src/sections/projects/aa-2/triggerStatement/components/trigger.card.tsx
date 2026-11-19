@@ -58,11 +58,8 @@ export default function TriggerCard({
   id,
   triggerStatement: tgSt,
   leadTime,
-<<<<<<< HEAD
   hasTriggerCallback,
-=======
   manualSources = [],
->>>>>>> 6226f3900a730e4e663484de53fef086375a9f3d
 }: IProps) {
   const formatDate = useDateFormat();
   const formatNum = useNumberFormat();

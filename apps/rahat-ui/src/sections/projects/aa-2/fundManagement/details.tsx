@@ -14,6 +14,7 @@ import {
 import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import DisburseButton from './components/disburse.button';
+import SyncDisbursementButton from './components/sync.disbursement.button';
 
 export default function FundManagementDetail() {
   const { id: projectID, fundId } = useParams();
@@ -77,7 +78,10 @@ export default function FundManagementDetail() {
           }
         />
         {!isLoading && (
-          <DisburseButton groupUuid={data?.groupId} status={data?.status} />
+          <div className="flex gap-2">
+            <SyncDisbursementButton groupUuid={data?.groupId} status={data?.status} />
+            <DisburseButton groupUuid={data?.groupId} status={data?.status} />
+          </div>
         )}
       </div>
 

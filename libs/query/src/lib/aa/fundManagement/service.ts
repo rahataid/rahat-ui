@@ -559,7 +559,13 @@ export const useDisburseChain = (projectUUID: UUID) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ dName, groups = [] }: { dName: string; groups?: string[] }) => {
+    mutationFn: async ({
+      dName,
+      groups = [],
+    }: {
+      dName: string;
+      groups?: string[];
+    }) => {
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
@@ -584,6 +590,43 @@ export const useDisburseChain = (projectUUID: UUID) => {
       showToast({
         type: 'error',
         title: t('ERROR_WHILE_TRIGGERING_DISBURSEMENT'),
+        description: errorMessage,
+      });
+    },
+  });
+};
+
+export const useSyncDisbursement = (projectUUID: UUID) => {
+  const t = useTranslations('AA_PROJECT');
+  const q = useProjectAction();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ groupUuid, chainType }: { groupUuid: string; chainType?: string }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aa.chain.syncDisburse',
+          payload: { groupUuid, chainType },
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      toast.success(t('DISBURSEMENT_SYNCED_SUCCESSFULLY'));
+      queryClient.invalidateQueries({
+        queryKey: ['groupsreservedfunds', projectUUID],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['fundmanagement', projectUUID],
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      showToast({
+        type: 'error',
+        title: t('ERROR_WHILE_SYNCING_DISBURSEMENT'),
         description: errorMessage,
       });
     },

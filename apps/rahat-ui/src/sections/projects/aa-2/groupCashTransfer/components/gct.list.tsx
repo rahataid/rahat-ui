@@ -36,7 +36,10 @@ import GctDeleteDialog from './gct.delete.dialog';
 import GctActionBtn from './gct.action-btn';
 import { GctItem } from '../types/gct.types';
 import { useTranslations } from 'next-intl';
-import { useNumberFormat, useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
+import {
+  useNumberFormat,
+  useLabelDigits,
+} from 'apps/rahat-ui/src/utils/i18n/number';
 
 export default function GctList() {
   const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
@@ -84,9 +87,15 @@ export default function GctList() {
     perPage: pagination.perPage,
     order: 'desc',
     sort: 'createdAt',
-    ...(debouncedFilters.search.trim() ? { search: debouncedFilters.search.trim() } : {}),
-    ...(debouncedFilters.phone.trim() ? { phone: debouncedFilters.phone.trim() } : {}),
-    ...(debouncedFilters.ward.trim() ? { ward: debouncedFilters.ward.trim() } : {}),
+    ...(debouncedFilters.search.trim()
+      ? { search: debouncedFilters.search.trim() }
+      : {}),
+    ...(debouncedFilters.phone.trim()
+      ? { phone: debouncedFilters.phone.trim() }
+      : {}),
+    ...(debouncedFilters.ward.trim()
+      ? { ward: debouncedFilters.ward.trim() }
+      : {}),
     ...(debouncedFilters.supportArea.trim()
       ? { supportArea: debouncedFilters.supportArea.trim() }
       : {}),
@@ -108,14 +117,19 @@ export default function GctList() {
       {
         accessorKey: 'name',
         header: t('GCT_GROUP_NAME_COL'),
+        meta: { className: 'w-[25%]' },
         cell: ({ row }) => (
           <div className="flex items-center gap-1.5">
-            <TruncatedCell text={row.getValue('name') || '—'} maxLength={20} />
+            <TruncatedCell text={row.getValue('name') || '—'} truncateByWidth />
             {row.original.extras?.isBankValidated && (
               <Tooltip>
                 <TooltipTrigger asChild>
                   <span className="flex items-center">
-                    <CheckCircle2 size={14} strokeWidth={2} className="text-green-500 shrink-0" />
+                    <CheckCircle2
+                      size={14}
+                      strokeWidth={2}
+                      className="text-green-500 shrink-0"
+                    />
                   </span>
                 </TooltipTrigger>
                 <TooltipContent>{t('BANK_ACCOUNT_VALIDATED')}</TooltipContent>
@@ -128,16 +142,20 @@ export default function GctList() {
         accessorKey: 'phone',
         header: tGlobal('PHONE'),
         cell: ({ row }) => (
-          <TruncatedCell text={formatPhone(row.getValue('phone')) || '—'} maxLength={18} />
+          <TruncatedCell
+            text={formatPhone(row.getValue('phone')) || '—'}
+            maxLength={18}
+          />
         ),
       },
       {
         id: 'municipality',
         header: tGlobal('MUNICIPALITY'),
+        meta: { className: 'w-[15%]' },
         cell: ({ row }) => (
           <TruncatedCell
             text={row.original.extras?.municipality || '—'}
-            maxLength={15}
+            truncateByWidth
           />
         ),
       },
@@ -146,7 +164,11 @@ export default function GctList() {
         header: tGlobal('WARD_COMMUNITY'),
         cell: ({ row }) => (
           <TruncatedCell
-            text={row.original.extras?.ward ? formatDigits(row.original.extras.ward) : '—'}
+            text={
+              row.original.extras?.ward
+                ? formatDigits(row.original.extras.ward)
+                : '—'
+            }
             maxLength={15}
           />
         ),
@@ -177,6 +199,7 @@ export default function GctList() {
       {
         id: 'actions',
         header: tGlobal('ACTION'),
+        meta: { className: 'w-[12%]' },
         cell: ({ row }) => {
           const item = row.original;
           const hasFund = (item.groupCashTransferRecords?.length ?? 0) > 0;
@@ -209,7 +232,9 @@ export default function GctList() {
                   />
                   <GctActionBtn
                     label={
-                      hasFund ? t('CANNOT_DELETE_FUNDS_RESERVED') : tGlobal('DELETE')
+                      hasFund
+                        ? t('CANNOT_DELETE_FUNDS_RESERVED')
+                        : tGlobal('DELETE')
                     }
                     icon={<Trash2 size={16} strokeWidth={1.8} />}
                     hoverClass="hover:bg-red-50 text-red-500"
@@ -287,7 +312,11 @@ export default function GctList() {
         />
       </div>
 
-      <DemoTable table={table} loading={isLoading} message={tGlobal('NO_RESULTS')} />
+      <DemoTable
+        table={table}
+        loading={isLoading}
+        message={tGlobal('NO_RESULTS')}
+      />
 
       <CustomPagination
         currentPage={pagination.page}

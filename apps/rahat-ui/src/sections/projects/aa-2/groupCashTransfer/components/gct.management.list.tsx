@@ -206,17 +206,19 @@ export default function GctManagementList() {
       {
         id: 'title',
         header: t('GCT_FUND_TITLE'),
+        meta: { className: 'w-[25%]' },
         cell: ({ row }) => (
-          <TruncatedCell text={row.original.title || '—'} maxLength={20} />
+          <TruncatedCell text={row.original.title || '—'} truncateByWidth />
         ),
       },
       {
         id: 'groupName',
         header: t('GCT_GROUP_NAME_COL'),
+        meta: { className: 'w-[20%]' },
         cell: ({ row }) => (
           <TruncatedCell
             text={row.original.groupCashTransfer?.name || '—'}
-            maxLength={20}
+            truncateByWidth
           />
         ),
       },
@@ -255,6 +257,7 @@ export default function GctManagementList() {
       {
         id: 'actions',
         header: t('ACTION_COL'),
+        meta: { className: 'w-[12%]' },
         cell: ({ row }) => {
           const s = row.original.status;
           const isFailed = s === 'FAILED';

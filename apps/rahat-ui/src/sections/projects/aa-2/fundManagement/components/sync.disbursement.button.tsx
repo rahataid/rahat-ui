@@ -17,6 +17,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 type SyncDisbursementButtonProps = {
   groupUuid?: string;
@@ -38,9 +39,10 @@ export default function SyncDisbursementButton({
   const isFailed = status === 'FAILED';
   const isDisbursed = status === 'DISBURSED';
 
+  const t = useTranslations('AA_PROJECT');
   const sync = useSyncDisbursement(projectId);
 
-  // if (!isStellar) return null;
+  if (!isStellar || !isFailed || isDisbursed) return null;
 
   const handleSync = () => {
     if (!groupUuid) return;
@@ -51,21 +53,20 @@ export default function SyncDisbursementButton({
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button variant="outline" disabled={sync.isPending}>
-          {sync.isPending ? 'Syncing...' : 'Sync Disbursement'}
+          {sync.isPending ? t('SYNCING_DISBURSEMENT') : t('SYNC_DISBURSEMENT')}
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Sync Disbursement?</AlertDialogTitle>
+          <AlertDialogTitle>{t('SYNC_DISBURSEMENT_CONFIRM_TITLE')}</AlertDialogTitle>
           <AlertDialogDescription>
-            This will re-sync the failed disbursement. Are you sure you want to
-            proceed?
+            {t('SYNC_DISBURSEMENT_CONFIRM_DESC')}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel>{t('CANCEL')}</AlertDialogCancel>
           <AlertDialogAction onClick={handleSync} disabled={sync.isPending}>
-            Confirm
+            {t('CONFIRM')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

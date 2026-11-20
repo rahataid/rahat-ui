@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import {
@@ -64,12 +64,7 @@ export default function GctDetail() {
     return map[s] ?? s.replace(/_/g, ' ');
   };
 
-  // Bank validation messages come from CIPS (external), so there's no fixed
-  // English string to key on. CIPS sends a stable `responseCode` alongside
-  // the message (e.g. "001") — prefer that when present, since it won't
-  // drift the way free-text wording can. When the code isn't available
-  // (or isn't keyed yet), fall back to a slug of the message text itself,
-  // then finally to the raw message unchanged.
+
   const localiseValidationMessage = (message: string, responseCode?: string) => {
     if (responseCode) {
       const codeKey = `CIPS_${responseCode}`;
@@ -105,6 +100,7 @@ export default function GctDetail() {
 
   const { data, isLoading } = useGetOneGroupCashTransfer(projectUUID, gctUUID);
   const validateBank = useValidateBankAccount(projectUUID);
+  const validatingRef = useRef(false);
 
   const item = data?.data ?? data ?? null;
   const extras = item?.extras ?? {};
@@ -121,6 +117,8 @@ export default function GctDetail() {
   const formatPhone = usePhoneFormat();
 
   const handleValidateBankAccount = async () => {
+    if (validatingRef.current || extras?.isBankValidated) return;
+    validatingRef.current = true;
     setValidationResult(null);
     try {
       const result = await validateBank.mutateAsync({
@@ -154,6 +152,8 @@ export default function GctDetail() {
         success: false,
         message: errorMessage,
       });
+    } finally {
+      validatingRef.current = false;
     }
   };
 
@@ -341,11 +341,10 @@ export default function GctDetail() {
           <CardContent className="px-4 pb-4">
             {validationResult && (
               <div
-                className={`flex items-center gap-2 text-xs mb-3 p-2 rounded ${
-                  validationResult.success
+                className={`flex items-center gap-2 text-xs mb-3 p-2 rounded ${validationResult.success
                     ? 'bg-green-50 text-green-700'
                     : 'bg-red-50 text-red-600'
-                }`}
+                  }`}
               >
                 {localiseValidationMessage(validationResult.message, validationResult.responseCode)}
               </div>

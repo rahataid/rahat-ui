@@ -33,9 +33,30 @@ type Props = {
   projectId: UUID;
 };
 
+// Backend IDs stay the source of truth; map them to translated labels so the
+// dropdown options follow the selected locale.
+const REPORT_TITLE_KEYS = {
+  overview: 'PROJECT_OVERVIEW',
+  'beneficiary-demographics': 'BENEFICIARY_DEMOGRAPHICS',
+  'flood-survey-data': 'FLOOD_SURVEY_DATA',
+  'heatwave-survey-data': 'HEATWAVE_SURVEY_DATA',
+  'token-stats': 'TOKEN_STATS',
+  'access-inclusion': 'ACCESS_&_INCLUSION',
+  'communication-outreach': 'COMMUNICATION_OUTREACH',
+  flood26Demographics: 'FLOOD_2026_HOUSEHOLD_DEMOGRAPHICS',
+  flood26Livelihood: 'FLOOD_2026_LIVELIHOOD',
+  flood26Housing: 'FLOOD_2026_HOUSING',
+  flood26Exposure: 'FLOOD_2026_DISASTER_EXPOSURE',
+  flood26Preparedness: 'FLOOD_2026_PREPAREDNESS',
+} as const;
+
 export default function DownloadReportDialog({ projectId }: Props) {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
+  const reportTitle = (report: DashboardReportSummary) => {
+    const key = REPORT_TITLE_KEYS[report.id as keyof typeof REPORT_TITLE_KEYS];
+    return key ? t(key) : report.title;
+  };
   const [open, setOpen] = useState(false);
   const [reportId, setReportId] = useState('');
   const [format, setFormat] = useState<DashboardReportFormat>('xlsx');
@@ -83,11 +104,14 @@ export default function DownloadReportDialog({ projectId }: Props) {
       setOpen(false);
       resetForm();
     } catch (error: any) {
-      toast.error(
-        error?.response?.data?.message ||
-          error?.message ||
-          t('DOWNLOAD_REPORT_FAILED'),
-      );
+      const code = error?.response?.data?.code;
+      const message =
+        code === 'DASHBOARD_REPORT_NO_DATA'
+          ? t('NO_DATA_IN_REPORT')
+          : error?.response?.data?.message ||
+            error?.message ||
+            t('DOWNLOAD_REPORT_FAILED');
+      toast.error(message);
     }
   };
 
@@ -141,7 +165,7 @@ export default function DownloadReportDialog({ projectId }: Props) {
                 <SelectContent>
                   {availableReports.map((report) => (
                     <SelectItem key={report.id} value={report.id}>
-                      {report.title}
+                      {reportTitle(report)}
                     </SelectItem>
                   ))}
                 </SelectContent>

@@ -22,8 +22,6 @@ export type ActivitiesOverviewFilterValues = {
   isAutomated?: string;
 };
 
-// Created-date range. Kept apart from the backend filters because `getAll`
-// has no date params; the overview applies it to the loaded rows.
 export type ActivitiesOverviewDateRange = {
   from?: Date;
   to?: Date;
@@ -64,10 +62,7 @@ export default function ActivitiesOverviewFilters({
     Object.values(filters).some(Boolean) || !!dateRange.from || !!dateRange.to;
 
   return (
-    // 5 equal columns that fill the row, plus an auto column for Clear all
-    // (empty when no filter is set). Wraps to 2 columns, then 1.
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[repeat(5,minmax(0,1fr))_auto] gap-2">
-      {/* Phase */}
       <Select
         value={filters.phase || 'all'}
         onValueChange={(value) => onFilterChange('phase', value)}
@@ -87,7 +82,6 @@ export default function ActivitiesOverviewFilters({
         </SelectContent>
       </Select>
 
-      {/* Category */}
       <Select
         value={filters.category || 'all'}
         onValueChange={(value) => onFilterChange('category', value)}
@@ -107,7 +101,6 @@ export default function ActivitiesOverviewFilters({
         </SelectContent>
       </Select>
 
-      {/* Type */}
       <Select
         value={filters.isAutomated || 'all'}
         onValueChange={(value) => onFilterChange('isAutomated', value)}
@@ -124,7 +117,6 @@ export default function ActivitiesOverviewFilters({
         </SelectContent>
       </Select>
 
-      {/* Created date range (same DatePicker as the Usage page) */}
       <DatePicker
         placeholder={tGlobal('FROM')}
         type="from"

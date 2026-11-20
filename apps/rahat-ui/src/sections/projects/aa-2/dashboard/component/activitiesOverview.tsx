@@ -10,13 +10,7 @@ import {
   usePhases,
   usePhasesStore,
 } from '@rahat-ui/query';
-import { CloudDownloadIcon } from 'lucide-react';
-import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
-import { Can } from 'apps/rahat-ui/src/components/can';
-import {
-  ACTIONS,
-  SUBJECTS,
-} from 'apps/rahat-ui/src/constants/ability.constants';
+import { Heading } from 'apps/rahat-ui/src/common';
 import { endOfDay, startOfDay } from 'date-fns';
 import ActivitiesOverviewFilters, {
   ActivitiesOverviewDateRange,
@@ -31,10 +25,8 @@ import ActivitiesOverviewInsights from './activitiesOverview.insights';
 
 const ActivitiesOverview = () => {
   const t = useTranslations('AA_PROJECT');
-  const tg = useTranslations('GLOBAL');
   const { id: projectID } = useParams();
 
-  // Load phases and categories into their stores for the filter dropdowns.
   useActivitiesCategories(projectID as UUID);
   usePhases(projectID as UUID);
 
@@ -42,14 +34,11 @@ const ActivitiesOverview = () => {
     {},
   );
 
-  // One call for every activity matching the filters; the stats are counted
-  // from it.
   const { data, activitiesData, activitiesMeta, isLoading } = useActivities(
     projectID as UUID,
     { ...filters, page: 1, perPage: STATS_PAGE_SIZE },
   );
-  // useActivities maps rows on every render; keep one array per response so
-  // the stats aren't recounted on unrelated re-renders.
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const activities = React.useMemo(() => activitiesData ?? [], [data]);
 
@@ -100,27 +89,13 @@ const ActivitiesOverview = () => {
   );
 
   return (
-    // grid-cols-1 = minmax(0, 1fr): lets this tab shrink to the dashboard's
-    // ScrollArea (Radix wraps content in a `display: table` box that would
-    // otherwise grow to its widest child).
+    // grid-cols-1 (minmax(0, 1fr)) lets the tab shrink inside the dashboard ScrollArea
     <div className="grid grid-cols-1">
-      {/* Title on the left, page action (Export) on the right */}
-      <div className="flex items-start justify-between gap-2">
-        <Heading
-          title={t('ACTIVITY_PROGRESS')}
-          titleStyle="text-lg"
-          description={t('ACTIVITY_PROGRESS_DESCRIPTION')}
-        />
-        {/* TODO: export handler not implemented yet */}
-        <Can action={ACTIONS.READ} subject={SUBJECTS.ACTIVITY}>
-          <IconLabelBtn
-            Icon={CloudDownloadIcon}
-            name={tg('EXPORT')}
-            variant="outline"
-            className="h-9 rounded shrink-0"
-          />
-        </Can>
-      </div>
+      <Heading
+        title={t('ACTIVITY_PROGRESS')}
+        titleStyle="text-lg"
+        description={t('ACTIVITY_PROGRESS_DESCRIPTION')}
+      />
       <div className="mb-4">
         <ActivitiesOverviewFilters
           filters={filters}
@@ -135,11 +110,7 @@ const ActivitiesOverview = () => {
       </div>
       <div className="flex flex-col gap-4">
         <ActivitiesOverviewCards stats={stats} loading={isLoading} />
-        <ActivitiesOverviewInsights
-          stats={stats}
-          phaseOrder={phaseOrder}
-          loading={isLoading}
-        />
+        <ActivitiesOverviewInsights stats={stats} loading={isLoading} />
       </div>
     </div>
   );

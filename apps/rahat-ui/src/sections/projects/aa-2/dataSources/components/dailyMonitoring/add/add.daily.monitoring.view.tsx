@@ -412,7 +412,7 @@ export default function AddDailyMonitoring() {
                 name="riverBasin"
                 label={getStationTitle(projectInfo?.value?.project_type, g) || ''}
                 placeholder={g('SELECT_PLACEHOLDER', {
-                  field: getStationTitle(projectInfo?.value?.project_type, g),
+                  name: getStationTitle(projectInfo?.value?.project_type, g),
                 })}
                 selectItems={riverBasins}
                 className="mx-2"

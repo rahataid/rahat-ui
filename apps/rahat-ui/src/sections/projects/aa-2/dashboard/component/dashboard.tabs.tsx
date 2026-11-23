@@ -21,6 +21,7 @@ import { PROJECT_SETTINGS_KEYS, useTabConfiguration } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 import { FLOOD_REPORT_TABS } from './floodReport/config';
+import ActivitiesOverview from './activitiesOverview';
 import FloodReportTab, { hasReportData } from './floodReport/floodReportTab';
 
 type TabConfig = {
@@ -112,6 +113,12 @@ export default function DashboardTabs({
       configKey: 'accessInclusion',
       label: t('ACCESS_INCLUSION'),
       content: <DigitalAccessOverview stats={benefStats} />,
+    },
+    {
+      value: 'activities',
+      configKey: 'activitiesOverview',
+      label: t('ACTIVITY_OVERVIEW'),
+      content: <ActivitiesOverview />,
     },
     {
       value: 'communication',

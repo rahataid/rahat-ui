@@ -267,7 +267,10 @@ export function useDateFormat() {
   ): string => {
     if (!date) return '';
     try {
-      const d = new Date(date);
+      const d =
+        typeof date === 'string' && /^\d{1,2}:\d{2}/.test(date)
+          ? new Date(`1970-01-01T${date}`)
+          : new Date(date);
       if (isNaN(d.getTime())) return '';
       const options = PATTERN_MAP[pattern] || PATTERN_MAP['MMMM d, yyyy, h:mm:ss a'];
       const neOptions = locale === 'ne' ? { ...options, numberingSystem: 'deva' } : options;

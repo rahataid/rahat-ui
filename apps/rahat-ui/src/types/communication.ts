@@ -25,6 +25,10 @@ export interface CommunicationData {
   audioURL?: AudioFile | string;
   sessionId?: string;
   communicationId?: string;
+  isScheduled?: boolean;
+  scheduleDate?: Date;
+  scheduleTime?: string;
+  scheduledAt?: string;
 }
 
 export interface CommunicationFetchData

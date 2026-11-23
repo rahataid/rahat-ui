@@ -30,7 +30,6 @@ import {
 import { toast } from 'react-toastify';
 import {
   useListSessionLogs,
-  useSessionBroadCastCount,
   useSessionRetryFailed,
 } from '@rahat-ui/query';
 import { SearchInput } from 'apps/rahat-ui/src/common';
@@ -42,7 +41,6 @@ import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { CommunicationChannelIcon } from './communication-channel-icon';
 import { CommunicationStatusBadge } from './communication-status-badge';
 import {
-  resolveTargetEffectiveStatus,
   resolveBroadcastLogStatus,
   resolveCommunicationLifecycleStatus,
   exportCommunicationLogs,
@@ -84,7 +82,7 @@ export function GroupBroadcastLogsDialog({
 
   const sessionId = target?.sessionId ?? '';
 
-  const { data: sessionLogsData, isLoading, isError, refetch } = useListSessionLogs(
+  const { data: sessionLogsData, isLoading, refetch } = useListSessionLogs(
     sessionId,
     {
       page,
@@ -94,16 +92,27 @@ export function GroupBroadcastLogsDialog({
     },
   );
 
-  const { data: broadcastCounts } = useSessionBroadCastCount(sessionId ? [sessionId] : []);
   const mutateRetry = useSessionRetryFailed();
 
-  const counts = (broadcastCounts as any)?.data?.data ?? broadcastCounts?.data ?? {
-    SUCCESS: 0,
-    FAIL: 0,
-    PENDING: 0,
-    SCHEDULED: 0,
-    TOTAL: 0,
-  };
+  const counts = useMemo(() => {
+    const rawCounts = (target as any)?.counts;
+    if (rawCounts) {
+      return {
+        SUCCESS: Number(rawCounts.SUCCESS ?? 0),
+        FAIL: Number(rawCounts.FAIL ?? 0),
+        PENDING: Number(rawCounts.PENDING ?? 0),
+        SCHEDULED: Number(rawCounts.SCHEDULED ?? 0),
+        TOTAL: Number(rawCounts.TOTAL ?? 0),
+      };
+    }
+    return {
+      SUCCESS: 0,
+      FAIL: 0,
+      PENDING: 0,
+      SCHEDULED: 0,
+      TOTAL: 0,
+    };
+  }, [target]);
 
   const effectiveStatus = useMemo(() => {
     return resolveCommunicationLifecycleStatus({

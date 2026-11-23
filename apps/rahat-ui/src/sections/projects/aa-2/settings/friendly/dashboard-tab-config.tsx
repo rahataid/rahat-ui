@@ -29,6 +29,7 @@ const TAB_OPTIONS: { value: string; label: string }[] = [
   { value: 'flood26Housing', label: 'Flood 2026 Housing' },
   { value: 'flood26Exposure', label: 'Flood 2026 Disaster Exposure' },
   { value: 'flood26Preparedness', label: 'Flood 2026 Preparedness' },
+  { value: 'activitiesOverview', label: 'Activity Overview' },
 ];
 
 type IProps = {

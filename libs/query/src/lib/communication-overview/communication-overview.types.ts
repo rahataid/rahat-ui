@@ -67,6 +67,7 @@ export type DeliveryStatus =
   | 'IN_PROGRESS'
   | 'PENDING'
   | 'NOT_STARTED'
+  | 'SCHEDULED'
   | 'FAILED'
   | 'CANCELLED'
   | (string & Record<never, never>);
@@ -88,6 +89,9 @@ export type CommunicationActivityItem = {
   total: number;
   failed?: number;
   pending?: number;
+  scheduled?: number;
+  isScheduled?: boolean;
+  scheduledAt?: string | null;
   sessionId?: string;
   communicationId?: string;
   activityId?: string;

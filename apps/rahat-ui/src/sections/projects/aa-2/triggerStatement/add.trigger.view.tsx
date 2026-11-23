@@ -53,20 +53,22 @@ import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
 
 export function buildAutomatedFormSchema(t?: any) {
-  const _t = t || ((s: string) => {
-    const fallback: Record<string, string> = {
-      PLEASE_ENTER_TRIGGER_TITLE: 'Please enter trigger title',
-      PLEASE_SELECT_DATA_SOURCE: 'Please select data source',
-    };
-    return fallback[s] || s;
-  });
+  const _t =
+    t ||
+    ((s: string) => {
+      const fallback: Record<string, string> = {
+        PLEASE_ENTER_TRIGGER_TITLE: 'Please enter trigger title',
+        PLEASE_SELECT_DATA_SOURCE: 'Please select data source',
+      };
+      return fallback[s] || s;
+    });
   return z.object({
     title: z.string().min(2, { message: _t('PLEASE_ENTER_TRIGGER_TITLE') }),
     description: z.string().optional(),
     source: z.string().min(1, { message: _t('PLEASE_SELECT_DATA_SOURCE') }),
     isMandatory: z.boolean().optional(),
     leadTime: z.string().optional(),
-  triggerStatement: buildTriggerStatementSchema(_t),
+    triggerStatement: buildTriggerStatementSchema(_t),
   });
 }
 
@@ -429,13 +431,17 @@ export default function AddTriggerView() {
                         {trigger.isMandatory ? t('MANDATORY') : t('OPTIONAL')}
                       </Badge>
                       <Badge className="font-medium">
-                        {translateValue(t, trigger.type, { fallbackStyle: 'raw' })}
+                        {translateValue(t, trigger.type, {
+                          fallbackStyle: 'raw',
+                        })}
                       </Badge>
                     </div>
                     <div className="flex items-center space-x-2">
                       <EditButton
                         className="border-none bg-blue-50"
-                        description={t('THIS_ACTION_WILL_REFILL_FORM_WITH_TRIGGER_DATA')}
+                        description={t(
+                          'THIS_ACTION_WILL_REFILL_FORM_WITH_TRIGGER_DATA',
+                        )}
                         onFallback={() => handleEdit(trigger)}
                       />
                       <DeleteButton
@@ -459,8 +465,9 @@ export default function AddTriggerView() {
                     {trigger?.triggerStatement?.source && (
                       <>
                         {SEP}
-                        {sourceLabelMapper[trigger.triggerStatement.source] || ''} (
-                        {trigger.triggerStatement.expression})
+                        {sourceLabelMapper[trigger.triggerStatement.source] ||
+                          ''}{' '}
+                        ({trigger.triggerStatement.expression})
                       </>
                     )}
 

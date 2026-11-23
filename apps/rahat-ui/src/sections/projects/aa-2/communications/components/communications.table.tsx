@@ -76,13 +76,22 @@ export function useResolvedCommunicationStatuses(records: CommunicationRecord[])
   const { newCommunicationService } = useNewCommunicationQuery();
 
   const recordSessionIds = React.useMemo(() => {
-    return records.map((record) => [
-      ...new Set(
-        (record.targets ?? [])
-          .map((target) => target.sessionId)
-          .filter(Boolean) as string[],
-      ),
-    ]);
+    return records.map((record) => {
+      const targetsWithSession = (record.targets ?? []).filter(
+        (t: any) => Boolean(t?.sessionId),
+      );
+      const hasDirectCounts =
+        targetsWithSession.length === 0 ||
+        targetsWithSession.every((t: any) => t?.counts != null);
+      if (hasDirectCounts) return [];
+      return [
+        ...new Set(
+          targetsWithSession
+            .map((target) => target.sessionId)
+            .filter(Boolean) as string[],
+        ),
+      ];
+    });
   }, [records]);
 
   const results = useQueries({
@@ -106,26 +115,58 @@ export function useResolvedCommunicationStatuses(records: CommunicationRecord[])
   const countsMap = React.useMemo(() => {
     const map: BroadcastCountsMap = new Map();
     records.forEach((record, index) => {
-      const sessionIds = recordSessionIds[index] ?? [];
-      if (sessionIds.length > 0) {
+      let aggregated: any = null;
+      for (const t of (record.targets ?? []) as any[]) {
+        if (t?.counts) {
+          if (!aggregated) {
+            aggregated = {
+              SUCCESS: 0,
+              FAIL: 0,
+              PENDING: 0,
+              SCHEDULED: 0,
+              TOTAL: 0,
+            };
+          }
+          aggregated.SUCCESS += Number(t.counts.SUCCESS ?? 0);
+          aggregated.FAIL += Number(t.counts.FAIL ?? 0);
+          aggregated.PENDING += Number(t.counts.PENDING ?? 0);
+          aggregated.SCHEDULED += Number(t.counts.SCHEDULED ?? 0);
+          aggregated.TOTAL += Number(
+            t.counts.TOTAL ??
+              (aggregated.SUCCESS +
+                aggregated.FAIL +
+                aggregated.PENDING +
+                aggregated.SCHEDULED),
+          );
+        }
+      }
+
+      if (aggregated) {
         map.set(record.id, {
-          data: results[index]?.data?.data ?? undefined,
-          isLoading: results[index]?.isLoading ?? true,
+          data: aggregated,
+          isLoading: false,
         });
+      } else {
+        const sessionIds = recordSessionIds[index] ?? [];
+        if (sessionIds.length > 0) {
+          map.set(record.id, {
+            data: results[index]?.data?.data ?? undefined,
+            isLoading: results[index]?.isLoading ?? true,
+          });
+        }
       }
     });
     return map;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [records, recordSessionIds, stableDataKey]);
 
   const resolvedStatuses = React.useMemo(() => {
     const resolvedById = new Map<string, string>();
-    records.forEach((record, index) => {
-      const sessionIds = recordSessionIds[index] ?? [];
-      const counts =
-        sessionIds.length > 0
-          ? results[index]?.data?.data ?? results[index]?.data
-          : undefined;
+    records.forEach((record) => {
+      const countsEntry = countsMap.get(record.id);
+      const sessionIds = (record.targets ?? [])
+        .map((t) => t.sessionId)
+        .filter(Boolean) as string[];
+      const counts = countsEntry?.data;
       resolvedById.set(
         record.id,
         resolveCommunicationLifecycleStatus({
@@ -139,12 +180,13 @@ export function useResolvedCommunicationStatuses(records: CommunicationRecord[])
             (target) => target.status === 'PENDING' || !target.status,
           ),
           hasSession: sessionIds.length > 0,
+          isScheduled: record.isScheduled,
+          scheduledAt: record.scheduledAt,
         }),
       );
     });
     return resolvedById;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [records, recordSessionIds, stableDataKey]);
+  }, [records, countsMap]);
 
   return { resolvedStatuses, countsMap, isBroadcastLoading };
 }

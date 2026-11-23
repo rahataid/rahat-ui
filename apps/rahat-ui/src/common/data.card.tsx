@@ -30,6 +30,8 @@ type CardProps = {
   infoIcon?: boolean;
   infoTooltip?: string;
   truncate?: boolean;
+  // Optional content under the number (progress bar, breakdown line).
+  footer?: React.ReactNode;
 };
 
 export function DataCard({
@@ -46,6 +48,7 @@ export function DataCard({
   infoIcon,
   infoTooltip,
   truncate = true,
+  footer,
 }: CardProps) {
   return (
     <Card
@@ -151,6 +154,7 @@ export function DataCard({
           )}
         </div>
       </CardContent>
+      {footer && !loading && <div className="px-3.5 pb-3.5">{footer}</div>}
     </Card>
   );
 }

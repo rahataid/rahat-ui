@@ -37,6 +37,7 @@ type Props = {
 // dropdown options follow the selected locale.
 const REPORT_TITLE_KEYS = {
   overview: 'PROJECT_OVERVIEW',
+  'activity-overview': 'ACTIVITY_OVERVIEW',
   'beneficiary-demographics': 'BENEFICIARY_DEMOGRAPHICS',
   'flood-survey-data': 'FLOOD_SURVEY_DATA',
   'heatwave-survey-data': 'HEATWAVE_SURVEY_DATA',

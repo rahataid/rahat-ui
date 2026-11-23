@@ -6,7 +6,7 @@ import {
   NoResult,
 } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
-import { Pencil, RefreshCcw, Trash } from 'lucide-react';
+import { Link, Pencil, RefreshCcw, Trash } from 'lucide-react';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { DocumentList } from '../components/documentCard';
@@ -40,6 +40,19 @@ export default function ActivitiesDetailView() {
     ? `/projects/aa/${projectId}/activities/list/${redirectTo}`
     : `/projects/aa/${projectId}/activities`;
 
+  // Set when arriving from another screen (e.g. a trigger) so Back returns there.
+  // Step back through history so the origin's own Back keeps working; fall back
+  // to the URL when there is no history (e.g. opened in a new tab).
+  const returnTo = searchParams.get('returnTo');
+  const hasReturnTo = !!returnTo?.startsWith(`/projects/aa/${projectId}/`);
+  const handleBack = () => {
+    if (window.history.length > 1) router.back();
+    else router.push(returnTo as string);
+  };
+  const backProps = hasReturnTo
+    ? { onBack: handleBack }
+    : { path: activitiesListPath };
+
   const redirectUpdatePath = redirectTo
     ? `/projects/aa/${projectId}/activities/${activityId}/edit?${
         redirectTo ? `&backFrom=${redirectTo}` : ''
@@ -65,7 +78,7 @@ export default function ActivitiesDetailView() {
   if (isLoading) {
     return (
       <div className="h-full p-4">
-        <Back path={activitiesListPath} />
+        <Back {...backProps} />
         <div className="h-full flex justify-center items-center">
           <Loader />
         </div>
@@ -76,7 +89,7 @@ export default function ActivitiesDetailView() {
   if (error) {
     return (
       <div className="h-full p-4">
-        <Back path={activitiesListPath} />
+        <Back {...backProps} />
         <NoResult
           className="h-full flex justify-center items-center"
           message={t('ERROR_LOADING_ACTIVITY_DETAILS')}
@@ -89,7 +102,7 @@ export default function ActivitiesDetailView() {
     <div className="h-[calc(100vh-65px)] p-4">
       <div className="flex gap-2 justify-between">
         <div className="flex flex-col gap-2">
-          <Back path={activitiesListPath} />
+          <Back {...backProps} />
           <Heading
             title={t('ACTIVITY_DETAILS')}
             description={t('DETAILED_VIEW_OF_SELECTED_ACTIVITY')}
@@ -132,6 +145,37 @@ export default function ActivitiesDetailView() {
               </Can>
             </div>
             <Can action={ACTIONS.UPDATE} subject={SUBJECTS.ACTIVITY}>
+              {activityDetail?.triggersCallback?.length > 0 ? (
+                <TooltipWrapper tip={t('MANAGE_LINKED_TRIGGERS')}>
+                  <IconLabelBtn
+                    variant="outline"
+                    Icon={Link}
+                    handleClick={() =>
+                      router.push(
+                        `/projects/aa/${projectId}/trigger-callbacks/manage?activityId=${activityDetail?.uuid}`,
+                      )
+                    }
+                    name={t('MANAGE_LINKED_TRIGGERS')}
+                    className="rounded-sm w-full "
+                  />
+                </TooltipWrapper>
+              ) : (
+                <TooltipWrapper tip={t('LINK_TRIGGER')}>
+                  <IconLabelBtn
+                    variant="outline"
+                    Icon={Link}
+                    handleClick={() =>
+                      router.push(
+                        `/projects/aa/${projectId}/trigger-callbacks/add?activityId=${activityDetail?.uuid}`,
+                      )
+                    }
+                    name={t('LINK_TRIGGER')}
+                    className="rounded-sm w-full "
+                  />
+                </TooltipWrapper>
+              )}
+            </Can>
+            <Can action={ACTIONS.UPDATE} subject={SUBJECTS.ACTIVITY}>
               <TooltipWrapper tip={t('UPDATE_ACTIVITY_STATUS')}>
                 <IconLabelBtn
                   Icon={RefreshCcw}
@@ -164,6 +208,7 @@ export default function ActivitiesDetailView() {
           </div>
           <CommunicationList
             activityCommunication={activityDetail?.activityCommunication}
+            triggersCallback={activityDetail?.triggersCallback}
             loading={isLoading}
           />
         </div>

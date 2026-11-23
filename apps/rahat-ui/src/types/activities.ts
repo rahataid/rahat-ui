@@ -37,6 +37,7 @@ export interface IActivitiesItem {
     communicationId: string;
     communicationTitle: string;
   }[];
+  hasTriggerCallback?: boolean;
 }
 export interface CommunicationDetails {
   message: string | { mediaURL: string; fileName: string };
@@ -92,6 +93,7 @@ export interface Phase {
     communicationId: string;
     sessionStatus?: string;
   }[];
+  hasTriggerCallback?: boolean;
 }
 
 export interface PhaseContentProps {

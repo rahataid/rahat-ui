@@ -113,6 +113,7 @@ export default function PhaseContent({
                 hasCommunication={
                   (phase.activityCommunication?.length ?? 0) > 0
                 }
+                hasTriggerCallback={phase.hasTriggerCallback}
                 className={`${
                   (phase.phase === 'PREPAREDNESS' && 'border-green-500') ||
                   (phase.phase === 'READINESS' && 'border-yellow-500') ||

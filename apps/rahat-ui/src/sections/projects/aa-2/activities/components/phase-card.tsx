@@ -9,7 +9,7 @@ import {
   CardFooter,
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
-import { RefreshCw, User, MessageSquare } from 'lucide-react';
+import { RefreshCw, User, MessageSquare, Link } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
@@ -30,6 +30,7 @@ interface PhaseCardProps {
   onUpdateStatus: () => void;
   className?: string;
   hasCommunication?: boolean;
+  hasTriggerCallback?: boolean;
 }
 
 export default function PhaseCard({
@@ -42,6 +43,7 @@ export default function PhaseCard({
   onUpdateStatus,
   className,
   hasCommunication,
+  hasTriggerCallback,
 }: PhaseCardProps) {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
@@ -79,6 +81,12 @@ export default function PhaseCard({
               <TooltipWrapper tip={t('COMMUNICATIONS_AVAILABLE')}>
                 {' '}
                 <MessageSquare className="w-4 h-4 text-blue-500" />
+              </TooltipWrapper>
+            )}
+            {hasTriggerCallback && (
+              <TooltipWrapper tip={t('TRIGGER_LINKED')}>
+                {' '}
+                <Link className="w-4 h-4 text-blue-500" />
               </TooltipWrapper>
             )}
           </div>

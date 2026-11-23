@@ -1,11 +1,10 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useParams } from 'next/navigation';
-import { UUID } from 'crypto';
 import { DataCard, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import DynamicPieChart from 'apps/rahat-ui/src/sections/projects/components/dynamicPieChart';
 import { useChartNumberOptions } from '../../../../../utils/i18n/number';
+import { buildDashboardPieChartOptions } from '../../../../dashboard/component/pieChartOptions';
 
 const TREASURY_COLORS = ['#009688', '#FBCA14', '#B0BEC5'];
 const STATUS_COLORS = [
@@ -54,6 +53,20 @@ export default function GctOverview({
     { label: t('TOKEN_TRANSFERRED'), value: tokenDisbursed },
     { label: t('REJECTED'), value: rejected },
   ];
+  const getChartTotal = (data: { value: number }[]) =>
+    data.reduce((total, item) => total + Number(item.value || 0), 0);
+  const treasuryChartOptions = buildDashboardPieChartOptions(
+    chartOptions,
+    formatNum,
+    tGlobal('TOTAL') || 'TOTAL',
+    getChartTotal(treasuryData),
+  );
+  const statusChartOptions = buildDashboardPieChartOptions(
+    chartOptions,
+    formatNum,
+    tGlobal('TOTAL') || 'TOTAL',
+    getChartTotal(statusData),
+  );
 
   const cards = [
     {
@@ -140,12 +153,7 @@ export default function GctOverview({
               pieData={treasuryData}
               colors={TREASURY_COLORS}
               isLoading={false}
-              options={{
-                tooltip: {
-                  fillSeriesColor: true,
-                  ...chartOptions.tooltip,
-                },
-              }}
+              options={treasuryChartOptions}
             />
           </div>
         </div>
@@ -185,12 +193,7 @@ export default function GctOverview({
               pieData={statusData}
               colors={STATUS_COLORS}
               isLoading={false}
-              options={{
-                tooltip: {
-                  fillSeriesColor: true,
-                  ...chartOptions.tooltip,
-                },
-              }}
+              options={statusChartOptions}
             />
           </div>
         </div>

@@ -10,7 +10,8 @@ import Map, {
   Source,
 } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import * as turf from '@turf/turf';
+// import * as turf from '@turf/turf';
+import { point, distance } from '@turf/turf';
 import { useTranslations } from 'next-intl';
 import { communityMapboxBasicConfig } from 'apps/rahat-ui/src/utils/map-config';
 
@@ -115,14 +116,14 @@ export default function MapView({
 
   // computed once per data change, not per render
   const geojson = React.useMemo(() => {
-    const origin = first ? turf.point([first.longitude, first.latitude]) : null;
+    const origin = first ? point([first.longitude, first.latitude]) : null;
     return {
       type: 'FeatureCollection' as const,
       features: (mapLocation ?? []).map((d) => {
         const km = origin
           ? Number(
               (
-                turf.distance(turf.point([d.longitude, d.latitude]), origin, {
+                distance(point([d.longitude, d.latitude]), origin, {
                   units: 'kilometers',
                 }) * 100
               ).toFixed(2),

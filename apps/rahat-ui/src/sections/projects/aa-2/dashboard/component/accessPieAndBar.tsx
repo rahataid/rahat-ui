@@ -7,6 +7,7 @@ import { useChartNumberOptions } from 'apps/rahat-ui/src/utils/i18n/number';
 import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { useTranslations } from 'next-intl';
 import DynamicPieChart from '../../../components/dynamicPieChart';
+import { buildDashboardPieChartOptions } from '../../../../dashboard/component/pieChartOptions';
 
 const chartTitleKeys: Record<string, string> = {
   FLOOD_AFFECTED_IN_5_YEARS: 'FLOOD_IMPACT_IN_LAST5_YEARS',
@@ -30,14 +31,6 @@ const AccessAndResilienceOverview = ({ data }: { data: any }) => {
 
   const channelUsageStats = getStat('CHANNEL_USAGE_STATS')?.data || [];
 
-  const pieChartOpts = {
-    tooltip: {
-      y: {
-        formatter: (val: number) => formatNum(val),
-      },
-    },
-  };
-
   return (
     <div className="flex flex-col mt-4">
       <Heading
@@ -56,6 +49,17 @@ const AccessAndResilienceOverview = ({ data }: { data: any }) => {
               label: translateValue(tg, item.id, { fallbackStyle: 'raw' }),
               value: item.count,
             }));
+          const total = pieData.reduce(
+            (sum: number, item: { value: number }) =>
+              sum + Number(item.value || 0),
+            0,
+          );
+          const pieChartOptions = buildDashboardPieChartOptions(
+            chartOptions,
+            formatNum,
+            tg('TOTAL') || 'TOTAL',
+            total,
+          );
 
           return (
             <div
@@ -64,7 +68,11 @@ const AccessAndResilienceOverview = ({ data }: { data: any }) => {
             >
               <h1 className="text-sm font-medium">{t(chartTitleKeys[key])}</h1>
               <div className="w-full flex-1 p-4 pt-0">
-                <DynamicPieChart pieData={pieData} colors={chartColors} options={pieChartOpts} />
+                <DynamicPieChart
+                  pieData={pieData}
+                  colors={chartColors}
+                  options={pieChartOptions}
+                />
               </div>
             </div>
           );

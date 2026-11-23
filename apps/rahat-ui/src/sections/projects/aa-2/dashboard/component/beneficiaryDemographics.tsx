@@ -4,8 +4,12 @@ import { useTranslations } from 'next-intl';
 import { Home, Users } from 'lucide-react';
 import React from 'react';
 import DynamicPieChart from '../../../components/dynamicPieChart';
-import { useChartNumberOptions, useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
+import {
+  useChartNumberOptions,
+  useLabelDigits,
+} from 'apps/rahat-ui/src/utils/i18n/number';
 import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
+import { buildDashboardPieChartOptions } from '../../../../dashboard/component/pieChartOptions';
 
 type Props = {
   data: {
@@ -30,6 +34,17 @@ const BeneficiaryDemographics = ({
     label: translateValue(tg, item.id, { fallbackStyle: 'raw' }),
     value: item.count,
   }));
+  const genderTotal = genderPieData.reduce(
+    (total: number, item: { value: number }) =>
+      total + Number(item.value || 0),
+    0,
+  );
+  const genderChartOptions = buildDashboardPieChartOptions(
+    chartOpts,
+    formatNum,
+    tg('TOTAL') || 'TOTAL',
+    genderTotal,
+  );
 
   // Define consistent gender chart colors
   const genderColorsMap: Record<string, string> = {
@@ -89,7 +104,11 @@ const BeneficiaryDemographics = ({
         <div className="border rounded-sm p-2 flex flex-col h-full min-h-[200px] sm:min-h-[300px]">
           <h1 className="text-sm font-medium">{t('GENDER_DISTRIBUTION')}</h1>
           <div className="w-full flex-1 flex justify-center p-4 pt-0 items-center">
-            <DynamicPieChart pieData={genderPieData} colors={genderColors} options={chartOpts} />
+            <DynamicPieChart
+              pieData={genderPieData}
+              colors={genderColors}
+              options={genderChartOptions}
+            />
           </div>
         </div>
 

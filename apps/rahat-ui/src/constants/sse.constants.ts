@@ -18,7 +18,8 @@ export type EVENT =
   | 'activity.created'
   | 'activity.updated'
   | 'payout.event'
-  | 'beneficiary.event';
+  | 'beneficiary.event'
+  | 'import.event';
 
 export const EVENT_QUERY_MAP: Record<
   string,
@@ -79,4 +80,9 @@ export const EVENT_QUERY_MAP: Record<
     ['GET_BENEFICIARY_GROUP'],
   ],
   'project.event': () => [[TAGS.GET_ALL_PROJECTS]],
+  'import.event': () => [
+    [TAGS.LIST_IMPORTS],
+    [TAGS.GET_IMPORT],
+    [TAGS.LIST_IMPORTS],
+  ],
 };

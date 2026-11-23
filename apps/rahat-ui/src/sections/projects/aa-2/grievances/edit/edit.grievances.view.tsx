@@ -1,7 +1,11 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useGrievanceDetails, useGrievanceEdit } from '@rahat-ui/query';
+import {
+  useGrievanceDetails,
+  useGrievanceEdit,
+  useUploadFile,
+} from '@rahat-ui/query';
 import {
   GrievancePriority,
   GrievanceStatus,
@@ -31,12 +35,16 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
-import { Back, Heading } from 'apps/rahat-ui/src/common';
+import { Back, FormInput, Heading } from 'apps/rahat-ui/src/common';
 import {
   grievancePriority,
   grievanceStatus,
   grievanceType,
 } from 'apps/rahat-ui/src/constants/aa.grievances.constants';
+import { validateFile } from 'apps/rahat-ui/src/utils/file.validation';
+import { isFileNameDuplicate } from 'apps/rahat-ui/src/utils/file.utils';
+import { CloudUpload, FileCheck, LoaderCircle, X } from 'lucide-react';
+import { toast } from 'react-toastify';
 import { UUID } from 'crypto';
 import { Tag, TagInput } from 'emblor';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
@@ -109,6 +117,16 @@ export default function EditGrievance() {
     }),
 
     tags: z.array(z.object({ id: z.string(), text: z.string() })).optional(),
+
+    grievanceDocuments: z
+      .array(
+        z.object({
+          fileName: z.string(),
+          mediaURL: z.string(),
+          originalFileName: z.string().optional(),
+        }),
+      )
+      .optional(),
   });
 
   type GrievanceFormValues = z.infer<typeof grievanceFormSchema>;
@@ -138,6 +156,10 @@ export default function EditGrievance() {
     fromSource === 'details' ? grievanceDetailsPath : grievanceListPath;
 
   const [formKey, setFormKey] = React.useState(0);
+  const uploadFile = useUploadFile();
+  const [uploadingFileName, setUploadingFileName] = React.useState<
+    string | null
+  >(null);
 
   // Fetch grievance details
   const { data: grievanceData } = useGrievanceDetails({
@@ -158,6 +180,7 @@ export default function EditGrievance() {
       type: GrievanceType.OTHER,
       status: GrievanceStatus.NEW,
       priority: GrievancePriority.MEDIUM,
+      grievanceDocuments: [],
     },
   });
 
@@ -173,6 +196,7 @@ export default function EditGrievance() {
         status,
         priority,
         tags,
+        grievanceDocuments,
       } = grievanceData.data;
 
       const sanitizedTags = (tags || []).map((a, index) => ({
@@ -189,6 +213,7 @@ export default function EditGrievance() {
         status: status || GrievanceStatus.NEW,
         priority: priority || GrievancePriority.MEDIUM,
         tags: sanitizedTags || [],
+        grievanceDocuments: grievanceDocuments || [],
       });
 
       // Initialize tag states with fetched data
@@ -210,6 +235,7 @@ export default function EditGrievance() {
         status,
         priority,
         tags,
+        grievanceDocuments,
       } = grievanceData.data;
 
       const sanitizedTags = (tags || []).map((a, index) => ({
@@ -227,6 +253,7 @@ export default function EditGrievance() {
         status: status || GrievanceStatus.NEW,
         priority: priority || GrievancePriority.MEDIUM,
         tags: sanitizedTags || [],
+        grievanceDocuments: grievanceDocuments || [],
       });
 
       // Reset tag states
@@ -238,6 +265,97 @@ export default function EditGrievance() {
       setFormKey((prev) => prev + 1);
     }
   }, [form, grievanceData?.data]);
+
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      const filesArray = Array.from(files);
+
+      for (const file of filesArray) {
+        const currentFiles = form.getValues('grievanceDocuments') || [];
+
+        // Check for duplicates by comparing with both server and original file names
+        const existingFileNames = currentFiles.map((f) => f.fileName);
+        const existingOriginalNames = currentFiles
+          .map((f) => (f as any).originalFileName)
+          .filter(Boolean);
+
+        const isDuplicateInFiles = isFileNameDuplicate(
+          file.name,
+          existingFileNames,
+        );
+        const isDuplicateInOriginals =
+          existingOriginalNames.some((origName: string) =>
+            isFileNameDuplicate(file.name, [origName]),
+          ) || existingOriginalNames.includes(file.name);
+
+        const isDuplicateFile = isDuplicateInFiles || isDuplicateInOriginals;
+
+        if (isDuplicateFile) {
+          toast.error(t('CANNOT_UPLOAD_DUPLICATE_FILE', { name: file.name }));
+          continue;
+        }
+
+        if (!validateFile(file, t)) {
+          continue;
+        }
+
+        // Add temporary file entry immediately to show in UI
+        const tempFile = {
+          fileName: file.name,
+          mediaURL: '', // Will be updated after upload completes
+          originalFileName: file.name, // Store original name for duplicate detection
+        };
+        form.setValue('grievanceDocuments', [...currentFiles, tempFile]);
+        setUploadingFileName(file.name);
+
+        try {
+          const formData = new FormData();
+          formData.append('file', file);
+          const { data: afterUpload } = await uploadFile.mutateAsync(formData);
+
+          // Add originalFileName to track server-side name transformations
+          const uploadedFileWithOriginal = {
+            ...afterUpload,
+            originalFileName: file.name,
+          };
+
+          // Replace temporary file with actual uploaded file
+          const updatedFiles = form.getValues('grievanceDocuments') || [];
+
+          const fileIndex = updatedFiles.findIndex(
+            (f) => f.fileName === file.name && f.mediaURL === '',
+          );
+
+          if (fileIndex !== -1) {
+            updatedFiles[fileIndex] = uploadedFileWithOriginal;
+            form.setValue('grievanceDocuments', updatedFiles);
+          } else {
+            // Fallback: just add it if we can't find the temp entry
+            form.setValue('grievanceDocuments', [
+              ...currentFiles,
+              uploadedFileWithOriginal,
+            ]);
+          }
+        } catch (error) {
+          // Remove temporary file entry on error
+          const updatedFiles = form.getValues('grievanceDocuments') || [];
+          const filteredFiles = updatedFiles.filter(
+            (f) => !(f.fileName === file.name && f.mediaURL === ''),
+          );
+          form.setValue('grievanceDocuments', filteredFiles);
+          toast.error(t('FAILED_TO_UPLOAD', { name: file.name }));
+        } finally {
+          setUploadingFileName(null);
+        }
+      }
+
+      // Reset the input value to allow selecting the same files again
+      event.target.value = '';
+    }
+  };
 
   // Initial form setup when data loads
   React.useEffect(() => {
@@ -577,6 +695,79 @@ export default function EditGrievance() {
                           </FormControl>
 
                           <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="grievanceDocuments"
+                    render={({ field }) => {
+                      const grievanceDocuments = field.value || [];
+                      return (
+                        <FormItem className="mt-4">
+                          <FormLabel>{t('DOCUMENTS')}</FormLabel>
+                          <FormControl>
+                            <div className="relative border border-dashed rounded p-1.5">
+                              <div className="absolute inset-0 flex gap-2 items-center justify-center">
+                                <CloudUpload
+                                  size={25}
+                                  strokeWidth={2}
+                                  className="text-primary"
+                                />
+                                <p className="text-sm font-medium">
+                                  {t('DROP_FILES_TO_UPLOAD')}{' '}
+                                  <span className="text-primary">
+                                    {t('BROWSE')}
+                                  </span>
+                                </p>
+                              </div>
+                              <FormInput
+                                className="opacity-0 cursor-pointer"
+                                type="file"
+                                multiple
+                                onChange={handleFileChange}
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                          <p className="text-xs text-end text-orange-500">
+                            {t('FILE_VALIDATION_TEXT')}
+                          </p>
+                          <div className="grid sm:grid-cols-2  lg:grid-cols-3 xl:grid-cols-5 gap-4 p-2">
+                            {grievanceDocuments?.map((file) => (
+                              <div
+                                key={file.fileName}
+                                className="bg-white shadow-sm rounded-xl p-4 border border-gray-200 flex items-center gap-3 hover:cursor-pointer hover:bg-gray-100"
+                              >
+                                {uploadFile.isPending &&
+                                uploadingFileName === file.fileName ? (
+                                  <LoaderCircle
+                                    strokeWidth={2.5}
+                                    className="text-green-600 animate-spin w-8 h-8"
+                                  />
+                                ) : (
+                                  <FileCheck
+                                    strokeWidth={2.5}
+                                    className="w-8 h-8 text-green-600"
+                                  />
+                                )}
+                                <p className="text-xs  flex  items-center gap-2">
+                                  {file.fileName}
+                                </p>
+                                <X
+                                  strokeWidth={2.5}
+                                  onClick={() => {
+                                    const updated = grievanceDocuments.filter(
+                                      (f) => f.fileName !== file.fileName,
+                                    );
+                                    field.onChange(updated);
+                                  }}
+                                  className="cursor-pointer text-red-500 w-8 h-8"
+                                />
+                              </div>
+                            ))}
+                          </div>
                         </FormItem>
                       );
                     }}

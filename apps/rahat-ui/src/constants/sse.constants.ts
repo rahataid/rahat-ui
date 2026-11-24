@@ -80,6 +80,7 @@ export const EVENT_QUERY_MAP: Record<
     ['GET_BENEFICIARY_GROUP'],
   ],
   'project.event': () => [[TAGS.GET_ALL_PROJECTS]],
+  'vendor.event': () => [[TAGS.GET_VENDORS], [TAGS.GET_VENDOR_DETAILS]],
   'import.event': () => [
     [TAGS.LIST_IMPORTS],
     [TAGS.GET_IMPORT],

@@ -202,7 +202,7 @@ export default function TriggerStatementDetail() {
           source !== 'MANUAL' ? 'grid-cols-2' : 'grid-cols-1'
         } gap-4`}
       >
-        <div className="p-4 border rounded-sm shadow">
+        <div className="p-4 border rounded-sm shadow min-w-0 [overflow-wrap:anywhere]">
           <Heading
             title={trigger?.title}
             titleStyle="text-lg/7"

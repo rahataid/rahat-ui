@@ -50,7 +50,9 @@ export const useGrievancesTableColumns = () => {
     {
       accessorKey: 'title',
       header: t('TITLE'),
-      cell: ({ row }) => <TruncatedCell text={row.getValue('title')} />,
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('title')} truncateByWidth />
+      ),
     },
     {
       accessorKey: 'reportedBy',

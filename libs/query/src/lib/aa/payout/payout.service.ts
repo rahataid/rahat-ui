@@ -162,6 +162,7 @@ export const useSinglePayout = (projectUUID: UUID, payload: { uuid: UUID }) => {
       });
       return mutate.data;
     },
+    refetchInterval: 10000,
     staleTime: 60 * 60 * 1000, // 1 hr
   });
   return query;

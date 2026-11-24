@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { useTranslations } from 'next-intl';
 import { resolveBackendErrorMessage } from '../../../utils/i18n/backend-error';
 import { showToast } from 'libs/query/src/utils/custom-toast';
+import { isQrPdfInProgress } from './qr-pdf-status';
 
 export const useGetBeneficiariesQr = (payload: {
   projectUuid: UUID;
@@ -32,7 +33,7 @@ export const useGetBeneficiariesQr = (payload: {
     staleTime: 1000,
     refetchInterval: (query) => {
       const data = query.state.data as { status?: string } | null;
-      if (data?.status === 'processing') return 3000;
+      if (isQrPdfInProgress(data?.status)) return 3000;
       return false;
     },
   });
@@ -167,11 +168,11 @@ const useQrPdfMutation = (projectUuid: UUID, action: string) => {
       return mutate.data;
     },
 
-    onSuccess: (_, { groupId }) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (_, { groupId }) => {
+      await queryClient.invalidateQueries({
         queryKey: ['beneficiariesQr', { projectUuid, groupId }],
       });
-      toast.success(t('QR_GENERATED_SUCCESSFULLY'));
+      toast.success(t('QR_GENERATION_STARTED'));
     },
 
     onError: (error: any) => {

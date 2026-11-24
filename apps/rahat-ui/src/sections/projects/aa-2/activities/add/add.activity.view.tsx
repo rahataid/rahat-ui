@@ -89,6 +89,7 @@ import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
+import { getContextPhaseId, getTemplatePhaseId } from './template-phase';
 export const DurationData = [
   { value: 'hours', label: 'Hours' },
   { value: 'days', label: 'Days' },
@@ -460,7 +461,10 @@ export default function AddActivities() {
       isSubmittingRef.current = false;
       console.error('Error::', e);
     } finally {
-      form.reset();
+      form.reset({
+        ...ACTIVITY_DEFAULT_VALUES,
+        phaseId: getContextPhaseId(phaseId, phases),
+      });
       setCommunicationData([]);
     }
   };
@@ -495,7 +499,10 @@ export default function AddActivities() {
   };
 
   const resetForm = () => {
-    form.reset(ACTIVITY_DEFAULT_VALUES);
+    form.reset({
+      ...ACTIVITY_DEFAULT_VALUES,
+      phaseId: getContextPhaseId(phaseId, phases),
+    });
     setSelectedTemplateId(null);
     communicationForm.reset(defaultCommunicationValues);
     addCommunicationOpen.onFalse();
@@ -545,14 +552,13 @@ export default function AddActivities() {
     });
   };
   const setPhase = (payload: Template) => {
-    if (!payload.phase?.name) return;
-
-    const phaseId = phases.find(
-      (p) => p.name.toLowerCase() === payload.phase!.name.toLowerCase(),
-    )?.uuid;
-
-    if (phaseId) {
-      form.setValue('phaseId', phaseId, { shouldDirty: true });
+    const templatePhaseId = getTemplatePhaseId(
+      phaseId,
+      payload.phase?.name,
+      phases,
+    );
+    if (templatePhaseId) {
+      form.setValue('phaseId', templatePhaseId, { shouldDirty: true });
     }
   };
   const setCategory = (payload: Template) => {
@@ -610,7 +616,7 @@ export default function AddActivities() {
       setCategory(payload);
       setCommunications(payload);
     },
-    [form, phases, categories],
+    [form, phases, categories, phaseId],
   );
   return (
     <Form {...form}>

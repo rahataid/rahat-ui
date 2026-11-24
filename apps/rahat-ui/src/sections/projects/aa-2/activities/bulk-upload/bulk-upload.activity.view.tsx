@@ -35,6 +35,7 @@ import {
   parseUploadedSheet,
 } from './bulk-upload.utils';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { getActivitiesListPath } from '../activity-navigation';
 
 export default function BulkUploadActivities() {
   const t = useTranslations('AA_PROJECT');
@@ -178,11 +179,7 @@ export default function BulkUploadActivities() {
         toast.dismiss();
         toast.success(t('ACTIVITIES_UPLOADED_SUCCESSFULLY'));
         const phaseParam = searchParams.get('phase');
-        router.push(
-          phaseParam
-            ? `/projects/aa/${projectID}/activities/list/${phaseParam.toLowerCase()}`
-            : `/projects/aa/${projectID}/activities`,
-        );
+        router.push(getActivitiesListPath(projectID, phaseParam || undefined));
       } catch (error) {
         toast.dismiss();
         toast.error(t('FAILED_TO_UPLOAD_ACTIVITIES'));

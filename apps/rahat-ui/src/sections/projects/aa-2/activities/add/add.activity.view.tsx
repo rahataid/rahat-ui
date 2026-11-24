@@ -89,6 +89,7 @@ import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
+import { getActivitiesListPath } from '../activity-navigation';
 export const DurationData = [
   { value: 'hours', label: 'Hours' },
   { value: 'days', label: 'Days' },
@@ -146,7 +147,8 @@ export default function AddActivities() {
   const { id: projectID } = useParams();
   const searchParams = useSearchParams();
   const phaseId = searchParams.get('phaseId');
-  const navPae = searchParams.get('nav');
+  const navPage = searchParams.get('nav');
+  const fromPhase = searchParams.get('from');
   const router = useRouter();
 
   const { data: users } = useUserList({
@@ -165,12 +167,12 @@ export default function AddActivities() {
     phases: state.phases,
   }));
 
-  const activitiesListPath =
-    navPae === 'mainPage'
-      ? `/projects/aa/${projectID}/activities`
-      : `/projects/aa/${projectID}/activities/list/${phases
-          .find((p) => p.uuid === phaseId)
-          ?.name.toLowerCase()}`;
+  const activitiesListPath = getActivitiesListPath(
+    projectID as string,
+    navPage === 'mainPage'
+      ? undefined
+      : fromPhase || phases.find((p) => p.uuid === phaseId)?.name,
+  );
 
   useStakeholdersGroups(projectID as UUID, {});
   useBeneficiariesGroups(projectID as UUID, {

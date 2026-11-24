@@ -1,8 +1,17 @@
 import { useTranslations } from 'next-intl';
 import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { Mail, MessageSquare, PencilIcon, Phone, Trash2 } from 'lucide-react';
+import {
+  Mail,
+  MessageSquare,
+  PencilIcon,
+  Phone,
+  Trash2,
+  CalendarClock,
+} from 'lucide-react';
 import React, { Dispatch, SetStateAction } from 'react';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { Transport } from '@rumsan/connect/src/types';
 import {
   useBeneficiariesGroupStore,
@@ -41,6 +50,7 @@ const CommunicationDataCard = ({
 }: CommunicationDataCardProps) => {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
+  const formatDate = useDateFormat();
   const stakeholdersGroups = useStakeholdersGroupsStore(
     (state) => state.stakeholdersGroups,
   );
@@ -59,9 +69,10 @@ const CommunicationDataCard = ({
       typeof itemData.audioURL === 'object' && itemData.audioURL !== null
         ? itemData.audioURL
         : {
-          fileName: '',
-          mediaURL: typeof itemData.audioURL === 'string' ? itemData.audioURL : '',
-        };
+            fileName: '',
+            mediaURL:
+              typeof itemData.audioURL === 'string' ? itemData.audioURL : '',
+          };
 
     form.reset({
       communicationTitle: itemData.communicationTitle || '',
@@ -75,6 +86,11 @@ const CommunicationDataCard = ({
       subject: itemData.subject || '',
       transportId: itemData.transportId || '',
       audioURL: audioObj,
+      isScheduled: itemData.isScheduled || false,
+      scheduleDate: itemData.scheduleDate
+        ? new Date(itemData.scheduleDate)
+        : undefined,
+      scheduleTime: itemData.scheduleTime || '',
     });
   };
 
@@ -104,10 +120,10 @@ const CommunicationDataCard = ({
                     ?.name === 'EMAIL' ? (
                     <Mail className="h-5 w-5 text-gray-500" />
                   ) : appTransports?.find((g) => g.cuid === comm.transportId)
-                    ?.name === 'SMS' ? (
+                      ?.name === 'SMS' ? (
                     <MessageSquare className="h-5 w-5 text-gray-500" />
                   ) : appTransports?.find((g) => g.cuid === comm.transportId)
-                    ?.name === 'VOICE' ? (
+                      ?.name === 'VOICE' ? (
                     <Phone className="h-5 w-5 text-gray-500" />
                   ) : (
                     <MessageSquare className="h-5 w-5 text-gray-500" />
@@ -126,7 +142,7 @@ const CommunicationDataCard = ({
                             (g) => g.cuid === comm.transportId,
                           )?.name;
                           return transportName
-                            ? tg(transportName as any)
+                            ? translateValue(tg, transportName)
                             : '';
                         })()}
                       </span>
@@ -135,27 +151,42 @@ const CommunicationDataCard = ({
                         comm?.groupType && (
                           <>
                             <span>•</span>
-                            <span>{tg(comm?.groupType as any)}</span>
+                            <span>{translateValue(tg, comm?.groupType)}</span>
                           </>
                         )}
 
                       {/* Group names container */}
                       <div className="flex flex-wrap gap-2 w-auto">
-                        {(comm?.beneficiaries?.length || comm?.stakeholders?.length) ? (
+                        {comm?.beneficiaries?.length ||
+                        comm?.stakeholders?.length ? (
                           <>
                             {comm.beneficiaries?.map((b) => (
-                              <div key={b.id} className="flex items-center gap-1">
+                              <div
+                                key={b.id}
+                                className="flex items-center gap-1"
+                              >
                                 <span>•</span>
-                                <Badge variant="secondary" className="text-xs font-normal">
-                                  {tg('BENEFICIARY')}: <TruncatedCell text={b.name} maxLength={10} />
+                                <Badge
+                                  variant="secondary"
+                                  className="text-xs font-normal"
+                                >
+                                  {tg('BENEFICIARY')}:{' '}
+                                  <TruncatedCell text={b.name} maxLength={10} />
                                 </Badge>
                               </div>
                             ))}
                             {comm.stakeholders?.map((s) => (
-                              <div key={s.id} className="flex items-center gap-1">
+                              <div
+                                key={s.id}
+                                className="flex items-center gap-1"
+                              >
                                 <span>•</span>
-                                <Badge variant="outline" className="text-xs font-normal">
-                                  {tg('STAKEHOLDERS')}: <TruncatedCell text={s.name} maxLength={10} />
+                                <Badge
+                                  variant="outline"
+                                  className="text-xs font-normal"
+                                >
+                                  {tg('STAKEHOLDERS')}:{' '}
+                                  <TruncatedCell text={s.name} maxLength={10} />
                                 </Badge>
                               </div>
                             ))}
@@ -172,7 +203,10 @@ const CommunicationDataCard = ({
                               t('UNKNOWN_GROUP');
 
                             return (
-                              <div key={uuid} className="flex items-center gap-2">
+                              <div
+                                key={uuid}
+                                className="flex items-center gap-2"
+                              >
                                 <span>•</span>
                                 <TruncatedCell text={groupName} maxLength={8} />
                               </div>
@@ -180,6 +214,21 @@ const CommunicationDataCard = ({
                           })
                         )}
                       </div>
+
+                      {comm?.isScheduled && (
+                        <div className="flex items-center gap-1 text-xs text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full font-medium">
+                          <CalendarClock className="h-3 w-3" />
+                          <span>
+                            {t('SCHEDULED_FOR')}:{' '}
+                            {comm.scheduleDate
+                              ? formatDate(comm.scheduleDate, 'PPP')
+                              : ''}{' '}
+                            {comm.scheduleTime
+                              ? formatDate(comm.scheduleTime, 'hh:mm a')
+                              : ''}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
                   {comm?.subject && (

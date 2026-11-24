@@ -5,7 +5,12 @@
 // messages namespace.
 
 export type ChartKind =
-  'kpi' | 'donut' | 'bar' | 'hbar' | 'stacked' | 'grouped';
+  | 'kpi'
+  | 'donut'
+  | 'bar'
+  | 'hbar'
+  | 'stacked'
+  | 'grouped';
 
 export type ReportChart = {
   stat: string;

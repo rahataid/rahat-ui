@@ -8,6 +8,7 @@ import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import React from 'react';
 import DynamicPieChart from '../../../components/dynamicPieChart';
 import { chartTitles } from '../utils/dashbord-constants';
+import { buildDashboardPieChartOptions } from '../../../../dashboard/component/pieChartOptions';
 
 // Translation key per chart, mirroring `chartTitles` in dashbord-constants.
 // `chartTitles` stays the source of truth for which charts render; anything
@@ -41,14 +42,6 @@ const DigitalAccessOverview = ({ stats }: Props) => {
 
   const filteredStats = stats.filter((stat) => chartTitles[stat.name]);
 
-  const pieChartOpts = {
-    tooltip: {
-      y: {
-        formatter: (val: number) => formatNum(val),
-      },
-    },
-  };
-
   return (
     <div className="mt-4">
       <Heading
@@ -64,6 +57,17 @@ const DigitalAccessOverview = ({ stats }: Props) => {
             }),
             value: d.count,
           }));
+          const total = chartData.reduce(
+            (sum: number, item: { value: number }) =>
+              sum + Number(item.value || 0),
+            0,
+          );
+          const pieChartOptions = buildDashboardPieChartOptions(
+            chartOptions,
+            formatNum,
+            tg('TOTAL') || 'TOTAL',
+            total,
+          );
 
           return (
             <div
@@ -81,7 +85,7 @@ const DigitalAccessOverview = ({ stats }: Props) => {
                 <DynamicPieChart
                   pieData={chartData}
                   colors={defaultColors.slice(0, chartData.length)}
-                  options={pieChartOpts}
+                  options={pieChartOptions}
                 />
               </div>
             </div>

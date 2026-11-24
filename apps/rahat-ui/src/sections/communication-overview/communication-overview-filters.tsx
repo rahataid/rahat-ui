@@ -6,7 +6,6 @@ import { X } from 'lucide-react';
 import {
   useProjectList,
   CommunicationActivityItem,
-  Project,
   capitalizeFirstLetter,
 } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -98,7 +97,7 @@ const CommunicationOverviewFilters = React.memo(
 
     const projectList = useMemo(
       () =>
-        (projects?.data ?? []).filter((p: Project) => Boolean(p.uuid)),
+        (projects?.data ?? []).filter((p) => Boolean(p.uuid)),
       [projects?.data],
     );
 
@@ -164,7 +163,8 @@ const CommunicationOverviewFilters = React.memo(
         filters.toDate ||
         filters.channel ||
         filters.recipient ||
-        filters.phase,
+        filters.phase ||
+        filters.status,
     );
 
     const selectedChannelValue = useMemo(() => {
@@ -187,7 +187,7 @@ const CommunicationOverviewFilters = React.memo(
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">{t('ALL_PROJECTS')}</SelectItem>
-              {projectList.map((project: Project) => (
+              {projectList.map((project) => (
                 <SelectItem key={project.uuid} value={project.uuid as string}>
                   {project.name}
                 </SelectItem>

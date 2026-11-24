@@ -38,6 +38,8 @@ export interface CommunicationPayload {
   subject?: string;
   sessionId?: string;
   communicationId?: string;
+  isScheduled?: boolean;
+  scheduledAt?: string;
   extras?: {
     characterCount: number;
     encoding: string;
@@ -121,6 +123,20 @@ export const buildCommunicationPayload = (
 
     if (communication.communicationId) {
       payload.communicationId = communication.communicationId;
+    }
+
+    if (communication.isScheduled) {
+      payload.isScheduled = true;
+      if (communication.scheduleDate && communication.scheduleTime) {
+        const [hours, minutes] = communication.scheduleTime
+          .split(':')
+          .map(Number);
+        const d = new Date(communication.scheduleDate);
+        d.setHours(hours, minutes, 0, 0);
+        payload.scheduledAt = d.toISOString();
+      } else if (communication.scheduledAt) {
+        payload.scheduledAt = communication.scheduledAt;
+      }
     }
 
     if (

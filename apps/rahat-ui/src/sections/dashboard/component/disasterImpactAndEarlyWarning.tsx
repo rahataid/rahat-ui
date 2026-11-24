@@ -5,11 +5,12 @@ import DynamicPieChart from '../../projects/components/dynamicPieChart';
 import { useTranslations } from 'next-intl';
 import { useChartNumberOptions } from 'apps/rahat-ui/src/utils/i18n/number';
 import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
+import { buildDashboardPieChartOptions } from './pieChartOptions';
 
 const DisasterImpactAndEarlyWarning = ({ statsData }: { statsData: any[] }) => {
   const t = useTranslations('DASHBOARD_DISASTER_IMPACT_EARLY_WARNING');
   const g = useTranslations('GLOBAL');
-  const { chartOptions: chartOpts } = useChartNumberOptions();
+  const { formatNum, chartOptions: chartOpts } = useChartNumberOptions();
   // Helper to find stat data by name
   const getStat = (name: string) =>
     statsData?.find((s) => s.name === name)?.data ?? [];
@@ -33,24 +34,39 @@ const DisasterImpactAndEarlyWarning = ({ statsData }: { statsData: any[] }) => {
             title: t('ACCESS_TO_EARLY_WARNING_INFORMATION'),
             data: earlyWarningAccess,
           },
-        ].map(({ title, data }) => (
-          <div
-            key={title}
-            className="border rounded-sm p-2 flex flex-col h-full min-h-[340px] col-span-1"
-          >
-            <h1 className="text-sm font-medium">{title}</h1>
-            <div className="w-full flex-1 p-4 pt-0">
-              <DynamicPieChart
-                pieData={data.map((item: any) => ({
-                  label: translateValue(g, item.id, { fallbackStyle: 'raw' }),
-                  value: item.count,
-                }))}
-                colors={['#00796B', '#4A90E2']}
-                options={chartOpts}
-              />
+        ].map(({ title, data }) => {
+          const pieData = data.map((item: any) => ({
+            label: translateValue(g, item.id, { fallbackStyle: 'raw' }),
+            value: item.count,
+          }));
+          const total = pieData.reduce(
+            (sum: number, item: { value: number }) =>
+              sum + Number(item.value || 0),
+            0,
+          );
+          const chartOptions = buildDashboardPieChartOptions(
+            chartOpts,
+            formatNum,
+            g('TOTAL') || 'TOTAL',
+            total,
+          );
+
+          return (
+            <div
+              key={title}
+              className="border rounded-sm p-2 flex flex-col h-full min-h-[340px] col-span-1"
+            >
+              <h1 className="text-sm font-medium">{title}</h1>
+              <div className="w-full flex-1 p-4 pt-0">
+                <DynamicPieChart
+                  pieData={pieData}
+                  colors={['#00796B', '#4A90E2']}
+                  options={chartOptions}
+                />
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
 
         <div className="border rounded-sm p-2 flex flex-col h-full min-h-[340px] lg:col-span-2">
           <h1 className="text-sm font-medium">{t('INFORMATION_CHANNEL_USED')}</h1>

@@ -1,4 +1,4 @@
-import { BarChart, PieChart } from '@rahat-ui/shadcn/src/components/charts';
+import { BarChart } from '@rahat-ui/shadcn/src/components/charts';
 import { DataCard, Heading, NoResult } from 'apps/rahat-ui/src/common';
 import { BroadcastStats } from 'apps/rahat-ui/src/types/dashboard';
 import React from 'react';
@@ -6,6 +6,7 @@ import DynamicPieChart from '../../projects/components/dynamicPieChart';
 import { useTranslations } from 'next-intl';
 import { useChartNumberOptions } from 'apps/rahat-ui/src/utils/i18n/number';
 import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
+import { buildDashboardPieChartOptions } from './pieChartOptions';
 
 const CommunicationsAndOutreach = ({
   commsStats,
@@ -15,6 +16,26 @@ const CommunicationsAndOutreach = ({
   const t = useTranslations('DASHBOARD_COMMUNICATIONS_OUTREACH');
   const tg = useTranslations('GLOBAL');
   const { formatNum, chartOptions: chartOpts } = useChartNumberOptions();
+  const communicationPieData = [
+    {
+      label: t('SUCCESS'),
+      value: commsStats?.messageStats?.successRate,
+    },
+    {
+      label: t('FAILURE'),
+      value: 100 - commsStats?.messageStats?.successRate,
+    },
+  ];
+  const communicationPieTotal = communicationPieData.reduce(
+    (total, item) => total + Number(item.value || 0),
+    0,
+  );
+  const communicationChartOptions = buildDashboardPieChartOptions(
+    chartOpts,
+    formatNum,
+    tg('TOTAL') || 'TOTAL',
+    communicationPieTotal,
+  );
 
   return (
     <div className="flex flex-col mt-4">
@@ -71,18 +92,9 @@ const CommunicationsAndOutreach = ({
           </h1>
           <div className="w-full flex-1 p-4 pt-0">
             <DynamicPieChart
-              pieData={[
-                {
-                  label: t('SUCCESS'),
-                  value: commsStats?.messageStats?.successRate,
-                },
-                {
-                  label: t('FAILURE'),
-                  value: 100 - commsStats?.messageStats?.successRate,
-                },
-              ]}
+              pieData={communicationPieData}
               colors={['#388E3C', '#D32F2F']}
-              options={chartOpts}
+              options={communicationChartOptions}
             />
           </div>
         </div>

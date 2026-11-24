@@ -203,11 +203,14 @@ export default function TriggerStatementDetail() {
         } gap-4`}
       >
         <div className="p-4 border rounded-sm shadow">
-          <Heading
-            title={trigger?.title}
-            titleStyle="text-lg/7"
-            description={trigger?.description}
-          />
+          <div className="mb-2 min-w-0">
+            <div className="font-bold mb-1 text-lg/7">
+              <TruncatedCell text={trigger?.title} truncateByWidth />
+            </div>
+            <div className="text-[clamp(11px,1vw,14px)] leading-4 text-muted-foreground">
+              <TruncatedCell text={trigger?.description} truncateByWidth />
+            </div>
+          </div>
           {source === 'MANUAL' && manualSources.length > 0 && (
             <div className="flex items-start gap-2 mt-2 text-sm text-gray-500">
               <span className="flex-shrink-0 mt-0.5">

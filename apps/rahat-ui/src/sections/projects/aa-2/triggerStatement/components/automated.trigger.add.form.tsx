@@ -15,11 +15,14 @@ import {
   Select,
   SelectContent,
   SelectItem,
-  SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
+import {
+  FormInput,
+  FormTextarea,
+  FormSelectTrigger,
+} from 'apps/rahat-ui/src/common';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 import { z } from 'zod';
 import { Info } from 'lucide-react';
@@ -200,14 +203,14 @@ export default function AddAutomatedTriggerForm({
     form.setValue('triggerStatement.expression', '');
   };
 
-  const SourceSubTypeField = ({ label }: { label: string }) => {
+  const SourceSubTypeField = ({ label, value }: { label: string; value?: string }) => {
     return (
       <>
         <FormLabel>{label}</FormLabel>
         <FormControl>
-          <SelectTrigger>
+          <FormSelectTrigger value={value}>
             <SelectValue placeholder={t('SELECT_TYPE')} />
-          </SelectTrigger>
+          </FormSelectTrigger>
         </FormControl>
         <SelectContent>
           {subTypeOptions?.[source]?.length ? (
@@ -265,7 +268,7 @@ export default function AddAutomatedTriggerForm({
                 <FormItem>
                   <FormLabel>{t('TRIGGER_TITLE')}</FormLabel>
                   <FormControl>
-                    <Input
+                    <FormInput
                       type="text"
                       placeholder={t('ENTER_TRIGGER_TITLE')}
                       {...field}
@@ -289,7 +292,7 @@ export default function AddAutomatedTriggerForm({
                   <FormItem>
                     <FormLabel>{tg('LEAD_TIME')}</FormLabel>
                     <div className="grid grid-cols-4">
-                      <Input
+                      <FormInput
                         type="text"
                         placeholder={tg('ENTER_LEAD_TIME')}
                         className="col-span-3 rounded-r-none"
@@ -307,9 +310,9 @@ export default function AddAutomatedTriggerForm({
                         }}
                       >
                         <FormControl>
-                          <SelectTrigger className="rounded-l-none">
+                          <FormSelectTrigger className="rounded-l-none" value={unit}>
                             <SelectValue />
-                          </SelectTrigger>
+                          </FormSelectTrigger>
                         </FormControl>
                         <SelectContent>
                           {DurationData.map((item) => (
@@ -342,9 +345,9 @@ export default function AddAutomatedTriggerForm({
                   >
                     <FormLabel>{t('SOURCE')}</FormLabel>
                     <FormControl>
-                      <SelectTrigger>
+                      <FormSelectTrigger value={field.value}>
                         <SelectValue placeholder={t('SELECT_SOURCE')} />
-                      </SelectTrigger>
+                      </FormSelectTrigger>
                     </FormControl>
                     <SelectContent>
                       {filteredSourceOptions?.length ? (
@@ -384,19 +387,21 @@ export default function AddAutomatedTriggerForm({
                           key={field.value}
                         >
                           {triggerSource === 'water_level_m' && (
-                            <SourceSubTypeField label={t('LEVEL_TYPE')} />
+                            <SourceSubTypeField label={t('LEVEL_TYPE')} value={field.value} />
                           )}
                           {triggerSource === 'discharge_m3s' && (
-                            <SourceSubTypeField label={t('DISCHARGE_TYPE')} />
+                            <SourceSubTypeField label={t('DISCHARGE_TYPE')} value={field.value} />
                           )}
                           {triggerSource === 'rainfall_mm' && (
                             <SourceSubTypeField
                               label={t('MEASUREMENT_PERIOD')}
+                              value={field.value}
                             />
                           )}
                           {triggerSource === 'prob_flood' && (
                             <SourceSubTypeField
                               label={t('PROBABILITY_PERIOD')}
+                              value={field.value}
                             />
                           )}
 
@@ -405,6 +410,7 @@ export default function AddAutomatedTriggerForm({
                             triggerSource === 'temperature_c') && (
                             <SourceSubTypeField
                               label={t('MEASUREMENT_PERIOD')}
+                              value={field.value}
                             />
                           )}
                         </Select>
@@ -437,11 +443,11 @@ export default function AddAutomatedTriggerForm({
                           >
                             <FormLabel>{t('STATION')}</FormLabel>
                             <FormControl>
-                              <SelectTrigger>
+                              <FormSelectTrigger value={field.value}>
                                 <SelectValue
                                   placeholder={t('SELECT_STATION')}
                                 />
-                              </SelectTrigger>
+                              </FormSelectTrigger>
                             </FormControl>
                             <SelectContent>
                               {seriesList?.length ? (
@@ -483,11 +489,11 @@ export default function AddAutomatedTriggerForm({
                             >
                               <FormLabel>{t('OPERATOR')}</FormLabel>
                               <FormControl>
-                                <SelectTrigger>
+                                <FormSelectTrigger value={field.value}>
                                   <SelectValue
                                     placeholder={t('SELECT_OPERATOR')}
                                   />
-                                </SelectTrigger>
+                                </FormSelectTrigger>
                               </FormControl>
                               <SelectContent>
                                 {operatorOptions?.length ? (
@@ -532,7 +538,7 @@ export default function AddAutomatedTriggerForm({
                               </FormLabel>
 
                               <FormControl>
-                                <Input
+                                <FormInput
                                   type="number"
                                   placeholder={meta?.placeholder}
                                   step="1"
@@ -587,7 +593,7 @@ export default function AddAutomatedTriggerForm({
                 <FormItem className="col-span-2">
                   <FormLabel>{t('TRIGGER_DESCRIPTION')}</FormLabel>
                   <FormControl>
-                    <Textarea
+                    <FormTextarea
                       placeholder={t('WRITE_TRIGGER_DESCRIPTION_HERE')}
                       {...field}
                     />

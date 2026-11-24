@@ -2,8 +2,12 @@
 
 import { memo } from 'react';
 
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 import { CloudDownloadIcon, Plus } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import GrievancesTabs from './grievances.tabs';
@@ -82,10 +86,7 @@ function GrievancesView() {
           description={t('TRACK_ALL_THE_GRIEVANCES_IN_THE')}
         />
         <div className="flex flex-end gap-2">
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.Municipality]}
-            hasContent={false}
-          >
+          <Can action={ACTIONS.READ} subject={SUBJECTS.GRIEVANCE}>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -113,11 +114,8 @@ function GrievancesView() {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-          </RoleAuth>
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.Municipality]}
-            hasContent={false}
-          >
+          </Can>
+          <Can action={ACTIONS.CREATE} subject={SUBJECTS.GRIEVANCE}>
             <IconLabelBtn
               Icon={Plus}
               handleClick={() =>
@@ -126,7 +124,7 @@ function GrievancesView() {
               name={t('CREATE_GRIEVANCE')}
               className="px-3 py-2"
             />
-          </RoleAuth>
+          </Can>
         </div>
       </div>
 

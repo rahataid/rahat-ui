@@ -13,6 +13,11 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 import { grievanceStatus } from 'apps/rahat-ui/src/constants/aa.grievances.constants';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
@@ -142,21 +147,23 @@ export default function GrievanceDetailSplitView({
       {/* Header */}
       <div className="flex justify-between items-center py-[12px] px-[12px]">
         <div className="flex space-x-2">
-          <TooltipComponent
-            handleOnClick={handleEdit}
-            Icon={Pencil}
+          <Can action={ACTIONS.UPDATE} subject={SUBJECTS.GRIEVANCE}>
+            <TooltipComponent
+              handleOnClick={handleEdit}
+              Icon={Pencil}
               tip={t('EDIT')}
             />
-            <TooltipComponent
-              handleOnClick={handleViewFull}
-              Icon={Expand}
-              tip={tg('EXPAND')}
-            />
-          </div>
+          </Can>
           <TooltipComponent
-            handleOnClick={closeSecondPanel}
-            Icon={X}
-            tip={t('CLOSE')}
+            handleOnClick={handleViewFull}
+            Icon={Expand}
+            tip={tg('EXPAND')}
+          />
+        </div>
+        <TooltipComponent
+          handleOnClick={closeSecondPanel}
+          Icon={X}
+          tip={t('CLOSE')}
         />
       </div>
 
@@ -185,27 +192,29 @@ export default function GrievanceDetailSplitView({
                 </div>
               </div>
             </div>
-            <div className="flex items-center space-x-2 w-full">
-              <label className="font-inter font-normal text-[14px] leading-[24px] tracking-[0] text-[#667085]">
-                {t('STATUS')}
-              </label>
-              <Select
-                value={currentStatus}
-                onValueChange={handleStatusChange}
-                disabled={editStatusMutation.isPending}
-              >
-                <SelectTrigger className="w-40">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {grievanceStatus.map((status) => (
-                    <SelectItem key={status.value} value={status.value}>
-                      {labelMap[status.label] || status.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <Can action={ACTIONS.UPDATE} subject={SUBJECTS.GRIEVANCE}>
+              <div className="flex items-center space-x-2 w-full">
+                <label className="font-inter font-normal text-[14px] leading-[24px] tracking-[0] text-[#667085]">
+                  {t('STATUS')}
+                </label>
+                <Select
+                  value={currentStatus}
+                  onValueChange={handleStatusChange}
+                  disabled={editStatusMutation.isPending}
+                >
+                  <SelectTrigger className="w-40">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {grievanceStatus.map((status) => (
+                      <SelectItem key={status.value} value={status.value}>
+                        {labelMap[status.label] || status.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </Can>
           </div>
 
           <Separator />

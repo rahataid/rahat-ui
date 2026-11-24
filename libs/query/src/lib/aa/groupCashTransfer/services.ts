@@ -203,10 +203,20 @@ export const useValidateBankAccount = (projectUUID: UUID) => {
   const t = useTranslations('AA_PROJECT');
   const tb = useTranslations();
   const q = useProjectAction();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (payload: Record<string, unknown>) =>
       runAction(q, projectUUID, ACTION_NS + '.validateBankAccount', payload),
+    onSuccess: (_data, variables) =>
+      Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: [ACTION_NS + '.getOne', projectUUID, variables?.['groupUuid']],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: [ACTION_NS + '.get', projectUUID],
+        }),
+      ]),
     onError: (error: any) => {
       q.reset();
       const rawMessage = error?.response?.data?.message || t('ERROR');

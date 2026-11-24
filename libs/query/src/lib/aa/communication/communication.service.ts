@@ -179,7 +179,6 @@ export const useCreateCommunication = () => {
     onSuccess: () => {
       q.reset();
       qc.invalidateQueries({ queryKey: ['ms.communications.getAll'] });
-      toast.success(t('ADDED_SUCCESSFULLY'));
     },
     onError: (error: any) => {
       const rawMessage = error?.response?.data?.message || t('ERROR');
@@ -207,7 +206,7 @@ export const useListCommunications = (
     perPage?: number;
     title?: string;
     status?: string;
-    transportId?: string;
+    transportId?: string | string[];
     xrefId?: string;
     startDate?: string;
     endDate?: string;

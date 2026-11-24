@@ -1,29 +1,47 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import dynamic from 'next/dynamic';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { NoResult, TableLoader } from 'apps/rahat-ui/src/common';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
+import { CATEGORY_META } from './timeline.chart.options';
 import {
-  buildTimelineChartOptions,
-  CATEGORY_META,
-} from './timeline.chart.options';
+  Bar as RechartsBar,
+  BarChart as RechartsBarChart,
+  Brush as RechartsBrush,
+  CartesianGrid as RechartsCartesianGrid,
+  ResponsiveContainer as RechartsResponsiveContainer,
+  Tooltip as RechartsTooltip,
+  XAxis as RechartsXAxis,
+  YAxis as RechartsYAxis,
+} from 'recharts';
 import { buildTimelineSeries, niceYCeiling } from './timeline.data';
 import type {
+  BucketDetail,
   CategoryCounts,
   CategoryKey,
   StatusCounts,
   TimelineChartLabels,
   TimelineEvent,
 } from './timeline.types';
-
-const ApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
+import { getStatusLabel } from './timeline.status';
 
 const CATS: CategoryKey[] = ['success', 'inProgress', 'failed'];
 
 type ZoomState = { min: number; max: number };
+type BrushRange = { startIndex?: number; endIndex?: number };
+
+type TimelineChartDatum = {
+  timestamp: number;
+  time: string;
+  success: number;
+  inProgress: number;
+  failed: number;
+  total: number;
+  exactTime: string;
+  detail: BucketDetail;
+};
 
 type TimelineChartCardProps = {
   events: TimelineEvent[];
@@ -50,10 +68,9 @@ export default function TimelineChartCard({
   const tg = useTranslations('GLOBAL');
   const locale = useLocale();
   const formatNum = useNumberFormat();
-  const formatNumRef = useRef(formatNum);
-  formatNumRef.current = formatNum;
 
   const [zoomStack, setZoomStack] = useState<ZoomState[]>([]);
+  const [brushRange, setBrushRange] = useState<BrushRange | null>(null);
   const currentZoom = zoomStack.length > 0 ? zoomStack[zoomStack.length - 1] : null;
 
   const prevEventsRef = useRef(events);
@@ -61,10 +78,9 @@ export default function TimelineChartCard({
     if (prevEventsRef.current !== events) {
       prevEventsRef.current = events;
       setZoomStack([]);
+      setBrushRange(null);
     }
   }, [events]);
-
-  const seriesRef = useRef<ReturnType<typeof buildTimelineSeries> | null>(null);
 
   const zoomedEvents = useMemo(() => {
     if (!currentZoom) return events;
@@ -74,9 +90,7 @@ export default function TimelineChartCard({
   }, [events, currentZoom]);
 
   const series = useMemo(() => {
-    const result = buildTimelineSeries(zoomedEvents, 'all', locale, isFsp);
-    seriesRef.current = result;
-    return result;
+    return buildTimelineSeries(zoomedEvents, 'all', locale, isFsp);
   }, [zoomedEvents, locale, isFsp]);
 
   const yCeiling = useMemo(() => niceYCeiling(series.maxY), [series.maxY]);
@@ -154,74 +168,56 @@ export default function TimelineChartCard({
     [tg, tv, locale],
   );
 
-  const handleZoomed = useCallback(
-    (_chart: any, opts: { xaxis: { min: number; max: number } }) => {
-      if (!opts?.xaxis || opts.xaxis.min == null || opts.xaxis.max == null) return;
-
-      const s = seriesRef.current;
-      if (!s) return;
-
-      const timestamps = s.seriesData.bucketTimestamps;
-      if (!timestamps.length) return;
-
-      const minIdx = Math.max(0, Math.floor(opts.xaxis.min) - 1);
-      const maxIdx = Math.min(timestamps.length - 1, Math.ceil(opts.xaxis.max) - 1);
-
-      const tMin = timestamps[minIdx];
-      const tMax = timestamps[maxIdx];
-
-      if (tMin == null || tMax == null || tMin > tMax) return;
-
-      const stepMs = s.stepMs || 60_000;
-      setZoomStack((prev) => {
-        const nextMin = tMin;
-        const nextMax = tMax + stepMs;
-        if (
-          prev.length > 0 &&
-          prev[prev.length - 1].min === nextMin &&
-          prev[prev.length - 1].max === nextMax
-        ) {
-          return prev;
-        }
-        return [...prev, { min: nextMin, max: nextMax }];
-      });
-    },
-    [],
-  );
-
-  const handleResetZoom = useCallback(() => {
+  const handleResetZoom = () => {
     setZoomStack([]);
-  }, []);
+    setBrushRange(null);
+  };
 
-  const handleZoomOut = useCallback(() => {
+  const handleZoomOut = () => {
     setZoomStack((prev) => (prev.length > 0 ? prev.slice(0, -1) : prev));
-  }, []);
+    setBrushRange(null);
+  };
 
-  const chartOptions = useMemo(
+  const chartData = useMemo<TimelineChartDatum[]>(
     () =>
-      buildTimelineChartOptions({
-        yCeiling,
-        isLargeDataset,
-        labels,
-        formatNumRef,
-        seriesData: series.seriesData,
-        onZoomed: handleZoomed,
-        onResetZoom: handleResetZoom,
+      series.seriesData.xLabels.map((time, index) => {
+        const success = series.seriesData.perCategory.success[index] ?? 0;
+        const inProgress = series.seriesData.perCategory.inProgress[index] ?? 0;
+        const failed = series.seriesData.perCategory.failed[index] ?? 0;
+        return {
+          timestamp: series.seriesData.bucketTimestamps[index],
+          time,
+          success,
+          inProgress,
+          failed,
+          total: success + inProgress + failed,
+          exactTime: series.seriesData.exactTimes[index] ?? time,
+          detail: series.seriesData.bucketDetails[index],
+        };
       }),
-    [yCeiling, isLargeDataset, labels, series.seriesData, handleZoomed, handleResetZoom],
+    [series.seriesData],
   );
 
-  const chartSeries = useMemo(
-    () =>
-      CATS.map((cat) => ({
-        name: labels[cat] || CATEGORY_META[cat].label,
-        data: series.seriesData.perCategory[cat] || [],
-      })),
-    [series.seriesData, labels],
-  );
-
-  const hasData = series.seriesData.xLabels.length > 0;
+  const hasData = chartData.length > 0;
   const isZoomed = zoomStack.length > 0;
+  const applyBrushZoom = () => {
+    if (!brushRange || chartData.length < 2) return;
+    const startIndex = Math.max(0, brushRange.startIndex ?? 0);
+    const endIndex = Math.min(
+      chartData.length - 1,
+      brushRange.endIndex ?? chartData.length - 1,
+    );
+    if (endIndex <= startIndex) return;
+
+    const min = chartData[startIndex]?.timestamp;
+    const max = chartData[endIndex]?.timestamp;
+    if (min == null || max == null || min >= max) return;
+    setZoomStack((prev) => [
+      ...prev,
+      { min, max: max + (series.stepMs || 60_000) },
+    ]);
+    setBrushRange(null);
+  };
 
   return (
     <div className="rounded-sm border border-gray-100 bg-white p-3 space-y-2">
@@ -269,6 +265,14 @@ export default function TimelineChartCard({
             </button>
           </div>
         )}
+        {brushRange && chartData.length > 1 && (
+          <button
+            onClick={applyBrushZoom}
+            className="text-xs text-blue-600 hover:text-blue-800 font-medium px-2 py-1 border border-blue-200 rounded hover:bg-blue-50 transition-colors"
+          >
+            {labels.zoomIn}
+          </button>
+        )}
       </div>
 
       {undatedCount > 0 && (
@@ -286,13 +290,171 @@ export default function TimelineChartCard({
           <NoResult />
         </div>
       ) : (
-        <ApexChart
-          key={isZoomed ? `zoom-${zoomStack.length}-${currentZoom!.min}` : 'full'}
-          options={chartOptions}
-          series={chartSeries}
-          type="bar"
-          height={360}
-        />
+        <>
+          <div className="h-[360px] w-full min-w-0">
+            <RechartsResponsiveContainer width="100%" height="100%">
+              <RechartsBarChart
+                data={chartData}
+                margin={{ top: 16, right: 16, bottom: 56, left: 18 }}
+                barCategoryGap={
+                  chartData.length <= 5
+                    ? '40%'
+                    : chartData.length <= 20
+                      ? '30%'
+                      : '20%'
+                }
+              >
+                <RechartsCartesianGrid
+                  stroke="#CBD5E1"
+                  strokeDasharray="4 4"
+                  vertical={false}
+                />
+                <RechartsXAxis
+                  dataKey="time"
+                  angle={-45}
+                  textAnchor="end"
+                  height={80}
+                  interval="preserveStartEnd"
+                  tick={{ fontSize: 11, fontWeight: 600, fill: '#334155' }}
+                  tickLine={{ stroke: '#CBD5E1' }}
+                  axisLine={{ stroke: '#CBD5E1' }}
+                  label={{
+                    value: labels.time || 'Time',
+                    position: 'insideBottom',
+                    offset: -44,
+                    fill: '#1E293B',
+                    fontSize: 12,
+                    fontWeight: 700,
+                  }}
+                />
+                <RechartsYAxis
+                  domain={[0, yCeiling]}
+                  allowDecimals={false}
+                  tickFormatter={(value: number) => formatNum(value)}
+                  tick={{ fontSize: 12, fontWeight: 600, fill: '#334155' }}
+                  tickLine={{ stroke: '#CBD5E1' }}
+                  axisLine={{ stroke: '#CBD5E1' }}
+                  label={{
+                    value: labels.transactions || 'Transactions',
+                    angle: -90,
+                    position: 'insideLeft',
+                    fill: '#1E293B',
+                    fontSize: 12,
+                    fontWeight: 700,
+                  }}
+                />
+                <RechartsTooltip
+                  cursor={{
+                    fill: '#F8FAFC',
+                    stroke: '#CBD5E1',
+                    strokeDasharray: '3 3',
+                  }}
+                  content={({ active, payload }) => {
+                    if (!active || !payload?.length) return null;
+                    const point = payload[0]?.payload as TimelineChartDatum;
+                    if (!point) return null;
+
+                    return (
+                      <div className="min-w-[210px] max-w-[320px] rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-xs shadow-lg">
+                        <div className="mb-1.5 border-b border-slate-100 pb-1.5 font-semibold text-slate-800">
+                          {point.exactTime}
+                        </div>
+                        <div className="mb-2 flex justify-between text-[11px] text-slate-500">
+                          <span>{labels.total || 'Total'}</span>
+                          <strong className="text-slate-900">
+                            {formatNum(point.total)}
+                          </strong>
+                        </div>
+                        {CATS.map((cat) => {
+                          const count = point[cat];
+                          if (!count) return null;
+                          const categoryLabel =
+                            labels[cat] || CATEGORY_META[cat].label;
+                          const entries = Object.entries(
+                            point.detail?.[cat] ?? {},
+                          ).sort((a, b) => b[1] - a[1]);
+
+                          return (
+                            <div key={cat} className="mb-1.5 last:mb-0">
+                              <div className="flex items-center justify-between gap-3">
+                                <span className="flex items-center gap-1.5 font-semibold text-slate-700">
+                                  <span
+                                    className="inline-block h-2.5 w-2.5 rounded-sm"
+                                    style={{
+                                      backgroundColor: CATEGORY_META[cat].color,
+                                    }}
+                                  />
+                                  {categoryLabel}
+                                </span>
+                                <strong className="text-slate-900">
+                                  {formatNum(count)}
+                                </strong>
+                              </div>
+                              {entries.map(([status, statusCount]) => (
+                                <div
+                                  key={status}
+                                  className="mt-0.5 flex justify-between gap-3 pl-4 text-[11px] text-slate-500"
+                                >
+                                  <span>
+                                    {labels.statusLabels?.[status] ||
+                                      getStatusLabel(status)}
+                                  </span>
+                                  <span>{formatNum(statusCount)}</span>
+                                </div>
+                              ))}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  }}
+                />
+                {CATS.map((cat) => (
+                  <RechartsBar
+                    key={cat}
+                    dataKey={cat}
+                    name={labels[cat] || CATEGORY_META[cat].label}
+                    stackId="transactions"
+                    fill={CATEGORY_META[cat].color}
+                    radius={[2, 2, 0, 0]}
+                    isAnimationActive={!isLargeDataset}
+                  />
+                ))}
+                {chartData.length > 1 && (
+                  <RechartsBrush
+                    key={`brush-${zoomStack.length}-${currentZoom?.min ?? 'full'}`}
+                    dataKey="time"
+                    height={20}
+                    travellerWidth={8}
+                    stroke="#64748B"
+                    onChange={(range) => {
+                      if (!range) {
+                        setBrushRange(null);
+                        return;
+                      }
+                      const startIndex = range.startIndex ?? 0;
+                      const endIndex = range.endIndex ?? chartData.length - 1;
+                      setBrushRange(
+                        startIndex === 0 && endIndex === chartData.length - 1
+                          ? null
+                          : range,
+                      );
+                    }}
+                  />
+                )}
+              </RechartsBarChart>
+            </RechartsResponsiveContainer>
+          </div>
+          {/*
+          <ApexChart
+            key={isZoomed ? `zoom-${zoomStack.length}-${currentZoom!.min}` : 'full'}
+            options={chartOptions}
+            series={chartSeries}
+            type="bar"
+            height={360}
+          />
+          */}
+        </>
       )}
 
       {hasData && (

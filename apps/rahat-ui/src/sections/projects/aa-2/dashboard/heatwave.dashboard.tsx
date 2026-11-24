@@ -2,7 +2,6 @@
 
 import BeneficiaryDemographics from './component/beneficiaryDemographics';
 import CommunicationAnalytics from './component/communicationAnalytics';
-import MapView from './component/mapView';
 import ResilienceOverview from './component/resilienceOverview';
 import DigitalAccessOverview from './component/digitalAccessOverview';
 import TokenStatsCard from './component/tokenStats.card';
@@ -15,7 +14,12 @@ type Props = {
   projectId: string;
 };
 
-export default function HeatwaveDashboard({ benefStats, triggeersStats, tokenStats, projectId }: Props) {
+export default function HeatwaveDashboard({
+  benefStats,
+  triggeersStats,
+  tokenStats,
+  projectId,
+}: Props) {
   return (
     <div className="space-y-3">
       <TokenStatsCard tokenStats={tokenStats} />
@@ -36,9 +40,6 @@ export default function HeatwaveDashboard({ benefStats, triggeersStats, tokenSta
         triggeersStats={triggeersStats}
         projectId={projectId}
       />
-      <div className="mb-2 h-full w-full">
-        <MapView projectId={projectId} benefStats={benefStats} />
-      </div>
     </div>
   );
 }

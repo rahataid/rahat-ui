@@ -6,6 +6,7 @@ import DynamicPieChart from '../sections/projects/components/dynamicPieChart';
 import { translateValue } from '../utils/i18n/translateValue';
 import { useChartNumberOptions } from '../utils/i18n/number';
 import { GENDER_ORDER, genderColorsMap } from '../utils/genderStats';
+import { buildDashboardPieChartOptions } from '../sections/dashboard/component/pieChartOptions';
 import { DataCard } from './data.card';
 
 interface GenderStatsProps {
@@ -35,6 +36,16 @@ export function GenderStats({
     value: Number(genderCounts[key]) || 0,
   }));
   const genderColors = genderKeys.map((key) => genderColorsMap[key]);
+  const genderTotal = genderData.reduce(
+    (total, item) => total + item.value,
+    0,
+  );
+  const genderChartOptions = buildDashboardPieChartOptions(
+    chartOptions,
+    formatNum,
+    g('TOTAL') || 'TOTAL',
+    genderTotal,
+  );
 
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
@@ -51,7 +62,7 @@ export function GenderStats({
           <DynamicPieChart
             pieData={genderData}
             colors={genderColors}
-            options={chartOptions}
+            options={genderChartOptions}
             isLoading={isLoading}
           />
         </div>

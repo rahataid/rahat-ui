@@ -10,7 +10,6 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import BeneficiaryDemographics from './beneficiaryDemographics';
 import DigitalAccessOverview from './digitalAccessOverview';
 import CommunicationAnalytics from './communicationAnalytics';
-import MapView from './mapView';
 import HeatwaveSpecific from './heatwave.specific';
 import AccessAndResilienceOverview from './accessPieAndBar';
 import SocialProtectionBenefits from './socialProtectionBenefits';
@@ -22,6 +21,7 @@ import { PROJECT_SETTINGS_KEYS, useTabConfiguration } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 import { FLOOD_REPORT_TABS } from './floodReport/config';
+import ActivitiesOverview from './activitiesOverview';
 import FloodReportTab, { hasReportData } from './floodReport/floodReportTab';
 
 type TabConfig = {
@@ -115,6 +115,12 @@ export default function DashboardTabs({
       content: <DigitalAccessOverview stats={benefStats} />,
     },
     {
+      value: 'activities',
+      configKey: 'activitiesOverview',
+      label: t('ACTIVITY_OVERVIEW'),
+      content: <ActivitiesOverview />,
+    },
+    {
       value: 'communication',
       configKey: 'communicationOutreach',
       label: t('COMMUNICATION_OUTREACH'),
@@ -155,7 +161,6 @@ export default function DashboardTabs({
             triggeersStats={triggeersStats}
             projectId={projectId}
           />
-          <MapView projectId={projectId} benefStats={benefStats} />
         </div>
       ),
     },

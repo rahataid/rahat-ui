@@ -1,10 +1,9 @@
 'use client';
 
-import Swal from 'sweetalert2';
 import React, { useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { useLabelDigits, useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { Heading, Back, SearchInput } from 'apps/rahat-ui/src/common';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
@@ -20,19 +19,22 @@ import {
   AlertCircle,
   CalendarClock,
   Hourglass,
+  CloudDownload,
+  LoaderCircle,
 } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
+import { toast } from 'react-toastify';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import {
   useDeleteCommunication,
   useGetCommunication,
   useListAllTransports,
+  useListSessionLogs,
   useTriggerCommunicationBroadcast,
   useBeneficiariesGroups,
   useStakeholdersGroups,
-  useSessionBroadCastCount,
   useSessionRetryFailed,
 } from '@rahat-ui/query';
 import { toCommunicationRecord } from '../components/useCommunicationsTableColumns';
@@ -41,8 +43,8 @@ import { CommunicationChannelIcon } from '../components/communication-channel-ic
 import { SendCommunicationConfirmDialog } from '../components/send-communication-confirm-dialog';
 import {
   resolveChannelByTransportId,
-  resolveTargetEffectiveStatus,
-  resolveCommunicationLifecycleStatus,
+  exportCommunicationLogs,
+  toDisplayStatus,
 } from '../utils/communications.utils';
 import { UUID } from 'crypto';
 
@@ -121,25 +123,38 @@ export default function CommunicationDetailsView() {
     return { name: groupId || (isBeneficiary ? t('BENEFICIARY_GROUP') : t('STAKEHOLDER_GROUP')), count: 0 };
   };
 
-  const failedTargetsAudienceCount = targets
-    .filter((t: any) => t?.status === 'FAILED')
-    .reduce((sum: number, target: any) => {
-      const info = getGroupDetails(target.groupId, target.groupType, target.group);
-      return sum + (info.count || 0);
-    }, 0);
+  const isBroadcastResolving = isLoading;
 
-  const { data: broadcastCounts, isLoading: isBroadcastLoading } = useSessionBroadCastCount(sessionIds);
-  const isBroadcastResolving = sessionIds.length > 0 && (isBroadcastLoading || broadcastCounts === undefined);
+  const rawBroadcastCounts = useMemo(() => {
+    let success = 0;
+    let fail = 0;
+    let pending = 0;
+    let scheduled = 0;
+    let total = 0;
 
-  const rawBroadcastCounts =
-    (broadcastCounts as any)?.data?.data ??
-    (broadcastCounts as any)?.data ??
-    broadcastCounts;
+    for (const t of (targets || []) as any[]) {
+      if (t?.counts) {
+        success += Number(t.counts.SUCCESS || 0);
+        fail += Number(t.counts.FAIL || 0);
+        pending += Number(t.counts.PENDING || 0);
+        scheduled += Number(t.counts.SCHEDULED || 0);
+        total += Number(t.counts.TOTAL || 0);
+      }
+    }
 
-  const deliveredCount = rawBroadcastCounts?.SUCCESS ?? 0;
-  const scheduledCount = rawBroadcastCounts?.SCHEDULED ?? 0;
-  const failedCount = rawBroadcastCounts?.FAIL ?? 0;
-  const pendingCountBroadcast = rawBroadcastCounts?.PENDING ?? 0;
+    return {
+      SUCCESS: success,
+      FAIL: fail,
+      PENDING: pending,
+      SCHEDULED: scheduled,
+      TOTAL: total,
+    };
+  }, [targets]);
+
+  const deliveredCount = rawBroadcastCounts.SUCCESS;
+  const scheduledCount = rawBroadcastCounts.SCHEDULED;
+  const failedCount = rawBroadcastCounts.FAIL;
+  const pendingCountBroadcast = rawBroadcastCounts.PENDING;
 
   const record = useMemo(() => {
     if (!raw) return null;
@@ -150,24 +165,13 @@ export default function CommunicationDetailsView() {
   }, [raw, appTransports]);
 
   const effectiveOverallStatus = useMemo(() => {
-    return resolveCommunicationLifecycleStatus({
-      channel: record?.channel || raw?.channel || 'SMS',
-      rawStatus: record?.status || raw?.status,
-      counts: sessionIds.length > 0 ? rawBroadcastCounts : undefined,
-      hasActiveTargets:
-        targets.some((t: any) => t?.status === 'PROCESSING'),
-      hasPendingTargets: targets.some((t: any) => t?.status === 'PENDING' || !t?.status),
-      hasSession: sessionIds.length > 0,
-      isRetrying: isRetrying || retryFailedSession.isPending || triggerBroadcast.isPending,
-    });
+    if (isRetrying || retryFailedSession.isPending || triggerBroadcast.isPending) {
+      return 'IN_PROGRESS';
+    }
+    return raw?.status || record?.status;
   }, [
-    record?.channel,
-    raw?.channel,
     record?.status,
     raw?.status,
-    rawBroadcastCounts,
-    sessionIds.length,
-    targets,
     isRetrying,
     retryFailedSession.isPending,
     triggerBroadcast.isPending,
@@ -222,9 +226,6 @@ export default function CommunicationDetailsView() {
 
 
   const hasFailedTargets = targets.some((target: any) => target?.status === 'FAILED');
-  const hasPendingTargets = targets.some(
-    (target: any) => target?.status === 'PENDING' || target?.status === 'PROCESSING',
-  );
 
   const canSend =
     targets.length > 0 &&
@@ -413,7 +414,9 @@ export default function CommunicationDetailsView() {
                 disabled={isMutating}
               >
                 <SendHorizontal className="w-4 h-4 text-primary" />
-                {t('SEND_COMMUNICATION') || 'Send Communication'}
+                {raw?.isScheduled
+                  ? t('SEND_NOW') || 'Send Now'
+                  : t('SEND_COMMUNICATION') || 'Send Communication'}
               </Button>
             )}
 
@@ -439,12 +442,18 @@ export default function CommunicationDetailsView() {
         {/* Title & Channel Header Card */}
         <Card className="p-3.5 sm:p-4 rounded-sm bg-white border border-gray-200/90 shadow-none flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="space-y-1">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center flex-wrap gap-2">
               <span className="bg-slate-100 text-slate-700 text-xs font-medium px-2 py-0.5 rounded border border-slate-200/80 flex items-center gap-1.5">
                 <CommunicationChannelIcon channel={record?.channel || 'SMS'} className="h-3.5 w-3.5 text-slate-600" />
                 {t(record?.channel || 'SMS')}
               </span>
               <CommunicationStatusBadge status={effectiveOverallStatus} isLoading={isBroadcastResolving} />
+              {raw?.isScheduled && raw?.scheduledAt && (
+                <span className="bg-amber-50 text-amber-700 text-xs font-medium px-2 py-0.5 rounded border border-amber-200/80 flex items-center gap-1.5">
+                  <CalendarClock className="h-3.5 w-3.5 text-amber-600" />
+                  {t('SCHEDULED_FOR') || 'Scheduled for'}: {formatDate(raw.scheduledAt, 'MMM d, yyyy, h:mm a')}
+                </span>
+              )}
             </div>
             <div className="pt-0.5 min-w-0">
               <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">{t('COMMUNICATION_TITLE')}:</span>
@@ -632,19 +641,28 @@ function TargetGroupCardItem({
   const projectId = params.id as string;
   const commId = params.commId as string;
 
-  const { data: broadcastCounts, isLoading: isGroupBroadcastLoading } = useSessionBroadCastCount(target?.sessionId ? [target.sessionId] : []);
   const mutateRetry = useSessionRetryFailed();
   const triggerBroadcast = useTriggerCommunicationBroadcast();
 
-  const isTargetResolving = !!target?.sessionId && (isGroupBroadcastLoading || broadcastCounts === undefined);
+  const isTargetResolving = false;
+  const rawGroupCounts = target?.counts ?? null;
 
-  const rawGroupCounts =
-    (broadcastCounts as any)?.data?.data ??
-    (broadcastCounts as any)?.data ??
-    broadcastCounts;
+  const { data: sessionLogs, isLoading: isLoadingSessionLogs } =
+    useListSessionLogs(target?.sessionId || '', {
+      page: 1,
+      perPage: 1000,
+    });
 
-  const delivered = rawGroupCounts?.SUCCESS ?? 0;
-  const failed = rawGroupCounts?.FAIL ?? 0;
+  const sessionLogsList = useMemo(() => {
+    const raw =
+      (sessionLogs as any)?.data ??
+      (sessionLogs as any)?.httpReponse?.data?.data ??
+      [];
+    return Array.isArray(raw) ? raw : [];
+  }, [sessionLogs]);
+
+  const delivered = Number(rawGroupCounts?.SUCCESS || 0);
+  const failed = Number(rawGroupCounts?.FAIL || 0);
   const audioURL = typeof raw?.audioURL === 'object' ? raw.audioURL : null;
   const messageText =
     typeof raw?.message === 'string' && raw.message.trim()
@@ -654,16 +672,9 @@ function TargetGroupCardItem({
   const isRetrying = mutateRetry.isPending || triggerBroadcast.isPending;
 
   const effectiveTargetStatus = useMemo(() => {
-    return resolveCommunicationLifecycleStatus({
-      channel: record.channel,
-      rawStatus: target?.status,
-      counts: target?.sessionId ? rawGroupCounts : undefined,
-      hasActiveTargets: target?.status === 'PROCESSING',
-      hasPendingTargets: target?.status === 'PENDING' || !target?.status,
-      hasSession: !!target?.sessionId,
-      isRetrying: (failed > 0 || target?.status === 'FAILED') && isRetrying,
-    });
-  }, [target?.status, target?.sessionId, rawGroupCounts, record.channel, isRetrying, failed]);
+    if ((failed > 0 || target?.status === 'FAILED') && isRetrying) return 'IN_PROGRESS';
+    return toDisplayStatus(target?.sessionStatus || target?.status);
+  }, [target?.sessionStatus, target?.status, isRetrying, failed]);
 
   const handleRetry = async () => {
     if (isRetrying) return;
@@ -679,6 +690,86 @@ function TargetGroupCardItem({
       refetch();
     } catch (error) {
       console.error('Retry error:', error);
+    }
+  };
+
+  const [isExportingAll, setIsExportingAll] = useState(false);
+  const [isExportingFailed, setIsExportingFailed] = useState(false);
+
+  const hasNoFailedDeliveries =
+    failed === 0 &&
+    sessionLogsList.filter(
+      (l: any) =>
+        (l?.status || '').toUpperCase() === 'FAIL' ||
+        (l?.status || '').toUpperCase() === 'FAILED',
+    ).length === 0;
+
+  const hasNoLogsForExport =
+    !target?.sessionId ||
+    (delivered === 0 &&
+      failed === 0 &&
+      sessionLogsList.length === 0 &&
+      (rawGroupCounts?.TOTAL ?? 0) === 0);
+
+  const handleExportFailed = async () => {
+    if (isExportingFailed || hasNoFailedDeliveries) return;
+    setIsExportingFailed(true);
+    try {
+      const logs = sessionLogsList.length > 0 ? sessionLogsList : [];
+      const success = await exportCommunicationLogs(logs, {
+        title: record?.title || raw?.title,
+        groupName: groupInfo.name,
+        groupType: target?.groupType,
+        channel: record?.channel,
+        onlyFailed: true,
+        message: typeof raw?.message === 'string' ? raw.message : undefined,
+        subject: raw?.subject,
+        sessionStartedAt: target?.createdAt || raw?.createdAt,
+        sessionEndedAt: target?.updatedAt || raw?.updatedAt,
+        formatDate: (d) => formatDate(d, 'MMMM d, yyyy, h:mm:ss a'),
+        naLabel: tg('N_A'),
+      });
+      if (success) {
+        toast.success(t('LOGS_EXPORTED_SUCCESSFULLY') || 'Logs exported successfully');
+      } else {
+        toast.info(t('NO_FAILED_DELIVERIES_TO_EXPORT') || 'No failed deliveries to export');
+      }
+    } catch (error) {
+      console.error('Error exporting failed logs:', error);
+      toast.error(t('FAILED_EXPORT_LOGS') || 'Failed to export logs');
+    } finally {
+      setIsExportingFailed(false);
+    }
+  };
+
+  const handleExportAll = async () => {
+    if (isExportingAll || hasNoLogsForExport) return;
+    setIsExportingAll(true);
+    try {
+      const logs = sessionLogsList.length > 0 ? sessionLogsList : [];
+      const success = await exportCommunicationLogs(logs, {
+        title: record?.title || raw?.title,
+        groupName: groupInfo.name,
+        groupType: target?.groupType,
+        channel: record?.channel,
+        onlyFailed: false,
+        message: typeof raw?.message === 'string' ? raw.message : undefined,
+        subject: raw?.subject,
+        sessionStartedAt: target?.createdAt || raw?.createdAt,
+        sessionEndedAt: target?.updatedAt || raw?.updatedAt,
+        formatDate: (d) => formatDate(d, 'MMMM d, yyyy, h:mm:ss a'),
+        naLabel: tg('N_A'),
+      });
+      if (success) {
+        toast.success(t('LOGS_EXPORTED_SUCCESSFULLY') || 'Logs exported successfully');
+      } else {
+        toast.info(t('NO_COMMUNICATION_LOGS_AVAILABLE_TO_EXPORT') || 'No communication logs available to export');
+      }
+    } catch (error) {
+      console.error('Error exporting logs:', error);
+      toast.error(t('FAILED_EXPORT_LOGS') || 'Failed to export logs');
+    } finally {
+      setIsExportingAll(false);
     }
   };
 
@@ -705,7 +796,13 @@ function TargetGroupCardItem({
         {record.channel === 'VOICE' && audioURL?.mediaURL ? (
           <div className="bg-slate-50/80 p-2 sm:p-2.5 rounded border border-gray-200/80 space-y-1">
             <p className="text-[11px] font-medium text-gray-600 truncate">{audioURL.fileName || 'recording.wav'}</p>
-            <audio src={audioURL.mediaURL} controls className="w-full h-8 rounded" />
+            <audio
+              src={audioURL.mediaURL}
+              controls
+              aria-label={audioURL.fileName || t('VOICE_RECORDING') || 'Voice recording'}
+              title={audioURL.fileName || 'Audio recording'}
+              className="w-full h-8 rounded"
+            />
           </div>
         ) : messageText ? (
           <div className="bg-slate-50/80 p-2 sm:p-2.5 rounded border border-gray-200/80 text-xs text-gray-800 leading-relaxed whitespace-pre-wrap max-h-24 overflow-y-auto font-sans break-words break-all [overflow-wrap:anywhere]">
@@ -724,12 +821,25 @@ function TargetGroupCardItem({
       </div>
 
       {/* Footer Section: Timestamps on Left + Buttons on Right */}
-      <div className="pt-2.5 border-t border-gray-100 flex flex-wrap items-end justify-between gap-2">
-        <div className="text-[11px] text-gray-500 space-y-0.5">
-          {(effectiveTargetStatus === 'COMPLETED' || target?.status === 'COMPLETED') && (
-            <p>{t('COMPLETED_AT') || 'Completed At'}: {formatDate(target?.updatedAt || raw?.updatedAt, 'MMMM d, yyyy at h:mm:ss a')}</p>
+      <div className="pt-2.5 border-t border-gray-100 flex flex-wrap items-center justify-between gap-2">
+        <div className="text-[11px] text-gray-500">
+          {effectiveTargetStatus === 'COMPLETED' || target?.status === 'COMPLETED' ? (
+            <p>
+              {t('COMPLETED_AT') || 'Completed At'}:{' '}
+              {formatDate(
+                target?.completedAt || target?.updatedAt || raw?.updatedAt,
+                'MMMM d, yyyy at h:mm:ss a',
+              )}
+            </p>
+          ) : (
+            <p>
+              {t('UPDATED_AT') || 'Updated at'}:{' '}
+              {formatDate(
+                target?.updatedAt || raw?.updatedAt,
+                'MMMM d, yyyy at h:mm:ss a',
+              )}
+            </p>
           )}
-          <p>{t('UPDATED_AT') || 'Updated at'}: {formatDate(target?.updatedAt || raw?.updatedAt, 'MMMM d, yyyy at h:mm:ss a')}</p>
         </div>
 
         <div className="flex items-center flex-wrap gap-2 ml-auto">
@@ -746,6 +856,42 @@ function TargetGroupCardItem({
               variant="outline"
             />
           )}
+
+          <TooltipWrapper
+            tip={t('NO_FAILED_DELIVERIES_TO_EXPORT')}
+            disable={!hasNoFailedDeliveries}
+          >
+            <DialogComponent
+              buttonIcon={CloudDownload}
+              buttonText={isExportingFailed ? t('EXPORTING') || 'Exporting...' : t('FAILED_EXPORTS') || 'Failed Exports'}
+              dialogTitle={t('EXPORT_FAILED_COMMUNICATION_LOGS') || 'Export Failed Communication Logs'}
+              dialogDescription={t('EXPORT_FAILED_COMMUNICATION_LOGS_CONFIRM') || 'Are you sure you want to export failed communication logs for this group?'}
+              confirmButtonText={t('CONFIRM') || 'Confirm'}
+              handleClick={handleExportFailed}
+              buttonClassName="h-8 text-xs font-medium px-3 gap-1.5 rounded-sm shrink-0 whitespace-nowrap"
+              confirmButtonClassName="rounded-sm bg-primary"
+              variant="outline"
+              data={{ _count: { Activity: hasNoFailedDeliveries || isExportingFailed ? 1 : 0 } }}
+            />
+          </TooltipWrapper>
+
+          <TooltipWrapper
+            tip={t('NO_COMMUNICATION_LOGS_AVAILABLE_TO_EXPORT')}
+            disable={!hasNoLogsForExport}
+          >
+            <DialogComponent
+              buttonIcon={CloudDownload}
+              buttonText={isExportingAll ? t('EXPORTING') || 'Exporting...' : t('EXPORT_ALL_LOGS') || 'Export All Logs'}
+              dialogTitle={t('EXPORT_COMMUNICATION_LOGS') || 'Export Communication Logs'}
+              dialogDescription={t('EXPORT_COMMUNICATION_LOGS_CONFIRM') || 'Are you sure you want to export all communication logs for this group?'}
+              confirmButtonText={t('CONFIRM') || 'Confirm'}
+              handleClick={handleExportAll}
+              buttonClassName="h-8 text-xs font-medium px-3 gap-1.5 rounded-sm shrink-0 whitespace-nowrap"
+              confirmButtonClassName="rounded-sm bg-primary"
+              variant="outline"
+              data={{ _count: { Activity: hasNoLogsForExport || isExportingAll ? 1 : 0 } }}
+            />
+          </TooltipWrapper>
 
           <Button
             variant="outline"

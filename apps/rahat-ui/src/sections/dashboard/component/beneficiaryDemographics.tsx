@@ -1,11 +1,15 @@
-import { BarChart, PieChart } from '@rahat-ui/shadcn/src/components/charts';
+import { BarChart } from '@rahat-ui/shadcn/src/components/charts';
 import React from 'react';
 import MapView from '../mapComponent/lazyMapView';
 import { DataCard, Heading, NoResult } from 'apps/rahat-ui/src/common';
 import DynamicPieChart from '../../projects/components/dynamicPieChart';
 import { useTranslations } from 'next-intl';
-import { useChartNumberOptions, useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
+import {
+  useChartNumberOptions,
+  useLabelDigits,
+} from 'apps/rahat-ui/src/utils/i18n/number';
 import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
+import { buildDashboardPieChartOptions } from './pieChartOptions';
 
 const STATS_CONSTANT = [
   'AGE_GROUPS',
@@ -54,6 +58,17 @@ const BeneficiaryDemographics = ({ benefStats }: any) => {
       value: item.count,
     }),
   );
+  const genderTotal = genderData.reduce(
+    (total: number, item: { value: number }) =>
+      total + Number(item.value || 0),
+    0,
+  );
+  const genderChartOptions = buildDashboardPieChartOptions(
+    chartOpts,
+    formatNum,
+    g('TOTAL') || 'TOTAL',
+    genderTotal,
+  );
   // Keyed off the raw enum, not the translated label, so colours survive locale changes.
   const genderColors = (mappedStats['BENEFICIARY_GENDER'] || []).map(
     (item: any) => genderColorsMap[item.id] || '#CCCCCC',
@@ -84,7 +99,11 @@ const BeneficiaryDemographics = ({ benefStats }: any) => {
           <div className="border rounded-sm p-2 flex flex-col h-full min-h-[300px]">
             <h1 className="text-sm font-medium">{t('GENDER_DISTRIBUTION')}</h1>
             <div className="w-full flex-1 p-4 pt-0 flex justify-center items-center">
-              <DynamicPieChart pieData={genderData} colors={genderColors} options={chartOpts} />
+              <DynamicPieChart
+                pieData={genderData}
+                colors={genderColors}
+                options={genderChartOptions}
+              />
             </div>
           </div>
 

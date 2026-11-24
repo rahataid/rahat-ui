@@ -42,21 +42,7 @@ const PhoneInput: React.ForwardRefExoticComponent<PhoneInputProps> =
           inputComponent={InputComponent}
           international={true}
           countryCallingCodeEditable={false}
-          /**
-           * Handles the onChange event.
-           *
-           * react-phone-number-input might trigger the onChange event as undefined
-           * when a valid phone number is not entered. To prevent this,
-           * the value is coerced to an empty string.
-           *
-           * @param {E164Number | undefined} value - The entered value
-           */
-          // @ts-ignore
-          onChange={(value) => {
-            if (value !== undefined) {
-              onChange?.(value);
-            }
-          }}
+          onChange={(value) => onChange?.(value ?? '')}
           {...props}
         />
       );

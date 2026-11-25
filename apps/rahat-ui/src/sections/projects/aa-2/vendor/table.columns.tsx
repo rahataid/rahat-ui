@@ -23,7 +23,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { IProjectVendor } from './types';
 import { toast } from 'react-toastify';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import { ACTIONS, SUBJECTS } from 'apps/rahat-ui/src/constants/ability.constants';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
 import { usePhoneFormat } from 'apps/rahat-ui/src/utils/i18n/phone';
@@ -297,7 +298,7 @@ export const useProjectVendorRedemptionTableColumns = () => {
                   />
                 </div>
               ) : (
-                <RoleAuth roles={[AARoles.ADMIN, AARoles.Municipality]}>
+                <Can action={ACTIONS.UPDATE} subject={SUBJECTS.VENDOR}>
                   <DialogComponent
                     onSubmit={() => handleApproveClick(row)}
                     onCancel={() => null}
@@ -309,7 +310,7 @@ export const useProjectVendorRedemptionTableColumns = () => {
                       </div>
                     }
                   />
-                </RoleAuth>
+                </Can>
               )}
             </div>
           </>

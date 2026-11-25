@@ -9,7 +9,8 @@ import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import { ACTIONS, SUBJECTS } from 'apps/rahat-ui/src/constants/ability.constants';
 import { DialogComponent } from 'apps/rahat-ui/src/components/dialog';
 import { UUID } from 'crypto';
 import { useTranslations } from 'next-intl';
@@ -61,8 +62,7 @@ export const useInkindRedemptionColumn = (
           return <div>{t('N_A')}</div>;
         }
         const txUrl = getExplorerUrl({
-          chainSettings:
-            settings?.[id]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS],
+          chainSettings: settings?.[id]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS],
           target: 'tx',
           value: row.original?.transactionHash,
         });
@@ -184,7 +184,7 @@ export const useInkindRedemptionColumn = (
                         />
                       </div>
                     ) : (
-                      <RoleAuth roles={[AARoles.ADMIN, AARoles.Municipality]}>
+                      <Can action={ACTIONS.UPDATE} subject={SUBJECTS.VENDOR}>
                         <DialogComponent
                           onSubmit={() => handleApproveClick(row)}
                           onCancel={() => null}
@@ -196,7 +196,7 @@ export const useInkindRedemptionColumn = (
                             </div>
                           }
                         />
-                      </RoleAuth>
+                      </Can>
                     )}
                   </div>
                 </>

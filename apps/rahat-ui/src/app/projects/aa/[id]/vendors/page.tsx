@@ -1,7 +1,11 @@
 'use client';
 
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import dynamic from 'next/dynamic';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
+import ProjectPermissionGuard from 'apps/rahat-ui/src/guards/project-permission-guard';
 
 const VendorsPage = dynamic(
   () =>
@@ -15,15 +19,8 @@ const VendorsPage = dynamic(
 
 export default function Page() {
   return (
-    <RoleAuth
-      roles={[
-        AARoles.ADMIN,
-        AARoles.MANAGER,
-        AARoles.Municipality,
-        AARoles.UNICEFNepalCO,
-      ]}
-    >
+    <ProjectPermissionGuard action={ACTIONS.READ} subject={SUBJECTS.VENDOR}>
       <VendorsPage />
-    </RoleAuth>
+    </ProjectPermissionGuard>
   );
 }

@@ -4,7 +4,8 @@ import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
 import { Plus } from 'lucide-react';
 import { UUID } from 'crypto';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import { ACTIONS, SUBJECTS } from 'apps/rahat-ui/src/constants/ability.constants';
 import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { GctTabs } from './components';
 
@@ -24,10 +25,7 @@ export default function GroupCashTransferView() {
           title={tv('GROUP_CASH_TRANSFER')}
           description={tv('TRACK_ALL_THE_GCT_GROUP_IN')}
         />
-        <RoleAuth
-          roles={[AARoles.ADMIN, AARoles.Municipality]}
-          hasContent={false}
-        >
+        <Can action={ACTIONS.CREATE} subject={SUBJECTS.GROUP_CASH_TRANSFER}>
           <IconLabelBtn
             Icon={Plus}
             handleClick={() =>
@@ -35,7 +33,7 @@ export default function GroupCashTransferView() {
             }
             name={tv('CREATE_GCT_GROUP')}
           />
-        </RoleAuth>
+        </Can>
       </div>
 
       {/* Tabs: GCT Group List / GCT Management List */}

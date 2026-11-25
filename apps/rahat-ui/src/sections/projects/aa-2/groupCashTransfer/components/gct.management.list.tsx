@@ -46,7 +46,8 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/collapsible';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import { ACTIONS, SUBJECTS } from 'apps/rahat-ui/src/constants/ability.constants';
 import {
   DemoTable,
   SearchInput,
@@ -376,10 +377,7 @@ export default function GctManagementList() {
               )}
             </Tooltip>
           </TooltipProvider>
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.Municipality]}
-            hasContent={false}
-          >
+          <Can action={ACTIONS.CREATE} subject={SUBJECTS.GROUP_CASH_TRANSFER}>
             <Button
               size="sm"
               className="rounded-sm gap-1.5"
@@ -392,7 +390,7 @@ export default function GctManagementList() {
               <Plus size={14} />
               {t('ASSIGN_CASH')}
             </Button>
-          </RoleAuth>
+          </Can>
         </div>
       </div>
 

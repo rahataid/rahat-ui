@@ -23,7 +23,8 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import { ACTIONS, SUBJECTS } from 'apps/rahat-ui/src/constants/ability.constants';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 import {
   DemoTable,
@@ -193,10 +194,7 @@ export default function GctList() {
                     )
                   }
                 />
-                <RoleAuth
-                  roles={[AARoles.ADMIN, AARoles.Municipality]}
-                  hasContent={false}
-                >
+                <Can action={ACTIONS.UPDATE} subject={SUBJECTS.GROUP_CASH_TRANSFER}>
                   <GctActionBtn
                     label={tGlobal('EDIT')}
                     icon={<Pencil size={16} strokeWidth={1.8} />}
@@ -207,6 +205,8 @@ export default function GctList() {
                       )
                     }
                   />
+                </Can>
+                <Can action={ACTIONS.DELETE} subject={SUBJECTS.GROUP_CASH_TRANSFER}>
                   <GctActionBtn
                     label={
                       hasFund ? t('CANNOT_DELETE_FUNDS_RESERVED') : tGlobal('DELETE')
@@ -216,7 +216,7 @@ export default function GctList() {
                     disabled={hasFund}
                     onClick={() => openDelete(item)}
                   />
-                </RoleAuth>
+                </Can>
               </div>
             </TooltipProvider>
           );

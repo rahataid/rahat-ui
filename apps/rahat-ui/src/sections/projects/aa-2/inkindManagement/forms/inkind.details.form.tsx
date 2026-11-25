@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Button } from 'libs/shadcn/src/components/ui/button';
@@ -12,13 +12,10 @@ import {
   FormLabel,
   FormMessage,
 } from 'libs/shadcn/src/components/ui/form';
-import { Input } from 'libs/shadcn/src/components/ui/input';
-import { Textarea } from 'libs/shadcn/src/components/ui/textarea';
 import {
   Select,
   SelectContent,
   SelectItem,
-  SelectTrigger,
   SelectValue,
 } from 'libs/shadcn/src/components/ui/select';
 import {
@@ -34,6 +31,11 @@ import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
+import {
+  FormInput,
+  FormSelectTrigger,
+  FormTextarea,
+} from 'apps/rahat-ui/src/common';
 
 const DEFAULT_VALUES: InkindDetailsValues = {
   name: '',
@@ -46,12 +48,16 @@ interface Props {
   formData: Partial<InkindFormData>;
   onNext: (data: InkindDetailsValues) => void;
   existingNames?: string[];
+  onDraftChange?: (values: Partial<InkindDetailsValues>, isDirty: boolean) => void;
+  onClear?: () => void;
 }
 
 export default function InkindDetailsForm({
   formData,
   onNext,
   existingNames = [],
+  onDraftChange,
+  onClear,
 }: Props) {
   const tg = useTranslations('AA_PROJECT_WITH_GNOSIS');
   const tglob = useTranslations('GLOBAL');
@@ -76,6 +82,12 @@ export default function InkindDetailsForm({
 
   const nameValue = watch('name');
   const descriptionValue = watch('description');
+  const values = watch();
+  const { isDirty } = form.formState;
+
+  useEffect(() => {
+    onDraftChange?.(values, isDirty);
+  }, [values, isDirty, onDraftChange]);
 
   const handleNext = (data: InkindDetailsValues) => {
     const trimmed = data.name.trim().toLowerCase();
@@ -102,7 +114,7 @@ export default function InkindDetailsForm({
             render={({ field }) => (
               <FormItem>
                 <div className="flex items-center justify-between">
-                  <FormLabel>{tg('INKIND_NAME')}</FormLabel>
+                  <FormLabel required>{tg('INKIND_NAME')}</FormLabel>
                   <span
                     className={`text-xs ${
                       (nameValue?.length ?? 0) >= NAME_MAX
@@ -114,7 +126,7 @@ export default function InkindDetailsForm({
                   </span>
                 </div>
                 <FormControl>
-                  <Input
+                  <FormInput
                     placeholder={tg('E_G_RICE50KG_BAGS')}
                     maxLength={NAME_MAX}
                     {...field}
@@ -131,7 +143,7 @@ export default function InkindDetailsForm({
             render={({ field }) => (
               <FormItem>
                 <div className="flex items-center justify-between">
-                  <FormLabel>{tglob('DESCRIPTION')}</FormLabel>
+                  <FormLabel required>{tglob('DESCRIPTION')}</FormLabel>
                   <span
                     className={`text-xs ${
                       (descriptionValue?.length ?? 0) >= DESCRIPTION_MAX
@@ -144,7 +156,7 @@ export default function InkindDetailsForm({
                   </span>
                 </div>
                 <FormControl>
-                  <Textarea
+                  <FormTextarea
                     placeholder={tg('BRIEFLY_DESCRIBE_THIS_IN_KIND_ITEM')}
                     className="resize-none"
                     rows={3}
@@ -162,12 +174,12 @@ export default function InkindDetailsForm({
             name="type"
             render={({ field }) => (
               <FormItem>
-                  <FormLabel>{tg('INKIND_TYPE')}</FormLabel>
+                  <FormLabel required>{tg('INKIND_TYPE')}</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
-                      <SelectTrigger>
+                      <FormSelectTrigger value={field.value}>
                         <SelectValue placeholder={tg('SELECT_TYPE')} />
-                    </SelectTrigger>
+                    </FormSelectTrigger>
                   </FormControl>
                   <SelectContent>
                     {INKIND_TYPES.map((t) => (
@@ -189,7 +201,7 @@ export default function InkindDetailsForm({
               <FormItem>
                 <FormLabel>{tg('INKIND_QUANTITY_OPTIONAL')}</FormLabel>
                 <FormControl>
-                  <Input
+                  <FormInput
                     type="text"
                     placeholder={tg('ENTER_QUANTITY')}
                     {...field}
@@ -213,7 +225,10 @@ export default function InkindDetailsForm({
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => reset(DEFAULT_VALUES)}
+                onClick={() => {
+                  reset(DEFAULT_VALUES);
+                  onClear?.();
+                }}
                  className="px-10 rounded-sm w-40"
               >
                 {tg('CLEAR')}

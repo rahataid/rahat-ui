@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useParams, useRouter } from 'next/navigation';
@@ -9,7 +9,9 @@ import { UUID } from 'crypto';
 import { Loader2 } from 'lucide-react';
 import { Form } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { HeaderWithBack } from 'apps/rahat-ui/src/common';
+import { HeaderWithBack, UnsavedChangesDialog } from 'apps/rahat-ui/src/common';
+import { useUnsavedChanges } from 'apps/rahat-ui/src/hooks/useUnsavedChanges';
+import { useSessionFormStorage } from 'apps/rahat-ui/src/hooks/useSessionFormStorage';
 import { useCreateGroupCashTransfer, useValidateBankAccount } from '@rahat-ui/query';
 import { buildGctGroupSchema, GctGroupValues, applyDuplicateErrors } from './types/gct.schemas';
 import { BasicInfoSection, BankDetailsSection } from './components/gct.form-sections';
@@ -39,6 +41,9 @@ export default function AddGct() {
   const [validating, setValidating] = useState(false);
   const [hasUnsavedTag, setHasUnsavedTag] = useState(false);
   const [clearKey, setClearKey] = useState(0);
+  const hasInteracted = useRef(false);
+  const isRestored = useRef(false);
+  const isSubmittingRef = useRef(false);
 
   const createGct = useCreateGroupCashTransfer(projectUUID);
   const validateBank = useValidateBankAccount(projectUUID);
@@ -47,6 +52,45 @@ export default function AddGct() {
   const form = useForm<GctGroupValues>({
     resolver: zodResolver(GctGroupSchema),
     defaultValues: DEFAULT_VALUES,
+  });
+
+  const { loadSaved, saveData, clearSaved } = useSessionFormStorage<GctGroupValues>({
+    key: 'gct_group_draft',
+    projectId: id as string,
+    defaultValue: DEFAULT_VALUES,
+  });
+
+  useEffect(() => {
+    if (isRestored.current || !id) return;
+    const saved = loadSaved();
+    if (saved && Object.keys(saved).length > 0) {
+      form.reset({ ...saved, accountNumber: '' });
+      setClearKey((k) => k + 1);
+    }
+    isRestored.current = true;
+  }, [id]);
+
+  const saveCurrentForm = () => {
+    saveData({ ...form.getValues(), accountNumber: '' });
+  };
+
+  const hasUnsavedChanges =
+    !isSubmittingRef.current &&
+    ((hasInteracted.current && form.formState.isDirty) || hasUnsavedTag);
+
+  const {
+    showDialog,
+    handleConfirmLeave,
+    handleCancelLeave,
+    handleDiscardLeave,
+  } = useUnsavedChanges({
+    hasUnsavedChanges,
+    onConfirm: () => {
+      saveCurrentForm();
+    },
+    onDiscard: () => {
+      clearSaved();
+    },
   });
 
   const handleSubmit = async (values: GctGroupValues) => {
@@ -71,6 +115,7 @@ export default function AddGct() {
     // setValidating(false);
 
     const supportAreaStrings = (values.supportArea ?? []).map((t) => t.text);
+    isSubmittingRef.current = true;
     try {
       await createGct.mutateAsync({
         name: values.name,
@@ -90,8 +135,10 @@ export default function AddGct() {
           supportArea: supportAreaStrings,
         },
       });
+      clearSaved();
       router.push(`/projects/aa/${id}/group-cash-transfer`);
     } catch (error: any) {
+      isSubmittingRef.current = false;
       const msg: string = error?.response?.data?.message || error?.message || '';
       applyDuplicateErrors(msg, (field, err) =>
         form.setError(field as keyof GctGroupValues, err), t,
@@ -110,7 +157,13 @@ export default function AddGct() {
       />
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+        <form
+          onSubmit={form.handleSubmit(handleSubmit)}
+          onFocus={() => {
+            hasInteracted.current = true;
+          }}
+          className="space-y-4"
+        >
           <BasicInfoSection
             key={clearKey}
             form={form}
@@ -123,7 +176,7 @@ export default function AddGct() {
               type="button"
               variant="secondary"
               className="px-8"
-              onClick={() => { form.reset(DEFAULT_VALUES); setClearKey((k) => k + 1); }}
+              onClick={() => { clearSaved(); form.reset(DEFAULT_VALUES); setClearKey((k) => k + 1); }}
               disabled={isPending}
             >
               {t('CLEAR')}
@@ -150,6 +203,18 @@ export default function AddGct() {
           </div>
         </form>
       </Form>
+
+      <UnsavedChangesDialog
+        open={showDialog}
+        onConfirm={handleConfirmLeave}
+        onCancel={handleCancelLeave}
+        onDiscard={handleDiscardLeave}
+        title={tGlobal('UNSAVED_TITLE')}
+        description={tGlobal('UNSAVED_ALERT_DESCRIPTION')}
+        cancelText={tGlobal('CANCEL_TEXT')}
+        discardText={tGlobal('DISCARD_TEXT')}
+        confirmText={tGlobal('CONFIRM_TEXT')}
+      />
     </div>
   );
 }

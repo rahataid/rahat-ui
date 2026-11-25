@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ChevronLeft, CheckCircle2, Info } from 'lucide-react';
 import { INKIND_FORM_STEPS } from './consts/inkind.consts';
@@ -11,16 +11,82 @@ import { useInkinds } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useTranslations } from 'next-intl';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
+import { UnsavedChangesDialog } from 'apps/rahat-ui/src/common';
+import { useUnsavedChanges } from 'apps/rahat-ui/src/hooks/useUnsavedChanges';
+import { useSessionFormStorage } from 'apps/rahat-ui/src/hooks/useSessionFormStorage';
+
+const EMPTY_DRAFT: Partial<InkindDetailsValues> = {};
 
 export default function AddInkindView() {
   const { id } = useParams();
   const router = useRouter();
   const projectUUID = id as UUID;
   const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const formatDigits = useLabelDigits();
 
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<Partial<InkindDetailsValues>>({});
+  const [formKey, setFormKey] = useState(0);
+  const [isDetailsDirty, setIsDetailsDirty] = useState(false);
+  const [hasProgressed, setHasProgressed] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false);
+  const detailsValuesRef = useRef<Partial<InkindDetailsValues>>({});
+  const isRestored = useRef(false);
+  const listPath = `/projects/aa/${id}/inkind-management?tab=inkindList`;
+
+  const { loadSaved, saveData, clearSaved } = useSessionFormStorage<
+    Partial<InkindDetailsValues>
+  >({
+    key: 'inkind_draft',
+    projectId: id as string,
+    defaultValue: EMPTY_DRAFT,
+  });
+
+  useEffect(() => {
+    if (isRestored.current || !id) return;
+    const saved = loadSaved();
+    if (saved && Object.values(saved).some(Boolean)) {
+      setFormData(saved);
+      setFormKey((k) => k + 1);
+    }
+    isRestored.current = true;
+  }, [id, loadSaved]);
+
+  const handleDraftChange = useCallback(
+    (values: Partial<InkindDetailsValues>, isDirty: boolean) => {
+      detailsValuesRef.current = values;
+      setIsDetailsDirty(isDirty);
+    },
+    [],
+  );
+
+  const handleClear = useCallback(() => {
+    clearSaved();
+    setFormData({});
+    setHasProgressed(false);
+  }, [clearSaved]);
+
+  const hasUnsavedChanges = !isCompleted && (isDetailsDirty || hasProgressed);
+
+  const {
+    showDialog,
+    handleConfirmLeave,
+    handleCancelLeave,
+    handleDiscardLeave,
+  } = useUnsavedChanges({
+    hasUnsavedChanges,
+    onConfirm: () => {
+      saveData(currentStep === 0 ? detailsValuesRef.current : formData);
+    },
+    onDiscard: () => {
+      clearSaved();
+    },
+  });
+
+  useEffect(() => {
+    if (isCompleted) router.push(listPath);
+  }, [isCompleted, router, listPath]);
 
   const { data: inkindsData } = useInkinds(projectUUID, {
     page: 1,
@@ -36,17 +102,19 @@ export default function AddInkindView() {
     if (currentStep > 0) {
       setCurrentStep((s) => s - 1);
     } else {
-      router.push(`/projects/aa/${id}/inkind-management?tab=inkindList`);
+      router.push(listPath);
     }
-  }, [currentStep, id, router]);
+  }, [currentStep, listPath, router]);
 
   const handleDetailsNext = (data: InkindDetailsValues) => {
     setFormData(data);
+    setHasProgressed(true);
     setCurrentStep(1);
   };
 
   const handleSuccess = () => {
-    router.push(`/projects/aa/${id}/inkind-management?tab=inkindList`);
+    clearSaved();
+    setIsCompleted(true);
   };
 
   return (
@@ -130,9 +198,12 @@ export default function AddInkindView() {
       <div className="px-4 pb-4">
         {currentStep === 0 && (
           <InkindDetailsForm
+            key={formKey}
             formData={formData}
             onNext={handleDetailsNext}
             existingNames={existingNames}
+            onDraftChange={handleDraftChange}
+            onClear={handleClear}
           />
         )}
         {currentStep === 1 && (
@@ -142,6 +213,18 @@ export default function AddInkindView() {
           />
         )}
       </div>
+
+      <UnsavedChangesDialog
+        open={showDialog}
+        onConfirm={handleConfirmLeave}
+        onCancel={handleCancelLeave}
+        onDiscard={handleDiscardLeave}
+        title={tg('UNSAVED_TITLE')}
+        description={tg('UNSAVED_ALERT_DESCRIPTION')}
+        cancelText={tg('CANCEL_TEXT')}
+        discardText={tg('DISCARD_TEXT')}
+        confirmText={tg('CONFIRM_TEXT')}
+      />
     </div>
   );
 }

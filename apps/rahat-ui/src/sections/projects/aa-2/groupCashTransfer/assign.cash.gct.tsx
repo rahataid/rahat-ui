@@ -1,7 +1,7 @@
 'use client';
 import { useTranslations } from 'next-intl';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useParams, useRouter } from 'next/navigation';
@@ -12,10 +12,9 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   AlertDialog,
@@ -32,7 +31,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/popover';
-import { HeaderWithBack } from 'apps/rahat-ui/src/common';
+import {
+  FormComboboxTrigger,
+  FormInput,
+  HeaderWithBack,
+  UnsavedChangesDialog,
+} from 'apps/rahat-ui/src/common';
+import { useUnsavedChanges } from 'apps/rahat-ui/src/hooks/useUnsavedChanges';
+import { useSessionFormStorage } from 'apps/rahat-ui/src/hooks/useSessionFormStorage';
 import {
   useAssignGroupCashTransferFund,
   useGetAllValidGroupCashTransfers,
@@ -40,6 +46,12 @@ import {
 import { buildAssignCashSchema, AssignCashValues } from './types/gct.schemas';
 import { useNumberFormat } from '../../../../utils/i18n/number';
 import { SectionCard } from './components/gct.form-sections';
+
+const DEFAULT_VALUES: AssignCashValues = {
+  title: '',
+  groupCashTransferId: '',
+  amount: '',
+};
 
 export default function AssignCashGct() {
   const t = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
@@ -61,6 +73,9 @@ export default function AssignCashGct() {
   const formatNum = useNumberFormat();
   const [pendingValues, setPendingValues] = useState<AssignCashValues | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const hasInteracted = useRef(false);
+  const isRestored = useRef(false);
+  const isSubmittingRef = useRef(false);
 
   const filteredGroups = useMemo(() => {
     if (!groupSearch.trim()) return groups;
@@ -71,7 +86,42 @@ export default function AssignCashGct() {
   const AssignCashSchema = buildAssignCashSchema(t);
   const form = useForm<AssignCashValues>({
     resolver: zodResolver(AssignCashSchema),
-    defaultValues: { title: '', groupCashTransferId: '', amount: '' },
+    defaultValues: DEFAULT_VALUES,
+  });
+
+  const { loadSaved, saveData, clearSaved } = useSessionFormStorage<AssignCashValues>({
+    key: 'gct_assign_cash_draft',
+    projectId: id as string,
+    defaultValue: DEFAULT_VALUES,
+  });
+
+  useEffect(() => {
+    if (isRestored.current || !id || groupsLoading) return;
+    const saved = loadSaved();
+    if (saved && Object.values(saved).some(Boolean)) {
+      const group = groups.find((g) => g.uuid === saved.groupCashTransferId);
+      form.reset({ ...saved, groupCashTransferId: group?.uuid ?? '' });
+      setSelectedGroupName(group?.name ?? '');
+    }
+    isRestored.current = true;
+  }, [id, groupsLoading]);
+
+  const hasUnsavedChanges =
+    !isSubmittingRef.current && hasInteracted.current && form.formState.isDirty;
+
+  const {
+    showDialog,
+    handleConfirmLeave,
+    handleCancelLeave,
+    handleDiscardLeave,
+  } = useUnsavedChanges({
+    hasUnsavedChanges,
+    onConfirm: () => {
+      saveData(form.getValues());
+    },
+    onDiscard: () => {
+      clearSaved();
+    },
   });
 
   const handleSubmit = (values: AssignCashValues) => {
@@ -82,14 +132,17 @@ export default function AssignCashGct() {
   const handleConfirmedAssign = async () => {
     if (!pendingValues) return;
     setConfirmOpen(false);
+    isSubmittingRef.current = true;
     try {
       await assignFund.mutateAsync({
         title: pendingValues.title,
         groupCashTransferId: pendingValues.groupCashTransferId,
         amount: Number(pendingValues.amount),
       });
+      clearSaved();
       router.push(`/projects/aa/${id}/group-cash-transfer?tab=gctManagementList`);
     } catch (error: any) {
+      isSubmittingRef.current = false;
       const msg: string = error?.response?.data?.message || error?.message || '';
       if (/already|duplicate|reserved/i.test(msg)) {
         form.setError('groupCashTransferId', {
@@ -108,7 +161,12 @@ export default function AssignCashGct() {
       />
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)}>
+        <form
+          onSubmit={form.handleSubmit(handleSubmit)}
+          onFocus={() => {
+            hasInteracted.current = true;
+          }}
+        >
           <SectionCard titleKey="FUND_DETAILS">
             <div className="grid grid-cols-2 gap-4">
               <FormField
@@ -116,11 +174,9 @@ export default function AssignCashGct() {
                 name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <Label>
-                      {t('GCT_FUND_TITLE')} <span className="text-destructive">*</span>
-                    </Label>
+                    <FormLabel required>{t('GCT_FUND_TITLE')}</FormLabel>
                     <FormControl>
-                      <Input placeholder={t('ENTER_FUND_TITLE')} {...field} />
+                      <FormInput placeholder={t('ENTER_FUND_TITLE')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -132,25 +188,22 @@ export default function AssignCashGct() {
                 name="groupCashTransferId"
                 render={({ field }) => (
                   <FormItem>
-                    <Label>
-                      {t('GCT_GROUP')} <span className="text-destructive">*</span>
-                    </Label>
+                    <FormLabel required>{t('GCT_GROUP')}</FormLabel>
                     <Popover
                       open={groupPopoverOpen}
                       onOpenChange={setGroupPopoverOpen}
                     >
                       <PopoverTrigger asChild>
                         <FormControl>
-                          <Button
-                            variant="outline"
-                            role="combobox"
+                          <FormComboboxTrigger
+                            value={field.value}
                             disabled={groupsLoading}
                             className="w-full justify-between font-normal"
                           >
                             {groupsLoading
                               ? t('LOADING_GROUPS')
                               : selectedGroupName || t('SELECT_A_VALIDATED_GCT_GROUP')}
-                          </Button>
+                          </FormComboboxTrigger>
                         </FormControl>
                       </PopoverTrigger>
                       <PopoverContent className="w-[320px] p-0" align="start">
@@ -203,11 +256,9 @@ export default function AssignCashGct() {
                 name="amount"
                 render={({ field }) => (
                   <FormItem>
-                    <Label>
-                      {t('AMOUNT')} <span className="text-destructive">*</span>
-                    </Label>
+                    <FormLabel required>{t('AMOUNT')}</FormLabel>
                     <FormControl>
-                      <Input
+                      <FormInput
                         type="number"
                         min={1}
                         placeholder={t('ENTER_AMOUNT')}
@@ -226,7 +277,8 @@ export default function AssignCashGct() {
                 variant="secondary"
                 className="px-8"
                 onClick={() => {
-                  form.reset();
+                  clearSaved();
+                  form.reset(DEFAULT_VALUES);
                   setSelectedGroupName('');
                   setGroupSearch('');
                 }}
@@ -282,6 +334,18 @@ export default function AssignCashGct() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <UnsavedChangesDialog
+        open={showDialog}
+        onConfirm={handleConfirmLeave}
+        onCancel={handleCancelLeave}
+        onDiscard={handleDiscardLeave}
+        title={tGlobal('UNSAVED_TITLE')}
+        description={tGlobal('UNSAVED_ALERT_DESCRIPTION')}
+        cancelText={tGlobal('CANCEL_TEXT')}
+        discardText={tGlobal('DISCARD_TEXT')}
+        confirmText={tGlobal('CONFIRM_TEXT')}
+      />
     </div>
   );
 }

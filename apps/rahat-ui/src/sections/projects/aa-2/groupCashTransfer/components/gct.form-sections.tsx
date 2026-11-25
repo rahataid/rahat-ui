@@ -6,11 +6,9 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
 import {
   Command,
@@ -30,16 +28,14 @@ import { Check, ChevronDown } from 'lucide-react';
 import { Tag } from 'emblor';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
+import {
+  FormComboboxTrigger,
+  FormInput,
+} from 'apps/rahat-ui/src/common/form-fields';
 import { usePhoneCountrySelectProps } from 'apps/rahat-ui/src/utils/i18n/phone';
 import GctSupportAreaInput from './gct.support-area-input';
 import { GctGroupValues } from '../types/gct.schemas';
 import { CIPS_BANKS } from '../types/cips-banks';
-
-// ─── Required marker ──────────────────────────────────────────────────────────
-
-function Req() {
-  return <span className="text-destructive">*</span>;
-}
 
 // ─── Section wrapper ──────────────────────────────────────────────────────────
 
@@ -96,9 +92,9 @@ export function BasicInfoSection({
           name="name"
           render={({ field }) => (
             <FormItem>
-              <Label>{t('GCT_GROUP_NAME')} <Req /></Label>
+              <FormLabel required>{t('GCT_GROUP_NAME')}</FormLabel>
               <FormControl>
-                <Input placeholder={t('ENTER_GCT_GROUP_NAME')} {...field} />
+                <FormInput placeholder={t('ENTER_GCT_GROUP_NAME')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -107,13 +103,17 @@ export function BasicInfoSection({
         <FormField
           control={form.control}
           name="phone"
-          render={({ field }) => (
+          render={({ field, fieldState }) => (
             <FormItem>
-              <Label>{tGlobal('PHONE_NUMBER')} <Req /></Label>
+              <FormLabel required>{tGlobal('PHONE_NUMBER')}</FormLabel>
               <FormControl>
                 <PhoneInput
                   defaultCountry="NP"
                   placeholder="+977"
+                  className={cn(
+                    fieldState.error &&
+                      '[&_input]:bg-red-50 [&_input]:shadow-[inset_4px_0_0_0_hsl(var(--destructive))]',
+                  )}
                   {...field}
                   {...phoneCountrySelectProps}
                 />
@@ -127,9 +127,9 @@ export function BasicInfoSection({
           name="email"
           render={({ field }) => (
             <FormItem>
-              <Label>{t('EMAIL_OPTIONAL')}</Label>
+              <FormLabel>{t('EMAIL_OPTIONAL')}</FormLabel>
               <FormControl>
-                <Input type="text" placeholder={t('ENTER_EMAIL_ADDRESS')} {...field} />
+                <FormInput type="text" placeholder={t('ENTER_EMAIL_ADDRESS')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -143,9 +143,9 @@ export function BasicInfoSection({
           name="district"
           render={({ field }) => (
             <FormItem>
-              <Label>{t('DISTRICT')} <Req /></Label>
+              <FormLabel required>{t('DISTRICT')}</FormLabel>
               <FormControl>
-                <Input placeholder={t('ENTER_DISTRICT')} {...field} />
+                <FormInput placeholder={t('ENTER_DISTRICT')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -156,9 +156,9 @@ export function BasicInfoSection({
           name="ward"
           render={({ field }) => (
             <FormItem>
-              <Label>{tGlobal('WARD_COMMUNITY')} <Req /></Label>
+              <FormLabel required>{tGlobal('WARD_COMMUNITY')}</FormLabel>
               <FormControl>
-                <Input
+                <FormInput
                   placeholder={t('ENTER_WARD_AND_COMMUNITY')}
                   {...field}
                   value={formatDigits(field.value)}
@@ -174,9 +174,9 @@ export function BasicInfoSection({
           name="municipality"
           render={({ field }) => (
             <FormItem>
-              <Label>{tGlobal('MUNICIPALITY')} <Req /></Label>
+              <FormLabel required>{tGlobal('MUNICIPALITY')}</FormLabel>
               <FormControl>
-                <Input placeholder={t('ENTER_MUNICIPALITY')} {...field} />
+                <FormInput placeholder={t('ENTER_MUNICIPALITY')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -211,20 +211,19 @@ export function BankDetailsSection({ form }: BankDetailsSectionProps) {
           name="bankCode"
           render={({ field }) => (
             <FormItem className="flex flex-col space-y-3">
-              <Label className="mt-1">{t('BANK_NAME')} <Req /></Label>
+              <FormLabel required className="mt-1">{t('BANK_NAME')}</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
-                    <Button
-                      variant="outline"
-                      role="combobox"
+                    <FormComboboxTrigger
+                      value={field.value}
                       className={cn('justify-between font-normal', !field.value && 'text-muted-foreground')}
                     >
                       {field.value
                         ? CIPS_BANKS.find((b) => b.bankId === field.value)?.bankName
                         : t('SELECT_A_BANK')}
                       <ChevronDown className="opacity-50" />
-                    </Button>
+                    </FormComboboxTrigger>
                   </FormControl>
                 </PopoverTrigger>
                 <PopoverContent className="p-0 w-[--radix-popover-trigger-width]">
@@ -260,9 +259,9 @@ export function BankDetailsSection({ form }: BankDetailsSectionProps) {
           name="bankBranchName"
           render={({ field }) => (
             <FormItem>
-              <Label>{t('BANK_BRANCH_NAME')} <Req /></Label>
+              <FormLabel required>{t('BANK_BRANCH_NAME')}</FormLabel>
               <FormControl>
-                <Input placeholder={t('ENTER_BANK_BRANCH_NAME')} {...field} />
+                <FormInput placeholder={t('ENTER_BANK_BRANCH_NAME')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -273,9 +272,9 @@ export function BankDetailsSection({ form }: BankDetailsSectionProps) {
           name="accountName"
           render={({ field }) => (
             <FormItem>
-              <Label>{t('ACCOUNT_HOLDER_NAME')} <Req /></Label>
+              <FormLabel required>{t('ACCOUNT_HOLDER_NAME')}</FormLabel>
               <FormControl>
-                <Input placeholder={t('ENTER_BANK_ACCOUNT_HOLDER_NAME')} {...field} />
+                <FormInput placeholder={t('ENTER_BANK_ACCOUNT_HOLDER_NAME')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -286,9 +285,9 @@ export function BankDetailsSection({ form }: BankDetailsSectionProps) {
           name="accountNumber"
           render={({ field }) => (
             <FormItem>
-              <Label>{t('ACCOUNT_NUMBER')} <Req /></Label>
+              <FormLabel required>{t('ACCOUNT_NUMBER')}</FormLabel>
               <FormControl>
-                <Input
+                <FormInput
                   placeholder={t('ENTER_BANK_ACCOUNT_NUMBER')}
                   {...field}
                   value={formatDigits(field.value)}

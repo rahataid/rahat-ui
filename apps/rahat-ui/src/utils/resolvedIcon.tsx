@@ -124,8 +124,8 @@ export const defaultNavConfig: NavConfigDB = {
     {
       icon: 'Store',
       path: 'vendors',
-      roles: ['ADMIN', 'MANAGER', 'UNICEFNepalCO', 'Municipality'],
       title: 'Vendors',
+      subject: SUBJECTS.VENDOR,
     },
     {
       title: 'IVR',

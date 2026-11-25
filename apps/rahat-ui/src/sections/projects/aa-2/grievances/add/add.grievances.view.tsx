@@ -6,6 +6,7 @@ import {
   GrievanceType,
 } from '@rahat-ui/query/lib/grievance/types/grievance';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { cn } from '@rahat-ui/shadcn/src';
 import {
   Form,
   FormControl,
@@ -14,7 +15,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
   RadioGroup,
   RadioGroupItem,
@@ -24,10 +24,8 @@ import {
   Select,
   SelectContent,
   SelectItem,
-  SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { useUserStore } from '@rumsan/react-query';
 import {
@@ -42,10 +40,20 @@ import { useForm } from 'react-hook-form';
 import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 import { Tag, TagInput } from 'emblor';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
-import { Back, FormInput, Heading } from 'apps/rahat-ui/src/common';
+import {
+  Back,
+  ERROR_CLASSES,
+  FILLED_CLASSES,
+  FormInput,
+  FormSelectTrigger,
+  FormTextarea,
+  Heading,
+  UnsavedChangesDialog,
+} from 'apps/rahat-ui/src/common';
+import { useUnsavedChanges } from 'apps/rahat-ui/src/hooks/useUnsavedChanges';
+import { useSessionFormStorage } from 'apps/rahat-ui/src/hooks/useSessionFormStorage';
 import { validateFile } from 'apps/rahat-ui/src/utils/file.validation';
 import { isFileNameDuplicate } from 'apps/rahat-ui/src/utils/file.utils';
 import { CloudUpload, FileCheck, LoaderCircle, X } from 'lucide-react';
@@ -53,6 +61,7 @@ import { toast } from 'react-toastify';
 
 export default function AddGrievances() {
   const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const labelMap: Record<string, string> = {
     'Technical': t('TECHNICAL'),
     'Non-Technical': t('NON_TECHNICAL'),
@@ -75,6 +84,9 @@ export default function AddGrievances() {
   const [uploadingFileName, setUploadingFileName] = React.useState<
     string | null
   >(null);
+  const hasInteracted = React.useRef(false);
+  const isRestored = React.useRef(false);
+  const isSubmittingRef = React.useRef(false);
 
   // Custom validation for email or phone number. Devanagari numerals are
   // normalized to ASCII before the check runs, so a phone number typed in
@@ -151,21 +163,31 @@ export default function AddGrievances() {
 
   const formatLabel = useLabelDigits();
 
+  const DEFAULT_FORM_VALUES: Partial<FormValues> = {
+    reportedBy: '',
+    reporterContact: '',
+    title: '',
+    description: '',
+    status: GrievanceStatus.NEW,
+    type: undefined,
+    priority: undefined,
+    tags: [],
+    grievanceDocuments: [],
+  };
+
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {
-      reportedBy: '',
-      reporterContact: '',
-      title: '',
-      description: '',
-      status: GrievanceStatus.NEW,
-      type: undefined,
-      priority: undefined,
-      tags: [],
-      grievanceDocuments: [],
-    },
+    defaultValues: DEFAULT_FORM_VALUES,
     mode: 'onChange',
   });
+
+  const { loadSaved, saveData, clearSaved } = useSessionFormStorage<Partial<FormValues>>(
+    {
+      key: 'grievance_draft',
+      projectId: projectID as string,
+      defaultValue: DEFAULT_FORM_VALUES,
+    },
+  );
 
   const handleCreateGrievance: import('react-hook-form').SubmitHandler<
     FormValues
@@ -178,45 +200,29 @@ export default function AddGrievances() {
         tags: data?.tags?.map((tag) => tag.text) || [],
       };
 
+      isSubmittingRef.current = true;
       await addGrievance.mutateAsync({
         projectUUID: projectID as UUID,
         grievancePayload: payload,
       });
 
+      clearSaved();
       // Reset form after successful submission with default values
-      form.reset({
-        reportedBy: '',
-        reporterContact: '',
-        title: '',
-        type: undefined,
-        description: '',
-        status: GrievanceStatus.NEW,
-        priority: undefined,
-        tags: [],
-        grievanceDocuments: [],
-      });
+      form.reset(DEFAULT_FORM_VALUES);
       setVariationTags([]);
       setUnsavedTag('');
       setActiveTagIndex(null);
 
       router.push(grievancesListPath);
     } catch (error) {
+      isSubmittingRef.current = false;
       console.error('Error submitting form:', error);
     }
   };
 
   const handleResetForm = () => {
-    form.reset({
-      reportedBy: '',
-      reporterContact: '',
-      title: '',
-      description: '',
-      status: GrievanceStatus.NEW,
-      type: undefined,
-      priority: undefined,
-      tags: [],
-      grievanceDocuments: [],
-    });
+    clearSaved();
+    form.reset(DEFAULT_FORM_VALUES);
     setVariationTags([]);
     setUnsavedTag('');
     setActiveTagIndex(null);
@@ -320,6 +326,50 @@ export default function AddGrievances() {
   );
   const [unsavedTag, setUnsavedTag] = React.useState<string>('');
 
+  React.useEffect(() => {
+    if (isRestored.current || !projectID) return;
+    const saved = loadSaved();
+    if (saved && Object.keys(saved).length > 0) {
+      form.reset(saved);
+      if (saved.tags && saved.tags.length > 0) {
+        setVariationTags(saved.tags);
+      }
+      forceRerender();
+    }
+    isRestored.current = true;
+  }, [projectID]);
+
+  const saveCurrentForm = () => {
+    const values = form.getValues();
+    saveData({
+      ...values,
+      tags: variationTags,
+      grievanceDocuments: (values.grievanceDocuments ?? []).filter(
+        (file) => file.mediaURL,
+      ),
+    });
+  };
+
+  const hasUnsavedChanges =
+    !isSubmittingRef.current &&
+    ((hasInteracted.current && form.formState.isDirty) ||
+      unsavedTag.trim() !== '');
+
+  const {
+    showDialog,
+    handleConfirmLeave,
+    handleCancelLeave,
+    handleDiscardLeave,
+  } = useUnsavedChanges({
+    hasUnsavedChanges,
+    onConfirm: () => {
+      saveCurrentForm();
+    },
+    onDiscard: () => {
+      clearSaved();
+    },
+  });
+
   const handleSupportAreaKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>,
   ) => {
@@ -341,7 +391,12 @@ export default function AddGrievances() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleCreateGrievance)}>
+      <form
+        onSubmit={form.handleSubmit(handleCreateGrievance)}
+        onFocus={() => {
+          hasInteracted.current = true;
+        }}
+      >
         <div className="p-4">
           <div className=" mb-2 flex flex-col space-y-0">
             <Back path={grievancesListPath} />
@@ -368,9 +423,9 @@ export default function AddGrievances() {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>{t('GRIEVANCE_TITLE')} *</FormLabel>
+                        <FormLabel required>{t('GRIEVANCE_TITLE')}</FormLabel>
                         <FormControl>
-                          <Input
+                          <FormInput
                             type="text"
                             placeholder={t('WRITE_GRIEVANCE_TITLE')}
                             {...field}
@@ -388,9 +443,9 @@ export default function AddGrievances() {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>{t('DESCRIPTION')} *</FormLabel>
+                        <FormLabel required>{t('DESCRIPTION')}</FormLabel>
                         <FormControl>
-                          <Textarea
+                          <FormTextarea
                             placeholder={t('PROVIDE_DETAILED_INFORMATION')}
                             {...field}
                           />
@@ -408,7 +463,7 @@ export default function AddGrievances() {
                     name="type"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('GRIEVANCE_TYPE')} *</FormLabel>
+                        <FormLabel required>{t('GRIEVANCE_TYPE')}</FormLabel>
                         <Select
                           onValueChange={(value: string) =>
                             field.onChange(value as GrievanceType)
@@ -417,9 +472,9 @@ export default function AddGrievances() {
                           defaultValue={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger>
+                            <FormSelectTrigger value={field.value}>
                               <SelectValue placeholder={t('SELECT_GRIEVANCE_TYPE')} />
-                            </SelectTrigger>
+                            </FormSelectTrigger>
                           </FormControl>
                           <SelectContent>
                             {grievanceType.map((item) => (
@@ -442,7 +497,7 @@ export default function AddGrievances() {
                     name="status"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('STATUS')} *</FormLabel>
+                        <FormLabel required>{t('STATUS')}</FormLabel>
                         <Select
                           onValueChange={(value: string) =>
                             field.onChange(value as GrievanceStatus)
@@ -451,9 +506,9 @@ export default function AddGrievances() {
                           defaultValue={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger>
+                            <FormSelectTrigger value={field.value}>
                               <SelectValue placeholder={t('SELECT_GRIEVANCE_STATUS')} />
-                            </SelectTrigger>
+                            </FormSelectTrigger>
                           </FormControl>
                           <SelectContent>
                             {grievanceStatus.map((item) => (
@@ -477,7 +532,7 @@ export default function AddGrievances() {
                     name="priority"
                     render={({ field }) => (
                       <FormItem className="space-y-3">
-                        <FormLabel>{t('PRIORITY')} *</FormLabel>
+                        <FormLabel required>{t('PRIORITY')}</FormLabel>
                         <FormControl>
                           <RadioGroup
                             onValueChange={(value: string) =>
@@ -516,9 +571,9 @@ export default function AddGrievances() {
                     render={({ field }) => {
                       return (
                         <FormItem>
-                        <FormLabel>{t('REPORTER_NAME')} *</FormLabel>
+                        <FormLabel required>{t('REPORTER_NAME')}</FormLabel>
                         <FormControl>
-                          <Input
+                          <FormInput
                             type="text"
                             placeholder={t('ENTER_REPORTER_NAME')}
                             {...field}
@@ -539,9 +594,9 @@ export default function AddGrievances() {
                         field.value.includes('@');
                       return (
                         <FormItem>
-                        <FormLabel>{t('CONTACT_INFORMATION')} *</FormLabel>
+                        <FormLabel required>{t('CONTACT_INFORMATION')}</FormLabel>
                         <FormControl>
-                          <Input
+                          <FormInput
                             type="text"
                             placeholder={t('WRITE_REPORTER_CONTACT')}
                             {...field}
@@ -563,10 +618,10 @@ export default function AddGrievances() {
                 <FormField
                   control={form.control}
                   name="tags"
-                  render={({ field }) => {
+                  render={({ field, fieldState }) => {
                     return (
                       <FormItem>
-                        <Label>{t('TAGS')}</Label>
+                        <FormLabel>{t('TAGS')}</FormLabel>
                         <FormControl>
                           <>
                             <TagInput
@@ -582,9 +637,11 @@ export default function AddGrievances() {
                               placeholder={t('ENTER_TAG_AND_PRESS_ENTER')}
                               className="min-h-[23px]"
                               styleClasses={{
-                                inlineTagsContainer:
-                                  'border-input rounded shadow-xs p-1 gap-1 ' +
-                                  'focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500',
+                                inlineTagsContainer: cn(
+                                  'border-input rounded shadow-xs p-1 gap-1 focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500',
+                                  variationTags.length > 0 && !fieldState.error && FILLED_CLASSES,
+                                  fieldState.error && ERROR_CLASSES,
+                                ),
                                 input:
                                   'w-full rounded-sm min-w-[80px] shadow-none px-2 h-7',
                                 tag: {
@@ -706,6 +763,18 @@ export default function AddGrievances() {
           </ScrollArea>
         </div>
       </form>
+
+      <UnsavedChangesDialog
+        open={showDialog}
+        onConfirm={handleConfirmLeave}
+        onCancel={handleCancelLeave}
+        onDiscard={handleDiscardLeave}
+        title={tg('UNSAVED_TITLE')}
+        description={tg('UNSAVED_ALERT_DESCRIPTION')}
+        cancelText={tg('CANCEL_TEXT')}
+        discardText={tg('DISCARD_TEXT')}
+        confirmText={tg('CONFIRM_TEXT')}
+      />
     </Form>
   );
 }

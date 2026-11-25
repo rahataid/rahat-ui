@@ -20,8 +20,9 @@ import {
 } from 'libs/shadcn/src/components/ui/form';
 import { Input } from 'libs/shadcn/src/components/ui/input';
 import DropdownSearch from 'apps/rahat-ui/src/common/search.dropdown';
+import { FormInput } from 'apps/rahat-ui/src/common';
 import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { useTranslations } from 'next-intl';
@@ -43,10 +44,21 @@ const DEFAULT_VALUES: FundAssignmentFormValues = {
   totalTokenAmount: 0,
 };
 
+export type FundDraft = Pick<
+  FundAssignmentFormValues,
+  'title' | 'beneficiaryGroupId' | 'tokenAmountPerBenef'
+>;
+
 export default function AssignFundsForm({
   handleStepChange,
+  draft,
+  onDraftChange,
+  onClear,
 }: {
   handleStepChange: (step: number) => void;
+  draft?: FundDraft | null;
+  onDraftChange?: (values: FundDraft, isDirty: boolean) => void;
+  onClear?: () => void;
 }) {
   const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
@@ -85,6 +97,36 @@ export default function AssignFundsForm({
 
   const tokenPerBenef = watch('tokenAmountPerBenef');
   const selectedGroupId = watch('beneficiaryGroupId');
+  const title = watch('title');
+  const { isDirty } = form.formState;
+  const isDraftRestored = useRef(false);
+
+  useEffect(() => {
+    onDraftChange?.(
+      {
+        title,
+        beneficiaryGroupId: selectedGroupId,
+        tokenAmountPerBenef: tokenPerBenef,
+      },
+      isDirty,
+    );
+  }, [title, selectedGroupId, tokenPerBenef, isDirty, onDraftChange]);
+
+  useEffect(() => {
+    if (isDraftRestored.current || !draft || !benGroups.data) return;
+    isDraftRestored.current = true;
+    if (assignedFundData?.reserveTokenPayload) return;
+    const isGroupEligible = benGroups.data.some(
+      (group) => group.uuid === draft.beneficiaryGroupId,
+    );
+    reset({
+      ...DEFAULT_VALUES,
+      title: draft.title ?? '',
+      beneficiaryGroupId: isGroupEligible ? draft.beneficiaryGroupId : '',
+      tokenAmountPerBenef: draft.tokenAmountPerBenef ?? 0,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [draft, benGroups.data]);
 
   // Pre-fill form when returning from a later step
   useEffect(() => {
@@ -187,9 +229,9 @@ export default function AssignFundsForm({
             render={({ field }) => {
               return (
                 <FormItem>
-                  <FormLabel>{t('TITLE')}</FormLabel>
+                  <FormLabel required>{t('TITLE')}</FormLabel>
                   <FormControl>
-                    <Input
+                    <FormInput
                       type="text"
                       placeholder={t('WRITE_TOKEN_TITLE')}
                       {...field}
@@ -206,7 +248,7 @@ export default function AssignFundsForm({
               name="beneficiaryGroupId"
               render={({ field }) => (
                 <FormItem className="flex flex-col space-y-3 w-full">
-                  <FormLabel className="mt-1">{t('BENEFICIARY_GROUP')}</FormLabel>
+                  <FormLabel required className="mt-1">{t('BENEFICIARY_GROUP')}</FormLabel>
                   <DropdownSearch
                     selectedLabel={
                       benGroups.data?.find((group) => group.uuid === field.value)
@@ -238,9 +280,9 @@ export default function AssignFundsForm({
               name="tokenAmountPerBenef"
               render={({ field }) => (
                 <FormItem className="w-full">
-                  <FormLabel>{t('TOKEN_AMOUNT_PER_BENEFICIARY_LABEL')}</FormLabel>
+                  <FormLabel required>{t('TOKEN_AMOUNT_PER_BENEFICIARY_LABEL')}</FormLabel>
                   <FormControl>
-                    <Input
+                    <FormInput
                       type="number"
                       placeholder={t('WRITE_TOKEN_AMOUNT')}
                       {...field}
@@ -288,7 +330,10 @@ export default function AssignFundsForm({
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => reset(DEFAULT_VALUES)}
+                onClick={() => {
+                  reset(DEFAULT_VALUES);
+                  onClear?.();
+                }}
                 className="px-10 rounded-sm w-40"
               >
                 {t('CLEAR')}

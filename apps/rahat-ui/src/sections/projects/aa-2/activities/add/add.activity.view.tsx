@@ -28,13 +28,13 @@ import {
   Select,
   SelectContent,
   SelectItem,
-  SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { useUserList } from '@rumsan/react-query';
 import {
   Back,
   FormInput,
+  FormSelectTrigger,
   FormTextarea,
   Heading,
   UnsavedChangesDialog,
@@ -902,9 +902,12 @@ export default function AddActivities() {
                                 }}
                               >
                                 <FormControl>
-                                  <SelectTrigger className="rounded-l-none">
+                                  <FormSelectTrigger
+                                    value={lead ? unit : ''}
+                                    className="rounded-l-none"
+                                  >
                                     <SelectValue />
-                                  </SelectTrigger>
+                                  </FormSelectTrigger>
                                 </FormControl>
                                 <SelectContent>
                                   {DurationData.map((item) => (

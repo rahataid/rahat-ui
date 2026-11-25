@@ -22,9 +22,11 @@ import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 export default function Confirmation({
   payoutData,
   onPayoutData,
+  onComplete,
 }: {
   payoutData: FundWithPayoutSchema | null;
   onPayoutData: (data: FundWithPayoutSchema | null) => void;
+  onComplete?: () => void;
 }) {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
@@ -107,6 +109,10 @@ export default function Confirmation({
 
       // Clear payout state and navigate, store is cleared when AssignFundsView unmounts
       onPayoutData(null);
+      if (onComplete) {
+        onComplete();
+        return;
+      }
       router.push(
         `/projects/aa/${projectUUID}/fund-management?tab=fundManagementList`,
       );

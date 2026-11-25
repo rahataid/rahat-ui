@@ -80,6 +80,7 @@ export default function AddAnotherDataSource({
         fields = (
           <>
             <SelectFormField
+              required
               form={form}
               name={fieldName('forecast')}
               label={t('FORECAST')}
@@ -94,24 +95,28 @@ export default function AddAnotherDataSource({
         fields = (
           <>
             <InputFormField
+              required
               form={form}
               name={fieldName('todayGLOFAS')}
               label={t('TODAY')}
               placeholder={t('ENTER_TODAYS_STATUS')}
             />
             <InputFormField
+              required
               form={form}
               name={fieldName('days3')}
               label={t('N3_DAYS')}
               placeholder={t('ENTER_3_DAYS_STATUS')}
             />
             <InputFormField
+              required
               form={form}
               name={fieldName('days5')}
               label={t('N5_DAYS')}
               placeholder={t('ENTER_5_DAYS_STATUS')}
             />
             <SelectFormField
+              required
               form={form}
               name={fieldName(
                 'inBetweenTodayUntil7DaysIsThereAnyPossibilityOfPeak',
@@ -126,6 +131,7 @@ export default function AddAnotherDataSource({
       case 'Flash Flood Risk Monitoring':
         fields = (
           <SelectFormField
+            required
             form={form}
             name={fieldName('status')}
             label={t('STATUS')}
@@ -138,6 +144,7 @@ export default function AddAnotherDataSource({
         fields = (
           <>
             <SelectFormField
+              required
               form={form}
               name={fieldName('heavyRainfallForecastInKarnaliBasin')}
               label={t('HEAVY_RAINFALL_FORECAST_IN_KARNALI_BASIN')}
@@ -149,6 +156,7 @@ export default function AddAnotherDataSource({
               ]}
             />
             <SelectFormField
+              required
               form={form}
               name={fieldName('hours24')}
               label={t('N24_HOURS')}
@@ -156,6 +164,7 @@ export default function AddAnotherDataSource({
               selectItems={rainfallSelectItems}
             />
             <SelectFormField
+              required
               form={form}
               name={fieldName('hours72')}
               label={t('N72_HOURS')}
@@ -163,6 +172,7 @@ export default function AddAnotherDataSource({
               selectItems={rainfallSelectItems}
             />
             <SelectFormField
+              required
               form={form}
               name={fieldName('hours168')}
               label={t('N168_HOURS')}
@@ -176,6 +186,7 @@ export default function AddAnotherDataSource({
         fields = (
           <>
             <InputFormField
+              required
               form={form}
               name={fieldName('extremeWeatherOutlook')}
               label={t('EXTREME_WEATHER_OUTLOOK')}
@@ -183,6 +194,7 @@ export default function AddAnotherDataSource({
               placeholder={t('ENTER_STATUS')}
             />
             <InputFormField
+              required
               form={form}
               name={fieldName('deterministicsPredictionSystem')}
               label={t('DETERMINISTICS_PREDICTION_SYSTEM')}
@@ -190,6 +202,7 @@ export default function AddAnotherDataSource({
               placeholder={t('ENTER_STATUS')}
             />
             <InputFormField
+              required
               form={form}
               name={fieldName('probabilisticPredictionSystem')}
               label={t('PROBABILISTIC_PREDICTION_SYSTEM')}
@@ -203,6 +216,7 @@ export default function AddAnotherDataSource({
         fields = (
           <>
             <SelectFormField
+              required
               form={form}
               name={fieldName('gaugeForecast')}
               label={t('FORECAST')}
@@ -212,6 +226,7 @@ export default function AddAnotherDataSource({
             {selectedGaugeForecast && (
               <>
                 <SelectFormField
+                  required
                   key={`station-${selectedGaugeForecast}`}
                   form={form}
                   name={fieldName('station')}
@@ -226,6 +241,7 @@ export default function AddAnotherDataSource({
                   selectItems={gaugeReadingOptions}
                 />
                 <InputFormField
+                  required
                   form={form}
                   name={fieldName('gaugeReading')}
                   label={`${t('GAUGE_READING')} ${
@@ -253,6 +269,7 @@ export default function AddAnotherDataSource({
         fields = (
           <>
             <SelectFormField
+              required
               form={form}
               name={fieldName('today')}
               label={t('TODAY')}
@@ -260,6 +277,7 @@ export default function AddAnotherDataSource({
               selectItems={floodForecastSelectItems}
             />
             <SelectFormField
+              required
               form={form}
               name={fieldName('tomorrow')}
               label={t('TOMORROW')}
@@ -267,6 +285,7 @@ export default function AddAnotherDataSource({
               selectItems={floodForecastSelectItems}
             />
             <SelectFormField
+              required
               form={form}
               name={fieldName('dayAfterTomorrow')}
               label={t('DAY_AFTER_TOMORROW')}
@@ -280,6 +299,7 @@ export default function AddAnotherDataSource({
         fields = (
           <>
             <SelectFormField
+              required
               form={form}
               name={fieldName('todayAfternoon')}
               label={t('TODAY_AFTERNOON')}
@@ -287,6 +307,7 @@ export default function AddAnotherDataSource({
               selectItems={rainfallForecastSelectItems}
             />
             <SelectFormField
+              required
               form={form}
               name={fieldName('todayNight')}
               label={t('TODAY_NIGHT')}
@@ -294,6 +315,7 @@ export default function AddAnotherDataSource({
               selectItems={rainfallForecastSelectItems}
             />
             <SelectFormField
+              required
               form={form}
               name={fieldName('tomorrowAfternoon')}
               label={t('TOMORROW_AFTERNOON')}
@@ -301,6 +323,7 @@ export default function AddAnotherDataSource({
               selectItems={rainfallForecastSelectItems}
             />
             <SelectFormField
+              required
               form={form}
               name={fieldName('tomorrowNight')}
               label={t('TOMORROW_NIGHT')}
@@ -308,6 +331,7 @@ export default function AddAnotherDataSource({
               selectItems={rainfallForecastSelectItems}
             />
             <SelectFormField
+              required
               form={form}
               name={fieldName('dayAfterTomorrowAfternoon')}
               label={t('DAY_AFTER_TOMORROW_AFTERNOON')}
@@ -315,6 +339,7 @@ export default function AddAnotherDataSource({
               selectItems={rainfallForecastSelectItems}
             />
             <SelectFormField
+              required
               form={form}
               name={fieldName('dayAfterTomorrowNight')}
               label={t('DAY_AFTER_TOMORROW_NIGHT')}
@@ -327,6 +352,7 @@ export default function AddAnotherDataSource({
       case 'Realtime Monitoring (River Watch)':
         fields = (
           <InputFormField
+            required
             form={form}
             name={fieldName('waterLevel')}
             label={t('WATER_LEVEL_METER')}
@@ -339,6 +365,7 @@ export default function AddAnotherDataSource({
         fields = (
           <>
             <SelectFormField
+              required
               form={form}
               name={fieldName('hours24NWP')}
               label={t('N24_HOURS')}
@@ -346,6 +373,7 @@ export default function AddAnotherDataSource({
               selectItems={rainfallSelectItems}
             />
             <SelectFormField
+              required
               form={form}
               name={fieldName('hours48')}
               label={t('N48_HOURS')}
@@ -353,6 +381,7 @@ export default function AddAnotherDataSource({
               selectItems={rainfallSelectItems}
             />
             <SelectFormField
+              required
               form={form}
               name={fieldName('hours72NWP')}
               label={t('N72_HOURS')}
@@ -390,6 +419,7 @@ export default function AddAnotherDataSource({
       </div>
       <div className="grid grid-cols-2 gap-4">
         <SelectFormField
+          required
           form={form}
           name={fieldName('source')}
           label={t('SOURCE')}

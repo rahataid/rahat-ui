@@ -7,14 +7,13 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import { useTranslations } from 'next-intl';
-import { HeaderWithBack, Heading } from 'apps/rahat-ui/src/common';
+import { HeaderWithBack, Heading, FormInput } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -196,11 +195,11 @@ export default function EditStakeholders() {
                 render={({ field }) => {
                   return (
                     <FormItem className="space-y-[clamp(2px,0.4vw,6px)]">
-                      <Label className="text-[clamp(11px,1vw,14px)]">
+                      <FormLabel className="text-[clamp(11px,1vw,14px)]">
                         {t('STAKEHOLDERS_NAME')}
-                      </Label>
+                      </FormLabel>
                       <FormControl>
-                        <Input
+                        <FormInput
                           type="text"
                           placeholder={t('ENTER_A_STAKEHOLDER_NAME')}
                           className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
@@ -219,14 +218,14 @@ export default function EditStakeholders() {
                 render={({ field }) => {
                   return (
                     <FormItem className="space-y-[clamp(2px,0.4vw,6px)]">
-                      <Label className="flex gap-2 items-center text-[clamp(11px,1vw,14px)]">
+                      <FormLabel className="flex gap-2 items-center text-[clamp(11px,1vw,14px)]">
                         {t('SUPPORT_AREA')}{' '}
                         {unsavedSupportAreaInput && (
                           <span className="text-[clamp(11px,1vw,14px)] text-red-400 ml-1">
                             {t('PRESS_ENTER_TO_ADD')}
                           </span>
                         )}
-                      </Label>
+                      </FormLabel>
                       <FormControl>
                         <TagInput
                           {...field}
@@ -277,9 +276,9 @@ export default function EditStakeholders() {
                 render={({ field }) => {
                   return (
                     <FormItem className="space-y-[clamp(2px,0.4vw,8px)]">
-                      <Label className="text-[clamp(11px,1vw,14px)]">
+                      <FormLabel className="text-[clamp(11px,1vw,14px)]">
                         {t('PHONE_NUMBER')}
-                      </Label>
+                      </FormLabel>
                       <FormControl>
                         <PhoneInput
                           placeholder={t('ENTER_A_PHONE_NUMBER')}
@@ -299,11 +298,11 @@ export default function EditStakeholders() {
                 render={({ field }) => {
                   return (
                     <FormItem className="space-y-[clamp(2px,0.4vw,8px)]">
-                      <Label className="text-[clamp(11px,1vw,14px)]">
+                      <FormLabel className="text-[clamp(11px,1vw,14px)]">
                         {t('EMAIL')}
-                      </Label>
+                      </FormLabel>
                       <FormControl>
-                        <Input
+                        <FormInput
                           type="email"
                           placeholder={t('ENTER_A_EMAIL_ADDRESS')}
                           className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
@@ -321,11 +320,11 @@ export default function EditStakeholders() {
                 render={({ field }) => {
                   return (
                     <FormItem className="space-y-[clamp(2px,0.4vw,8px)]">
-                      <Label className="text-[clamp(11px,1vw,14px)]">
+                      <FormLabel className="text-[clamp(11px,1vw,14px)]">
                         {t('DESIGNATION')}
-                      </Label>
+                      </FormLabel>
                       <FormControl>
-                        <Input
+                        <FormInput
                           type="text"
                           placeholder={t('ENTER_A_DESIGNATION')}
                           className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
@@ -343,11 +342,11 @@ export default function EditStakeholders() {
                 render={({ field }) => {
                   return (
                     <FormItem className="space-y-[clamp(2px,0.4vw,8px)]">
-                      <Label className="text-[clamp(11px,1vw,14px)]">
+                      <FormLabel className="text-[clamp(11px,1vw,14px)]">
                         {t('ORGANIZATION')}
-                      </Label>
+                      </FormLabel>
                       <FormControl>
-                        <Input
+                        <FormInput
                           type="text"
                           placeholder={t('ENTER_AN_ORGANIZATION')}
                           className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
@@ -366,11 +365,11 @@ export default function EditStakeholders() {
                 render={({ field }) => {
                   return (
                     <FormItem className="space-y-[clamp(2px,0.4vw,8px)]">
-                      <Label className="text-[clamp(11px,1vw,14px)]">
+                      <FormLabel className="text-[clamp(11px,1vw,14px)]">
                         {t('DISTRICT')}
-                      </Label>
+                      </FormLabel>
                       <FormControl>
-                        <Input
+                        <FormInput
                           type="text"
                           placeholder={t('ENTER_A_DISTRICT')}
                           className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
@@ -389,11 +388,11 @@ export default function EditStakeholders() {
                 render={({ field }) => {
                   return (
                     <FormItem className="space-y-[clamp(2px,0.4vw,8px)]">
-                      <Label className="text-[clamp(11px,1vw,14px)]">
+                      <FormLabel className="text-[clamp(11px,1vw,14px)]">
                         {t('MUNICIPALITY')}
-                      </Label>
+                      </FormLabel>
                       <FormControl>
-                        <Input
+                        <FormInput
                           type="text"
                           placeholder={t('ENTER_A_MUNICIPALITY')}
                           className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"

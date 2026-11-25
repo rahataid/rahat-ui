@@ -19,13 +19,12 @@ import {
   DemoTable,
   Heading,
 } from 'apps/rahat-ui/src/common';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -45,6 +44,7 @@ import {
 import StakeholdersTableFilters from './component/stakeholders.table.filters';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { FormInput } from 'apps/rahat-ui/src/common';
 
 const UpdateOrAddStakeholdersGroup = () => {
   const formatNum = useNumberFormat();
@@ -287,9 +287,9 @@ const UpdateOrAddStakeholdersGroup = () => {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <Label>{t('STAKEHOLDER_GROUP_NAME')}</Label>
+                    <FormLabel required>{t('STAKEHOLDER_GROUP_NAME')}</FormLabel>
                     <FormControl>
-                      <Input
+                      <FormInput
                         placeholder={t('WRITE_STAKEHOLDER_GROUP_NAME')}
                         className="w-full rounded-md text-[clamp(11px,1vw,14px)]"
                         {...field}
@@ -303,15 +303,15 @@ const UpdateOrAddStakeholdersGroup = () => {
           </div>
 
           <div className="rounded-md border p-3">
-              <Heading
-                title=" "
-                description={
-                  isEditing
-                    ? t('SELECT_STAKEHOLDERS_TO_UPDATE_GROUP')
-                    : t('SELECT_STAKEHOLDERS_TO_CREATE_GROUP')
-                }
-                titleStyle="text-xl"
-              />
+            <Heading
+              title=" "
+              description={
+                isEditing
+                  ? t('SELECT_STAKEHOLDERS_TO_UPDATE_GROUP')
+                  : t('SELECT_STAKEHOLDERS_TO_CREATE_GROUP')
+              }
+              titleStyle="text-xl"
+            />
 
             <StakeholdersTableFilters
               projectID={projectId}
@@ -332,25 +332,25 @@ const UpdateOrAddStakeholdersGroup = () => {
               </p>
             )}
 
-      <CustomPagination
-        meta={
-          stakeholdersMeta || {
-            total: 0,
-            currentPage: 0,
-            lastPage: 0,
-            perPage: 0,
-            next: null,
-            prev: null,
-          }
-        }
-        handleNextPage={setNextPage}
-        handlePrevPage={setPrevPage}
-        handlePageSizeChange={setPerPage}
-        currentPage={pagination.page}
-        perPage={pagination.perPage}
-        setPagination={setPagination}
-        total={stakeholdersMeta?.lastPage || 0}
-      />
+            <CustomPagination
+              meta={
+                stakeholdersMeta || {
+                  total: 0,
+                  currentPage: 0,
+                  lastPage: 0,
+                  perPage: 0,
+                  next: null,
+                  prev: null,
+                }
+              }
+              handleNextPage={setNextPage}
+              handlePrevPage={setPrevPage}
+              handlePageSizeChange={setPerPage}
+              currentPage={pagination.page}
+              perPage={pagination.perPage}
+              setPagination={setPagination}
+              total={stakeholdersMeta?.lastPage || 0}
+            />
 
           </div>
         </form>

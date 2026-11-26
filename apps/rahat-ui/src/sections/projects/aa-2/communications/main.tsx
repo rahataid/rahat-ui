@@ -31,9 +31,8 @@ export default function CommunicationsView() {
   const [pagination, setPagination] = useState({ page: 1, perPage: 10 });
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 500);
-  const [channelFilter, setChannelFilter] = useState<
-    '' | 'SMS' | 'VOICE' | 'EMAIL'
-  >('');
+
+  const [channelFilter, setChannelFilter] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState('');
   const [dateRange, setDateRange] = useState<
     { from?: Date; to?: Date } | undefined
@@ -41,10 +40,28 @@ export default function CommunicationsView() {
   const [datePickerKey, setDatePickerKey] = useState(0);
 
   const appTransports = useListAllTransports();
+  const activeTransportIds = useMemo(() => {
+    if (!channelFilter) return undefined;
+    return (appTransports ?? [])
+      .filter((t) => resolveChannelByTransportId(appTransports, t.cuid) === channelFilter)
+      .map((t) => t.cuid as string);
+  }, [appTransports, channelFilter]);
   const { data, isLoading } = useListCommunications(uuid, {
     page: pagination.page,
     perPage: pagination.perPage,
     ...(debouncedSearch.trim() ? { title: debouncedSearch.trim() } : {}),
+    ...(activeTransportIds ? { transportId: activeTransportIds } : {}),
+    ...(statusFilter ? { status: statusFilter } : {}),
+    ...(dateRange?.from ? { startDate: dateRange.from.toISOString() } : {}),
+    ...(dateRange?.to
+      ? {
+        endDate: (() => {
+          const end = new Date(dateRange.to);
+          end.setHours(23, 59, 59, 999);
+          return end.toISOString();
+        })(),
+      }
+      : {}),
   });
   const { data: statsData, isLoading: isStatsDataLoading } = useListCommunications(uuid, {
     page: 1,
@@ -78,7 +95,6 @@ export default function CommunicationsView() {
       ),
     [items, appTransports],
   );
-
   const statsItems = useMemo(
     () =>
       Array.isArray(statsData?.data)
@@ -134,7 +150,7 @@ export default function CommunicationsView() {
     setPagination((prev) => ({ ...prev, page: 1 }));
   }, []);
 
-  const handleChannelFilterChange = useCallback((value: '' | 'SMS' | 'VOICE' | 'EMAIL') => {
+  const handleChannelFilterChange = useCallback((value: string) => {
     setChannelFilter(value);
     setActiveTab(value === '' ? 'all' : value.toLowerCase());
     setPagination((prev) => ({ ...prev, page: 1 }));
@@ -169,17 +185,16 @@ export default function CommunicationsView() {
 
   const showResetFilters = Boolean(
     search ||
-      channelFilter ||
-      statusFilter ||
-      dateRange?.from ||
-      dateRange?.to ||
-      activeTab !== 'all' ||
-      pagination.page !== 1,
+    channelFilter ||
+    statusFilter ||
+    dateRange?.from ||
+    dateRange?.to ||
+    activeTab !== 'all' ||
+    pagination.page !== 1,
   );
 
   const tableProps = useMemo(() => ({
     records,
-    allRecords: statsRecords,
     meta,
     isLoading,
     pagination,
@@ -199,7 +214,7 @@ export default function CommunicationsView() {
     showResetFilters,
     onResetFilters: handleResetFilters,
   }), [
-    records, statsRecords, meta, isLoading, pagination, search, channelFilter,
+    records, meta, isLoading, pagination, search, channelFilter,
     statusFilter, dateRange, datePickerKey, showResetFilters,
     handleSearchChange, handleChannelFilterChange,
     handleStatusFilterChange, handleDateRangeChange,

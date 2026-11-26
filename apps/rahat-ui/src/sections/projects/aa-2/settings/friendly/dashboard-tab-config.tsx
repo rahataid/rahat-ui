@@ -29,6 +29,7 @@ const TAB_OPTIONS: { value: string; label: string }[] = [
   { value: 'flood26Housing', label: 'Flood 2026 Housing' },
   { value: 'flood26Exposure', label: 'Flood 2026 Disaster Exposure' },
   { value: 'flood26Preparedness', label: 'Flood 2026 Preparedness' },
+  { value: 'activitiesOverview', label: 'Activity Overview' },
 ];
 
 type IProps = {
@@ -49,12 +50,9 @@ export default function DashboardTabConfigEditor({ submitRef }: IProps) {
   const initialValuesRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
-    // When this setting has never been saved for the project, default to
-    // every known tab enabled rather than none — an empty selection here
-    // would disable all fund management tabs the next time settings are saved.
-    const currentTabs: { value: string }[] = currentSetting
-      ? currentSetting?.value?.tabs || []
-      : TAB_OPTIONS;
+    // Fresh project (setting never saved): start with every tab unticked —
+    // a tab only enables after the admin ticks it and saves.
+    const currentTabs: { value: string }[] = currentSetting?.value?.tabs || [];
     const initial = new Set(currentTabs.map((tab) => tab.value));
     initialValuesRef.current = initial;
     setCheckedValues(initial);

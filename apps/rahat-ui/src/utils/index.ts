@@ -1,6 +1,6 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
 // If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-import * as XLSX from 'xlsx';
+// import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import { format, isValid, parse } from 'date-fns';
 import { localizeNepaliParts } from './i18n/date';
@@ -91,7 +91,9 @@ export function humanReadableDate(date: Date) {
   return formattedDate;
 }
 
-export const exportDataToExcel = (data: any[]) => {
+export const exportDataToExcel = async (data: any[]) => {
+  const XLSX = await import('xlsx');
+
   const currentDate = new Date().getTime();
   const fileName = `Failed_Beneficiary_${currentDate}.xlsx`;
   const worksheet = XLSX.utils.json_to_sheet(data);
@@ -117,11 +119,13 @@ export function formatDT(date: Date) {
   return formattedDate;
 }
 
-export const generateExcel = (
+export const generateExcel = async (
   data: any,
   title: string,
   numberOfColumns: number,
 ) => {
+  const XLSX = await import('xlsx');
+
   const wb = XLSX.utils.book_new();
 
   const ws = XLSX.utils.json_to_sheet(data);

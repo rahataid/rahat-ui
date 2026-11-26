@@ -10,6 +10,7 @@ import {
   SendHorizonal,
   LoaderCircle,
   ArrowUpRightSquare,
+  CalendarClock,
 } from 'lucide-react';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
@@ -21,6 +22,7 @@ import { SessionStatus } from '@rumsan/connect/src/types';
 import MessageWithToggle from './messageWithToggle';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { Can } from 'apps/rahat-ui/src/components/can';
 import {
   ACTIONS,
@@ -30,7 +32,7 @@ import { formatEnumString } from 'apps/rahat-ui/src/utils/string';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { useRouter } from 'next/navigation';
-import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
+import { SendCommunicationConfirmDialog } from '../../communications/components/send-communication-confirm-dialog';
 
 interface BaseCommunication {
   communicationTitle?: string;
@@ -46,6 +48,8 @@ interface BaseCommunication {
   startedAt?: string;
   updatedAt?: string;
   extras?: { smsCredits: number };
+  isScheduled?: boolean;
+  scheduledAt?: string;
   onSend?: () => void;
   onEdit?: () => void;
 }
@@ -85,6 +89,8 @@ export function CommunicationCard({
         return 'text-sky-800 bg-sky-100 border border-sky-200';
       case SessionStatus.FAILED:
         return 'text-rose-800 bg-rose-100 border border-rose-200';
+      case 'SCHEDULED':
+        return 'text-blue-800 bg-blue-100 border border-blue-200';
       default:
         return 'text-slate-700 bg-slate-100 border border-slate-200';
     }
@@ -113,9 +119,9 @@ export function CommunicationCard({
     () =>
       `/projects/aa/${projectId}/communication-logs/commsdetails/${
         activityCommunication?.communicationId
-      }@${activityId}@${activityCommunication?.sessionId || ''}?from=activities${
-        redirectTo ? `&backFrom=${redirectTo}` : ''
-      }`,
+      }@${activityId}@${
+        activityCommunication?.sessionId || ''
+      }?from=activities${redirectTo ? `&backFrom=${redirectTo}` : ''}`,
     [activityCommunication, redirectTo, activityId, projectId],
   );
 
@@ -135,11 +141,15 @@ export function CommunicationCard({
   };
 
   const handleConfirmSend = async () => {
-    confirmationDialog.onFalse();
-    await triggerCommunication(
-      activityId,
-      activityCommunication?.communicationId,
-    );
+    try {
+      await triggerCommunication(
+        activityId,
+        activityCommunication?.communicationId,
+      );
+      confirmationDialog.onFalse();
+    } catch {
+      // Error handled by query hook
+    }
   };
 
   return (
@@ -171,44 +181,60 @@ export function CommunicationCard({
                 iconStyle="text-primary"
               />
               <TooltipWrapper
-                tip={`${t('COMMUNICATION_STATUS')}: ${
-                  activityCommunication?.sessionStatus
-                    ? tg(activityCommunication.sessionStatus as any)
-                    : tg('UNKNOWN')
-                }`}
+                tip={`${t('COMMUNICATION_STATUS')}: ${translateValue(
+                  tg,
+                  activityCommunication?.sessionStatus,
+                  {
+                    fallback:
+                      activityCommunication?.sessionStatus || tg('UNKNOWN'),
+                  },
+                )}`}
               >
                 <Badge
                   className={`text-xs font-normal ${getSessionStatusBadgeClass(
                     activityCommunication?.sessionStatus,
                   )}`}
                 >
-                  {activityCommunication?.sessionStatus
-                    ? tg(activityCommunication.sessionStatus as any)
-                    : tg('UNKNOWN')}
+                  {translateValue(tg, activityCommunication?.sessionStatus, {
+                    fallback:
+                      activityCommunication?.sessionStatus || tg('UNKNOWN'),
+                  })}
                 </Badge>
               </TooltipWrapper>
             </div>
 
             <div className="flex items-center gap-2 text-sm text-gray-500">
               <TooltipWrapper
-                tip={`${t('COMMUNICATION_CHANNEL')}: ${
-                  activityCommunication?.transportName
-                }`}
+                tip={`${t('COMMUNICATION_CHANNEL')}: ${translateValue(
+                  tg,
+                  activityCommunication?.transportName,
+                  {
+                    fallback:
+                      activityCommunication?.transportName || tg('UNKNOWN'),
+                  },
+                )}`}
               >
                 <span>
-                  {activityCommunication?.transportName
-                    ? tg(activityCommunication.transportName as any)
-                    : tg('UNKNOWN')}
+                  {translateValue(tg, activityCommunication?.transportName, {
+                    fallback:
+                      activityCommunication?.transportName || tg('UNKNOWN'),
+                  })}
                 </span>
               </TooltipWrapper>
               <span>•</span>
               <TooltipWrapper
-                tip={`${t('GROUP_TYPE')}: ${activityCommunication?.groupType}`}
+                tip={`${t('GROUP_TYPE')}: ${translateValue(
+                  tg,
+                  activityCommunication?.groupType,
+                  {
+                    fallback: activityCommunication?.groupType || tg('UNKNOWN'),
+                  },
+                )}`}
               >
                 <span>
-                  {activityCommunication?.groupType
-                    ? tg(activityCommunication.groupType as any)
-                    : tg('UNKNOWN')}
+                  {translateValue(tg, activityCommunication?.groupType, {
+                    fallback: activityCommunication?.groupType || tg('UNKNOWN'),
+                  })}
                 </span>
               </TooltipWrapper>
               <span>•</span>
@@ -240,26 +266,27 @@ export function CommunicationCard({
           </div>
 
           {/* Send Button */}
-          {activityCommunication?.sessionStatus === SessionStatus.NEW && (
-            <Can action={ACTIONS.UPDATE} subject={SUBJECTS.ACTIVITY}>
-              <TooltipWrapper tip={t('SEND_COMMUNICATION')}>
-                <Button
-                  className="h-10 w-10 rounded-full p-0 flex-shrink-0"
-                  variant="outline"
-                  onClick={confirmationDialog.onTrue}
-                  type="button"
-                >
-                  {loadingButtons.includes(
-                    activityCommunication?.communicationId,
-                  ) ? (
-                    <LoaderCircle size={20} className="animate-spin" />
-                  ) : (
-                    <SendHorizonal size={18} strokeWidth={1.5} />
-                  )}
-                </Button>
-              </TooltipWrapper>
-            </Can>
-          )}
+          {activityCommunication?.sessionStatus === SessionStatus.NEW &&
+            !activityCommunication?.isScheduled && (
+              <Can action={ACTIONS.UPDATE} subject={SUBJECTS.ACTIVITY}>
+                <TooltipWrapper tip={t('SEND_COMMUNICATION')}>
+                  <Button
+                    className="h-10 w-10 rounded-full p-0 flex-shrink-0"
+                    variant="outline"
+                    onClick={confirmationDialog.onTrue}
+                    type="button"
+                  >
+                    {loadingButtons.includes(
+                      activityCommunication?.communicationId,
+                    ) ? (
+                      <LoaderCircle size={20} className="animate-spin" />
+                    ) : (
+                      <SendHorizonal size={18} strokeWidth={1.5} />
+                    )}
+                  </Button>
+                </TooltipWrapper>
+              </Can>
+            )}
         </div>
 
         {/* Subject for Email */}
@@ -341,6 +368,24 @@ export function CommunicationCard({
                 </p>
               </TooltipWrapper>
             )}
+          {(activityCommunication?.isScheduled ||
+            activityCommunication?.scheduledAt) && (
+            <TooltipWrapper
+              tip={`${t('SCHEDULED_FOR')}: ${formatDate(
+                activityCommunication.scheduledAt,
+                'MMM d, yyyy, h:mm a',
+              )}`}
+            >
+              <p className="text-sm text-gray-500 flex items-center gap-1">
+                <CalendarClock className="h-3.5 w-3.5 text-primary" />
+                {t('SCHEDULED_FOR')}:{' '}
+                {formatDate(
+                  activityCommunication.scheduledAt,
+                  'MMM d, yyyy, h:mm a',
+                )}
+              </p>
+            </TooltipWrapper>
+          )}
           {activityCommunication?.sessionStatus !== 'COMPLETED' &&
             activityCommunication?.updatedAt && (
               <TooltipWrapper
@@ -357,24 +402,20 @@ export function CommunicationCard({
         </div>
       </CardContent>
 
-      <ConfirmationDialog
-        isConfirmationDialogOpen={confirmationDialog.value}
-        onCancel={confirmationDialog.onFalse}
+      <SendCommunicationConfirmDialog
+        isOpen={confirmationDialog.value}
+        onClose={confirmationDialog.onFalse}
         onConfirm={handleConfirmSend}
-        dialogTitle={t('SEND_COMMUNICATION')}
-      >
-        <div>
-          {t('SEND_COMMUNICATION_CONFIRM')}
-          <span className="font-bold mx-1">
-            {activityCommunication?.transportName}
-          </span>
-          {t('COMMUNICATION_TO_THE')}
-          <span className="font-bold mx-1">
-            {activityCommunication?.groupName}
-          </span>
-          {t('GROUP_QUESTION')}
-        </div>
-      </ConfirmationDialog>
+        isPending={loadingButtons.includes(
+          activityCommunication?.communicationId,
+        )}
+        title={activityCommunication?.communicationTitle}
+        channel={translateValue(tg, activityCommunication?.transportName, {
+          fallback: activityCommunication?.transportName,
+        })}
+        groupName={activityCommunication?.groupName}
+        credits={activityCommunication?.extras?.smsCredits}
+      />
     </Card>
   );
 }

@@ -21,7 +21,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import { TooltipProvider } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import * as XLSX from 'xlsx';
 import {
   ChevronDown,
@@ -167,6 +172,12 @@ export default function GctManagementList() {
             perPage: 10000,
             sort: 'createdAt',
             order: 'desc',
+            ...(debouncedFilters.title.trim()
+              ? { search: debouncedFilters.title.trim() }
+              : {}),
+            ...(debouncedFilters.group.trim()
+              ? { groupCashTransferName: debouncedFilters.group.trim() }
+              : {}),
             ...(statusFilter ? { status: statusFilter } : {}),
           },
         },
@@ -200,6 +211,7 @@ export default function GctManagementList() {
 
   const rows = useMemo<GctFundRecord[]>(() => data?.data ?? [], [data]);
   const meta = data?.meta ?? data?.response?.meta;
+  const hasData = rows.length > 0;
 
   const columns: ColumnDef<GctFundRecord>[] = useMemo(
     () => [
@@ -339,20 +351,31 @@ export default function GctManagementList() {
           description={t('LIST_OF_ALL_THE_RECORDS')}
         />
         <div className="flex items-center gap-2">
-          <Button
-            size="sm"
-            variant="outline"
-            className="rounded-sm gap-1.5"
-            onClick={handleDownload}
-            disabled={downloading}
-          >
-            {downloading ? (
-              <Loader2 size={14} className="animate-spin" />
-            ) : (
-              <Download size={14} />
-            )}
-            {t('DOWNLOAD_LOGS')}
-          </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="rounded-sm gap-1.5"
+                    onClick={handleDownload}
+                    disabled={downloading || isLoading || !hasData}
+                  >
+                    {downloading ? (
+                      <Loader2 size={14} className="animate-spin" />
+                    ) : (
+                      <Download size={14} />
+                    )}
+                    {t('DOWNLOAD_LOGS')}
+                  </Button>
+                </span>
+              </TooltipTrigger>
+              {!hasData && !isLoading && (
+                <TooltipContent>{t('NO_LOGS_TO_DOWNLOAD')}</TooltipContent>
+              )}
+            </Tooltip>
+          </TooltipProvider>
           <RoleAuth
             roles={[AARoles.ADMIN, AARoles.Municipality]}
             hasContent={false}

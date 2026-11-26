@@ -35,6 +35,12 @@ export type Tag = {
 
 export type SanitizedTags = string[];
 
+export type GrievanceDocument = {
+  fileName: string;
+  mediaURL: string;
+  originalFileName?: string;
+};
+
 export type GrievanceFormData = {
   reportedBy: string;
   reporterContact: string;
@@ -44,4 +50,5 @@ export type GrievanceFormData = {
   status?: GrievanceStatus;
   priority: GrievancePriority;
   tags: SanitizedTags;
+  grievanceDocuments?: GrievanceDocument[];
 };

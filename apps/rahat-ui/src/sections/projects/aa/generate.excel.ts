@@ -1,16 +1,22 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
 // If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-import * as XLSX from 'xlsx';
+// import * as XLSX from 'xlsx';
 
-export const generateExcel = (data: any, title: string, numberOfColumns: number) => {
-    const wb = XLSX.utils.book_new();
+export const generateExcel = async (
+  data: any,
+  title: string,
+  numberOfColumns: number,
+) => {
+  const XLSX = await import('xlsx');
 
-    const ws = XLSX.utils.json_to_sheet(data);
+  const wb = XLSX.utils.book_new();
 
-    const columnWidths = 20;
-    ws['!cols'] = Array(numberOfColumns).fill({ wch: columnWidths });
+  const ws = XLSX.utils.json_to_sheet(data);
 
-    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+  const columnWidths = 20;
+  ws['!cols'] = Array(numberOfColumns).fill({ wch: columnWidths });
 
-    XLSX.writeFile(wb, `${title}.xlsx`);
+  XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+  XLSX.writeFile(wb, `${title}.xlsx`);
 };

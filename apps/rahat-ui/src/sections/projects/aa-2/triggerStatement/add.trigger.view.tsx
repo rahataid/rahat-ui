@@ -107,10 +107,6 @@ export default function AddTriggerView() {
   const [allTriggers, setAllTriggers] = React.useState<any[]>([]);
   const [open, setOpen] = React.useState<boolean>(false);
   const [showClearDialog, setShowClearDialog] = React.useState(false);
-  const [isManualDataValid, setIsManualDataValid] =
-    React.useState<boolean>(false);
-  const [isAutomatedDataValid, setIsAutomatedDataValid] =
-    React.useState<boolean>(false);
 
   const router = useRouter();
   const params = useParams();
@@ -271,49 +267,44 @@ export default function AddTriggerView() {
   const handleSubmitManualTrigger = async (
     data: z.infer<typeof ManualFormSchema>,
   ) => {
-    isManualDataValid &&
-      setAllTriggers([
-        ...allTriggers,
-        {
-          ...data,
-          isMandatory: !data?.isMandatory,
-          type: activeTab,
-          source: 'MANUAL',
-          time: new Date(),
-          phaseId: selectedPhase?.id,
-          riverBasin: selectedPhase?.riverBasin,
-        },
-      ]);
+    setAllTriggers((prev) => [
+      ...prev,
+      {
+        ...data,
+        isMandatory: !data?.isMandatory,
+        type: activeTab,
+        source: 'MANUAL',
+        time: new Date(),
+        phaseId: selectedPhase?.id,
+        riverBasin: selectedPhase?.riverBasin,
+      },
+    ]);
+    setOpen(true);
   };
 
   const handleSubmitAutomatedTrigger = async (
     data: z.infer<typeof AutomatedFormSchema>,
   ) => {
-    isAutomatedDataValid &&
-      setAllTriggers([
-        ...allTriggers,
-        {
-          ...data,
-          source: data?.source.split(':')[0].toUpperCase(),
-          isMandatory: !data?.isMandatory,
-          type: activeTab,
-          time: new Date(),
-          phaseId: selectedPhase?.id,
-          riverBasin: selectedPhase?.riverBasin,
-        },
-      ]);
+    setAllTriggers((prev) => [
+      ...prev,
+      {
+        ...data,
+        source: data?.source.split(':')[0].toUpperCase(),
+        isMandatory: !data?.isMandatory,
+        type: activeTab,
+        time: new Date(),
+        phaseId: selectedPhase?.id,
+        riverBasin: selectedPhase?.riverBasin,
+      },
+    ]);
+    setOpen(true);
   };
 
   const handleStoreTriggers = () => {
     const formHandlers = {
-      manual: () => {
-        manualForm.handleSubmit(handleSubmitManualTrigger)();
-        isManualDataValid ? setOpen(true) : setOpen(false);
-      },
-      automated: () => {
-        automatedForm.handleSubmit(handleSubmitAutomatedTrigger)();
-        isAutomatedDataValid ? setOpen(true) : setOpen(false);
-      },
+      manual: () => manualForm.handleSubmit(handleSubmitManualTrigger)(),
+      automated: () =>
+        automatedForm.handleSubmit(handleSubmitAutomatedTrigger)(),
     };
 
     formHandlers[activeTab as keyof typeof formHandlers]?.();
@@ -366,7 +357,7 @@ export default function AddTriggerView() {
         triggerStatementPayload: { triggers: payload },
       });
       clearSaved();
-      router.back();
+      router.push(`/projects/aa/${projectId}/trigger-statements`);
     } catch (e) {
       isSubmittingRef.current = false;
       console.error(e);
@@ -375,21 +366,6 @@ export default function AddTriggerView() {
       setAllTriggers([]);
     }
   };
-  React.useEffect(() => {
-    const isValid =
-      activeTab === 'automated'
-        ? automatedForm.formState.isValid
-        : manualForm.formState.isValid;
-
-    activeTab === 'automated'
-      ? setIsAutomatedDataValid(isValid)
-      : setIsManualDataValid(isValid);
-  }, [
-    automatedForm.formState.isValid,
-    manualForm.formState.isValid,
-    activeTab,
-  ]);
-
   const sourceLabelMapper: Record<string, string> = {
     water_level_m: 'DHM Water Level',
     rainfall_mm: 'DHM Rainfall',

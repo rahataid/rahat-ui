@@ -9,6 +9,7 @@ import {
   UnsavedChangesDialog,
 } from 'apps/rahat-ui/src/common';
 import { useUnsavedChanges } from 'apps/rahat-ui/src/hooks/useUnsavedChanges';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import { useSessionFormStorage } from 'apps/rahat-ui/src/hooks/useSessionFormStorage';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -105,6 +106,7 @@ export default function AddTriggerView() {
   const [activeTab, setActiveTab] = React.useState<string>('');
   const [allTriggers, setAllTriggers] = React.useState<any[]>([]);
   const [open, setOpen] = React.useState<boolean>(false);
+  const [showClearDialog, setShowClearDialog] = React.useState(false);
   const [isManualDataValid, setIsManualDataValid] =
     React.useState<boolean>(false);
   const [isAutomatedDataValid, setIsAutomatedDataValid] =
@@ -398,6 +400,16 @@ export default function AddTriggerView() {
     temperature_c: 'DHM Temperature',
   };
 
+  const handleClearForm = () => {
+    clearSaved();
+    if (activeTab === 'automated') {
+      automatedForm.reset();
+    } else {
+      manualForm.reset();
+    }
+    setShowClearDialog(false);
+  };
+
   return (
     <div className="p-4">
       <Back />
@@ -494,14 +506,7 @@ export default function AddTriggerView() {
                 type="button"
                 variant="outline"
                 className="w-40 mr-2"
-                onClick={() => {
-                  clearSaved();
-                  if (activeTab === 'automated') {
-                    automatedForm.reset();
-                  } else {
-                    manualForm.reset();
-                  }
-                }}
+                onClick={() => setShowClearDialog(true)}
               >
                 {t('CLEAR')}
               </Button>
@@ -596,6 +601,15 @@ export default function AddTriggerView() {
         cancelText={tg('CANCEL_TEXT')}
         discardText={tg('DISCARD_TEXT')}
         confirmText={tg('CONFIRM_TEXT')}
+      />
+
+      <ConfirmationDialog
+        isConfirmationDialogOpen={showClearDialog}
+        onCancel={() => setShowClearDialog(false)}
+        onConfirm={handleClearForm}
+        dialogTitle={tg('CLEAR_FORM')}
+        dialogMessage={tg('FORM_CLEAR_ALERT')}
+        confirmLabel={tg('CLEAR_ALL')}
       />
     </div>
   );

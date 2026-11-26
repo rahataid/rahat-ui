@@ -8,8 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { SiteInfo, useSiteInfoList, useUpdateSiteInfo } from '@rahat-ui/query';
 import { Back } from 'apps/rahat-ui/src/common';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
+import { FormInput, FormTextarea } from 'apps/rahat-ui/src/common/form-fields';
 import {
   Form,
   FormControl,
@@ -224,9 +223,9 @@ export default function EditSiteInfo() {
               name="BRAND_NAME"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('BRAND_NAME')}</FormLabel>
+                  <FormLabel required>{t('BRAND_NAME')}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t('ENTER_BRAND_NAME')} {...field} />
+                    <FormInput placeholder={t('ENTER_BRAND_NAME')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -237,9 +236,9 @@ export default function EditSiteInfo() {
               name="BRAND_DESCRIPTION"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('BRAND_DESCRIPTION')}</FormLabel>
+                  <FormLabel required>{t('BRAND_DESCRIPTION')}</FormLabel>
                   <FormControl>
-                    <Textarea
+                    <FormTextarea
                       placeholder={t('ENTER_BRAND_DESCRIPTION')}
                       {...field}
                     />

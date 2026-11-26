@@ -38,6 +38,7 @@ import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 import { DurationData } from '../../activities/add/add.activity.view';
+import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 // Labels are translation keys; resolved with `t()` where the options render.
 const operatorOptions = [
@@ -51,28 +52,28 @@ const operatorOptions = [
 const SOURCE_META = {
   water_level_m: {
     unit: 'm',
-    placeholder: 'Enter water level value in (m)',
+    placeholderKey: 'ENTER_WATER_LEVEL_VALUE_M',
   },
   discharge_m3s: {
     unit: 'm³/s',
-    placeholder: 'Enter discharge value in m³/s',
+    placeholderKey: 'ENTER_DISCHARGE_VALUE_M3S',
   },
   rainfall_mm: {
     unit: 'mm',
-    placeholder: 'Enter rainfall value in (mm)',
+    placeholderKey: 'ENTER_RAINFALL_VALUE_MM',
   },
   prob_flood: {
     unit: '%',
-    placeholder: 'Enter flood probability value in (%)',
+    placeholderKey: 'ENTER_FLOOD_PROBABILITY_PERCENT',
   },
   // for heatwave
   prob_humidity: {
     unit: '%',
-    placeholder: 'Enter humidity probability value in (%)',
+    placeholderKey: 'ENTER_HUMIDITY_PROBABILITY_PERCENT',
   },
   temperature_c: {
     unit: '°C',
-    placeholder: 'Enter temperature value in (°C)',
+    placeholderKey: 'ENTER_TEMPERATURE_VALUE_C',
   },
 } as const;
 
@@ -97,6 +98,7 @@ export default function AddAutomatedTriggerForm({
 }: IProps) {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
+  const formatNum = useNumberFormat();
   const [leadTimeUnit, setLeadTimeUnit] = useState<'hours' | 'days'>(
     () => getLeadTimeParts(form.getValues('leadTime')).unit,
   );
@@ -534,13 +536,13 @@ export default function AddAutomatedTriggerForm({
                           return (
                             <FormItem>
                               <FormLabel>
-                                Value {meta?.unit ? `(${meta.unit})` : ''}
+                                {t('VALUE')} {meta?.unit ? `(${meta.unit})` : ''}
                               </FormLabel>
 
                               <FormControl>
                                 <FormInput
                                   type="number"
-                                  placeholder={meta?.placeholder}
+                                  placeholder={meta ? t(meta.placeholderKey) : undefined}
                                   step="1"
                                   min="1"
                                   max={source === 'glofas' ? '100' : undefined}
@@ -562,13 +564,13 @@ export default function AddAutomatedTriggerForm({
                 <div>
                   <div className="flex space-x-2 items-center ">
                     <p className="text-sm/6 text-primary">
-                      Generated Expression
+                      {t('GENERATED_EXPRESSION')}
                     </p>
                     <Info color="gray" size={18} />
                   </div>
                   <p className="text-sm">
                     {triggerSource} {triggerOperator} {triggerSourceSubType} (
-                    {triggerValue}{' '}
+                    {formatNum(triggerValue)}{' '}
                     {triggerSource === 'water_level_m'
                       ? 'm'
                       : triggerSource === 'discharge_m3s'

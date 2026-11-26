@@ -18,9 +18,9 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
+import { FormSelectTrigger } from 'apps/rahat-ui/src/common';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 
 import { useRoleList } from '@rumsan/react-query';
@@ -210,7 +210,7 @@ export default function AssignRoleDialog({ userDetails }: IProps) {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>{tg('ROLE')}</FormLabel>
+                        <FormLabel required>{tg('ROLE')}</FormLabel>
                         <Select
                           onValueChange={(value) => {
                             field.onChange([value]);
@@ -218,11 +218,11 @@ export default function AssignRoleDialog({ userDetails }: IProps) {
                           value={field.value[0]}
                         >
                           <FormControl>
-                            <SelectTrigger>
+                            <FormSelectTrigger value={field.value[0]}>
                               <SelectValue
                                 placeholder={t('PLEASE_SELECT_ROLE')}
                               />
-                            </SelectTrigger>
+                            </FormSelectTrigger>
                           </FormControl>
                           <SelectContent>
                             <SelectGroup>

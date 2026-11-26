@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { usePhoneCountrySelectProps } from 'apps/rahat-ui/src/utils/i18n/phone';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import {
@@ -11,7 +11,6 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { useRoleList, useSettingsStore } from '@rahat-ui/query';
@@ -25,7 +24,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
   useAddAdmin,
   useAddManager,
@@ -41,6 +39,14 @@ import {
 import { Gender } from '@rahataid/sdk/enums';
 import { useUserCreate } from '@rumsan/react-query';
 import Swal from 'sweetalert2';
+import { cn } from '@rahat-ui/shadcn/src';
+import {
+  FormInput,
+  FormSelectTrigger,
+  UnsavedChangesDialog,
+} from 'apps/rahat-ui/src/common';
+import { useUnsavedChanges } from 'apps/rahat-ui/src/hooks/useUnsavedChanges';
+import { useSessionFormStorage } from 'apps/rahat-ui/src/hooks/useSessionFormStorage';
 
 export default function AddUser() {
   const t = useTranslations('USERS_ADD');
@@ -64,15 +70,56 @@ export default function AddUser() {
 
   const router = useRouter();
 
-  const form = useForm({
+  type FormValues = z.infer<typeof FormSchema>;
+  const DEFAULT_FORM_VALUES: FormValues = {
+    name: '',
+    gender: '',
+    email: '',
+    phone: '',
+    roles: [],
+    wallet: '',
+  };
+
+  const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {
-      name: '',
-      gender: '',
-      email: '',
-      phone: '',
-      roles: [],
-      wallet: '',
+    defaultValues: DEFAULT_FORM_VALUES,
+  });
+
+  const hasInteracted = useRef(false);
+  const isRestored = useRef(false);
+  const isSubmittingRef = useRef(false);
+
+  const { loadSaved, saveData, clearSaved } = useSessionFormStorage<FormValues>({
+    key: 'user_draft',
+    projectId: 'core',
+    defaultValue: DEFAULT_FORM_VALUES,
+  });
+
+  useEffect(() => {
+    if (isRestored.current) return;
+    const saved = loadSaved();
+    if (saved && (saved.name || saved.email || saved.phone || saved.wallet || saved.roles?.length)) {
+      form.reset({ ...DEFAULT_FORM_VALUES, ...saved });
+    }
+    isRestored.current = true;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const hasUnsavedChanges =
+    !isSubmittingRef.current && hasInteracted.current && form.formState.isDirty;
+
+  const {
+    showDialog,
+    handleConfirmLeave,
+    handleCancelLeave,
+    handleDiscardLeave,
+  } = useUnsavedChanges({
+    hasUnsavedChanges,
+    onConfirm: () => {
+      saveData(form.getValues());
+    },
+    onDiscard: () => {
+      clearSaved();
     },
   });
 
@@ -86,6 +133,7 @@ export default function AddUser() {
   const addAdmin = useAddAdmin();
 
   const handleAddUser = async (data: any) => {
+    isSubmittingRef.current = true;
     try {
       if (roleSync === true) {
         if (data.roles.includes('Manager')) {
@@ -94,12 +142,14 @@ export default function AddUser() {
             walletAddress: data?.wallet,
             contractAddress: contractSettings as `0x${string}`,
           });
+          isSubmittingRef.current = false;
         } else if (data.roles.includes('Admin')) {
           await addAdmin.mutateAsync({
             data: data,
             walletAddress: data?.wallet,
             contractAddress: contractSettings as `0x${string}`,
           });
+          isSubmittingRef.current = false;
         } else {
           await userCreate.mutateAsync(data);
         }
@@ -107,6 +157,7 @@ export default function AddUser() {
         await userCreate.mutateAsync(data);
       }
     } catch (error: unknown) {
+      isSubmittingRef.current = false;
       // error.message on an Axios error is a generic HTTP status string
       // (e.g. "Request failed with status code 400"), not the backend's
       // actual message -- read it from the response body instead. The
@@ -140,21 +191,20 @@ export default function AddUser() {
   useEffect(() => {
     if (userCreate.isSuccess) {
       Swal.fire(t('USER_CREATED_SUCCESSFULLY'), '', 'success');
-      form.reset({
-        name: '',
-        gender: '',
-        email: '',
-        phone: '',
-        roles: [],
-        wallet: '',
-      });
+      clearSaved();
+      form.reset(DEFAULT_FORM_VALUES);
       route.push('/users');
     }
   }, [form, route, userCreate.isSuccess]);
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleAddUser)}>
+      <form
+        onSubmit={form.handleSubmit(handleAddUser)}
+        onFocus={() => {
+          hasInteracted.current = true;
+        }}
+      >
         <div className="p-4 h-[calc(100vh-130px)]">
           <HeaderWithBack
             title={t('CREATE_USER')}
@@ -169,9 +219,9 @@ export default function AddUser() {
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('USER_NAME')}</FormLabel>
+                    <FormLabel required>{t('USER_NAME')}</FormLabel>
                     <FormControl>
-                      <Input
+                      <FormInput
                         type="text"
                         placeholder={t('ENTER_USER_NAME')}
                         {...field}
@@ -186,7 +236,7 @@ export default function AddUser() {
                 name="gender"
                 render={({ field }) => (
                   <FormItem className="space-y-3">
-                    <FormLabel>{tg('GENDER')}</FormLabel>
+                    <FormLabel required>{tg('GENDER')}</FormLabel>
                     <FormControl>
                       <RadioGroup
                         onValueChange={field.onChange}
@@ -215,13 +265,17 @@ export default function AddUser() {
               <FormField
                 control={form.control}
                 name="phone"
-                render={({ field }) => {
+                render={({ field, fieldState }) => {
                   return (
                     <FormItem>
                       <FormLabel>{tg('PHONE_NUMBER')}</FormLabel>
                       <FormControl>
                         <PhoneInput
                           placeholder={tg('ENTER_PHONE_NUMBER')}
+                          className={cn(
+                            fieldState.error &&
+                              '[&_input]:bg-red-50 [&_input]:shadow-[inset_4px_0_0_0_hsl(var(--destructive))]',
+                          )}
                           {...field}
                           {...phoneCountrySelectProps}
                         />
@@ -237,9 +291,9 @@ export default function AddUser() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>{tg('EMAIL')}</FormLabel>
+                      <FormLabel required>{tg('EMAIL')}</FormLabel>
                       <FormControl>
-                        <Input
+                        <FormInput
                           type="text"
                           placeholder={tg('ENTER_EMAIL_ADDRESS')}
                           {...field}
@@ -262,11 +316,11 @@ export default function AddUser() {
                         }}
                         value={field.value[0] ?? ''}
                       >
-                        <FormLabel>{t('USER_ROLE')}</FormLabel>
+                        <FormLabel required>{t('USER_ROLE')}</FormLabel>
                         <FormControl>
-                          <SelectTrigger>
+                          <FormSelectTrigger value={field.value[0]}>
                             <SelectValue placeholder={t('SELECT_USER_ROLE')} />
-                          </SelectTrigger>
+                          </FormSelectTrigger>
                         </FormControl>
                         <SelectContent>
                           <SelectGroup>
@@ -294,7 +348,7 @@ export default function AddUser() {
                       <FormControl>
                         <div className="relative w-full">
                           <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                          <Input
+                          <FormInput
                             type="text"
                             placeholder={tg('ENTER_WALLET_ADDRESS')}
                             {...field}
@@ -318,7 +372,8 @@ export default function AddUser() {
             type="button"
             variant="secondary"
             onClick={() => {
-              form.reset();
+              clearSaved();
+              form.reset(DEFAULT_FORM_VALUES);
               // router.push('/users')
             }}
           >
@@ -329,6 +384,18 @@ export default function AddUser() {
           </Button>
         </div>
       </form>
+
+      <UnsavedChangesDialog
+        open={showDialog}
+        onConfirm={handleConfirmLeave}
+        onCancel={handleCancelLeave}
+        onDiscard={handleDiscardLeave}
+        title={tg('UNSAVED_TITLE')}
+        description={tg('UNSAVED_ALERT_DESCRIPTION')}
+        cancelText={tg('CANCEL_TEXT')}
+        discardText={tg('DISCARD_TEXT')}
+        confirmText={tg('CONFIRM_TEXT')}
+      />
     </Form>
   );
 }

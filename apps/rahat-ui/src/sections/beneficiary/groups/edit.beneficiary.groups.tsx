@@ -9,7 +9,7 @@ import {
   FormItem,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { FormInput } from 'apps/rahat-ui/src/common';
 
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -137,7 +137,7 @@ export default function EditBeneficiaryGroups({
                   return (
                     <FormItem>
                       <FormControl>
-                        <Input
+                        <FormInput
                           type="text"
                           placeholder={t('GROUP_NAME')}
                           disabled={isGroupAssignedToProject}

@@ -11,7 +11,6 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { useRoleList } from '@rahat-ui/query';
@@ -24,7 +23,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { FormInput, FormSelectTrigger } from 'apps/rahat-ui/src/common';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
 import HeaderWithBack from '../projects/components/header.with.back';
@@ -115,9 +114,9 @@ export default function EditUser() {
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('USER_NAME')}</FormLabel>
+                    <FormLabel required>{t('USER_NAME')}</FormLabel>
                     <FormControl>
-                      <Input
+                      <FormInput
                         type="text"
                         placeholder={t('ENTER_USER_NAME')}
                         {...field}
@@ -194,9 +193,9 @@ export default function EditUser() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>{tg('EMAIL')}</FormLabel>
+                      <FormLabel required>{tg('EMAIL')}</FormLabel>
                       <FormControl>
-                        <Input
+                        <FormInput
                           type="text"
                           placeholder={tg('ENTER_EMAIL_ADDRESS')}
                           {...field}
@@ -223,9 +222,9 @@ export default function EditUser() {
                       >
                         <FormLabel>{t('USER_ROLE')}</FormLabel>
                         <FormControl>
-                          <SelectTrigger>
+                          <FormSelectTrigger value={field.value[0]}>
                             <SelectValue placeholder={t('SELECT_USER_ROLE')} />
-                          </SelectTrigger>
+                          </FormSelectTrigger>
                         </FormControl>
                         <SelectContent>
                           <SelectGroup>
@@ -250,11 +249,11 @@ export default function EditUser() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>{tg('WALLET_ADDRESS')}</FormLabel>
+                      <FormLabel required>{tg('WALLET_ADDRESS')}</FormLabel>
                       <FormControl>
                         <div className="relative w-full">
                           <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                          <Input
+                          <FormInput
                             type="text"
                             placeholder={tg('ENTER_WALLET_ADDRESS')}
                             {...field}

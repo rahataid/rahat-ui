@@ -9,6 +9,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import HeaderWithBack from '../projects/components/header.with.back';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { FormInput } from 'apps/rahat-ui/src/common';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -192,9 +193,9 @@ export default function UserAddRoleView() {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>{t('ROLE_NAME')}</FormLabel>
+                        <FormLabel required>{t('ROLE_NAME')}</FormLabel>
                         <FormControl>
-                          <Input placeholder={t('ENTER_ROLE_NAME')} {...field} />
+                          <FormInput placeholder={t('ENTER_ROLE_NAME')} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

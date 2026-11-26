@@ -13,12 +13,10 @@ import {
   FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
-  SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { useForm } from 'react-hook-form';
@@ -27,7 +25,7 @@ import { isValidPhoneNumber } from 'react-phone-number-input';
 import { z } from 'zod';
 import { Loader2, Wallet } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import {
   RadioGroup,
   RadioGroupItem,
@@ -37,6 +35,14 @@ import HeaderWithBack from '../../projects/components/header.with.back';
 import { useTranslations } from 'next-intl';
 import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
 import { usePhoneCountrySelectProps } from 'apps/rahat-ui/src/utils/i18n/phone';
+import { cn } from '@rahat-ui/shadcn/src';
+import {
+  FormInput,
+  FormSelectTrigger,
+  UnsavedChangesDialog,
+} from 'apps/rahat-ui/src/common';
+import { useUnsavedChanges } from 'apps/rahat-ui/src/hooks/useUnsavedChanges';
+import { useSessionFormStorage } from 'apps/rahat-ui/src/hooks/useSessionFormStorage';
 import { resolveBeneficiaryErrorMessage } from '@rahat-ui/query/utils/i18n/backend-error';
 
 export default function AddBeneficiaryForm() {
@@ -46,6 +52,9 @@ export default function AddBeneficiaryForm() {
   const g = useTranslations('GLOBAL');
   const phoneCountrySelectProps = usePhoneCountrySelectProps();
   const tb = useTranslations();
+  const hasInteracted = useRef(false);
+  const isRestored = useRef(false);
+  const isSubmittingRef = useRef(false);
 
   const FormSchema = z.object({
     name: z
@@ -85,23 +94,61 @@ export default function AddBeneficiaryForm() {
     ),
   });
 
-  const form = useForm<z.infer<typeof FormSchema>>({
+  type FormValues = z.infer<typeof FormSchema>;
+  const DEFAULT_FORM_VALUES: FormValues = {
+    name: '',
+    gender: '',
+    walletAddress: '',
+    email: '',
+    phone: '',
+    bankedStatus: '',
+    internetStatus: '',
+    phoneStatus: '',
+    age: '',
+    address: '',
+  };
+
+  const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {
-      name: '',
-      gender: '',
-      walletAddress: '',
-      email: '',
-      phone: '',
-      bankedStatus: '',
-      internetStatus: '',
-      phoneStatus: '',
-      age: '',
-      address: '',
+    defaultValues: DEFAULT_FORM_VALUES,
+  });
+
+  const { loadSaved, saveData, clearSaved } = useSessionFormStorage<FormValues>({
+    key: 'beneficiary_draft',
+    projectId: 'core',
+    defaultValue: DEFAULT_FORM_VALUES,
+  });
+
+  useEffect(() => {
+    if (isRestored.current) return;
+    const saved = loadSaved();
+    if (saved && Object.values(saved).some(Boolean)) {
+      form.reset({ ...DEFAULT_FORM_VALUES, ...saved });
+    }
+    isRestored.current = true;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const hasUnsavedChanges =
+    !isSubmittingRef.current && hasInteracted.current && form.formState.isDirty;
+
+  const {
+    showDialog,
+    handleConfirmLeave,
+    handleCancelLeave,
+    handleDiscardLeave,
+  } = useUnsavedChanges({
+    hasUnsavedChanges,
+    onConfirm: () => {
+      saveData(form.getValues());
+    },
+    onDiscard: () => {
+      clearSaved();
     },
   });
 
-  const handleCreateBeneficiary = async (data: z.infer<typeof FormSchema>) => {
+  const handleCreateBeneficiary = async (data: FormValues) => {
+    isSubmittingRef.current = true;
     try {
       const result = await addBeneficiary.mutateAsync({
         gender: data.gender,
@@ -118,11 +165,13 @@ export default function AddBeneficiaryForm() {
         walletAddress: data.walletAddress,
       });
       if (result) {
+        clearSaved();
         toast.success(t('BENEFICIARY_ADDED_SUCCESSFULLY'));
         router.push('/beneficiary');
         form.reset();
       }
     } catch (e: any) {
+      isSubmittingRef.current = false;
       const rawMessage = e?.response?.data?.message || t('FAILED_TO_ADD_BENEFICIARY');
       const errorMessage = resolveBeneficiaryErrorMessage(
         tb,
@@ -144,7 +193,12 @@ export default function AddBeneficiaryForm() {
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleCreateBeneficiary)}>
+        <form
+          onSubmit={form.handleSubmit(handleCreateBeneficiary)}
+          onFocus={() => {
+            hasInteracted.current = true;
+          }}
+        >
           <div className="p-4 h-[calc(100vh-115px)]">
             <HeaderWithBack
               title={t('CREATE_BENEFICIARY')}
@@ -159,9 +213,9 @@ export default function AddBeneficiaryForm() {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>{g('BENEFICIARY_NAME')}</FormLabel>
+                        <FormLabel required>{g('BENEFICIARY_NAME')}</FormLabel>
                         <FormControl>
-                          <Input
+                          <FormInput
                             type="text"
                             placeholder={g('ENTER_BENEFICIARY_NAME')}
                             {...field}
@@ -181,7 +235,7 @@ export default function AddBeneficiaryForm() {
                       <FormControl>
                         <RadioGroup
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          value={field.value}
                           className="flex space-x-1"
                         >
                           <FormItem className="flex items-center space-x-3 space-y-0">
@@ -214,13 +268,17 @@ export default function AddBeneficiaryForm() {
                 <FormField
                   control={form.control}
                   name="phone"
-                  render={({ field }) => {
+                  render={({ field, fieldState }) => {
                     return (
                       <FormItem>
-                        <FormLabel>{g('PHONE_NUMBER')}</FormLabel>
+                        <FormLabel required>{g('PHONE_NUMBER')}</FormLabel>
                         <FormControl>
                           <PhoneInput
                             placeholder={g('ENTER_PHONE_NUMBER')}
+                            className={cn(
+                              fieldState.error &&
+                                '[&_input]:bg-red-50 [&_input]:shadow-[inset_4px_0_0_0_hsl(var(--destructive))]',
+                            )}
                             {...field}
                             {...phoneCountrySelectProps}
                           />
@@ -238,7 +296,7 @@ export default function AddBeneficiaryForm() {
                       <FormItem>
                         <FormLabel>{g('EMAIL')}</FormLabel>
                         <FormControl>
-                          <Input placeholder={g('ENTER_EMAIL_ADDRESS')} {...field} />
+                          <FormInput placeholder={g('ENTER_EMAIL_ADDRESS')} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -253,7 +311,7 @@ export default function AddBeneficiaryForm() {
                       <FormItem>
                         <FormLabel>{g('ESTIMATED_AGE')}</FormLabel>
                         <FormControl>
-                          <Input
+                          <FormInput
                             type="number"
                             placeholder={g('ENTER_ESTIMATED_AGE')}
                             {...field}
@@ -272,7 +330,7 @@ export default function AddBeneficiaryForm() {
                       <FormItem>
                         <FormLabel>{g('ADDRESS')}</FormLabel>
                         <FormControl>
-                          <Input
+                          <FormInput
                             type="text"
                             placeholder={g('ENTER_BENEFICIARY_ADDRESS')}
                             {...field}
@@ -292,12 +350,12 @@ export default function AddBeneficiaryForm() {
                         <FormLabel>{g('PHONE_STATUS')}</FormLabel>
                         <Select
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          value={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger>
+                            <FormSelectTrigger value={field.value}>
                               <SelectValue placeholder={g('SELECT_PHONE_STATUS')} />
-                            </SelectTrigger>
+                            </FormSelectTrigger>
                           </FormControl>
                           <SelectContent>
                             <SelectItem value="smart_phone">
@@ -325,12 +383,12 @@ export default function AddBeneficiaryForm() {
                         <FormLabel>{g('BANKING_STATUS')}</FormLabel>
                         <Select
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          value={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger>
+                            <FormSelectTrigger value={field.value}>
                               <SelectValue placeholder={g('SELECT_BANKING_STATUS')} />
-                            </SelectTrigger>
+                            </FormSelectTrigger>
                           </FormControl>
                           <SelectContent>
                             <SelectItem value="banked">{g('BANKED')}</SelectItem>
@@ -356,12 +414,12 @@ export default function AddBeneficiaryForm() {
                         <FormLabel>{g('INTERNET_STATUS')}</FormLabel>
                         <Select
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          value={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger>
+                            <FormSelectTrigger value={field.value}>
                               <SelectValue placeholder={g('SELECT_INTERNET_STATUS')} />
-                            </SelectTrigger>
+                            </FormSelectTrigger>
                           </FormControl>
                           <SelectContent>
                             <SelectItem value="mobile_internet">
@@ -392,7 +450,7 @@ export default function AddBeneficiaryForm() {
                         <FormControl>
                           <div className="relative w-full">
                             <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                            <Input
+                            <FormInput
                               type="text"
                               placeholder={g('ENTER_WALLET_ADDRESS')}
                               {...field}
@@ -418,7 +476,10 @@ export default function AddBeneficiaryForm() {
             <Button
               type="button"
               variant="secondary"
-              onClick={() => form.reset()}
+              onClick={() => {
+                clearSaved();
+                form.reset(DEFAULT_FORM_VALUES);
+              }}
             >
               {g('CLEAR')}
             </Button>
@@ -433,6 +494,18 @@ export default function AddBeneficiaryForm() {
           </div>
         </form>
       </Form>
+
+      <UnsavedChangesDialog
+        open={showDialog}
+        onConfirm={handleConfirmLeave}
+        onCancel={handleCancelLeave}
+        onDiscard={handleDiscardLeave}
+        title={g('UNSAVED_TITLE')}
+        description={g('UNSAVED_ALERT_DESCRIPTION')}
+        cancelText={g('CANCEL_TEXT')}
+        discardText={g('DISCARD_TEXT')}
+        confirmText={g('CONFIRM_TEXT')}
+      />
     </>
   );
 }

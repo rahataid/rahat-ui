@@ -17,12 +17,10 @@ import {
   FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
-  SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { useForm } from 'react-hook-form';
@@ -48,6 +46,8 @@ import {
 import { useTranslations } from 'next-intl';
 import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
 import { usePhoneCountrySelectProps } from 'apps/rahat-ui/src/utils/i18n/phone';
+import { cn } from '@rahat-ui/shadcn/src';
+import { FormInput, FormSelectTrigger } from 'apps/rahat-ui/src/common';
 
 export default function AddBeneficiaryForm() {
   const updateBeneficiary = useUpdateBeneficiary();
@@ -170,9 +170,9 @@ export default function AddBeneficiaryForm() {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>{g('BENEFICIARY_NAME')}</FormLabel>
+                        <FormLabel required>{g('BENEFICIARY_NAME')}</FormLabel>
                         <FormControl>
-                          <Input
+                          <FormInput
                             type="text"
                             placeholder={g('ENTER_BENEFICIARY_NAME')}
                             {...field}
@@ -233,13 +233,17 @@ export default function AddBeneficiaryForm() {
                 <FormField
                   control={form.control}
                   name="phone"
-                  render={({ field }) => {
+                  render={({ field, fieldState }) => {
                     return (
                       <FormItem>
-                        <FormLabel>{g('PHONE_NUMBER')}</FormLabel>
+                        <FormLabel required>{g('PHONE_NUMBER')}</FormLabel>
                         <FormControl>
                           <PhoneInput
                             placeholder={g('ENTER_PHONE_NUMBER')}
+                            className={cn(
+                              fieldState.error &&
+                                '[&_input]:bg-red-50 [&_input]:shadow-[inset_4px_0_0_0_hsl(var(--destructive))]',
+                            )}
                             {...field}
                             {...phoneCountrySelectProps}
                           />
@@ -257,7 +261,7 @@ export default function AddBeneficiaryForm() {
                       <FormItem>
                         <FormLabel>{g('EMAIL')}</FormLabel>
                         <FormControl>
-                          <Input placeholder={g('ENTER_EMAIL_ADDRESS')} {...field} />
+                          <FormInput placeholder={g('ENTER_EMAIL_ADDRESS')} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -272,7 +276,7 @@ export default function AddBeneficiaryForm() {
                       <FormItem>
                         <FormLabel>{g('ESTIMATED_AGE')}</FormLabel>
                         <FormControl>
-                          <Input
+                          <FormInput
                             type="number"
                             placeholder={g('ENTER_ESTIMATED_AGE')}
                             {...field}
@@ -291,7 +295,7 @@ export default function AddBeneficiaryForm() {
                       <FormItem>
                         <FormLabel>{g('ADDRESS')}</FormLabel>
                         <FormControl>
-                          <Input
+                          <FormInput
                             type="text"
                             placeholder={g('ENTER_BENEFICIARY_ADDRESS')}
                             {...field}
@@ -314,9 +318,9 @@ export default function AddBeneficiaryForm() {
                           defaultValue={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger>
+                            <FormSelectTrigger value={field.value}>
                               <SelectValue placeholder={g('SELECT_PHONE_STATUS')} />
-                            </SelectTrigger>
+                            </FormSelectTrigger>
                           </FormControl>
                           <SelectContent>
                             <SelectItem value={PhoneStatus.SMART_PHONE}>
@@ -351,9 +355,9 @@ export default function AddBeneficiaryForm() {
                           defaultValue={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger>
+                            <FormSelectTrigger value={field.value}>
                               <SelectValue placeholder={g('SELECT_BANKING_STATUS')} />
-                            </SelectTrigger>
+                            </FormSelectTrigger>
                           </FormControl>
                           <SelectContent>
                             <SelectItem value={BankedStatus.BANKED}>
@@ -388,9 +392,9 @@ export default function AddBeneficiaryForm() {
                           defaultValue={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger>
+                            <FormSelectTrigger value={field.value}>
                               <SelectValue placeholder={g('SELECT_INTERNET_STATUS')} />
-                            </SelectTrigger>
+                            </FormSelectTrigger>
                           </FormControl>
                           <SelectContent>
                             <SelectItem value={InternetStatus.MOBILE_INTERNET}>
@@ -423,7 +427,7 @@ export default function AddBeneficiaryForm() {
                         <FormControl>
                           <div className="relative w-full">
                             <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                            <Input
+                            <FormInput
                               type="text"
                               placeholder={g('ENTER_WALLET_ADDRESS')}
                               {...field}

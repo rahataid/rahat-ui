@@ -166,6 +166,13 @@ export default function TriggerStatementDetail() {
                 label={t('DELETE')}
                 handleContinueClick={handleDelete}
                 disabled={isEditDeleteDisabled}
+                warning={
+                  trigger?.callbacks?.length > 0
+                    ? t('DELETE_TRIGGER_LINKED_WARNING', {
+                        count: trigger.callbacks.length,
+                      })
+                    : undefined
+                }
               />
             </TooltipWrapper>
           </Can>

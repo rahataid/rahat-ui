@@ -2123,6 +2123,8 @@
     "DELETE": "Delete",
     "DELETE_ACTIVITY": "Delete Activity",
     "DELETE_ACTIVITY_CONFIRM": "Are you sure you want to delete this activity?",
+    "DELETE_ACTIVITY_LINKED_WARNING": "This activity is linked to {count, plural, one {# trigger} other {# triggers}}. Deleting it will automatically unlink {count, plural, one {that trigger} other {those triggers}}, so its communications will no longer be sent when {count, plural, one {it is} other {they are}} activated.",
+    "DELETE_TRIGGER_LINKED_WARNING": "This trigger is linked to {count, plural, one {# activity} other {# activities}}. Deleting it will automatically unlink {count, plural, one {that activity} other {those activities}}, so {count, plural, one {its} other {their}} communications will no longer be sent by this trigger.",
     "DELETE_GROUP": "Delete Group",
     "DELETE_PHASE": "Delete Phase",
     "DELETE_PHASE_CONFIRM": "Are you sure you want to delete this phase?",

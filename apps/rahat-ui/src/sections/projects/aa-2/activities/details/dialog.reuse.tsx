@@ -13,7 +13,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { IconLabelBtn } from 'apps/rahat-ui/src/common';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
-import { LucideIcon } from 'lucide-react';
+import { LucideIcon, TriangleAlert } from 'lucide-react';
 import { useState } from 'react';
 
 export type PaymentDialogProps = {
@@ -21,6 +21,8 @@ export type PaymentDialogProps = {
   dialogTitle: string;
   buttonText: string;
   dialogDescription: string;
+  /** Extra side-effect notice shown below the description */
+  dialogWarning?: string;
   confirmButtonText: string;
   buttonIcon: LucideIcon;
   buttonClassName?: string;
@@ -33,6 +35,7 @@ export function DialogComponent({
   buttonText,
   confirmButtonText,
   dialogDescription,
+  dialogWarning,
   dialogTitle,
   buttonIcon,
   buttonClassName = '',
@@ -74,6 +77,12 @@ export function DialogComponent({
         <DialogHeader className="!text-center">
           <DialogTitle>{dialogTitle}</DialogTitle>
           <DialogDescription>{dialogDescription}</DialogDescription>
+          {dialogWarning && (
+            <div className="flex items-start gap-2 rounded-sm border border-amber-200 bg-amber-50 p-2 text-left text-sm text-amber-800">
+              <TriangleAlert className="mt-0.5 h-4 w-4 flex-shrink-0" />
+              <span>{dialogWarning}</span>
+            </div>
+          )}
         </DialogHeader>
 
         <DialogFooter className="flex justify-between">

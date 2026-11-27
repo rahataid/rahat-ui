@@ -16,7 +16,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
-import { Trash2 } from 'lucide-react';
+import { TriangleAlert, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 type IProps = {
@@ -25,6 +25,8 @@ type IProps = {
   className?: string;
   label?: string;
   disabled?: boolean;
+  /** Extra side-effect notice shown below the confirmation text */
+  warning?: string;
 };
 
 export function DeleteButton({
@@ -33,6 +35,7 @@ export function DeleteButton({
   className,
   label = '',
   disabled = false,
+  warning,
 }: IProps) {
   const t = useTranslations('GLOBAL');
   return (
@@ -64,6 +67,12 @@ export function DeleteButton({
                 <AlertDialogDescription className="text-[clamp(11px,1vw,14px)]">
                   {t('DELETE_CONFIRMATION', { name })}
                 </AlertDialogDescription>
+                {warning && (
+                  <div className="flex items-start gap-2 rounded-sm border border-amber-200 bg-amber-50 p-2 text-left text-[clamp(11px,1vw,14px)] text-amber-800">
+                    <TriangleAlert className="mt-0.5 h-4 w-4 flex-shrink-0" />
+                    <span>{warning}</span>
+                  </div>
+                )}
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel className="h-[clamp(26px,3.2vw,40px)] px-[clamp(10px,1.4vw,16px)] text-[clamp(11px,1vw,14px)]">

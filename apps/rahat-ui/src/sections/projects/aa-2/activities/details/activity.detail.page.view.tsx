@@ -119,6 +119,13 @@ export default function ActivitiesDetailView() {
                     buttonText={t('DELETE')}
                     dialogTitle={t('DELETE_ACTIVITY')}
                     dialogDescription={t('DELETE_ACTIVITY_CONFIRM')}
+                    dialogWarning={
+                      activityDetail?.triggersCallback?.length > 0
+                        ? t('DELETE_ACTIVITY_LINKED_WARNING', {
+                            count: activityDetail.triggersCallback.length,
+                          })
+                        : undefined
+                    }
                     confirmButtonText={t('REMOVE')}
                     handleClick={() => removeActivity()}
                     buttonClassName="rounded-sm w-full text-red-500 border-red-500 sm"

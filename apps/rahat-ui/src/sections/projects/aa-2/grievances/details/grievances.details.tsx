@@ -9,6 +9,11 @@ import {
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { Back, Heading } from 'apps/rahat-ui/src/common';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 import { grievanceStatus } from 'apps/rahat-ui/src/constants/aa.grievances.constants';
 import { UUID } from 'crypto';
 import { Check, ChevronDown, PencilIcon } from 'lucide-react';
@@ -71,48 +76,52 @@ const GrievancesDetail = () => {
             />
           </div>
           <div className="flex gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="rounded flex gap-1 items-center text-sm font-medium w-auto"
-                >
-                  {t('UPDATE_STATUS')}
-                  <ChevronDown className="h-4 w-4 ml-1" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                {grievanceStatus.map((status) => {
-                  const isCurrentStatus =
-                    status.value === details?.data?.status;
-                  return (
-                    <DropdownMenuItem
-                      key={status.value}
-                      onClick={() =>
-                        handleStatusChange(status.value as GrievanceStatus)
-                      }
-                      className={`cursor-pointer flex items-center justify-between ${
-                        isCurrentStatus ? 'bg-accent' : ''
-                      }`}
-                    >
-                      <span>{labelMap[status.label] || status.label}</span>
-                      {isCurrentStatus && <Check className="h-4 w-4 ml-2" />}
-                    </DropdownMenuItem>
-                  );
-                })}
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <Button
-              className="rounded flex gap-1 items-center text-sm font-medium w-auto"
-              onClick={() =>
-                router.push(
-                  `/projects/aa/${projectId}/grievances/${grievanceId}/edit?from=details&tab=${redirectToHomeTab}`,
-                )
-              }
-            >
-              <PencilIcon className="h-4 w-4" />
-              {t('EDIT')}
-            </Button>
+            <Can action={ACTIONS.UPDATE} subject={SUBJECTS.GRIEVANCE}>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="rounded flex gap-1 items-center text-sm font-medium w-auto"
+                  >
+                    {t('UPDATE_STATUS')}
+                    <ChevronDown className="h-4 w-4 ml-1" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  {grievanceStatus.map((status) => {
+                    const isCurrentStatus =
+                      status.value === details?.data?.status;
+                    return (
+                      <DropdownMenuItem
+                        key={status.value}
+                        onClick={() =>
+                          handleStatusChange(status.value as GrievanceStatus)
+                        }
+                        className={`cursor-pointer flex items-center justify-between ${
+                          isCurrentStatus ? 'bg-accent' : ''
+                        }`}
+                      >
+                        <span>{labelMap[status.label] || status.label}</span>
+                        {isCurrentStatus && <Check className="h-4 w-4 ml-2" />}
+                      </DropdownMenuItem>
+                    );
+                  })}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </Can>
+            <Can action={ACTIONS.UPDATE} subject={SUBJECTS.GRIEVANCE}>
+              <Button
+                className="rounded flex gap-1 items-center text-sm font-medium w-auto"
+                onClick={() =>
+                  router.push(
+                    `/projects/aa/${projectId}/grievances/${grievanceId}/edit?from=details&tab=${redirectToHomeTab}`,
+                  )
+                }
+              >
+                <PencilIcon className="h-4 w-4" />
+                {t('EDIT')}
+              </Button>
+            </Can>
           </div>
         </div>
       </div>

@@ -14,6 +14,7 @@ import './globals.css';
 import { RSQueryProvider } from '@rumsan/react-query/providers/rs-query-provider';
 import { CommunicationQueryProvider } from '@rumsan/communication-query/providers/communication-query-provider';
 import { NewCommunicationQueryProvider } from '@rahat-ui/query';
+import { SseProvider } from '../providers/sse-provider';
 
 export const metadata = {
   icons: {
@@ -40,25 +41,27 @@ export default async function RootLayout({
               <RSQueryProvider>
                 <NewCommunicationQueryProvider>
                   <CommunicationQueryProvider>
-                    <ServiceProvider>
-                      <SecondPanelProvider>
-                        <TranslationBridge />
-                        <ThemeProvider attribute="class" defaultTheme="light">
-                          <main className={GeistSans.className}>
-                            {children}
-                          </main>
-                          <ToastContainer
-                            autoClose={3000}
-                            closeButton={true}
-                            hideProgressBar={false}
-                            newestOnTop={true}
-                            position="top-right"
-                            toastStyle={{ maxWidth: '400px' }}
-                          />
-                          <Toaster />
-                        </ThemeProvider>
-                      </SecondPanelProvider>
-                    </ServiceProvider>
+                    <SseProvider>
+                      <ServiceProvider>
+                        <SecondPanelProvider>
+                          <TranslationBridge />
+                          <ThemeProvider attribute="class" defaultTheme="light">
+                            <main className={GeistSans.className}>
+                              {children}
+                            </main>
+                            <ToastContainer
+                              autoClose={3000}
+                              closeButton={true}
+                              hideProgressBar={false}
+                              newestOnTop={true}
+                              position="top-right"
+                              toastStyle={{ maxWidth: '400px' }}
+                            />
+                            <Toaster />
+                          </ThemeProvider>
+                        </SecondPanelProvider>
+                      </ServiceProvider>
+                    </SseProvider>
                   </CommunicationQueryProvider>
                 </NewCommunicationQueryProvider>
               </RSQueryProvider>

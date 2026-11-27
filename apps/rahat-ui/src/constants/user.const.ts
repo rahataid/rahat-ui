@@ -24,7 +24,6 @@ export const SUBJECT_ACTIONS = {
   settings: ACTION_ITEMS,
   user: ACTION_ITEMS,
   project: ACTION_ITEMS,
-  vendor: ACTION_ITEMS,
 };
 
 // Subjects listed here get extra actions on top of ACTION_ITEMS.
@@ -62,7 +61,6 @@ const PROJECT_EXCLUDED_SUBJECTS = new Set([
   SUBJECTS.ALL,
   SUBJECTS.USER,
   SUBJECTS.BENEFICIARY,
-  SUBJECTS.VENDOR,
   SUBJECTS.SETTINGS,
 ]);
 

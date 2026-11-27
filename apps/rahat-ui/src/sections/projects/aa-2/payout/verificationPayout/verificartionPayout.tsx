@@ -30,6 +30,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/table';
 
 import { ClientSidePagination, HeaderWithBack } from 'apps/rahat-ui/src/common';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import { CloudDownload, Repeat2, Share } from 'lucide-react';
 import { toast } from 'react-toastify';
 import {
@@ -65,6 +66,18 @@ export default function VerificationPayout() {
   const [fileName, setFileName] = useState<string>(tg('NO_FILE_CHOSEN'));
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [showClearDialog, setShowClearDialog] = useState(false);
+
+  const handleClearForm = () => {
+    setData([]);
+    setFileName(tg('NO_FILE_CHOSEN'));
+    setSelectedFile(null);
+
+    if (inputRef.current) {
+      inputRef.current.value = '';
+    }
+    setShowClearDialog(false);
+  };
   const verifyManualPayout = useVerifyManualPayout();
   const [globalFilter, setGlobalFilter] = useState('');
   const matchBy =
@@ -414,15 +427,7 @@ export default function VerificationPayout() {
             type="button"
             className="w-48"
             variant="outline"
-            onClick={() => {
-              setData([]);
-              setFileName(tg('NO_FILE_CHOSEN'));
-              setSelectedFile(null);
-
-              if (inputRef.current) {
-                inputRef.current.value = '';
-              }
-            }}
+            onClick={() => setShowClearDialog(true)}
           >
             {tg('CLEAR')}
           </Button>
@@ -436,6 +441,14 @@ export default function VerificationPayout() {
           </Button>
         </div>
       </div>
+      <ConfirmationDialog
+        isConfirmationDialogOpen={showClearDialog}
+        onCancel={() => setShowClearDialog(false)}
+        onConfirm={handleClearForm}
+        dialogTitle={tg('CLEAR_FORM')}
+        dialogMessage={tg('FORM_CLEAR_ALERT')}
+        confirmLabel={tg('CLEAR_ALL')}
+      />
     </>
   );
 }

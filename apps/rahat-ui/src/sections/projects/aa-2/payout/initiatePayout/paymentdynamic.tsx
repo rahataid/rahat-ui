@@ -58,6 +58,7 @@ import {
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import DropdownSearch from 'apps/rahat-ui/src/common/search.dropdown';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 
 export interface PaymentState {
   method: string; // dynamic payout type key
@@ -97,6 +98,12 @@ export default function PaymentInitiation() {
   });
 
   const { setValue, reset, watch, trigger, control } = form;
+  const [showClearDialog, setShowClearDialog] = useState(false);
+
+  const handleClearForm = () => {
+    reset(initialFormState);
+    setShowClearDialog(false);
+  };
 
   // const [formState, setFormState] = useState<PaymentState>(initialFormState);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -361,7 +368,7 @@ export default function PaymentInitiation() {
                   variant="outline"
                   className="rounded-sm w-48"
                   type="button"
-                  onClick={() => reset(initialFormState)}
+                  onClick={() => setShowClearDialog(true)}
                 >
                   {tg('CLEAR')}
                 </Button>
@@ -424,6 +431,14 @@ export default function PaymentInitiation() {
           )}
         </form>
       </Form>
+      <ConfirmationDialog
+        isConfirmationDialogOpen={showClearDialog}
+        onCancel={() => setShowClearDialog(false)}
+        onConfirm={handleClearForm}
+        dialogTitle={tg('CLEAR_FORM')}
+        dialogMessage={tg('FORM_CLEAR_ALERT')}
+        confirmLabel={tg('CLEAR_ALL')}
+      />
     </div>
   );
 }

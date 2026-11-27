@@ -19,6 +19,7 @@ import { z } from 'zod';
 import AddAnotherDataSource from '../add/add.another.data.source';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { HeaderWithBack } from 'apps/rahat-ui/src/common';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import Loader from 'apps/rahat-ui/src/components/table.loader';
 import InputFormField from '../input.form.field';
 import SelectFormField from '../select.form.field';
@@ -34,6 +35,7 @@ const numeralString = () =>
 
 export default function EditDailyMonitoring() {
   const t = useTranslations('AA_PROJECT');
+  const [showResetDialog, setShowResetDialog] = React.useState(false);
   const g = useTranslations('GLOBAL');
   const params = useParams();
   const projectId = params.id as UUID;
@@ -620,9 +622,7 @@ export default function EditDailyMonitoring() {
               type="button"
               variant="secondary"
               className="bg-red-100 text-red-600 w-36"
-              onClick={() => {
-                form.reset();
-              }}
+              onClick={() => setShowResetDialog(true)}
             >
               {t('RESET')}
             </Button>
@@ -632,6 +632,17 @@ export default function EditDailyMonitoring() {
           </div>
         </form>
       </Form>
+      <ConfirmationDialog
+        isConfirmationDialogOpen={showResetDialog}
+        onCancel={() => setShowResetDialog(false)}
+        onConfirm={() => {
+          form.reset();
+          setShowResetDialog(false);
+        }}
+        dialogTitle={t('RESET_FORM')}
+        dialogMessage={t('RESET_FORM_ALERT')}
+        confirmLabel={t('RESET')}
+      />
     </div>
   );
 }

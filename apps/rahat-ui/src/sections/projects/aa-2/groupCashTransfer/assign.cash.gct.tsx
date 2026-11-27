@@ -33,6 +33,7 @@ import {
   PopoverTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/popover';
 import { HeaderWithBack } from 'apps/rahat-ui/src/common';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import {
   useAssignGroupCashTransferFund,
   useGetAllValidGroupCashTransfers,
@@ -73,6 +74,14 @@ export default function AssignCashGct() {
     resolver: zodResolver(AssignCashSchema),
     defaultValues: { title: '', groupCashTransferId: '', amount: '' },
   });
+  const [showClearDialog, setShowClearDialog] = useState(false);
+
+  const handleClearForm = () => {
+    form.reset();
+    setSelectedGroupName('');
+    setGroupSearch('');
+    setShowClearDialog(false);
+  };
 
   const handleSubmit = (values: AssignCashValues) => {
     setPendingValues(values);
@@ -225,11 +234,7 @@ export default function AssignCashGct() {
                 type="button"
                 variant="secondary"
                 className="px-8"
-                onClick={() => {
-                  form.reset();
-                  setSelectedGroupName('');
-                  setGroupSearch('');
-                }}
+                onClick={() => setShowClearDialog(true)}
                 disabled={assignFund.isPending}
               >
                 {t('CLEAR')}
@@ -282,6 +287,14 @@ export default function AssignCashGct() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <ConfirmationDialog
+        isConfirmationDialogOpen={showClearDialog}
+        onCancel={() => setShowClearDialog(false)}
+        onConfirm={handleClearForm}
+        dialogTitle={tGlobal('CLEAR_FORM')}
+        dialogMessage={tGlobal('FORM_CLEAR_ALERT')}
+        confirmLabel={tGlobal('CLEAR_ALL')}
+      />
     </div>
   );
 }

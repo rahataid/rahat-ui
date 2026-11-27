@@ -24,6 +24,7 @@ import { Entities } from './types';
 import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 
 export default function InitiateInKindTransfer({}: {}) {
   const t = useTranslations('AA_PROJECT');
@@ -62,6 +63,18 @@ export default function InitiateInKindTransfer({}: {}) {
   }, [currentUser, stakeholders]);
 
   const { data: balance } = useGetInkindBalance(id, donar?.smartaccount || '');
+  const [showClearDialog, setShowClearDialog] = useState(false);
+
+  const handleClearForm = () => {
+    setFormData({
+      from: currentEntity?.smartaccount ?? '',
+      to: '',
+      amount: '',
+      currency: 'USD',
+      comments: '',
+    });
+    setShowClearDialog(false);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -211,7 +224,11 @@ export default function InitiateInKindTransfer({}: {}) {
 
         {/* Buttons */}
         <div className="flex justify-end gap-2">
-          <Button type="button" variant="outline">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setShowClearDialog(true)}
+          >
             {t('CLEAR')}
           </Button>
           <Button
@@ -227,6 +244,14 @@ export default function InitiateInKindTransfer({}: {}) {
           </Button>
         </div>
       </form>
+      <ConfirmationDialog
+        isConfirmationDialogOpen={showClearDialog}
+        onCancel={() => setShowClearDialog(false)}
+        onConfirm={handleClearForm}
+        dialogTitle={t('CLEAR_FORM')}
+        dialogMessage={t('FORM_CLEAR_ALERT')}
+        confirmLabel={t('CLEAR_ALL')}
+      />
     </div>
   );
 }

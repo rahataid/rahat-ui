@@ -10,6 +10,7 @@ import { Loader2 } from 'lucide-react';
 import { Form } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { HeaderWithBack } from 'apps/rahat-ui/src/common';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import { useCreateGroupCashTransfer, useValidateBankAccount } from '@rahat-ui/query';
 import { buildGctGroupSchema, GctGroupValues, applyDuplicateErrors } from './types/gct.schemas';
 import { BasicInfoSection, BankDetailsSection } from './components/gct.form-sections';
@@ -48,6 +49,13 @@ export default function AddGct() {
     resolver: zodResolver(GctGroupSchema),
     defaultValues: DEFAULT_VALUES,
   });
+  const [showClearDialog, setShowClearDialog] = useState(false);
+
+  const handleClearForm = () => {
+    form.reset(DEFAULT_VALUES);
+    setClearKey((k) => k + 1);
+    setShowClearDialog(false);
+  };
 
   const handleSubmit = async (values: GctGroupValues) => {
     // setValidating(true);
@@ -123,7 +131,7 @@ export default function AddGct() {
               type="button"
               variant="secondary"
               className="px-8"
-              onClick={() => { form.reset(DEFAULT_VALUES); setClearKey((k) => k + 1); }}
+              onClick={() => setShowClearDialog(true)}
               disabled={isPending}
             >
               {t('CLEAR')}
@@ -150,6 +158,14 @@ export default function AddGct() {
           </div>
         </form>
       </Form>
+      <ConfirmationDialog
+        isConfirmationDialogOpen={showClearDialog}
+        onCancel={() => setShowClearDialog(false)}
+        onConfirm={handleClearForm}
+        dialogTitle={tGlobal('CLEAR_FORM')}
+        dialogMessage={tGlobal('FORM_CLEAR_ALERT')}
+        confirmLabel={tGlobal('CLEAR_ALL')}
+      />
     </div>
   );
 }

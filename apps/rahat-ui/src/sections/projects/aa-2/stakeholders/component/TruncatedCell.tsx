@@ -30,8 +30,8 @@ export function TruncatedCell({
               {text}
             </span>
           </TooltipTrigger>
-          <TooltipContent className="rounded-sm max-w-[400px]">
-            <p className="whitespace-pre-line flex wrap break-words text-[clamp(10px,0.9vw,14px)] font-normal leading-snug">
+          <TooltipContent className="rounded-sm max-w-[min(400px,calc(100vw-2rem))]">
+            <p className="whitespace-pre-line [overflow-wrap:anywhere] text-[clamp(10px,0.9vw,14px)] font-normal leading-snug">
               {text}
             </p>
           </TooltipContent>
@@ -55,8 +55,8 @@ export function TruncatedCell({
             {displayText}
           </span>
         </TooltipTrigger>
-        <TooltipContent className="rounded-sm max-w-[200px]">
-          <p className="whitespace-pre-line flex wrap break-words text-[clamp(10px,0.9vw,14px)] font-normal leading-snug">
+        <TooltipContent className="rounded-sm max-w-[min(400px,calc(100vw-2rem))]">
+          <p className="whitespace-pre-line [overflow-wrap:anywhere] text-[clamp(10px,0.9vw,14px)] font-normal leading-snug">
             {text}
           </p>
         </TooltipContent>

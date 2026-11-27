@@ -4485,6 +4485,8 @@
     "SELECT_A_PROJECT_TO_ASSIGN_THE": "चयन गरिएको विक्रेता नियुक्त गर्न परियोजना चयन गर्नुहोस्",
     "SELECT_A_PROJECT_TO_ASSIGN_SELECTED_VENDORS": "छानिएका {count} विक्रेताहरूलाई तोक्न एक वा बढी परियोजनाहरू चयन गर्नुहोस्",
     "ALREADY_ASSIGNED_VENDORS_WILL_BE_SKIPPED": "पहिले नै तोकिएका विक्रेताहरूलाई छोडिनेछ।",
+    "SELECT_PROJECTS": "परियोजनाहरू चयन गर्नुहोस्",
+    "PROJECTS_SELECTED": "{count} परियोजनाहरू चयन गरियो",
     "SELECT_PROJECT_NAME": "परियोजनाको नाम छान्नुहोस्",
     "SHOW_LESS": "कम देखाउनुहोस्",
     "THERE_ARE_NO_VENDORS_TO_DISPLAY": "यस समयमा प्रदर्शन गर्न कुनै विक्रेताहरू छैनन्",

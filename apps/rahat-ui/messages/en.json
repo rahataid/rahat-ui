@@ -1380,6 +1380,8 @@
     "SELECT_A_PROJECT_TO_ASSIGN_THE": "Select a project to assign the selected vendor",
     "SELECT_A_PROJECT_TO_ASSIGN_SELECTED_VENDORS": "Select one or more projects to assign to the {count} selected vendor(s)",
     "ALREADY_ASSIGNED_VENDORS_WILL_BE_SKIPPED": "Already-assigned vendors will be skipped.",
+    "SELECT_PROJECTS": "Select projects",
+    "PROJECTS_SELECTED": "{count} projects selected",
     "PROJECT": "Project",
     "SELECT_PROJECT_NAME": "Select Project Name",
     "NO_PROJECT_FOUND": "No project found",

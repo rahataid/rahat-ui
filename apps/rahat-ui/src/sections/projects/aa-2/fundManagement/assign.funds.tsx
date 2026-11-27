@@ -1,19 +1,26 @@
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ChevronLeft, CheckCircle2, Info } from 'lucide-react';
 import FundManagementForm from './components/fund.management.form';
 import { FUND_MANAGEMENT_TABS } from './consts/conts';
 import type { PayoutFormData } from './components/assign.payout.form';
+import type { FundDraft } from './components/assign.funds.form';
 import { useFundAssignmentStore } from '@rahat-ui/query';
 import { useTranslations } from 'next-intl';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
+import { UnsavedChangesDialog } from 'apps/rahat-ui/src/common';
+import { useUnsavedChanges } from 'apps/rahat-ui/src/hooks/useUnsavedChanges';
+import { useSessionFormStorage } from 'apps/rahat-ui/src/hooks/useSessionFormStorage';
+
+const EMPTY_DRAFT: Partial<FundDraft> = {};
 
 export default function AssignFundsView() {
   // Router goes here
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('AA_PROJECT_WITH_GNOSIS');
+  const tGlobal = useTranslations('GLOBAL');
   const formatDigits = useLabelDigits();
   const id = useParams().id;
   const router = useRouter();
@@ -24,6 +31,72 @@ export default function AssignFundsView() {
   // Tracks the payout sub-step: null = prompt, true = form
   // Lifted here so the Back button can reset it without decrementing the step
   const [wantsPayout, setWantsPayout] = useState<boolean | null>(null);
+  const [draft, setDraft] = useState<FundDraft | null>(null);
+  const [isDetailsDirty, setIsDetailsDirty] = useState(false);
+  const [hasProgressed, setHasProgressed] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false);
+  const draftValuesRef = useRef<FundDraft | null>(null);
+  const listPath = `/projects/aa/${id}/fund-management?tab=fundManagementList`;
+
+  const { loadSaved, saveData, clearSaved } = useSessionFormStorage<
+    Partial<FundDraft>
+  >({
+    key: 'fund_assignment_draft',
+    projectId: id as string,
+    defaultValue: EMPTY_DRAFT,
+  });
+
+  useEffect(() => {
+    if (!id) return;
+    const saved = loadSaved();
+    if (saved?.title || saved?.beneficiaryGroupId || saved?.tokenAmountPerBenef) {
+      setDraft(saved as FundDraft);
+    }
+  }, [id, loadSaved]);
+
+  useEffect(() => {
+    if (currentStep > 0) setHasProgressed(true);
+  }, [currentStep]);
+
+  const handleDraftChange = useCallback(
+    (values: FundDraft, isDirty: boolean) => {
+      draftValuesRef.current = values;
+      setIsDetailsDirty(isDirty);
+    },
+    [],
+  );
+
+  const handleClear = useCallback(() => {
+    clearSaved();
+    setDraft(null);
+    setHasProgressed(false);
+  }, [clearSaved]);
+
+  const handleComplete = useCallback(() => {
+    clearSaved();
+    setIsCompleted(true);
+  }, [clearSaved]);
+
+  useEffect(() => {
+    if (isCompleted) router.push(listPath);
+  }, [isCompleted, router, listPath]);
+
+  const hasUnsavedChanges = !isCompleted && (isDetailsDirty || hasProgressed);
+
+  const {
+    showDialog,
+    handleConfirmLeave,
+    handleCancelLeave,
+    handleDiscardLeave,
+  } = useUnsavedChanges({
+    hasUnsavedChanges,
+    onConfirm: () => {
+      if (draftValuesRef.current) saveData(draftValuesRef.current);
+    },
+    onDiscard: () => {
+      clearSaved();
+    },
+  });
 
   const { setAssignedFundData } = useFundAssignmentStore((s) => ({
     setAssignedFundData: s.setAssignedFundData,
@@ -134,8 +207,24 @@ export default function AssignFundsView() {
           onPayoutData={setPayoutData}
           wantsPayout={wantsPayout}
           onWantsPayoutChange={setWantsPayout}
+          draft={draft}
+          onDraftChange={handleDraftChange}
+          onClear={handleClear}
+          onComplete={handleComplete}
         />
       </div>
+
+      <UnsavedChangesDialog
+        open={showDialog}
+        onConfirm={handleConfirmLeave}
+        onCancel={handleCancelLeave}
+        onDiscard={handleDiscardLeave}
+        title={tGlobal('UNSAVED_TITLE')}
+        description={tGlobal('UNSAVED_ALERT_DESCRIPTION')}
+        cancelText={tGlobal('CANCEL_TEXT')}
+        discardText={tGlobal('DISCARD_TEXT')}
+        confirmText={tGlobal('CONFIRM_TEXT')}
+      />
     </div>
   );
 }

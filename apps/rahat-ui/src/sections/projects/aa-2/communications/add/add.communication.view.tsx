@@ -5,7 +5,9 @@ import { useTranslations } from 'next-intl';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { useParams, useRouter } from 'next/navigation';
-import { Heading, Back } from 'apps/rahat-ui/src/common';
+import { Heading, Back, UnsavedChangesDialog } from 'apps/rahat-ui/src/common';
+import { useUnsavedChanges } from 'apps/rahat-ui/src/hooks/useUnsavedChanges';
+import { useSessionFormStorage } from 'apps/rahat-ui/src/hooks/useSessionFormStorage';
 import {
   useListAllTransports,
   useBeneficiariesGroups,
@@ -57,18 +59,63 @@ const toAudienceOptions = (groups: any[], countOf: (g: any) => number): Audience
 
 export default function AddCommunicationView() {
   const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const formatDigits = useLabelDigits();
   const formatDate = useDateFormat();
   const router = useRouter();
   const { id: projectId } = useParams();
   const uuid = projectId as UUID;
   const appTransports = useListAllTransports();
-  const { form } = useBroadcastForm();
+  const { form, defaultBroadcastValues } = useBroadcastForm();
   const createCommunication = useCreateCommunication();
   const triggerBroadcast = useTriggerCommunicationBroadcast();
   const uploadFile = useUploadFile();
   const confirmDialog = useBoolean();
   const pendingBroadcast = React.useRef<BroadcastFormValues | null>(null);
+  const hasInteracted = React.useRef(false);
+  const isRestored = React.useRef(false);
+  const isSubmittingRef = React.useRef(false);
+
+  const { loadSaved, saveData, clearSaved } = useSessionFormStorage<BroadcastFormValues>({
+    key: 'communication_draft',
+    projectId: projectId as string,
+    defaultValue: defaultBroadcastValues,
+  });
+
+  React.useEffect(() => {
+    if (isRestored.current || !projectId) return;
+    const saved = loadSaved();
+    if (saved && Object.keys(saved).length > 0) {
+      form.reset({
+        ...saved,
+        audioFile: undefined,
+        scheduleDate: saved.scheduleDate ? new Date(saved.scheduleDate) : undefined,
+      });
+    }
+    isRestored.current = true;
+  }, [projectId]);
+
+  const saveCurrentForm = () => {
+    saveData({ ...form.getValues(), audioFile: undefined });
+  };
+
+  const hasUnsavedChanges =
+    !isSubmittingRef.current && hasInteracted.current && form.formState.isDirty;
+
+  const {
+    showDialog,
+    handleConfirmLeave,
+    handleCancelLeave,
+    handleDiscardLeave,
+  } = useUnsavedChanges({
+    hasUnsavedChanges,
+    onConfirm: () => {
+      saveCurrentForm();
+    },
+    onDiscard: () => {
+      clearSaved();
+    },
+  });
 
   const { data: beneficiaryGroupsData, isLoading: isLoadingBeneficiaries } = useBeneficiariesGroups(uuid, {
     page: 1,
@@ -126,6 +173,7 @@ export default function AddCommunicationView() {
     if (!data) return;
     if (!selectedTransport?.cuid) return;
 
+    isSubmittingRef.current = true;
     try {
       let audioURL: { fileName: string; mediaURL: string } | undefined;
       if (data.channel === 'voice' && data.audioFile) {
@@ -173,6 +221,7 @@ export default function AddCommunicationView() {
 
       const communicationUUID = created?.data?.uuid ?? created?.response?.data?.uuid ?? created?.uuid;
       if (!communicationUUID) {
+        isSubmittingRef.current = false;
         toast.error(t('ERROR'));
         return;
       }
@@ -198,8 +247,10 @@ export default function AddCommunicationView() {
           : t('COMMUNICATION_CREATED_SUCCESS') || 'Communication created successfully',
       );
 
+      clearSaved();
       router.push(`/projects/aa/${projectId}/communications`);
     } catch {
+      isSubmittingRef.current = false;
       return;
     } finally {
       confirmDialog.onFalse();
@@ -218,7 +269,12 @@ export default function AddCommunicationView() {
 
       <div className="w-full">
         <Form {...form}>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            onFocus={() => {
+              hasInteracted.current = true;
+            }}
+          >
             <Card className="shadow-sm">
               <CardHeader><CardTitle className="text-xl">{t("COMMUNICATION_DETAILS")}</CardTitle></CardHeader>
               <CardContent className="space-y-6">
@@ -244,7 +300,7 @@ export default function AddCommunicationView() {
                         <FormLabel required>{t("COMMUNICATION_CHANNEL")}</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
-                            <FormSelectTrigger><SelectValue placeholder={t("SELECT_CHANNEL")} /></FormSelectTrigger>
+                            <FormSelectTrigger value={field.value}><SelectValue placeholder={t("SELECT_CHANNEL")} /></FormSelectTrigger>
                           </FormControl>
                           <SelectContent>
                             <SelectItem value="sms">{t("SMS")}</SelectItem>
@@ -467,6 +523,18 @@ export default function AddCommunicationView() {
         description={isScheduled ? t('SCHEDULE_COMMUNICATION_CONFIRM') : t('CREATE_COMMUNICATION_CONFIRM')}
         values={watch()}
         credits={credits}
+      />
+
+      <UnsavedChangesDialog
+        open={showDialog}
+        onConfirm={handleConfirmLeave}
+        onCancel={handleCancelLeave}
+        onDiscard={handleDiscardLeave}
+        title={tg('UNSAVED_TITLE')}
+        description={tg('UNSAVED_ALERT_DESCRIPTION')}
+        cancelText={tg('CANCEL_TEXT')}
+        discardText={tg('DISCARD_TEXT')}
+        confirmText={tg('CONFIRM_TEXT')}
       />
     </div>
   );

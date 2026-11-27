@@ -15,8 +15,15 @@ import {
   DialogFooter,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@rahat-ui/shadcn/src/components/ui/form';
+import { FormInput } from 'apps/rahat-ui/src/common';
 
 type IProps = {
   open: boolean;
@@ -35,14 +42,11 @@ export default function AddCategoryDialog({ open, onClose }: IProps) {
 
   type FormValues = z.infer<typeof FormSchema>;
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<FormValues>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
+    defaultValues: { name: '' },
   });
+  const { handleSubmit, reset } = form;
 
   const handleClose = () => {
     reset();
@@ -60,27 +64,31 @@ export default function AddCategoryDialog({ open, onClose }: IProps) {
         <DialogHeader>
           <DialogTitle>{t('ADD_CATEGORY')}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1">
-            <Label htmlFor="name">{t('NAME')}</Label>
-            <Input
-              id="name"
-              placeholder={t('CATEGORY_NAME')}
-              {...register('name')}
+        <Form {...form}>
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel required>{t('NAME')}</FormLabel>
+                  <FormControl>
+                    <FormInput placeholder={t('CATEGORY_NAME')} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {errors.name && (
-              <p className="text-sm text-destructive">{errors.name.message}</p>
-            )}
-          </div>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={handleClose}>
-              {t('CANCEL')}
-            </Button>
-            <Button type="submit" disabled={isPending}>
-              {isPending ? t('ADDING') : t('SUBMIT')}
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={handleClose}>
+                {t('CANCEL')}
+              </Button>
+              <Button type="submit" disabled={isPending}>
+                {isPending ? t('ADDING') : t('SUBMIT')}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

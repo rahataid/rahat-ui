@@ -17,7 +17,6 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import {
   Select,
-  SelectTrigger,
   SelectValue,
   SelectContent,
   SelectItem,
@@ -48,6 +47,7 @@ import { toast } from 'react-toastify';
 import {
   Back,
   FormInput,
+  FormSelectTrigger,
   FormTextarea,
   Heading,
   NoResult,
@@ -702,9 +702,12 @@ export default function EditActivity() {
                                 }}
                               >
                                 <FormControl>
-                                  <SelectTrigger className="rounded-l-none">
+                                  <FormSelectTrigger
+                                    value={lead ? unit : ''}
+                                    className="rounded-l-none"
+                                  >
                                     <SelectValue />
-                                  </SelectTrigger>
+                                  </FormSelectTrigger>
                                 </FormControl>
                                 <SelectContent>
                                   {DurationData.map((item) => (

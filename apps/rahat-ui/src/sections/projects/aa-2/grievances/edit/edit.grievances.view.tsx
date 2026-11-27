@@ -12,6 +12,7 @@ import {
   GrievanceType,
 } from '@rahat-ui/query/lib/grievance/types/grievance';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { cn } from '@rahat-ui/shadcn/src';
 import {
   Form,
   FormControl,
@@ -20,8 +21,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import {
   RadioGroup,
   RadioGroupItem,
@@ -31,11 +30,17 @@ import {
   Select,
   SelectContent,
   SelectItem,
-  SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
-import { Back, FormInput, Heading } from 'apps/rahat-ui/src/common';
+import {
+  Back,
+  ERROR_CLASSES,
+  FILLED_CLASSES,
+  FormInput,
+  FormSelectTrigger,
+  FormTextarea,
+  Heading,
+} from 'apps/rahat-ui/src/common';
 import {
   grievancePriority,
   grievanceStatus,
@@ -449,9 +454,9 @@ export default function EditGrievance() {
                     render={({ field }) => {
                       return (
                         <FormItem>
-                          <FormLabel>{t('GRIEVANCE_TITLE')} *</FormLabel>
+                          <FormLabel required>{t('GRIEVANCE_TITLE')}</FormLabel>
                           <FormControl>
-                            <Input
+                            <FormInput
                               type="text"
                               placeholder={t('WRITE_GRIEVANCE_TITLE')}
                               {...field}
@@ -469,9 +474,9 @@ export default function EditGrievance() {
                     render={({ field }) => {
                       return (
                         <FormItem>
-                          <FormLabel>{t('DESCRIPTION')} *</FormLabel>
+                          <FormLabel required>{t('DESCRIPTION')}</FormLabel>
                           <FormControl>
-                            <Textarea
+                            <FormTextarea
                               placeholder={t('PROVIDE_DETAILED_INFORMATION')}
                               {...field}
                             />
@@ -489,7 +494,7 @@ export default function EditGrievance() {
                       name="type"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{t('GRIEVANCE_TYPE')} *</FormLabel>
+                          <FormLabel required>{t('GRIEVANCE_TYPE')}</FormLabel>
                           <Select
                             onValueChange={(value: string) =>
                               field.onChange(value as GrievanceType)
@@ -498,9 +503,9 @@ export default function EditGrievance() {
                             defaultValue={field.value}
                           >
                             <FormControl>
-                              <SelectTrigger>
+                              <FormSelectTrigger value={field.value}>
                                 <SelectValue placeholder={t('SELECT_GRIEVANCE_TYPE')} />
-                              </SelectTrigger>
+                              </FormSelectTrigger>
                             </FormControl>
                             <SelectContent>
                               {grievanceType.map((item) => (
@@ -523,7 +528,7 @@ export default function EditGrievance() {
                       name="status"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{t('STATUS')} *</FormLabel>
+                          <FormLabel required>{t('STATUS')}</FormLabel>
                           <Select
                             onValueChange={(value: string) =>
                               field.onChange(value as GrievanceStatus)
@@ -532,9 +537,9 @@ export default function EditGrievance() {
                             defaultValue={field.value}
                           >
                             <FormControl>
-                              <SelectTrigger>
+                              <FormSelectTrigger value={field.value}>
                                 <SelectValue placeholder={t('SELECT_GRIEVANCE_STATUS')} />
-                              </SelectTrigger>
+                              </FormSelectTrigger>
                             </FormControl>
                             <SelectContent>
                               {grievanceStatus.map((item) => (
@@ -558,7 +563,7 @@ export default function EditGrievance() {
                       name="priority"
                       render={({ field }) => (
                         <FormItem className="space-y-3">
-                          <FormLabel>{t('PRIORITY')} *</FormLabel>
+                          <FormLabel required>{t('PRIORITY')}</FormLabel>
                           <FormControl>
                             <RadioGroup
                               onValueChange={(value: string) =>
@@ -597,9 +602,9 @@ export default function EditGrievance() {
                       render={({ field }) => {
                         return (
                           <FormItem>
-                          <FormLabel>{t('REPORTER_NAME')} *</FormLabel>
+                          <FormLabel required>{t('REPORTER_NAME')}</FormLabel>
                           <FormControl>
-                            <Input
+                            <FormInput
                               type="text"
                               placeholder={t('ENTER_REPORTER_NAME')}
                               {...field}
@@ -620,9 +625,9 @@ export default function EditGrievance() {
                           field.value.includes('@');
                         return (
                           <FormItem>
-                          <FormLabel>{t('CONTACT_INFORMATION')} *</FormLabel>
+                          <FormLabel required>{t('CONTACT_INFORMATION')}</FormLabel>
                           <FormControl>
-                            <Input
+                            <FormInput
                               type="text"
                               placeholder={t('WRITE_REPORTER_CONTACT')}
                               {...field}
@@ -646,10 +651,10 @@ export default function EditGrievance() {
                   <FormField
                     control={form.control}
                     name="tags"
-                    render={({ field }) => {
+                    render={({ field, fieldState }) => {
                       return (
                         <FormItem>
-                          <Label>{t('TAGS')}</Label>
+                          <FormLabel>{t('TAGS')}</FormLabel>
                           <FormControl>
                             <>
                               <TagInput
@@ -665,9 +670,11 @@ export default function EditGrievance() {
                                 placeholder={t('ENTER_TAG_AND_PRESS_ENTER')}
                                 className="min-h-[23px]"
                                 styleClasses={{
-                                  inlineTagsContainer:
-                                    'border-input rounded shadow-xs p-1 gap-1 ' +
-                                    'focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500',
+                                  inlineTagsContainer: cn(
+                                    'border-input rounded shadow-xs p-1 gap-1 focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500',
+                                    variationTags.length > 0 && !fieldState.error && FILLED_CLASSES,
+                                    fieldState.error && ERROR_CLASSES,
+                                  ),
                                   input:
                                     'w-full rounded-sm min-w-[80px] shadow-none px-2 h-7',
                                   tag: {

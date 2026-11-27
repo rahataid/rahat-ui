@@ -20,6 +20,7 @@ import MultipleSelector, {
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
+import { FormInput } from 'apps/rahat-ui/src/common';
 
 interface PhaseFormProps {
   form: UseFormReturn<AddPhaseFormInputValues, unknown, AddPhaseFormValues>;
@@ -86,9 +87,9 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('PHASE_NAME')}</FormLabel>
+                    <FormLabel required>{t('PHASE_NAME')}</FormLabel>
                     <FormControl>
-                      <Input placeholder={t('WRITE_PHASE_NAME')} {...field} />
+                      <FormInput placeholder={t('WRITE_PHASE_NAME')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -120,9 +121,9 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
                   name="requiredMandatoryTriggers"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('MANDATORY_TRIGGERS')}*</FormLabel>
+                      <FormLabel required>{t('MANDATORY_TRIGGERS')}</FormLabel>
                       <FormControl>
-                        <Input
+                        <FormInput
                           type="number"
                           min={0}
                           placeholder={t('ENTER_MANDATORY_TRIGGERS')}
@@ -145,9 +146,9 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
                   name="requiredOptionalTriggers"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('OPTIONAL_TRIGGERS')}*</FormLabel>
+                      <FormLabel required>{t('OPTIONAL_TRIGGERS')}</FormLabel>
                       <FormControl>
-                        <Input
+                        <FormInput
                           type="number"
                           min={0}
                           placeholder={t('ENTER_OPTIONAL_TRIGGERS')}
@@ -302,7 +303,7 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
                     name="disbursementMethods"
                     render={({ field }) => (
                       <FormItem className=" flex  flex-col items-start w-full ">
-                        <FormLabel>{t('DISBURSEMENT_METHODS')}</FormLabel>
+                        <FormLabel required>{t('DISBURSEMENT_METHODS')}</FormLabel>
                         <FormControl>
                           <MultipleSelector
                             value={filterSelectedOptions(field.value)}

@@ -17,7 +17,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { FormInput } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
 import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
@@ -92,9 +92,9 @@ export default function AddFundDialog({ open, onClose, projectUUID }: IProps) {
               name="amount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('AMOUNT')}</FormLabel>
+                  <FormLabel required>{t('AMOUNT')}</FormLabel>
                   <FormControl>
-                    <Input
+                    <FormInput
                       type="text"
                       inputMode="decimal"
                       min="0"

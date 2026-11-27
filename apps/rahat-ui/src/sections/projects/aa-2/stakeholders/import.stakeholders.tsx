@@ -42,6 +42,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/table';
 
 import { ClientSidePagination, HeaderWithBack } from 'apps/rahat-ui/src/common';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import {
   CloudDownload,
   FileWarning,
@@ -113,6 +114,7 @@ export default function ImportStakeholder() {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const tb = useTranslations();
+  const [showClearDialog, setShowClearDialog] = useState(false);
   const formatNum = useNumberFormat();
 
   // Query goes here
@@ -1021,7 +1023,7 @@ export default function ImportStakeholder() {
               type="button"
               className="min-w-[clamp(60px,8vw,120px)] rounded-sm h-[clamp(28px,3vw,36px)] px-[clamp(8px,1vw,16px)] text-[clamp(11px,1vw,14px)]"
               variant="outline"
-              onClick={handleClear}
+              onClick={() => setShowClearDialog(true)}
             >
               {t('CLEAR')}
             </Button>
@@ -1299,6 +1301,17 @@ export default function ImportStakeholder() {
           )}
         </DialogContent>
       </Dialog>
+      <ConfirmationDialog
+        isConfirmationDialogOpen={showClearDialog}
+        onCancel={() => setShowClearDialog(false)}
+        onConfirm={() => {
+          handleClear();
+          setShowClearDialog(false);
+        }}
+        dialogTitle={t('CLEAR_FORM')}
+        dialogMessage={t('FORM_CLEAR_ALERT')}
+        confirmLabel={t('CLEAR_ALL')}
+      />
     </>
   );
 }

@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import { usePhoneCountrySelectProps } from 'apps/rahat-ui/src/utils/i18n/phone';
 import React from 'react';
 import { useForm } from 'react-hook-form';
@@ -41,6 +42,7 @@ import Swal from 'sweetalert2';
 export default function EditUser() {
   const t = useTranslations('USERS_EDIT');
   const tg = useTranslations('GLOBAL');
+  const [showResetDialog, setShowResetDialog] = React.useState(false);
   const phoneCountrySelectProps = usePhoneCountrySelectProps();
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
@@ -274,10 +276,7 @@ export default function EditUser() {
             className="px-14"
             type="button"
             variant="secondary"
-            onClick={() => {
-              form.reset();
-              // router.push('/users')
-            }}
+            onClick={() => setShowResetDialog(true)}
           >
             {tg('RESET')}
           </Button>
@@ -293,6 +292,18 @@ export default function EditUser() {
           )}
         </div>
       </form>
+      <ConfirmationDialog
+        isConfirmationDialogOpen={showResetDialog}
+        onCancel={() => setShowResetDialog(false)}
+        onConfirm={() => {
+          form.reset();
+          // router.push('/users')
+          setShowResetDialog(false);
+        }}
+        dialogTitle={tg('RESET_FORM')}
+        dialogMessage={tg('RESET_FORM_ALERT')}
+        confirmLabel={tg('RESET')}
+      />
     </Form>
   );
 }

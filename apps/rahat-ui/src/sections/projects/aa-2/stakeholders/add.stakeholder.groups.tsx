@@ -19,6 +19,7 @@ import {
   DemoTable,
   Heading,
 } from 'apps/rahat-ui/src/common';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
@@ -54,6 +55,7 @@ const UpdateOrAddStakeholdersGroup = () => {
   const router = useRouter();
   const isEditing = Boolean(groupId);
   const t = useTranslations('AA_PROJECT');
+  const [showClearDialog, setShowClearDialog] = useState(false);
 
   const stakeholderGroupSchema = React.useMemo(
     () => buildStakeholderGroupSchema(t),
@@ -258,10 +260,7 @@ const UpdateOrAddStakeholdersGroup = () => {
                   <Button
                     type="button"
                     className="min-w-[clamp(60px,8vw,120px)] rounded-sm h-[clamp(28px,3vw,36px)] px-[clamp(8px,1vw,16px)] text-[clamp(11px,1vw,14px)]"
-                    onClick={() => {
-                      reset();
-                      resetSelectedListItems();
-                    }}
+                    onClick={() => setShowClearDialog(true)}
                     variant="outline"
                   >
                     {t('CLEAR')}
@@ -355,6 +354,18 @@ const UpdateOrAddStakeholdersGroup = () => {
           </div>
         </form>
       </Form>
+      <ConfirmationDialog
+        isConfirmationDialogOpen={showClearDialog}
+        onCancel={() => setShowClearDialog(false)}
+        onConfirm={() => {
+          reset();
+          resetSelectedListItems();
+          setShowClearDialog(false);
+        }}
+        dialogTitle={t('CLEAR_FORM')}
+        dialogMessage={t('FORM_CLEAR_ALERT')}
+        confirmLabel={t('CLEAR_ALL')}
+      />
     </div>
   );
 };

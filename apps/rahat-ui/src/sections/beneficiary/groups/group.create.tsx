@@ -15,13 +15,16 @@ import HeaderWithBack from '../../projects/components/header.with.back';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useCreateBeneficiaryGroup } from '@rahat-ui/query';
 import { toast } from 'react-toastify';
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import { resolveBeneficiaryErrorMessage } from '@rahat-ui/query/utils/i18n/backend-error';
 
 export default function GroupCreateView() {
   const router = useRouter();
   const createBeneficiaryGroup = useCreateBeneficiaryGroup();
   const t = useTranslations('GLOBAL');
+  const [showClearDialog, setShowClearDialog] = useState(false);
   const tb = useTranslations('BENEFICIARY_GROUP_CREATE');
   const tRoot = useTranslations();
 
@@ -102,7 +105,7 @@ export default function GroupCreateView() {
           <Button
             type="button"
             variant="secondary"
-            onClick={() => form.reset()}
+            onClick={() => setShowClearDialog(true)}
           >
             {t('CLEAR')}
           </Button>
@@ -117,6 +120,17 @@ export default function GroupCreateView() {
           {/* )} */}
         </div>
       </form>
+      <ConfirmationDialog
+        isConfirmationDialogOpen={showClearDialog}
+        onCancel={() => setShowClearDialog(false)}
+        onConfirm={() => {
+          form.reset();
+          setShowClearDialog(false);
+        }}
+        dialogTitle={t('CLEAR_FORM')}
+        dialogMessage={t('FORM_CLEAR_ALERT')}
+        confirmLabel={t('CLEAR_ALL')}
+      />
     </Form>
   );
 }

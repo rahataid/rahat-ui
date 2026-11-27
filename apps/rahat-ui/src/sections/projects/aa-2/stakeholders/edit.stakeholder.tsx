@@ -15,6 +15,7 @@ import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import { useTranslations } from 'next-intl';
 import { HeaderWithBack, Heading } from 'apps/rahat-ui/src/common';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import { UUID } from 'crypto';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -32,6 +33,7 @@ export default function EditStakeholders() {
   const stakeholdersId = params.stakeholdersId as UUID;
   const searchParams = useSearchParams();
   const t = useTranslations('AA_PROJECT');
+  const [showResetDialog, setShowResetDialog] = useState(false);
   const phoneCountrySelectProps = usePhoneCountrySelectProps();
   const stakeholder = useStakeholderDetails(projectId, {
     uuid: stakeholdersId,
@@ -411,11 +413,7 @@ export default function EditStakeholders() {
                 type="button"
                 variant="secondary"
                 className="h-[clamp(28px,3vw,36px)] px-[clamp(16px,2vw,32px)] text-[clamp(11px,1vw,14px)]"
-                onClick={() => {
-                  form.reset();
-
-                  setUnsavedSupportAreaInput('');
-                }}
+                onClick={() => setShowResetDialog(true)}
               >
                 {t('RESET')}
               </Button>
@@ -432,6 +430,18 @@ export default function EditStakeholders() {
           </div>
         </form>
       </Form>
+      <ConfirmationDialog
+        isConfirmationDialogOpen={showResetDialog}
+        onCancel={() => setShowResetDialog(false)}
+        onConfirm={() => {
+          form.reset();
+          setUnsavedSupportAreaInput('');
+          setShowResetDialog(false);
+        }}
+        dialogTitle={t('RESET_FORM')}
+        dialogMessage={t('RESET_FORM_ALERT')}
+        confirmLabel={t('RESET')}
+      />
     </div>
   );
 }

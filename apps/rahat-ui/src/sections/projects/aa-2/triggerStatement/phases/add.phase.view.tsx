@@ -32,6 +32,7 @@ export default function AddPhaseView() {
   const projectId = params.id as UUID;
   const searchParams = useSearchParams();
   const addPhaseConfirmDialog = useBoolean(false);
+  const clearConfirmDialog = useBoolean(false);
 
   const navigation = searchParams.get('from');
   const tab = searchParams.get('tab') ?? '';
@@ -159,6 +160,7 @@ export default function AddPhaseView() {
     form.reset(resetValues);
     form.setValue('canRevert', resetValues.canRevert);
     form.setValue('canTriggerPayout', resetValues.canTriggerPayout);
+    clearConfirmDialog.onFalse();
   };
 
   if (isProjectInfoLoading) return <TableLoader />;
@@ -175,7 +177,7 @@ export default function AddPhaseView() {
       <PhaseForm
         form={form}
         onSubmit={handleFormSubmit}
-        onReset={handleReset}
+        onReset={clearConfirmDialog.onTrue}
         loading={createPhase.isPending}
         submitLabel={t('ADD')}
         resetLabel={t('CLEAR')}
@@ -189,6 +191,14 @@ export default function AddPhaseView() {
         onConfirm={handleConfirmAdd}
         dialogTitle={t('CONFIRM_ADD_PHASE')}
         dialogMessage={t('CONFIRM_ADD_PHASE_DESC')}
+      />
+      <ConfirmationDialog
+        isConfirmationDialogOpen={clearConfirmDialog.value}
+        onCancel={clearConfirmDialog.onFalse}
+        onConfirm={handleReset}
+        dialogTitle={t('CLEAR_FORM')}
+        dialogMessage={t('FORM_CLEAR_ALERT')}
+        confirmLabel={t('CLEAR_ALL')}
       />
     </>
   );

@@ -33,6 +33,7 @@ import DownloadBeneficiarySampleDialog from 'apps/rahat-ui/src/common/download.b
 import { BENEFICIARY_SAMPLE_TEMPLATES } from '../../../constants/beneficiary.sample.templates';
 
 import { useTranslations } from 'next-intl';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 
 export default function ExcelUploader() {
   const router = useRouter();
@@ -45,6 +46,7 @@ export default function ExcelUploader() {
   const inputRef = useRef<HTMLInputElement>(null);
   const uploadBeneficiary = useUploadBeneficiary();
   const t = useTranslations('GLOBAL');
+  const [showClearDialog, setShowClearDialog] = React.useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -211,13 +213,7 @@ export default function ExcelUploader() {
           <Button
             type="button"
             variant="secondary"
-            onClick={() => {
-              setData([]);
-              setFileName('');
-              setSelectedFile(null);
-
-              // router.push('/beneficiary')
-            }}
+            onClick={() => setShowClearDialog(true)}
           >
             {t('CLEAR')}
           </Button>
@@ -310,6 +306,21 @@ export default function ExcelUploader() {
           )}
         </DialogContent>
       </Dialog>
+      <ConfirmationDialog
+        isConfirmationDialogOpen={showClearDialog}
+        onCancel={() => setShowClearDialog(false)}
+        onConfirm={() => {
+          setData([]);
+          setFileName('');
+          setSelectedFile(null);
+
+          // router.push('/beneficiary')
+          setShowClearDialog(false);
+        }}
+        dialogTitle={t('CLEAR_FORM')}
+        dialogMessage={t('FORM_CLEAR_ALERT')}
+        confirmLabel={t('CLEAR_ALL')}
+      />
     </>
   );
 }

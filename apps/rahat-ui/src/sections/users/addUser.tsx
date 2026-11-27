@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import { usePhoneCountrySelectProps } from 'apps/rahat-ui/src/utils/i18n/phone';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -45,6 +46,7 @@ import Swal from 'sweetalert2';
 export default function AddUser() {
   const t = useTranslations('USERS_ADD');
   const tg = useTranslations('GLOBAL');
+  const [showClearDialog, setShowClearDialog] = React.useState(false);
   const tb = useTranslations();
   const phoneCountrySelectProps = usePhoneCountrySelectProps();
 
@@ -317,10 +319,7 @@ export default function AddUser() {
             className="px-14"
             type="button"
             variant="secondary"
-            onClick={() => {
-              form.reset();
-              // router.push('/users')
-            }}
+            onClick={() => setShowClearDialog(true)}
           >
             {tg('CLEAR')}
           </Button>
@@ -329,6 +328,18 @@ export default function AddUser() {
           </Button>
         </div>
       </form>
+      <ConfirmationDialog
+        isConfirmationDialogOpen={showClearDialog}
+        onCancel={() => setShowClearDialog(false)}
+        onConfirm={() => {
+          form.reset();
+          // router.push('/users')
+          setShowClearDialog(false);
+        }}
+        dialogTitle={tg('CLEAR_FORM')}
+        dialogMessage={tg('FORM_CLEAR_ALERT')}
+        confirmLabel={tg('CLEAR_ALL')}
+      />
     </Form>
   );
 }

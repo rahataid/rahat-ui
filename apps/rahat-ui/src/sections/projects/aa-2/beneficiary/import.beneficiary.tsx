@@ -34,6 +34,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { UUID } from 'crypto';
 import { HeaderWithBack, ClientSidePagination } from 'apps/rahat-ui/src/common';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import DownloadBeneficiarySampleDialog from 'apps/rahat-ui/src/common/download.beneficiary.sample.dialog';
 import { BENEFICIARY_SAMPLE_TEMPLATES } from 'apps/rahat-ui/src/constants/beneficiary.sample.templates';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
@@ -57,6 +58,7 @@ export default function AAImportBeneficiary() {
   const router = useRouter();
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
+  const [showClearDialog, setShowClearDialog] = useState(false);
   const formatNum = useNumberFormat();
   const [data, setData] = useState<string[][]>([]);
   const [fileName, setFileName] = useState<string>('');
@@ -369,7 +371,7 @@ export default function AAImportBeneficiary() {
               type="button"
               className="min-w-[clamp(60px,8vw,120px)] h-[clamp(28px,3vw,36px)] px-[clamp(8px,1vw,16px)] text-[clamp(11px,1vw,14px)]"
               variant="outline"
-              onClick={handleClear}
+              onClick={() => setShowClearDialog(true)}
             >
               {tg('CLEAR')}
             </Button>
@@ -691,6 +693,17 @@ export default function AAImportBeneficiary() {
           )}
         </DialogContent>
       </Dialog>
+      <ConfirmationDialog
+        isConfirmationDialogOpen={showClearDialog}
+        onCancel={() => setShowClearDialog(false)}
+        onConfirm={() => {
+          handleClear();
+          setShowClearDialog(false);
+        }}
+        dialogTitle={tg('CLEAR_FORM')}
+        dialogMessage={tg('FORM_CLEAR_ALERT')}
+        confirmLabel={tg('CLEAR_ALL')}
+      />
     </>
   );
 }

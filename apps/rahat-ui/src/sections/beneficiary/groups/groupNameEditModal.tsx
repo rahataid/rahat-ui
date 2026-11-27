@@ -24,6 +24,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useTranslations } from 'next-intl';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 
 type EditDialogProps = {
   open: boolean;
@@ -38,6 +39,7 @@ export default function GroupNameEditModal({
 }: EditDialogProps) {
   const updateBeneficiaryGroup = useUpdateBeneficiaryGroup();
   const t = useTranslations('GLOBAL');
+  const [showResetDialog, setShowResetDialog] = React.useState(false);
 
   const FormSchema = z.object({
     name: z
@@ -114,7 +116,7 @@ export default function GroupNameEditModal({
             />
 
             <DialogFooter className="sm:justify-end">
-              <Button type="button" variant="outline" onClick={() => reset()}>
+              <Button type="button" variant="outline" onClick={() => setShowResetDialog(true)}>
                 {t('RESET')}
               </Button>
               <Button type="submit" disabled={updateBeneficiaryGroup.isPending}>
@@ -123,6 +125,17 @@ export default function GroupNameEditModal({
             </DialogFooter>
           </form>
         </Form>
+        <ConfirmationDialog
+          isConfirmationDialogOpen={showResetDialog}
+          onCancel={() => setShowResetDialog(false)}
+          onConfirm={() => {
+            reset();
+            setShowResetDialog(false);
+          }}
+          dialogTitle={t('RESET_FORM')}
+          dialogMessage={t('RESET_FORM_ALERT')}
+          confirmLabel={t('RESET')}
+        />
       </DialogContent>
     </Dialog>
   );

@@ -1,4 +1,5 @@
 import { useTranslations } from 'next-intl';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import {
   Form,
   FormControl,
@@ -36,6 +37,7 @@ import { useUserRoleCreate } from '@rumsan/react-query';
 export default function UserAddRoleView() {
   const t = useTranslations('USERS_ADD_ROLE');
   const tg = useTranslations('GLOBAL');
+  const [showClearDialog, setShowClearDialog] = React.useState(false);
   const router = useRouter();
 
   const [selectedSubjectActions, setSeletedSubjectActions] =
@@ -372,16 +374,7 @@ export default function UserAddRoleView() {
               className="px-14"
               type="button"
               variant="secondary"
-              onClick={() => {
-                form.reset({
-                  name: '',
-                  isSystem: false,
-                });
-                setSeletedSubjectActions(null);
-                setSelectedProjectSubjectActions(null);
-                setRoleSearch('');
-                setProjectRoleSearch('');
-              }}
+              onClick={() => setShowClearDialog(true)}
             >
               {tg('CLEAR')}
             </Button>
@@ -391,6 +384,24 @@ export default function UserAddRoleView() {
           </div>
         </form>
       </Form>
+      <ConfirmationDialog
+        isConfirmationDialogOpen={showClearDialog}
+        onCancel={() => setShowClearDialog(false)}
+        onConfirm={() => {
+          form.reset({
+            name: '',
+            isSystem: false,
+          });
+          setSeletedSubjectActions(null);
+          setSelectedProjectSubjectActions(null);
+          setRoleSearch('');
+          setProjectRoleSearch('');
+          setShowClearDialog(false);
+        }}
+        dialogTitle={tg('CLEAR_FORM')}
+        dialogMessage={tg('FORM_CLEAR_ALERT')}
+        confirmLabel={tg('CLEAR_ALL')}
+      />
     </>
   );
 }

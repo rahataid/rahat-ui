@@ -14,10 +14,10 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import { FormInput } from 'apps/rahat-ui/src/common';
 import { ListBeneficiaryGroup } from '@rahat-ui/types';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -100,10 +100,9 @@ export default function GroupNameEditModal({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <Label htmlFor="group-name">{t('BENEFICIARY_GROUP_NAME')}</Label>
+                  <FormLabel required>{t('BENEFICIARY_GROUP_NAME')}</FormLabel>
                   <FormControl>
-                    <Input
-                      id="group-name"
+                    <FormInput
                       placeholder={t('ENTER_BENEFICIARY_GROUP_NAME')}
                       {...field}
                     />

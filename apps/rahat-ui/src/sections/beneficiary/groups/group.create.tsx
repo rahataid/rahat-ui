@@ -10,7 +10,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { FormInput } from 'apps/rahat-ui/src/common';
 import HeaderWithBack from '../../projects/components/header.with.back';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useCreateBeneficiaryGroup } from '@rahat-ui/query';
@@ -82,9 +82,9 @@ export default function GroupCreateView() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>{t('GROUP_NAME')}</FormLabel>
+                      <FormLabel required>{t('GROUP_NAME')}</FormLabel>
                       <FormControl>
-                        <Input
+                        <FormInput
                           type="text"
                           placeholder={tb('ENTER_GROUP_NAME')}
                           {...field}

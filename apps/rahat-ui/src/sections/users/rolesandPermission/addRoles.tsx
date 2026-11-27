@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Button } from '@rahat-ui/shadcn/components/button';
-import { Input } from '@rahat-ui/shadcn/components/input';
+import { FormInput } from 'apps/rahat-ui/src/common';
 import {
   Form,
   FormControl,
@@ -82,9 +82,9 @@ export default function AddRoles() {
               name="roleName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('ROLE_NAME')}</FormLabel>
+                  <FormLabel required>{t('ROLE_NAME')}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t('ROLE_NAME')} {...field} />
+                    <FormInput placeholder={t('ROLE_NAME')} {...field} />
                   </FormControl>
 
                   <FormMessage />

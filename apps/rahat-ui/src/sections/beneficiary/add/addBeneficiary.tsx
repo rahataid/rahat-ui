@@ -27,7 +27,7 @@ import { isValidPhoneNumber } from 'react-phone-number-input';
 import { z } from 'zod';
 import { Loader2, Wallet } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   RadioGroup,
   RadioGroupItem,
@@ -35,6 +35,7 @@ import {
 import Back from '../../projects/components/back';
 import HeaderWithBack from '../../projects/components/header.with.back';
 import { useTranslations } from 'next-intl';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
 import { usePhoneCountrySelectProps } from 'apps/rahat-ui/src/utils/i18n/phone';
 import { resolveBeneficiaryErrorMessage } from '@rahat-ui/query/utils/i18n/backend-error';
@@ -44,6 +45,7 @@ export default function AddBeneficiaryForm() {
   const router = useRouter();
   const t = useTranslations('BENEFICIARY_ADD');
   const g = useTranslations('GLOBAL');
+  const [showClearDialog, setShowClearDialog] = useState(false);
   const phoneCountrySelectProps = usePhoneCountrySelectProps();
   const tb = useTranslations();
 
@@ -418,7 +420,7 @@ export default function AddBeneficiaryForm() {
             <Button
               type="button"
               variant="secondary"
-              onClick={() => form.reset()}
+              onClick={() => setShowClearDialog(true)}
             >
               {g('CLEAR')}
             </Button>
@@ -433,6 +435,17 @@ export default function AddBeneficiaryForm() {
           </div>
         </form>
       </Form>
+      <ConfirmationDialog
+        isConfirmationDialogOpen={showClearDialog}
+        onCancel={() => setShowClearDialog(false)}
+        onConfirm={() => {
+          form.reset();
+          setShowClearDialog(false);
+        }}
+        dialogTitle={g('CLEAR_FORM')}
+        dialogMessage={g('FORM_CLEAR_ALERT')}
+        confirmLabel={g('CLEAR_ALL')}
+      />
     </>
   );
 }

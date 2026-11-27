@@ -26,6 +26,7 @@ import {
 import { CloudDownload, FileWarning, Repeat2, Share } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { HeaderWithBack } from 'apps/rahat-ui/src/common';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import {
   RowResult,
   buildActivityPayload,
@@ -39,6 +40,7 @@ import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 export default function BulkUploadActivities() {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
+  const [showClearDialog, setShowClearDialog] = useState(false);
   const { id: projectID } = useParams() as { id: UUID };
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -326,7 +328,7 @@ export default function BulkUploadActivities() {
           )}
         </div>
         <div className="flex gap-2">
-          <Button type="button" variant="outline" className="rounded-sm" onClick={handleClear}>
+          <Button type="button" variant="outline" className="rounded-sm" onClick={() => setShowClearDialog(true)}>
             {t('CLEAR')}
           </Button>
           {rows.length > 0 && !isValid && (
@@ -362,6 +364,17 @@ export default function BulkUploadActivities() {
           )}
         </div>
       </div>
+      <ConfirmationDialog
+        isConfirmationDialogOpen={showClearDialog}
+        onCancel={() => setShowClearDialog(false)}
+        onConfirm={() => {
+          handleClear();
+          setShowClearDialog(false);
+        }}
+        dialogTitle={tg('CLEAR_FORM')}
+        dialogMessage={tg('FORM_CLEAR_ALERT')}
+        confirmLabel={tg('CLEAR_ALL')}
+      />
     </div>
   );
 }

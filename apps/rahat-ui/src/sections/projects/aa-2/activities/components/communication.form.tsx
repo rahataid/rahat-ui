@@ -94,6 +94,7 @@ import {
   FormSelectTrigger,
   FormTextarea,
 } from 'apps/rahat-ui/src/common';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import { cn } from '@rahat-ui/shadcn/src';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { getSmsInfo } from 'apps/rahat-ui/src/utils/buildCommunicationPayload';
@@ -126,6 +127,7 @@ export default function AddCommunicationForm({
 }: AddCommunicationFormProps) {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
+  const [showClearDialog, setShowClearDialog] = useState(false);
   const formatNum = useNumberFormat();
   const formatDate = useDateFormat();
   const { id: projectId } = useParams();
@@ -973,7 +975,11 @@ export default function AddCommunicationForm({
         <CardFooter className="flex flex-wrap justify-end gap-3 border-t p-4 sm:p-6">
           <Button
             variant="outline"
-            onClick={clearCommunicationForm}
+            onClick={
+              editMode?.value
+                ? clearCommunicationForm
+                : () => setShowClearDialog(true)
+            }
             type="button"
           >
             {editMode?.value ? tg('CANCEL') : tg('CLEAR')}
@@ -1031,6 +1037,17 @@ export default function AddCommunicationForm({
           </DialogContent>
         </Dialog>
       </Card>
+      <ConfirmationDialog
+        isConfirmationDialogOpen={showClearDialog}
+        onCancel={() => setShowClearDialog(false)}
+        onConfirm={() => {
+          clearCommunicationForm();
+          setShowClearDialog(false);
+        }}
+        dialogTitle={tg('CLEAR_FORM')}
+        dialogMessage={tg('FORM_CLEAR_ALERT')}
+        confirmLabel={tg('CLEAR_ALL')}
+      />
     </Form>
   );
 }

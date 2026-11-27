@@ -31,7 +31,7 @@ import { isValidPhoneNumber } from 'react-phone-number-input';
 import { z } from 'zod';
 import { Loader2, Wallet } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   RadioGroup,
   RadioGroupItem,
@@ -46,6 +46,7 @@ import {
   BankedStatus,
 } from '@rahataid/sdk/enums';
 import { useTranslations } from 'next-intl';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
 import { usePhoneCountrySelectProps } from 'apps/rahat-ui/src/utils/i18n/phone';
 
@@ -61,6 +62,7 @@ export default function AddBeneficiaryForm() {
   const beneficiary = useBeneficiaryStore((state) => state.singleBeneficiary);
   const t = useTranslations('BENEFICIARY_EDIT');
   const g = useTranslations('GLOBAL');
+  const [showResetDialog, setShowResetDialog] = useState(false);
   const phoneCountrySelectProps = usePhoneCountrySelectProps();
 
   const FormSchema = z.object({
@@ -450,9 +452,7 @@ export default function AddBeneficiaryForm() {
               type="button"
               variant="secondary"
               // onClick={() => router.push('/beneficiary')}
-              onClick={() => {
-                form.reset();
-              }}
+              onClick={() => setShowResetDialog(true)}
             >
               {g('RESET')}
             </Button>
@@ -467,6 +467,17 @@ export default function AddBeneficiaryForm() {
           </div>
         </form>
       </Form>
+      <ConfirmationDialog
+        isConfirmationDialogOpen={showResetDialog}
+        onCancel={() => setShowResetDialog(false)}
+        onConfirm={() => {
+          form.reset();
+          setShowResetDialog(false);
+        }}
+        dialogTitle={g('RESET_FORM')}
+        dialogMessage={g('RESET_FORM_ALERT')}
+        confirmLabel={g('RESET')}
+      />
     </>
   );
 }

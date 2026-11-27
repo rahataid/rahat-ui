@@ -47,6 +47,7 @@ export default function EditPhaseView() {
   const deletePhase = useDeletePhase();
   const [isDeleted, setIsDeleted] = useState(false);
   const editPhaseConfirmDialog = useBoolean(false);
+  const resetConfirmDialog = useBoolean(false);
   const navigation = searchParams.get('from');
   const tab = searchParams.get('tab') ?? '';
   const { data: phasesData = [] } = usePhases(projectId);
@@ -227,7 +228,7 @@ export default function EditPhaseView() {
       <PhaseForm
         form={form}
         onSubmit={handleFormSubmit}
-        onReset={handleReset}
+        onReset={resetConfirmDialog.onTrue}
         loading={updatePhase.isPending}
         submitLabel={t('UPDATE')}
         resetLabel={t('RESET')}
@@ -242,6 +243,17 @@ export default function EditPhaseView() {
         onConfirm={handleConfirmUpdate}
         dialogTitle={t('CONFIRM_UPDATE_PHASE')}
         dialogMessage={t('CONFIRM_UPDATE_PHASE_DESC')}
+      />
+      <ConfirmationDialog
+        isConfirmationDialogOpen={resetConfirmDialog.value}
+        onCancel={resetConfirmDialog.onFalse}
+        onConfirm={() => {
+          handleReset();
+          resetConfirmDialog.onFalse();
+        }}
+        dialogTitle={t('RESET_FORM')}
+        dialogMessage={t('RESET_FORM_ALERT')}
+        confirmLabel={t('RESET')}
       />
     </>
   );

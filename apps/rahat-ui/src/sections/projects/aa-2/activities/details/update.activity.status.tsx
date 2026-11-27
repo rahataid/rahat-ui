@@ -10,6 +10,7 @@ import {
   FormTextarea,
   Heading,
 } from 'apps/rahat-ui/src/common';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import { UUID } from 'crypto';
 import { CloudUpload, File, LoaderCircle, X } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
@@ -49,6 +50,7 @@ const statusList = [NOT_STARTED, WORK_IN_PROGRESS, COMPLETED, DELAYED];
 export default function UpdateStatus() {
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
+  const [showResetDialog, setShowResetDialog] = React.useState(false);
   const params = useParams();
   const projectId = params.id as UUID;
   const activityId = params.activityID as UUID;
@@ -352,7 +354,7 @@ export default function UpdateStatus() {
                     type="button"
                     variant="secondary"
                     className="bg-red-100 text-red-600  w-48 rounded-sm"
-                    onClick={() => form.reset()}
+                    onClick={() => setShowResetDialog(true)}
                   >
                     {t('RESET')}
                   </Button>
@@ -374,6 +376,17 @@ export default function UpdateStatus() {
           </Form>
         </div>
       </div>
+      <ConfirmationDialog
+        isConfirmationDialogOpen={showResetDialog}
+        onCancel={() => setShowResetDialog(false)}
+        onConfirm={() => {
+          form.reset();
+          setShowResetDialog(false);
+        }}
+        dialogTitle={t('RESET_FORM')}
+        dialogMessage={t('RESET_FORM_ALERT')}
+        confirmLabel={t('RESET')}
+      />
     </>
   );
 }

@@ -53,6 +53,7 @@ import {
   NoResult,
 } from 'apps/rahat-ui/src/common';
 import DropdownSearch from 'apps/rahat-ui/src/common/search.dropdown';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import { useUserList } from '@rumsan/react-query';
 import { validateFile } from 'apps/rahat-ui/src/utils/file.validation';
 import { DurationData } from '../add/add.activity.view';
@@ -72,6 +73,7 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 
 export default function EditActivity() {
   const t = useTranslations('AA_PROJECT');
+  const [showResetDialog, setShowResetDialog] = useState(false);
   const formatDigits = useLabelDigits();
   // State goes here
   const [open, setOpen] = useState(false);
@@ -493,7 +495,7 @@ export default function EditActivity() {
                       type="button"
                       variant="outline"
                       className="w-36"
-                      onClick={handleReset}
+                      onClick={() => setShowResetDialog(true)}
                     >
                       {t('RESET')}
                     </Button>
@@ -859,6 +861,17 @@ export default function EditActivity() {
           </>
         </div>
       </form>
+      <ConfirmationDialog
+        isConfirmationDialogOpen={showResetDialog}
+        onCancel={() => setShowResetDialog(false)}
+        onConfirm={() => {
+          handleReset();
+          setShowResetDialog(false);
+        }}
+        dialogTitle={t('RESET_FORM')}
+        dialogMessage={t('RESET_FORM_ALERT')}
+        confirmLabel={t('RESET')}
+      />
     </Form>
   );
 }

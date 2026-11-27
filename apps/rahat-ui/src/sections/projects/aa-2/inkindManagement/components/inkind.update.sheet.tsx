@@ -19,13 +19,10 @@ import {
   FormControl,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import {
   Select,
   SelectContent,
   SelectItem,
-  SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -40,6 +37,11 @@ import {
   INKIND_TYPE_LABELS,
 } from '../schemas/inkind.validation';
 import { InkindItem } from '../types';
+import {
+  FormInput,
+  FormSelectTrigger,
+  FormTextarea,
+} from 'apps/rahat-ui/src/common';
 
 interface InkindUpdateSheetProps {
   projectUUID: UUID;
@@ -113,9 +115,9 @@ export default function InkindUpdateSheet({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{tg('NAME')}</FormLabel>
+                  <FormLabel required>{tg('NAME')}</FormLabel>
                   <FormControl>
-                    <Input placeholder={tv('ENTER_ITEM_NAME')} {...field} />
+                    <FormInput placeholder={tv('ENTER_ITEM_NAME')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -127,9 +129,9 @@ export default function InkindUpdateSheet({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{tg('DESCRIPTION')}</FormLabel>
+                  <FormLabel required>{tg('DESCRIPTION')}</FormLabel>
                   <FormControl>
-                    <Textarea
+                    <FormTextarea
                       placeholder={tv('ENTER_DESCRIPTION')}
                       className="resize-none"
                       rows={3}
@@ -146,12 +148,12 @@ export default function InkindUpdateSheet({
               name="type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{tg('TYPE')}</FormLabel>
+                  <FormLabel required>{tg('TYPE')}</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
-                      <SelectTrigger>
+                      <FormSelectTrigger value={field.value}>
                         <SelectValue placeholder={tv('SELECT_TYPE')} />
-                      </SelectTrigger>
+                      </FormSelectTrigger>
                     </FormControl>
                     <SelectContent>
                       {INKIND_TYPES.map((t) => (

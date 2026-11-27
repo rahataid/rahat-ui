@@ -44,6 +44,7 @@ import {
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
+import { FormComboboxTrigger } from 'apps/rahat-ui/src/common';
 
 interface Props {
   onNext: (
@@ -169,15 +170,14 @@ export default function AssignInkindForm({ onNext }: Props) {
             name="inkindId"
             render={({ field }) => (
               <FormItem className="flex flex-col space-y-3 w-full">
-                <FormLabel className="mt-1 text-base font-medium">
+                <FormLabel required className="mt-1 text-base font-medium">
                   {tv('INKIND_ITEM')}
                 </FormLabel>
                 <Popover open={inkindOpen} onOpenChange={setInkindOpen}>
                   <PopoverTrigger asChild>
                     <FormControl>
-                      <Button
-                        variant="outline"
-                        role="combobox"
+                      <FormComboboxTrigger
+                        value={field.value}
                         className={cn(
                           'justify-between font-normal',
                           !field.value && 'text-muted-foreground',
@@ -188,7 +188,7 @@ export default function AssignInkindForm({ onNext }: Props) {
                             ?.name
                           : tv('SELECT_INKIND_ITEM')}
                         <ChevronDown className="opacity-50" />
-                      </Button>
+                      </FormComboboxTrigger>
                     </FormControl>
                   </PopoverTrigger>
                   <PopoverContent className="p-0 w-[var(--radix-popover-trigger-width)]">
@@ -253,15 +253,14 @@ export default function AssignInkindForm({ onNext }: Props) {
             name="groupId"
             render={({ field }) => (
               <FormItem className="flex flex-col space-y-3 w-full">
-                <FormLabel className="mt-1 text-base font-medium">
+                <FormLabel required className="mt-1 text-base font-medium">
                   {tv('BENEFICIARY_GROUP')}
                 </FormLabel>
                 <Popover open={groupOpen} onOpenChange={setGroupOpen}>
                   <PopoverTrigger asChild>
                     <FormControl>
-                      <Button
-                        variant="outline"
-                        role="combobox"
+                      <FormComboboxTrigger
+                        value={field.value}
                         disabled={!selectedInkindId}
                         className={cn(
                           'justify-between font-normal',
@@ -272,7 +271,7 @@ export default function AssignInkindForm({ onNext }: Props) {
                           ? groups.find((g) => g.uuid === field.value)?.name
                           : tv('BENEFICIARY_GROUP')}
                         <ChevronDown className="opacity-50" />
-                      </Button>
+                      </FormComboboxTrigger>
                     </FormControl>
                   </PopoverTrigger>
                   <PopoverContent className="p-0 w-[var(--radix-popover-trigger-width)]">
@@ -332,7 +331,7 @@ export default function AssignInkindForm({ onNext }: Props) {
               render={({ field }) => (
                 <FormItem className="flex flex-col space-y-3 w-full">
                   <div className="flex items-center justify-between">
-                    <FormLabel className="mt-1 text-base font-medium">
+                    <FormLabel required className="mt-1 text-base font-medium">
                       {tv('SELECT_VENDOR')}
                     </FormLabel>
 
@@ -340,10 +339,8 @@ export default function AssignInkindForm({ onNext }: Props) {
                   <Popover open={vendorOpen} onOpenChange={setVendorOpen}>
                     <PopoverTrigger asChild>
                       <FormControl>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          role="combobox"
+                        <FormComboboxTrigger
+                          value={field.value}
                           className={cn(
                             'justify-between font-normal w-full',
                             !field.value && 'text-muted-foreground',
@@ -353,7 +350,7 @@ export default function AssignInkindForm({ onNext }: Props) {
                             ? `${selectedVendor.name ?? 'N/A'} `
                             : tv('SELECT_VENDOR')}
                           <ChevronDown className="opacity-50" />
-                        </Button>
+                        </FormComboboxTrigger>
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent className="p-0 w-[var(--radix-popover-trigger-width)]">

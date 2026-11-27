@@ -5,7 +5,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
   Dialog,
   DialogContent,
@@ -25,6 +24,7 @@ import {
 import { useIvrTemplateCreate } from '@rahat-ui/query';
 import { Plus } from 'lucide-react';
 import { UUID } from 'crypto';
+import { FormInput } from 'apps/rahat-ui/src/common';
 
 const CreateIVRFormSchema = z.object({
   name: z.string().min(1, 'IVR name is required'),
@@ -87,9 +87,9 @@ export default function CreateIVRDialog({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>IVR Name</FormLabel>
+                  <FormLabel required>IVR Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., Customer Support" {...field} />
+                    <FormInput placeholder="e.g., Customer Support" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -102,7 +102,7 @@ export default function CreateIVRDialog({
                 <FormItem>
                   <FormLabel>Description (optional)</FormLabel>
                   <FormControl>
-                    <Input
+                    <FormInput
                       placeholder="Brief description of this IVR"
                       {...field}
                     />

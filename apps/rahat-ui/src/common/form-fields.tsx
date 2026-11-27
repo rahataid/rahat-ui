@@ -3,6 +3,10 @@ import { cn } from '@rahat-ui/shadcn/src';
 import { forwardRef } from 'react';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { SelectTrigger } from '@rahat-ui/shadcn/src/components/ui/select';
+import {
+  Button,
+  ButtonProps,
+} from '@rahat-ui/shadcn/src/components/ui/button';
 import { useFormField } from '@rahat-ui/shadcn/src/components/ui/form';
 
 const FILLED_CLASSES = 'shadow-[inset_4px_0_0_0_hsl(var(--primary))] bg-blue-50';
@@ -87,4 +91,40 @@ const FormSelectTrigger = forwardRef<
 
 FormSelectTrigger.displayName = 'FormSelectTrigger';
 
-export { FormInput, FormTextarea, FormSelectTrigger };
+interface FormComboboxTriggerProps extends ButtonProps {
+  value?: string;
+}
+
+const FormComboboxTrigger = forwardRef<
+  HTMLButtonElement,
+  FormComboboxTriggerProps
+>(({ value, className, ...props }, ref) => {
+  const { error } = useFormField();
+  const isFilled = !!value && String(value).trim() !== '';
+
+  return (
+    <Button
+      ref={ref}
+      type="button"
+      variant="outline"
+      role="combobox"
+      {...props}
+      className={cn(
+        isFilled && !error && FILLED_CLASSES,
+        error && ERROR_CLASSES,
+        className,
+      )}
+    />
+  );
+});
+
+FormComboboxTrigger.displayName = 'FormComboboxTrigger';
+
+export {
+  FormInput,
+  FormTextarea,
+  FormSelectTrigger,
+  FormComboboxTrigger,
+  FILLED_CLASSES,
+  ERROR_CLASSES,
+};

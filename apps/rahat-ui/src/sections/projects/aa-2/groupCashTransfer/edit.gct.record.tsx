@@ -13,10 +13,9 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   AlertDialog,
@@ -28,7 +27,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
-import { HeaderWithBack } from 'apps/rahat-ui/src/common';
+import { FormInput, HeaderWithBack } from 'apps/rahat-ui/src/common';
 import { useGetOneGctRecord, useUpdateGctRecord } from '@rahat-ui/query';
 import SpinnerLoader from 'apps/rahat-ui/src/sections/projects/components/spinner.loader';
 import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
@@ -121,11 +120,9 @@ export default function EditGctRecord() {
                 name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <Label>
-                      {t('FUND_TITLE')} <span className="text-destructive">*</span>
-                    </Label>
+                    <FormLabel required>{t('FUND_TITLE')}</FormLabel>
                     <FormControl>
-                      <Input placeholder={t('ENTER_FUND_TITLE')} {...field} />
+                      <FormInput placeholder={t('ENTER_FUND_TITLE')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -136,11 +133,9 @@ export default function EditGctRecord() {
                 name="amount"
                 render={({ field }) => (
                   <FormItem>
-                    <Label>
-                      {t('AMOUNT')} <span className="text-destructive">*</span>
-                    </Label>
+                    <FormLabel required>{t('AMOUNT')}</FormLabel>
                     <FormControl>
-                      <Input type="number" min={1} placeholder={t('ENTER_AMOUNT')} {...field} />
+                      <FormInput type="number" min={1} placeholder={t('ENTER_AMOUNT')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

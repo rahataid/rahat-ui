@@ -3,14 +3,19 @@
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { Tag, TagInput } from 'emblor';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import { UseFormReturn } from 'react-hook-form';
+import { cn } from '@rahat-ui/shadcn/src';
+import {
+  ERROR_CLASSES,
+  FILLED_CLASSES,
+} from 'apps/rahat-ui/src/common/form-fields';
 
 export const TAG_STYLE = {
   inlineTagsContainer:
@@ -70,9 +75,9 @@ export default function GctSupportAreaInput({
     <FormField
       control={form.control}
       name="supportArea"
-      render={({ field }) => (
+      render={({ field, fieldState }) => (
         <FormItem>
-          <Label>{t('SUPPORT_AREA_OPTIONAL')}</Label>
+          <FormLabel>{t('SUPPORT_AREA_OPTIONAL')}</FormLabel>
           <FormControl>
             <>
               <TagInput
@@ -88,7 +93,14 @@ export default function GctSupportAreaInput({
                 }}
                 placeholder={t('ENTER_VALUE_AND_PRESS_ENTER')}
                 className="min-h-[23px]"
-                styleClasses={TAG_STYLE}
+                styleClasses={{
+                  ...TAG_STYLE,
+                  inlineTagsContainer: cn(
+                    TAG_STYLE.inlineTagsContainer,
+                    tags.length > 0 && !fieldState.error && FILLED_CLASSES,
+                    fieldState.error && ERROR_CLASSES,
+                  ),
+                }}
                 activeTagIndex={activeTagIndex}
                 setActiveTagIndex={setActiveTagIndex}
                 inputProps={{

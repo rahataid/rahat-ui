@@ -14,7 +14,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
-import { SpinnerLoader, Back } from 'apps/rahat-ui/src/common';
+import { HeaderWithBack, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import {
   useGetOneGctRecord,
   useProjectSettingsStore,
@@ -25,7 +25,10 @@ import { fmt, DetailRow } from './gct.ui';
 import { DisburseButton, DisburseModal } from './gct.disburse-modal';
 import { DisbursementInfoCard } from './gct.disbursement-info';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
-import { useNumberFormat, useLabelDigits } from '../../../../../utils/i18n/number';
+import {
+  useNumberFormat,
+  useLabelDigits,
+} from '../../../../../utils/i18n/number';
 import { usePhoneFormat } from '../../../../../utils/i18n/phone';
 
 export default function GctRecordDetail() {
@@ -101,16 +104,12 @@ export default function GctRecordDetail() {
   return (
     <div className="p-4">
       {/* Header */}
-      <div className="mb-6 flex items-start justify-between">
-        <div>
-          <Back path={backPath} />
-          <h1 className="text-2xl font-semibold">
-            {record?.title ?? t('FUND_RECORD')}
-          </h1>
-          <p className="text-muted-foreground text-sm mt-0.5">
-            {t('GROUP_CASH_TRANSFER_FUND_RECORD_DETAILS')}
-          </p>
-        </div>
+      <div className="mb-4 flex items-end justify-between">
+        <HeaderWithBack
+          title={record?.title ?? t('FUND_RECORD')}
+          path={backPath}
+          subtitle={t('GROUP_CASH_TRANSFER_FUND_RECORD_DETAILS')}
+        />
         <div className="flex items-center gap-2">
           <TooltipProvider>
             <Tooltip>
@@ -156,7 +155,9 @@ export default function GctRecordDetail() {
               value={formatNum(record?.amount ?? 0)}
             />
             <div className="flex flex-col gap-0.5 py-2.5 border-b">
-              <span className="text-xs text-muted-foreground">{t('STATUS_COL')}</span>
+              <span className="text-xs text-muted-foreground">
+                {t('STATUS_COL')}
+              </span>
               <Badge
                 className={`w-fit text-xs ${
                   GCT_STATUS_STYLE[status] ?? 'bg-gray-100 text-gray-600'
@@ -187,7 +188,10 @@ export default function GctRecordDetail() {
               {t('GCT_GROUP')}
             </p>
             <DetailRow label={t('GROUP_NAME_COL')} value={group?.name} />
-            <DetailRow label={t('PHONE_COL')} value={formatPhone(group?.phone)} />
+            <DetailRow
+              label={t('PHONE_COL')}
+              value={formatPhone(group?.phone)}
+            />
             {group?.bankDetails && (
               <>
                 <DetailRow

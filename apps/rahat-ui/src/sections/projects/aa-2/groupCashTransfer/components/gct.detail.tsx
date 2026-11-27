@@ -28,8 +28,11 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import SpinnerLoader from 'apps/rahat-ui/src/sections/projects/components/spinner.loader';
-import { Back, DemoTable } from 'apps/rahat-ui/src/common';
-import { useGetOneGroupCashTransfer, useValidateBankAccount } from '@rahat-ui/query';
+import { DemoTable, HeaderWithBack } from 'apps/rahat-ui/src/common';
+import {
+  useGetOneGroupCashTransfer,
+  useValidateBankAccount,
+} from '@rahat-ui/query';
 import { resolveBackendErrorMessage } from '@rahat-ui/query/utils/i18n/backend-error';
 import {
   Tooltip,
@@ -40,7 +43,10 @@ import {
 import GctDeleteDialog from './gct.delete.dialog';
 import { DetailRow } from './gct.ui';
 import { GctFundRecord, GCT_STATUS_STYLE } from '../types/gct.types';
-import { useNumberFormat, useLabelDigits } from '../../../../../utils/i18n/number';
+import {
+  useNumberFormat,
+  useLabelDigits,
+} from '../../../../../utils/i18n/number';
 import { usePhoneFormat } from '../../../../../utils/i18n/phone';
 import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 
@@ -64,8 +70,10 @@ export default function GctDetail() {
     return map[s] ?? s.replace(/_/g, ' ');
   };
 
-
-  const localiseValidationMessage = (message: string, responseCode?: string) => {
+  const localiseValidationMessage = (
+    message: string,
+    responseCode?: string,
+  ) => {
     if (responseCode) {
       const codeKey = `CIPS_${responseCode}`;
       const translated = translateValue(t, codeKey, {
@@ -132,15 +140,27 @@ export default function GctDetail() {
       const isValid = result?.data?.valid ?? result?.valid ?? false;
       setValidationResult({
         success: isValid,
-        message: result?.data?.message || result?.message || (isValid ? t('BANK_ACCOUNT_VALIDATED_SUCCESSFULLY') : t('DISBURSEMENT_FAILED')),
+        message:
+          result?.data?.message ||
+          result?.message ||
+          (isValid
+            ? t('BANK_ACCOUNT_VALIDATED_SUCCESSFULLY')
+            : t('DISBURSEMENT_FAILED')),
         responseCode: result?.data?.result?.cipsData?.responseCode,
       });
     } catch (error: unknown) {
       const e = error as {
-        response?: { data?: { message?: string; code?: string; params?: Record<string, unknown> } };
+        response?: {
+          data?: {
+            message?: string;
+            code?: string;
+            params?: Record<string, unknown>;
+          };
+        };
         message?: string;
       };
-      const rawMessage = e?.response?.data?.message || e?.message || t('DISBURSEMENT_FAILED');
+      const rawMessage =
+        e?.response?.data?.message || e?.message || t('DISBURSEMENT_FAILED');
       const errorMessage = resolveBackendErrorMessage(
         tb,
         e?.response?.data?.code,
@@ -187,7 +207,9 @@ export default function GctDetail() {
           const s = row.original.status;
           return (
             <Badge
-              className={`text-xs ${GCT_STATUS_STYLE[s] ?? 'bg-gray-100 text-gray-600'}`}
+              className={`text-xs ${
+                GCT_STATUS_STYLE[s] ?? 'bg-gray-100 text-gray-600'
+              }`}
             >
               {statusLabel(s)}
             </Badge>
@@ -215,27 +237,20 @@ export default function GctDetail() {
   return (
     <div className="p-4">
       {/* Header */}
-      <div className="flex items-start justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <Back path={`/projects/aa/${id}/group-cash-transfer?tab=gctGroupList`} />
-          <div>
-            <h1 className="text-2xl font-semibold">{item?.name ?? '—'}</h1>
-            <p className="text-muted-foreground text-sm mt-0.5">
-              {t('GCT_GROUP_DETAILS_AND_BANK_INFO')}
-            </p>
-          </div>
-          {hasFund && (
-            <Badge className="bg-green-100 text-green-700 hover:bg-green-100 ml-2">
-              {t('FUND_RESERVED')}
-            </Badge>
-          )}
-        </div>
+      <div className="flex items-end justify-between mb-6">
+        <HeaderWithBack
+          title={item?.name ?? '—'}
+          path={`/projects/aa/${id}/group-cash-transfer?tab=gctGroupList`}
+          subtitle={t('GCT_GROUP_DETAILS_AND_BANK_INFO')}
+          status={hasFund ? t('FUND_RESERVED') : undefined}
+          badgeClassName="shrink-0 bg-green-100 text-green-700 hover:bg-green-100 ml-2"
+        />
 
         <RoleAuth
           roles={[AARoles.ADMIN, AARoles.Municipality]}
           hasContent={false}
         >
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 ">
             <Button
               variant="outline"
               size="sm"
@@ -274,18 +289,29 @@ export default function GctDetail() {
           <CardContent className="px-4 pb-4">
             <DetailRow label={tGlobal('NAME')} value={item?.name} />
             <Separator />
-            <DetailRow label={tGlobal('PHONE')} value={formatPhone(item?.phone)} />
+            <DetailRow
+              label={tGlobal('PHONE')}
+              value={formatPhone(item?.phone)}
+            />
             <Separator />
             <DetailRow label={tGlobal('EMAIL')} value={extras?.email} />
             <Separator />
             <DetailRow label={t('DISTRICT')} value={extras?.district} />
             <Separator />
-            <DetailRow label={tGlobal('MUNICIPALITY')} value={extras?.municipality} />
+            <DetailRow
+              label={tGlobal('MUNICIPALITY')}
+              value={extras?.municipality}
+            />
             <Separator />
-            <DetailRow label={tGlobal('WARD_COMMUNITY')} value={formatDigits(extras?.ward)} />
+            <DetailRow
+              label={tGlobal('WARD_COMMUNITY')}
+              value={formatDigits(extras?.ward)}
+            />
             <Separator />
             <div className="flex flex-col gap-1 py-2">
-              <span className="text-xs text-muted-foreground">{tGlobal('SUPPORT_AREA')}</span>
+              <span className="text-xs text-muted-foreground">
+                {tGlobal('SUPPORT_AREA')}
+              </span>
               {supportAreas.length > 0 ? (
                 <div className="flex flex-wrap gap-1 mt-0.5">
                   {supportAreas.map((area) => (
@@ -319,10 +345,17 @@ export default function GctDetail() {
                         size="sm"
                         className="gap-1.5 rounded-sm"
                         onClick={handleValidateBankAccount}
-                        disabled={validateBank.isPending || !bankDetails?.accountNumber || !!extras?.isBankValidated}
+                        disabled={
+                          validateBank.isPending ||
+                          !bankDetails?.accountNumber ||
+                          !!extras?.isBankValidated
+                        }
                       >
                         {validateBank.isPending ? (
-                          <><Loader2 size={12} className="animate-spin" />{t('VALIDATING')}</>
+                          <>
+                            <Loader2 size={12} className="animate-spin" />
+                            {t('VALIDATING')}
+                          </>
                         ) : extras?.isBankValidated ? (
                           <>{t('BANK_VALIDATED')}</>
                         ) : (
@@ -332,7 +365,9 @@ export default function GctDetail() {
                     </span>
                   </TooltipTrigger>
                   {extras?.isBankValidated && (
-                    <TooltipContent>{t('BANK_ACCOUNT_ALREADY_VALIDATED')}</TooltipContent>
+                    <TooltipContent>
+                      {t('BANK_ACCOUNT_ALREADY_VALIDATED')}
+                    </TooltipContent>
                   )}
                 </Tooltip>
               </TooltipProvider>
@@ -341,21 +376,34 @@ export default function GctDetail() {
           <CardContent className="px-4 pb-4">
             {validationResult && (
               <div
-                className={`flex items-center gap-2 text-xs mb-3 p-2 rounded ${validationResult.success
+                className={`flex items-center gap-2 text-xs mb-3 p-2 rounded ${
+                  validationResult.success
                     ? 'bg-green-50 text-green-700'
                     : 'bg-red-50 text-red-600'
-                  }`}
+                }`}
               >
-                {localiseValidationMessage(validationResult.message, validationResult.responseCode)}
+                {localiseValidationMessage(
+                  validationResult.message,
+                  validationResult.responseCode,
+                )}
               </div>
             )}
             <DetailRow label={t('BANK_NAME')} value={bankDetails?.bankName} />
             <Separator />
-            <DetailRow label={t('BANK_BRANCH_NAME')} value={bankDetails?.bankBranchName} />
+            <DetailRow
+              label={t('BANK_BRANCH_NAME')}
+              value={bankDetails?.bankBranchName}
+            />
             <Separator />
-            <DetailRow label={t('ACCOUNT_HOLDER_NAME')} value={bankDetails?.accountName} />
+            <DetailRow
+              label={t('ACCOUNT_HOLDER_NAME')}
+              value={bankDetails?.accountName}
+            />
             <Separator />
-            <DetailRow label={t('ACCOUNT_NUMBER')} value={formatDigits(bankDetails?.accountNumber)} />
+            <DetailRow
+              label={t('ACCOUNT_NUMBER')}
+              value={formatDigits(bankDetails?.accountNumber)}
+            />
             <Separator />
             <DetailRow
               label={t('TOTAL_RESERVED_AMOUNT')}
@@ -383,9 +431,7 @@ export default function GctDetail() {
         item={item}
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
-        onDeleted={() =>
-          router.push(`/projects/aa/${id}/group-cash-transfer`)
-        }
+        onDeleted={() => router.push(`/projects/aa/${id}/group-cash-transfer`)}
       />
     </div>
   );

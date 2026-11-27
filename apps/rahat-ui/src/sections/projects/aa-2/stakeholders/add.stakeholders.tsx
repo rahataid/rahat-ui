@@ -1,18 +1,22 @@
 import { useTranslations } from 'next-intl';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCreateStakeholders } from '@rahat-ui/query';
+import { cn } from '@rahat-ui/shadcn/src';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
-import { HeaderWithBack, UnsavedChangesDialog } from 'apps/rahat-ui/src/common';
+import {
+  FormInput,
+  HeaderWithBack,
+  UnsavedChangesDialog,
+} from 'apps/rahat-ui/src/common';
 import { useUnsavedChanges } from 'apps/rahat-ui/src/hooks/useUnsavedChanges';
 import { useSessionFormStorage } from 'apps/rahat-ui/src/hooks/useSessionFormStorage';
 import { UUID } from 'crypto';
@@ -232,11 +236,11 @@ export default function AddStakeholders() {
                 render={({ field }) => {
                   return (
                     <FormItem className="space-y-[clamp(2px,0.4vw,6px)]">
-                      <Label className="text-[clamp(11px,1vw,14px)]">
+                      <FormLabel required className="text-[clamp(11px,1vw,14px)]">
                         {t('STAKEHOLDERS_NAME')}
-                      </Label>
+                      </FormLabel>
                       <FormControl>
-                        <Input
+                        <FormInput
                           type="text"
                           placeholder={t('ENTER_A_STAKEHOLDER_NAME')}
                           className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
@@ -255,9 +259,9 @@ export default function AddStakeholders() {
                 render={({ field }) => {
                   return (
                     <FormItem className="space-y-[clamp(2px,0.4vw,6px)]">
-                      <Label className="text-[clamp(11px,1vw,14px)]">
+                      <FormLabel className="text-[clamp(11px,1vw,14px)]">
                         {t('SUPPORT_AREA')}
-                      </Label>
+                      </FormLabel>
                       <FormControl>
                         <>
                           <TagInput
@@ -312,17 +316,21 @@ export default function AddStakeholders() {
               <FormField
                 control={form.control}
                 name="phone"
-                render={({ field }) => {
+                render={({ field, fieldState }) => {
                   return (
                     <FormItem className="space-y-[clamp(2px,0.4vw,8px)]">
-                      <Label className="text-[clamp(11px,1vw,14px)]">
+                      <FormLabel required className="text-[clamp(11px,1vw,14px)]">
                         {tg('PHONE_NUMBER')}
-                      </Label>
+                      </FormLabel>
                       <FormControl>
                         <PhoneInput
                           defaultCountry="NP"
                           placeholder={t('ENTER_A_PHONE_NUMBER')}
-                          className="[&_input]:h-[clamp(28px,3vw,36px)] [&_input]:text-[clamp(11px,1vw,14px)] [&_button]:h-[clamp(28px,3vw,36px)]"
+                          className={cn(
+                            '[&_input]:h-[clamp(28px,3vw,36px)] [&_input]:text-[clamp(11px,1vw,14px)] [&_button]:h-[clamp(28px,3vw,36px)]',
+                            fieldState.error &&
+                            '[&_input]:bg-red-50 [&_input]:shadow-[inset_4px_0_0_0_hsl(var(--destructive))]',
+                          )}
                           {...field}
                           {...phoneCountrySelectProps}
                         />
@@ -338,11 +346,11 @@ export default function AddStakeholders() {
                 render={({ field }) => {
                   return (
                     <FormItem className="space-y-[clamp(2px,0.4vw,8px)]">
-                      <Label className="text-[clamp(11px,1vw,14px)]">
+                      <FormLabel className="text-[clamp(11px,1vw,14px)]">
                         {tg('EMAIL')}
-                      </Label>
+                      </FormLabel>
                       <FormControl>
-                        <Input
+                        <FormInput
                           type="email"
                           placeholder={t('ENTER_A_EMAIL_ADDRESS')}
                           className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
@@ -360,11 +368,11 @@ export default function AddStakeholders() {
                 render={({ field }) => {
                   return (
                     <FormItem className="space-y-[clamp(2px,0.4vw,8px)]">
-                      <Label className="text-[clamp(11px,1vw,14px)]">
+                      <FormLabel required className="text-[clamp(11px,1vw,14px)]">
                         {t('DESIGNATION')}
-                      </Label>
+                      </FormLabel>
                       <FormControl>
-                        <Input
+                        <FormInput
                           type="text"
                           placeholder={t('ENTER_A_DESIGNATION')}
                           className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
@@ -382,11 +390,11 @@ export default function AddStakeholders() {
                 render={({ field }) => {
                   return (
                     <FormItem className="space-y-[clamp(2px,0.4vw,8px)]">
-                      <Label className="text-[clamp(11px,1vw,14px)]">
+                      <FormLabel required className="text-[clamp(11px,1vw,14px)]">
                         {t('ORGANIZATION')}
-                      </Label>
+                      </FormLabel>
                       <FormControl>
-                        <Input
+                        <FormInput
                           type="text"
                           placeholder={t('ENTER_AN_ORGANIZATION')}
                           className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
@@ -405,11 +413,11 @@ export default function AddStakeholders() {
                 render={({ field }) => {
                   return (
                     <FormItem className="space-y-[clamp(2px,0.4vw,8px)]">
-                      <Label className="text-[clamp(11px,1vw,14px)]">
+                      <FormLabel required className="text-[clamp(11px,1vw,14px)]">
                         {t('DISTRICT')}
-                      </Label>
+                      </FormLabel>
                       <FormControl>
-                        <Input
+                        <FormInput
                           type="text"
                           placeholder={t('ENTER_A_DISTRICT')}
                           className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"
@@ -428,11 +436,11 @@ export default function AddStakeholders() {
                 render={({ field }) => {
                   return (
                     <FormItem className="space-y-[clamp(2px,0.4vw,8px)]">
-                      <Label className="text-[clamp(11px,1vw,14px)]">
+                      <FormLabel required className="text-[clamp(11px,1vw,14px)]">
                         {t('MUNICIPALITY')}
-                      </Label>
+                      </FormLabel>
                       <FormControl>
-                        <Input
+                        <FormInput
                           type="text"
                           placeholder={t('ENTER_A_MUNICIPALITY')}
                           className="h-[clamp(28px,3vw,36px)] text-[clamp(11px,1vw,14px)]"

@@ -10,7 +10,9 @@ import {
   useSources,
 } from '@rahat-ui/query';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { HeaderWithBack } from 'apps/rahat-ui/src/common';
+import { HeaderWithBack, UnsavedChangesDialog } from 'apps/rahat-ui/src/common';
+import { useUnsavedChanges } from 'apps/rahat-ui/src/hooks/useUnsavedChanges';
+import { useSessionFormStorage } from 'apps/rahat-ui/src/hooks/useSessionFormStorage';
 import { UUID } from 'crypto';
 import { Plus } from 'lucide-react';
 import { useFieldArray, useForm } from 'react-hook-form';
@@ -48,6 +50,9 @@ export default function AddDailyMonitoring() {
   const dailyMonitoringListPath = `/projects/aa/${projectId}/data-sources?tab=dailyMonitoring`;
 
   const createDailyMonitoring = useCreateDailyMonitoring();
+  const hasInteracted = React.useRef(false);
+  const isRestored = React.useRef(false);
+  const isSubmittingRef = React.useRef(false);
 
   const anotherDataSourceSchema = {
     source: '',
@@ -260,15 +265,55 @@ export default function AddDailyMonitoring() {
     ),
   });
 
-  const form = useForm<z.infer<typeof FormSchema>>({
+  type FormValues = z.infer<typeof FormSchema>;
+  const DEFAULT_FORM_VALUES: FormValues = {
+    riverBasin: '',
+    // Pre-seed one row so `dataSource.0.source` defaults to '' instead of
+    // undefined — otherwise Zod's base type check fails before the custom
+    // PLEASE_SELECT_A_SOURCE message runs, surfacing its untranslated
+    // built-in "Required" fallback on first submit.
+    dataSource: [anotherDataSourceSchema],
+  };
+
+  const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {
-      riverBasin: '',
-      // Pre-seed one row so `dataSource.0.source` defaults to '' instead of
-      // undefined — otherwise Zod's base type check fails before the custom
-      // PLEASE_SELECT_A_SOURCE message runs, surfacing its untranslated
-      // built-in "Required" fallback on first submit.
-      dataSource: [anotherDataSourceSchema],
+    defaultValues: DEFAULT_FORM_VALUES,
+  });
+
+  const { loadSaved, saveData, clearSaved } = useSessionFormStorage<FormValues>(
+    {
+      key: 'daily_monitoring_draft',
+      projectId: projectId as string,
+      defaultValue: DEFAULT_FORM_VALUES,
+    },
+  );
+
+  React.useEffect(() => {
+    if (isRestored.current || !projectId) return;
+    const saved = loadSaved();
+    if (saved && Object.keys(saved).length > 0) {
+      form.reset(saved);
+    }
+    isRestored.current = true;
+  }, [projectId]);
+
+  const hasUnsavedChanges =
+    !isSubmittingRef.current &&
+    hasInteracted.current &&
+    form.formState.isDirty;
+
+  const {
+    showDialog,
+    handleConfirmLeave,
+    handleCancelLeave,
+    handleDiscardLeave,
+  } = useUnsavedChanges({
+    hasUnsavedChanges,
+    onConfirm: () => {
+      saveData(form.getValues());
+    },
+    onDiscard: () => {
+      clearSaved();
     },
   });
 
@@ -379,18 +424,21 @@ export default function AddDailyMonitoring() {
       riverBasin: data.riverBasin,
       data: dataPayload,
     };
+    isSubmittingRef.current = true;
     try {
       await createDailyMonitoring.mutateAsync({
         projectUUID: projectId,
         monitoringPayload: payload,
       });
     } catch (e) {
+      isSubmittingRef.current = false;
       console.error('Create Bulletin Error::', e);
     }
   };
 
   React.useEffect(() => {
     if (createDailyMonitoring.isSuccess) {
+      clearSaved();
       form.reset();
       router.push(dailyMonitoringListPath);
     }
@@ -404,12 +452,18 @@ export default function AddDailyMonitoring() {
         path={`/projects/aa/${projectId}/data-sources?tab=dailyMonitoring`}
       />
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleCreateBulletin)}>
+        <form
+          onSubmit={form.handleSubmit(handleCreateBulletin)}
+          onFocus={() => {
+            hasInteracted.current = true;
+          }}
+        >
           <ScrollArea className="h-[calc(100vh-240px)]">
             <div className="grid grid-cols-2 gap-4">
               <SelectFormField
                 form={form}
                 name="riverBasin"
+                required
                 label={getStationTitle(projectInfo?.value?.project_type, g) || ''}
                 placeholder={g('SELECT_PLACEHOLDER', {
                   name: getStationTitle(projectInfo?.value?.project_type, g),
@@ -455,6 +509,7 @@ export default function AddDailyMonitoring() {
               variant="secondary"
               className="bg-red-100 text-red-600 w-36"
               onClick={() => {
+                clearSaved();
                 form.reset();
                 // router.push(dailyMonitoringListPath);
               }}
@@ -467,6 +522,18 @@ export default function AddDailyMonitoring() {
           </div>
         </form>
       </Form>
+
+      <UnsavedChangesDialog
+        open={showDialog}
+        onConfirm={handleConfirmLeave}
+        onCancel={handleCancelLeave}
+        onDiscard={handleDiscardLeave}
+        title={g('UNSAVED_TITLE')}
+        description={g('UNSAVED_ALERT_DESCRIPTION')}
+        cancelText={g('CANCEL_TEXT')}
+        discardText={g('DISCARD_TEXT')}
+        confirmText={g('CONFIRM_TEXT')}
+      />
     </div>
   );
 }

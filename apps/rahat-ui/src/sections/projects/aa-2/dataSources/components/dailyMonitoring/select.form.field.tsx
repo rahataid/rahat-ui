@@ -7,11 +7,11 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import {
   Select,
-  SelectTrigger,
   SelectValue,
   SelectContent,
   SelectItem,
 } from '@rahat-ui/shadcn/src/components/ui/select';
+import { FormSelectTrigger } from 'apps/rahat-ui/src/common/form-fields';
 
 type IProps = {
   form: any;
@@ -21,6 +21,7 @@ type IProps = {
   subLabel?: string;
   placeholder: string;
   selectItems: Array<{ value: string; label: string; isDisabled?: boolean }>;
+  required?: boolean;
 };
 
 export default function SelectFormField({
@@ -31,6 +32,7 @@ export default function SelectFormField({
   subLabel,
   placeholder,
   selectItems,
+  required = false,
 }: IProps) {
   return (
     <FormField
@@ -39,7 +41,7 @@ export default function SelectFormField({
       render={({ field }) => {
         return (
           <FormItem className={className}>
-            <FormLabel>
+            <FormLabel required={required}>
               {label}
               {subLabel && (
                 <p className="text-sm text-muted-foreground font-normal">
@@ -53,9 +55,9 @@ export default function SelectFormField({
               value={form.watch(name)}
             >
               <FormControl>
-                <SelectTrigger>
+                <FormSelectTrigger value={field.value}>
                   <SelectValue placeholder={placeholder} />
-                </SelectTrigger>
+                </FormSelectTrigger>
               </FormControl>
               <SelectContent>
                 {selectItems && selectItems.length > 0 ? (

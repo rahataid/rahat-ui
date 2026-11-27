@@ -5,7 +5,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { FormInput } from 'apps/rahat-ui/src/common/form-fields';
 import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 
@@ -15,6 +15,7 @@ type IProps = {
   label: string;
   subLabel?: string;
   placeholder: string;
+  required?: boolean;
 };
 
 // Every current field rendered through this component is a numeric
@@ -27,6 +28,7 @@ export default function InputFormField({
   label,
   subLabel,
   placeholder,
+  required = false,
 }: IProps) {
   const formatDigits = useLabelDigits();
   return (
@@ -36,7 +38,7 @@ export default function InputFormField({
       render={({ field }) => {
         return (
           <FormItem>
-            <FormLabel>
+            <FormLabel required={required}>
               {label}
               {subLabel && (
                 <p className="text-sm text-muted-foreground font-normal">
@@ -45,7 +47,7 @@ export default function InputFormField({
               )}
             </FormLabel>
             <FormControl>
-              <Input
+              <FormInput
                 placeholder={placeholder}
                 {...field}
                 value={formatDigits(field.value ?? '')}

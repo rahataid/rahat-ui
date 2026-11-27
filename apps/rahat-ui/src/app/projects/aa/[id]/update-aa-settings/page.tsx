@@ -9,7 +9,7 @@ import {
 
 const Page = () => {
   return (
-    <ProjectPermissionGuard action={ACTIONS.MANAGE} subject={SUBJECTS.ALL}>
+    <ProjectPermissionGuard action={ACTIONS.READ} subject={SUBJECTS.SETTINGS}>
       <AAProjectSettingsView />
     </ProjectPermissionGuard>
   );

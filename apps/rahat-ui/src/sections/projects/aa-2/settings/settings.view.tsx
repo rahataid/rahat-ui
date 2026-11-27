@@ -10,6 +10,11 @@ import {
   useAAProjectSettingsUpdateValues,
 } from '@rahat-ui/query';
 import { IconLabelBtn } from 'apps/rahat-ui/src/common';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -88,13 +93,15 @@ export default function AASettingsView() {
             {t('MANAGE_PROJECT_SETTINGS')}
           </p>
         </div>
-        <IconLabelBtn
-          Icon={Save}
-          handleClick={handleUpdateClick}
-          name={updateSettings.isPending ? t('UPDATING') : t('UPDATE_SETTING')}
-          className="px-3 py-2"
-          disabled={updateSettings.isPending}
-        />
+        <Can action={ACTIONS.UPDATE} subject={SUBJECTS.SETTINGS}>
+          <IconLabelBtn
+            Icon={Save}
+            handleClick={handleUpdateClick}
+            name={updateSettings.isPending ? t('UPDATING') : t('UPDATE_SETTING')}
+            className="px-3 py-2"
+            disabled={updateSettings.isPending}
+          />
+        </Can>
       </div>
       <div className="space-y-4">
         <ProjectNavConfigEditor submitRef={navSubmitRef} />

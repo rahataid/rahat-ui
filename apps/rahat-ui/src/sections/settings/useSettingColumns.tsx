@@ -9,6 +9,11 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { ColumnDef } from '@tanstack/react-table';
 import { Edit } from 'lucide-react';
+import { GlobalCan } from 'apps/rahat-ui/src/components/global-can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 import { useSecondPanel } from '../../providers/second-panel-provider';
 import EditSettings from './edit.settings';
 interface SettingData {
@@ -68,22 +73,26 @@ export const useSettingTableColumns = () => {
         return (
           <TooltipProvider delayDuration={100}>
             <Tooltip>
-              <TooltipTrigger>
-                <Edit
-                  size={20}
-                  strokeWidth={1.5}
-                  className="cursor-pointer hover:text-primary"
-                  onClick={() =>
-                    setSecondPanelComponent(
-                      <>
-                        <EditSettings
-                          closeSecondPanel={closeSecondPanel}
-                          settingData={row?.original && row?.original}
-                        />
-                      </>,
-                    )
-                  }
-                />
+              <TooltipTrigger asChild>
+                <span>
+                  <GlobalCan action={ACTIONS.UPDATE} subject={SUBJECTS.SETTINGS}>
+                    <Edit
+                      size={20}
+                      strokeWidth={1.5}
+                      className="cursor-pointer hover:text-primary"
+                      onClick={() =>
+                        setSecondPanelComponent(
+                          <>
+                            <EditSettings
+                              closeSecondPanel={closeSecondPanel}
+                              settingData={row?.original && row?.original}
+                            />
+                          </>,
+                        )
+                      }
+                    />
+                  </GlobalCan>
+                </span>
               </TooltipTrigger>
 
               <TooltipContent>{g('EDIT')}</TooltipContent>

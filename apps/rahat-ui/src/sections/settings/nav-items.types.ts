@@ -10,4 +10,6 @@ export type NavItem = {
   style?: React.CSSProperties;
   className?: string;
   component?: React.ReactNode;
+  action?: string;
+  subject?: string;
 };

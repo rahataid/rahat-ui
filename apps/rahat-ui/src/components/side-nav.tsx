@@ -15,6 +15,8 @@ import { useNavData } from '../app/config-nav';
 import getIcon from '../utils/getIcon';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
+import { GlobalCan } from './global-can';
+import { ACTIONS, SUBJECTS } from '../constants/ability.constants';
 import { translateValue } from '../utils/i18n/translateValue';
 
 export default function SideNav() {
@@ -110,24 +112,26 @@ export default function SideNav() {
         </nav>
 
         {/* Settings icon at the bottom */}
-        <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Link
-                href="/settings"
-                className={`flex h-9 w-9 items-center justify-center rounded-full transition-colors md:h-8 md:w-8 ${
-                  activePath === 'settings'
-                    ? 'bg-primary text-white'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                <Settings className="h-5 w-5" />
-                <span className="sr-only">{t('SETTINGS')}</span>
-              </Link>
-            </TooltipTrigger>
-            <TooltipContent side="right">{t('SETTINGS')}</TooltipContent>
-          </Tooltip>
-        </nav>
+        <GlobalCan action={ACTIONS.READ} subject={SUBJECTS.SETTINGS}>
+          <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href="/settings"
+                  className={`flex h-9 w-9 items-center justify-center rounded-full transition-colors md:h-8 md:w-8 ${
+                    activePath === 'settings'
+                      ? 'bg-primary text-white'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  <Settings className="h-5 w-5" />
+                  <span className="sr-only">{t('SETTINGS')}</span>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side="right">{t('SETTINGS')}</TooltipContent>
+            </Tooltip>
+          </nav>
+        </GlobalCan>
       </aside>
     </TooltipProvider>
   );

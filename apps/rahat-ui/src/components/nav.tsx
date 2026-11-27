@@ -28,7 +28,8 @@ import { NotificationButton } from './notification-button';
 import { LanguageToggle } from './language-toggle';
 import { useProjectList } from '@rahat-ui/query';
 import { useTranslations } from 'next-intl';
-import { SystemUserAuth } from '@rahat-ui/auth';
+import { GlobalCan } from './global-can';
+import { ACTIONS, SUBJECTS } from '../constants/ability.constants';
 
 export function Nav({ hasDefaultHeader = true }) {
   const t = useTranslations('TOP_NAVIGATION_HEADER');
@@ -108,12 +109,14 @@ export function Nav({ hasDefaultHeader = true }) {
                 >
                   {t('HOME')}
                 </Link>
-                <Link
-                  className="p-1 hover:bg-secondary rounded"
-                  href={paths.settings.root}
-                >
-                  {g('SETTINGS')}
-                </Link>
+                <GlobalCan action={ACTIONS.READ} subject={SUBJECTS.SETTINGS}>
+                  <Link
+                    className="p-1 hover:bg-secondary rounded"
+                    href={paths.settings.root}
+                  >
+                    {g('SETTINGS')}
+                  </Link>
+                </GlobalCan>
                 <Link
                   className="p-1 hover:bg-secondary rounded"
                   href={paths.usage.root}

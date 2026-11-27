@@ -17,14 +17,15 @@ const SETTING_NAME = 'FORECAST_TAB_CONFIG';
 // Known forecast tabs, matching componentMap in
 // apps/rahat-ui/src/sections/projects/aa-2/dataSources/main.tsx
 // (aws/nwp are excluded here — those are only used for HEAT_WAVE projects).
-const TAB_OPTIONS: { value: string; label: string; hasdatepicker?: boolean }[] = [
-  { value: 'dhm', label: 'DHM' },
-  { value: 'glofas', label: 'GLOFAS' },
-  { value: 'gfh', label: 'Google Flood Hub' },
-  { value: 'dailyMonitoring', label: 'Daily Monitoring' },
-  { value: 'gaugeReading', label: 'Gauge Reading', hasdatepicker: true },
-  { value: 'externalLinks', label: 'External Links' },
-];
+const TAB_OPTIONS: { value: string; label: string; hasdatepicker?: boolean }[] =
+  [
+    { value: 'dhm', label: 'DHM' },
+    { value: 'glofas', label: 'GLOFAS' },
+    { value: 'gfh', label: 'Google Flood Hub' },
+    { value: 'dailyMonitoring', label: 'Daily Monitoring' },
+    { value: 'gaugeReading', label: 'Gauge Reading', hasdatepicker: true },
+    { value: 'externalLinks', label: 'External Links' },
+  ];
 
 type IProps = {
   submitRef?: MutableRefObject<
@@ -87,7 +88,9 @@ export default function ForecastTabConfigEditor({ submitRef }: IProps) {
   });
 
   if (isLoading) {
-    return <div className="p-4 text-sm text-muted-foreground">{g('LOADING')}</div>;
+    return (
+      <div className="p-4 text-sm text-muted-foreground">{g('LOADING')}</div>
+    );
   }
 
   return (

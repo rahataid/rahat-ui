@@ -73,7 +73,7 @@ const DynamicPieChart = ({
       projectAA
       donutSize="80%"
       width="100%"
-      height="100%"
+      height={300}
       type="donut"
     />
   );

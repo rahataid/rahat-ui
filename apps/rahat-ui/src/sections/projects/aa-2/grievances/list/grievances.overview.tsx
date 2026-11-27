@@ -17,6 +17,7 @@ import { UUID } from 'crypto';
 import { useTranslations } from 'next-intl';
 import { AlertTriangle, Clock } from 'lucide-react';
 import { useParams } from 'next/navigation';
+import { buildDashboardPieChartOptions } from '../../../../dashboard/component/pieChartOptions';
 
 // Define consistent chart colors using enum values
 const typeColorsMap: Record<string, string> = {
@@ -40,6 +41,7 @@ export default function GrievanceOverview({
   className,
 }: GrievanceOverviewProps) {
   const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const { formatNum, chartOptions } = useChartNumberOptions();
   const { id } = useParams();
   const projectUUID = id as UUID;
@@ -105,6 +107,26 @@ export default function GrievanceOverview({
         value: value as number,
       };
     },
+  );
+  const typeChartTotal = typeChartData.reduce(
+    (total, item) => total + Number(item.value || 0),
+    0,
+  );
+  const statusChartTotal = statusChartData.reduce(
+    (total, item) => total + Number(item.value || 0),
+    0,
+  );
+  const typeChartOptions = buildDashboardPieChartOptions(
+    chartOptions,
+    formatNum,
+    tg('TOTAL') || 'TOTAL',
+    typeChartTotal,
+  );
+  const statusChartOptions = buildDashboardPieChartOptions(
+    chartOptions,
+    formatNum,
+    tg('TOTAL') || 'TOTAL',
+    statusChartTotal,
   );
 
   // Get colors for charts using mapped enum values
@@ -187,12 +209,7 @@ export default function GrievanceOverview({
               chart={{
                 series: typeChartData,
                 colors: typeColors,
-                options: {
-                  tooltip: {
-                    fillSeriesColor: true,
-                    ...chartOptions.tooltip,
-                  },
-                },
+                options: typeChartOptions,
               }}
               custom={true}
               projectAA={true}
@@ -214,12 +231,7 @@ export default function GrievanceOverview({
               chart={{
                 series: statusChartData,
                 colors: statusColors,
-                options: {
-                  tooltip: {
-                    fillSeriesColor: true,
-                    ...chartOptions.tooltip,
-                  },
-                },
+                options: statusChartOptions,
               }}
               custom={true}
               projectAA={true}

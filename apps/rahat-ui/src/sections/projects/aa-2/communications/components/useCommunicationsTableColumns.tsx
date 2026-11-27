@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from 'next/navigation';
 
-import React, { useContext, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { useLabelDigits, translateValue } from 'apps/rahat-ui/src/utils/i18n';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
@@ -12,10 +12,6 @@ import { Eye, SendHorizontal } from 'lucide-react';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { CommunicationTooltip } from './communication-tooltip';
 import {
-  aggregateTargetStatus,
-  resolveCommunicationLifecycleStatus,
-} from '../utils/communications.utils';
-import {
   useTriggerCommunicationBroadcast,
   useBeneficiariesGroups,
   useStakeholdersGroups,
@@ -23,7 +19,6 @@ import {
 import { UUID } from 'crypto';
 import { CommunicationStatusBadge } from './communication-status-badge';
 import { CommunicationChannelIcon } from './communication-channel-icon';
-import { BroadcastCountsContext } from './communications.table';
 import { SendCommunicationConfirmDialog } from './send-communication-confirm-dialog';
 
 export type CommunicationRecord = {
@@ -41,6 +36,8 @@ export type CommunicationRecord = {
   sender?: string;
   status: 'DELIVERED' | 'IN_PROGRESS' | 'FAILED' | 'PENDING' | 'COMPLETED' | 'SENT' | string;
   date: string;
+  isScheduled?: boolean;
+  scheduledAt?: string | null;
   targets?: {
     uuid: string;
     groupId: string;
@@ -58,6 +55,9 @@ export type BackendCommunication = {
   audioURL?: { mediaURL?: string; fileName?: string } | null;
   transportId?: string | null;
   createdBy?: string | null;
+  isScheduled?: boolean;
+  scheduledAt?: string | null;
+  status?: string;
   createdAt: string;
   updatedAt: string;
   targets?: {
@@ -80,15 +80,32 @@ export const toCommunicationRecord = (
   const stakeholders = targets
     .filter((target) => target?.groupType === 'STAKEHOLDERS' || target?.groupType === 'STAKEHOLDER')
     .map((target) => target.groupId);
-  const delivered = targets.filter(
-    (target) =>
-      target?.status === 'DELIVERED' ||
-      target?.status === 'SUCCESS' ||
-      target?.status === 'COMPLETED',
-  ).length;
-  const failed = targets.filter(
-    (target) => target?.status === 'FAILED' || target?.status === 'FAIL',
-  ).length;
+
+  let targetDelivered = 0;
+  let targetFailed = 0;
+  let hasAnyTargetCounts = false;
+
+  for (const t of targets as any[]) {
+    if (t?.counts) {
+      hasAnyTargetCounts = true;
+      targetDelivered += Number(t.counts.SUCCESS ?? 0);
+      targetFailed += Number(t.counts.FAIL ?? 0);
+    }
+  }
+
+  const delivered = hasAnyTargetCounts
+    ? targetDelivered
+    : targets.filter(
+        (target) =>
+          target?.status === 'DELIVERED' ||
+          target?.status === 'SUCCESS' ||
+          target?.status === 'COMPLETED',
+      ).length;
+  const failed = hasAnyTargetCounts
+    ? targetFailed
+    : targets.filter(
+        (target) => target?.status === 'FAILED' || target?.status === 'FAIL',
+      ).length;
   const message =
     typeof item?.message === 'string'
       ? item.message
@@ -101,6 +118,7 @@ export const toCommunicationRecord = (
       t?.group?._count?.stakeholders ??
       t?.group?.beneficiaries?.length ??
       t?.group?.stakeholders?.length ??
+      t?.counts?.TOTAL ??
       t?.count;
     return directCount != null && directCount > 0 ? acc + directCount : acc;
   }, 0);
@@ -115,8 +133,10 @@ export const toCommunicationRecord = (
     delivered,
     failed,
     sender: item.createdBy ?? undefined,
-    status: aggregateTargetStatus(targets),
+    status: item.status ?? 'NOT_STARTED',
     date: item.createdAt,
+    isScheduled: item?.isScheduled,
+    scheduledAt: item?.scheduledAt,
     targets,
   };
 };
@@ -126,31 +146,7 @@ export function CommunicationRowStatusCell({
 }: {
   record: CommunicationRecord;
 }) {
-  const countsMap = useContext(BroadcastCountsContext);
-  const entry = countsMap.get(record.id);
-
-  const sessionIds = useMemo(() => {
-    return (record.targets ?? [])
-      .map((t) => t.sessionId)
-      .filter(Boolean) as string[];
-  }, [record.targets]);
-
-  const effStatus = useMemo(() => {
-    return resolveCommunicationLifecycleStatus({
-      channel: record.channel || 'SMS',
-      rawStatus: record.status,
-      counts: entry?.data ?? undefined,
-      hasActiveTargets: (record.targets ?? []).some(
-        (t) => t.status === 'SENT' || t.status === 'PROCESSING',
-      ),
-      hasPendingTargets: (record.targets ?? []).some(
-        (t) => t.status === 'PENDING',
-      ),
-      hasSession: sessionIds.length > 0,
-    });
-  }, [record.channel, record.status, entry?.data, record.targets, sessionIds.length]);
-
-  return <CommunicationStatusBadge status={effStatus} isLoading={false} />;
+  return <CommunicationStatusBadge status={record.status} isLoading={false} />;
 }
 
 export function CommunicationRowDeliveryStatusCell({
@@ -162,8 +158,6 @@ export function CommunicationRowDeliveryStatusCell({
 }) {
   const t = useTranslations('AA_PROJECT');
   const formatDigits = useLabelDigits();
-  const countsMap = useContext(BroadcastCountsContext);
-  const entry = countsMap.get(record.id);
 
   const totalAudience = useMemo(() => {
     return (record.targets ?? []).reduce((acc: number, t: any) => {
@@ -183,14 +177,26 @@ export function CommunicationRowDeliveryStatusCell({
   }, [record.targets, groupCountMap]);
 
   const { delivered, total } = useMemo(() => {
-    if (entry?.data) {
-      const counts = entry.data;
-      const d = counts.SUCCESS ?? 0;
-      const f = counts.FAIL ?? 0;
-      const p = (counts.PENDING ?? 0) + (counts.SCHEDULED ?? 0);
-      const sessionTotal = counts.TOTAL ?? (d + f + p);
-      const tot = totalAudience > 0 ? totalAudience : sessionTotal > 0 ? sessionTotal : 0;
-      return { delivered: d, total: tot };
+    let targetDelivered = 0;
+    let targetTotal = 0;
+    let hasTargetCounts = false;
+
+    for (const t of (record.targets ?? []) as any[]) {
+      if (t?.counts) {
+        hasTargetCounts = true;
+        targetDelivered += Number(t.counts.SUCCESS ?? 0);
+        const s = Number(t.counts.SUCCESS ?? 0);
+        const f = Number(t.counts.FAIL ?? 0);
+        const p = Number(t.counts.PENDING ?? 0);
+        const sc = Number(t.counts.SCHEDULED ?? 0);
+        const tTot = Number(t.counts.TOTAL ?? (s + f + p + sc));
+        targetTotal += tTot;
+      }
+    }
+
+    if (hasTargetCounts) {
+      const tot = totalAudience > 0 ? totalAudience : targetTotal > 0 ? targetTotal : record.recipients;
+      return { delivered: targetDelivered, total: tot };
     }
 
     const deliveredCount = (record.targets ?? []).reduce((acc: number, t: any) => {
@@ -215,7 +221,7 @@ export function CommunicationRowDeliveryStatusCell({
 
     const tot = totalAudience > 0 ? totalAudience : record.recipients;
     return { delivered: deliveredCount, total: tot };
-  }, [entry?.data, totalAudience, record.targets, record.recipients, groupCountMap]);
+  }, [totalAudience, record.targets, record.recipients, groupCountMap]);
 
   const groupsCount = (record.targets ?? []).length;
   const tooltipContent = (
@@ -323,7 +329,11 @@ function CommunicationRowActionsCell({
           <span onClick={() => setIsConfirmOpen(true)}>
             <TooltipComponent
               Icon={SendHorizontal}
-              tip={t('SEND_COMMUNICATION') || 'Send Communication'}
+              tip={
+                record.isScheduled
+                  ? t('SEND_NOW') || 'Send Now'
+                  : t('SEND_COMMUNICATION') || 'Send Communication'
+              }
               iconStyle="hover:text-primary cursor-pointer text-muted-foreground"
             />
           </span>
@@ -457,7 +467,7 @@ export default function useCommunicationsTableColumns() {
                 variant="outline"
                 className="text-[10px] px-1.5 py-0 font-medium truncate max-w-full w-max bg-white"
               >
-                {`${formatDigits(stakeCount)} ${t('STAKEHOLDER_GROUPS').replace(/[:ः]$/, '')}`}
+                {`${formatDigits(stakeCount)} ${t('STAKEHOLDER_GROUPS').replace(/(?::|ः)$/, '')}`}
               </Badge>
             )}
             {benCount === 0 && stakeCount === 0 && (

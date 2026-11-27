@@ -50,14 +50,29 @@ import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import { AudioRecorder } from './recorder';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import { CloudUpload, Mic, Trash2 } from 'lucide-react';
+import {
+  CloudUpload,
+  Mic,
+  Trash2,
+  CalendarClock,
+  Calendar as CalendarIcon,
+} from 'lucide-react';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
+import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/popover';
+import { ScheduleTimePicker } from '../../communications/components/schedule-time-picker';
 import {
   Dialog,
   DialogContent,
@@ -112,6 +127,7 @@ export default function AddCommunicationForm({
   const t = useTranslations('AA_PROJECT');
   const tg = useTranslations('GLOBAL');
   const formatNum = useNumberFormat();
+  const formatDate = useDateFormat();
   const { id: projectId } = useParams();
   const [contentType, setContentType] = useState<ValidationContent | ''>('');
   const [customFileName, setCustomFileName] = useState('');
@@ -191,10 +207,7 @@ export default function AddCommunicationForm({
       .map((g: any) => ({
         id: g?.uuid,
         name: g?.name,
-        count:
-          g?._count?.stakeholders ??
-          g?.stakeholders?.length ??
-          0,
+        count: g?._count?.stakeholders ?? g?.stakeholders?.length ?? 0,
       }))
       .filter((g) => g.id && g.name);
   }, [stakeGroupsData, stakeholdersGroups]);
@@ -209,7 +222,8 @@ export default function AddCommunicationForm({
   // Hydrate legacy single-group communication into TargetAudienceSelector when editing
   useEffect(() => {
     const hasSelection =
-      (Array.isArray(selectedBeneficiaries) && selectedBeneficiaries.length > 0) ||
+      (Array.isArray(selectedBeneficiaries) &&
+        selectedBeneficiaries.length > 0) ||
       (Array.isArray(selectedStakeholders) && selectedStakeholders.length > 0);
 
     if (
@@ -218,12 +232,17 @@ export default function AddCommunicationForm({
       groupId.length > 0 &&
       groupType
     ) {
-      if (groupType === 'BENEFICIARY' && beneficiaryAudienceOptions.length > 0) {
+      if (
+        groupType === 'BENEFICIARY' &&
+        beneficiaryAudienceOptions.length > 0
+      ) {
         const matching = beneficiaryAudienceOptions.filter((opt) =>
           groupId.includes(opt.id),
         );
         if (matching.length > 0) {
-          form.setValue('beneficiaries' as any, matching, { shouldValidate: true });
+          form.setValue('beneficiaries' as any, matching, {
+            shouldValidate: true,
+          });
         }
       } else if (
         groupType === 'STAKEHOLDERS' &&
@@ -233,7 +252,9 @@ export default function AddCommunicationForm({
           groupId.includes(opt.id),
         );
         if (matching.length > 0) {
-          form.setValue('stakeholders' as any, matching, { shouldValidate: true });
+          form.setValue('stakeholders' as any, matching, {
+            shouldValidate: true,
+          });
         }
       }
     }
@@ -446,6 +467,7 @@ export default function AddCommunicationForm({
 
   const transportId = form.watch('transportId');
   const audioFile = form.watch('audioURL');
+  const isScheduled = form.watch('isScheduled');
 
   const isLoading = useMemo(
     () =>
@@ -469,8 +491,7 @@ export default function AddCommunicationForm({
   }, [transportId, appTransports]);
 
   const isVoice =
-    transportData?.name === 'VOICE' ||
-    contentType === ValidationContent.URL;
+    transportData?.name === 'VOICE' || contentType === ValidationContent.URL;
   const isEmail = transportData?.name === 'EMAIL';
   const isText =
     transportData?.name === 'SMS' ||
@@ -597,7 +618,9 @@ export default function AddCommunicationForm({
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <FormSelectTrigger value={field.value}>
-                        <SelectValue placeholder={t('SELECT_COMMUNICATION_TYPE')} />
+                        <SelectValue
+                          placeholder={t('SELECT_COMMUNICATION_TYPE')}
+                        />
                       </FormSelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -687,10 +710,10 @@ export default function AddCommunicationForm({
                       disabled={fileUpload.isPending}
                       className={cn(
                         errors.audioURL &&
-                        'shadow-[inset_4px_0_0_0_hsl(var(--destructive))] bg-red-50 focus-visible:ring-2 focus-visible:ring-destructive',
+                          'shadow-[inset_4px_0_0_0_hsl(var(--destructive))] bg-red-50 focus-visible:ring-2 focus-visible:ring-destructive',
                         !errors.audioURL &&
-                        Boolean(audioFile?.mediaURL) &&
-                        'shadow-[inset_4px_0_0_0_hsl(var(--primary))] bg-blue-50 pl-2',
+                          Boolean(audioFile?.mediaURL) &&
+                          'shadow-[inset_4px_0_0_0_hsl(var(--primary))] bg-blue-50 pl-2',
                       )}
                       onChange={handleAudioFileChange}
                     />
@@ -744,9 +767,7 @@ export default function AddCommunicationForm({
 
               {Boolean(audioFile?.fileName && audioFile?.mediaURL) && (
                 <div className="p-3 rounded-md border bg-white space-y-2">
-                  <h3 className="text-sm font-medium">
-                    {audioFile?.fileName}
-                  </h3>
+                  <h3 className="text-sm font-medium">{audioFile?.fileName}</h3>
                   <div className="flex gap-2 items-center justify-between">
                     <audio
                       src={audioFile?.mediaURL}
@@ -777,15 +798,9 @@ export default function AddCommunicationForm({
                   if (!value) return true;
 
                   if (/[\u0900-\u097F]/.test(value)) {
-                    return (
-                      value.length <= 350 ||
-                      t('NEPALI_MESSAGE_LIMIT')
-                    );
+                    return value.length <= 350 || t('NEPALI_MESSAGE_LIMIT');
                   } else {
-                    return (
-                      value.length <= 700 ||
-                      t('ENGLISH_MESSAGE_LIMIT')
-                    );
+                    return value.length <= 700 || t('ENGLISH_MESSAGE_LIMIT');
                   }
                 },
               }}
@@ -829,13 +844,14 @@ export default function AddCommunicationForm({
                           </p>
                         )}
                         <p
-                          className={`whitespace-nowrap ${(field.value?.length ?? 0) > maxLen
-                            ? 'text-destructive font-medium'
-                            : ''
-                            }`}
+                          className={`whitespace-nowrap ${
+                            (field.value?.length ?? 0) > maxLen
+                              ? 'text-destructive font-medium'
+                              : ''
+                          }`}
                         >
-                          {formatNum(field.value?.length ?? 0)} / {formatNum(maxLen)}{' '}
-                          {charactersText}
+                          {formatNum(field.value?.length ?? 0)} /{' '}
+                          {formatNum(maxLen)} {charactersText}
                         </p>
                       </div>
                     </div>
@@ -844,6 +860,114 @@ export default function AddCommunicationForm({
               }}
             />
           )}
+
+          <div className="col-span-2 rounded-md border p-4 bg-muted/20 space-y-4">
+            <FormField
+              control={form.control}
+              name="isScheduled"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                  <FormControl>
+                    <Checkbox
+                      id="activity-schedule-later"
+                      checked={field.value}
+                      onCheckedChange={(checked) => {
+                        field.onChange(checked);
+                        if (!checked) {
+                          form.setValue('scheduleDate', undefined);
+                          form.setValue('scheduleTime', '');
+                          form.clearErrors(['scheduleDate', 'scheduleTime']);
+                        }
+                      }}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel
+                      htmlFor="activity-schedule-later"
+                      className="text-sm font-semibold cursor-pointer flex items-center gap-2"
+                    >
+                      <CalendarClock className="w-4 h-4 text-primary" />
+                      {t('SCHEDULE_LATER')}
+                    </FormLabel>
+                    <p className="text-xs text-muted-foreground">
+                      {t('SCHEDULE_LATER_DESCRIPTION')}
+                    </p>
+                  </div>
+                </FormItem>
+              )}
+            />
+
+            {isScheduled && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t">
+                <FormField
+                  control={form.control}
+                  name="scheduleDate"
+                  render={({ field }) => (
+                    <FormItem className="space-y-2 flex flex-col">
+                      <FormLabel required>{t('SCHEDULE_DATE')}</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                'w-full pl-3 text-left font-normal flex justify-between items-center bg-white',
+                                !field.value && 'text-muted-foreground',
+                              )}
+                            >
+                              {field.value ? (
+                                formatDate(field.value, 'PPP')
+                              ) : (
+                                <span>{t('PICK_SCHEDULE_DATE')}</span>
+                              )}
+                              <CalendarIcon className="h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={(date) => {
+                              field.onChange(date);
+                              form.trigger(['scheduleDate', 'scheduleTime']);
+                            }}
+                            disabled={(date) => {
+                              const today = new Date();
+                              today.setHours(0, 0, 0, 0);
+                              return date < today;
+                            }}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="scheduleTime"
+                  render={({ field }) => (
+                    <FormItem className="space-y-2 flex flex-col">
+                      <FormLabel required>{t('SCHEDULE_TIME')}</FormLabel>
+                      <FormControl>
+                        <ScheduleTimePicker
+                          value={field.value}
+                          onChange={(val) => {
+                            field.onChange(val);
+                            form.trigger(['scheduleDate', 'scheduleTime']);
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            )}
+          </div>
         </CardContent>
 
         <CardFooter className="flex flex-wrap justify-end gap-3 border-t p-4 sm:p-6">

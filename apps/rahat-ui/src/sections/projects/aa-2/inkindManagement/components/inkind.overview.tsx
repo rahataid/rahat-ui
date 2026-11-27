@@ -30,16 +30,15 @@ import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { useInkindsSummary, useInkindTransactions } from '@rahat-ui/query';
-import { INKIND_TYPE_LABELS } from '../schemas/inkind.validation';
 import {
   exportInkindSummary,
   hasInkindData,
   MOVEMENT_CONFIG,
 } from '../utils/utils';
-import { formatLabel } from './inkind.allocation.list';
-import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
+import { useChartNumberOptions } from 'apps/rahat-ui/src/utils/i18n/number';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 import DynamicPieChart from 'apps/rahat-ui/src/sections/projects/components/dynamicPieChart';
+import { buildDashboardPieChartOptions } from '../../../../dashboard/component/pieChartOptions';
 import {
   Tooltip,
   TooltipContent,
@@ -120,7 +119,7 @@ export default function InkindOverview() {
   const tv = useTranslations('AA_PROJECT_WITH_GNOSIS');
   const tg = useTranslations('GLOBAL');
   const formatDate = useDateFormat();
-  const formatNum = useNumberFormat();
+  const { formatNum, chartOptions } = useChartNumberOptions();
 
   const sortedMovements = [...movements].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
@@ -128,6 +127,54 @@ export default function InkindOverview() {
 
   const s = inkindItemsSummary;
   const hasData = hasInkindData(s);
+
+  const redemptionTypeData = [
+    {
+      label: tv('PRE_DEFINED_BENEFICIARY_LIST'),
+      value: inkindItemsSummary?.chartData?.redemptionType?.predefined || 0,
+    },
+    {
+      label: tv('WALK_IN_BENEFICIARY_LIST'),
+      value: inkindItemsSummary?.chartData?.redemptionType?.walkIn || 0,
+    },
+  ];
+  const redemptionStatusData = [
+    {
+      label: tv('REDEEMED'),
+      value: inkindItemsSummary?.totalRedeemedStock || 0,
+    },
+    {
+      label: tv('NOT_REDEEMED'),
+      value: Math.max(
+        0,
+        (inkindItemsSummary?.totalAssignedStock || 0) -
+          (inkindItemsSummary?.totalRedeemedStock || 0),
+      ),
+    },
+  ];
+  const otpStatusData = [
+    {
+      label: tv('SKIPPED'),
+      value: inkindItemsSummary?.chartData?.otpStatus?.skipped || 0,
+    },
+    {
+      label: tv('NOT_SKIPPED'),
+      value: inkindItemsSummary?.chartData?.otpStatus?.notSkipped || 0,
+    },
+  ];
+  const getPieChartOptions = (data: { value: number }[]) => {
+    const total = data.reduce((sum, item) => sum + Number(item.value || 0), 0);
+    return buildDashboardPieChartOptions(
+      chartOptions,
+      formatNum,
+      tg('TOTAL') || 'TOTAL',
+      total,
+    );
+  };
+
+  const redemptionTypeOptions = getPieChartOptions(redemptionTypeData);
+  const redemptionStatusOptions = getPieChartOptions(redemptionStatusData);
+  const otpStatusOptions = getPieChartOptions(otpStatusData);
 
   const handleDownloadReport = () => exportInkindSummary(s);
 
@@ -140,9 +187,7 @@ export default function InkindOverview() {
           description={tv('TRACK_YOUR_IN_KIND_FLOW_HERE')}
         />
         <div className="flex gap-2 items-center">
-          <TooltipWrapper
-            tip={hasData ? '' : tg('NO_INKIND_DATA_TO_EXPORT')}
-          >
+          <TooltipWrapper tip={hasData ? '' : tg('NO_INKIND_DATA_TO_EXPORT')}>
             <IconLabelBtn
               Icon={CloudDownloadIcon}
               handleClick={handleDownloadReport}
@@ -202,60 +247,28 @@ export default function InkindOverview() {
           {/* Row 1: Redemption Type + Redemption Status */}
           <div className="grid xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-1 gap-3 mb-3">
             <div className="border rounded-sm p-4">
-              <h3 className="text-sm font-medium mb-3">{tv('REDEMPTION_TYPE')}</h3>
-              <div className="w-full h-48">
+              <h3 className="text-sm font-medium mb-3">
+                {tv('REDEMPTION_TYPE')}
+              </h3>
+              <div className="w-full h-[300px] flex justify-center">
                 <DynamicPieChart
-                  pieData={[
-                    {
-                      label: tv('PRE_DEFINED_BENEFICIARY_LIST'),
-                      value:
-                        inkindItemsSummary?.chartData?.redemptionType
-                          ?.predefined || 0,
-                    },
-                    {
-                      label: tv('WALK_IN_BENEFICIARY_LIST'),
-                      value:
-                        inkindItemsSummary?.chartData?.redemptionType?.walkIn ||
-                        0,
-                    },
-                  ]}
+                  pieData={redemptionTypeData}
                   colors={['#F4A462', '#2A9D90']}
-                  options={{
-                tooltip: {
-                  fillSeriesColor: true,
-                  y: { formatter: (val: number) => formatNum(val) },
-                },
-              }}
-            />
+                  options={redemptionTypeOptions}
+                />
               </div>
             </div>
 
             <div className="border rounded-sm p-4">
-              <h3 className="text-sm font-medium mb-3">{tv('REDEMPTION_STATUS')}</h3>
-              <div className="w-full h-48">
+              <h3 className="text-sm font-medium mb-3">
+                {tv('REDEMPTION_STATUS')}
+              </h3>
+              <div className="w-full h-[300px] flex justify-center">
                 <DynamicPieChart
-                  pieData={[
-                    {
-                      label: tv('REDEEMED'),
-                      value: inkindItemsSummary?.totalRedeemedStock || 0,
-                    },
-                    {
-                      label: tv('NOT_REDEEMED'),
-                      value: Math.max(
-                        0,
-                        (inkindItemsSummary?.totalAssignedStock || 0) -
-                          (inkindItemsSummary?.totalRedeemedStock || 0),
-                      ),
-                    },
-                  ]}
+                  pieData={redemptionStatusData}
                   colors={['#FFA500', '#10B981']}
-                  options={{
-                tooltip: {
-                  fillSeriesColor: true,
-                  y: { formatter: (val: number) => formatNum(val) },
-                },
-              }}
-            />
+                  options={redemptionStatusOptions}
+                />
               </div>
             </div>
           </div>
@@ -266,35 +279,19 @@ export default function InkindOverview() {
             <div className="flex flex-col gap-3">
               <div className="border rounded-sm p-4">
                 <h3 className="text-sm font-medium mb-3">{tv('OTP_STATUS')}</h3>
-                <div className="w-full h-48">
+                <div className="w-full h-[300px] flex justify-center">
                   <DynamicPieChart
-                    pieData={[
-                      {
-                        label: tv('SKIPPED'),
-                        value:
-                          inkindItemsSummary?.chartData?.otpStatus?.skipped ||
-                          0,
-                      },
-                      {
-                        label: tv('NOT_SKIPPED'),
-                        value:
-                          inkindItemsSummary?.chartData?.otpStatus
-                            ?.notSkipped || 0,
-                      },
-                    ]}
+                    pieData={otpStatusData}
                     colors={['#FFA500', '#10B981']}
-                    options={{
-                  tooltip: {
-                    fillSeriesColor: true,
-                    y: { formatter: (val: number) => formatNum(val) },
-                  },
-                }}
-              />
+                    options={otpStatusOptions}
+                  />
                 </div>
               </div>
 
               <div className="border rounded-sm p-4">
-                <h3 className="text-sm font-medium mb-3">{tv('OTP_SKIP_REASONS')}</h3>
+                <h3 className="text-sm font-medium mb-3">
+                  {tv('OTP_SKIP_REASONS')}
+                </h3>
                 {inkindItemsSummary?.chartData?.otpSkipReasons &&
                 inkindItemsSummary.chartData.otpSkipReasons.length > 0 ? (
                   (() => {
@@ -353,7 +350,9 @@ export default function InkindOverview() {
             {/* Right Column: Overall Inkind Flow */}
             <div className="border rounded-sm p-4 flex flex-col">
               <div className="flex items-start justify-between mb-0.5">
-                <h1 className="text-lg font-medium">{tv('OVERALL_INKIND_FLOW')}</h1>
+                <h1 className="text-lg font-medium">
+                  {tv('OVERALL_INKIND_FLOW')}
+                </h1>
               </div>
               {movements.length !== 0 && (
                 <p className="text-xs text-muted-foreground mb-3">
@@ -543,43 +542,45 @@ export default function InkindOverview() {
                         </div>
                       </div>
 
-                  {selectedMovement.inkind && (
-                    <div className="mb-5">
-                      <SectionTitle title={tv('INKIND_ITEM')} />
-                      <div className="border rounded-md px-3">
-                        <DetailRow
-                          icon={Package}
-                          label={tg('NAME')}
-                          value={selectedMovement.inkind.name}
-                        />
-                        <DetailRow
-                          icon={Layers}
-                          label={tg('TYPE')}
-                          value={
-                            <Badge className="bg-gray-200 text-gray-600">
-                              {tg(selectedMovement.inkind.type)}
-                            </Badge>
-                          }
-                        />
-                        <DetailRow
-                          icon={Archive}
-                          label={tv('AVAILABLE_STOCK')}
-                          value={
-                            <span className="text-primary font-bold">
-                              {formatNum(selectedMovement.inkind.availableStock)}
-                            </span>
-                          }
-                        />
-                        {selectedMovement.inkind.description && (
-                          <DetailRow
-                            icon={Hash}
-                            label={tg('DESCRIPTION')}
-                            value={selectedMovement.inkind.description}
-                          />
-                        )}
-                      </div>
-                    </div>
-                  )}
+                      {selectedMovement.inkind && (
+                        <div className="mb-5">
+                          <SectionTitle title={tv('INKIND_ITEM')} />
+                          <div className="border rounded-md px-3">
+                            <DetailRow
+                              icon={Package}
+                              label={tg('NAME')}
+                              value={selectedMovement.inkind.name}
+                            />
+                            <DetailRow
+                              icon={Layers}
+                              label={tg('TYPE')}
+                              value={
+                                <Badge className="bg-gray-200 text-gray-600">
+                                  {tg(selectedMovement.inkind.type)}
+                                </Badge>
+                              }
+                            />
+                            <DetailRow
+                              icon={Archive}
+                              label={tv('AVAILABLE_STOCK')}
+                              value={
+                                <span className="text-primary font-bold">
+                                  {formatNum(
+                                    selectedMovement.inkind.availableStock,
+                                  )}
+                                </span>
+                              }
+                            />
+                            {selectedMovement.inkind.description && (
+                              <DetailRow
+                                icon={Hash}
+                                label={tg('DESCRIPTION')}
+                                value={selectedMovement.inkind.description}
+                              />
+                            )}
+                          </div>
+                        </div>
+                      )}
 
                       {selectedMovement.groupInkind && (
                         <div className="mb-5">

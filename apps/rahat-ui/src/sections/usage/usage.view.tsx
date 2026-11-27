@@ -2,12 +2,9 @@
 
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { RefreshCcw, RefreshCw, ScrollText } from 'lucide-react';
+import { RefreshCcw, RefreshCw } from 'lucide-react';
 import { SystemUserAuth } from '@rahat-ui/auth';
-import CoreBtnComponent from '../../components/core.btn';
 import { IconLabelBtn } from '../../common';
-import { paths } from '../../routes/paths';
 import { useDateFormat } from 'apps/rahat-ui/src/utils/i18n/date';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
@@ -50,7 +47,6 @@ type DateRangeQuery = { from?: string; to?: string };
 export default function UsageView() {
   const t = useTranslations('USAGE');
   const tg = useTranslations('GLOBAL');
-  const router = useRouter();
   const formatDate = useDateFormat();
   const { activeTab, setActiveTab } = useActiveTab('usage');
   const [showSyncConfirm, setShowSyncConfirm] = useState(false);
@@ -94,21 +90,14 @@ export default function UsageView() {
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold">{t('USAGE')}</h2>
             <SystemUserAuth hasContent={false}>
-              <div className="flex items-center gap-2">
-                <IconLabelBtn
-                  name={isBackfilling ? t('SYNCING') : t('SYNC_STATS')}
-                  Icon={RefreshCcw}
-                  variant="outline"
-                  disabled={isBackfilling}
-                  handleClick={() => setShowSyncConfirm(true)}
-                  className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
-                />
-                <CoreBtnComponent
-                  Icon={ScrollText}
-                  name={t('LOG_STREAM')}
-                  handleClick={() => router.push(paths.logs.root)}
-                />
-              </div>
+              <IconLabelBtn
+                name={isBackfilling ? t('SYNCING') : t('SYNC_STATS')}
+                Icon={RefreshCcw}
+                variant="outline"
+                disabled={isBackfilling}
+                handleClick={() => setShowSyncConfirm(true)}
+                className="text-[clamp(11px,1vw,14px)] h-[clamp(28px,3vw,36px)] px-2 sm:px-3"
+              />
             </SystemUserAuth>
           </div>
 

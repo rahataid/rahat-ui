@@ -5,7 +5,9 @@ import { BarChart } from '@rahat-ui/shadcn/src/components/charts';
 import DynamicPieChart from '../../../components/dynamicPieChart';
 import { SECTIONS } from '../utils/dashbord-constants';
 import { useTranslations } from 'next-intl';
+import { useChartNumberOptions } from 'apps/rahat-ui/src/utils/i18n/number';
 import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
+import { buildDashboardPieChartOptions } from '../../../../dashboard/component/pieChartOptions';
 
 export default function HeatwaveSpecific({
   benefStats,
@@ -13,6 +15,7 @@ export default function HeatwaveSpecific({
   benefStats: any[];
 }) {
   const tg = useTranslations('GLOBAL');
+  const { formatNum, chartOptions } = useChartNumberOptions();
   const getStat = (name: string) =>
     benefStats.find((s: any) => s.name === name);
 
@@ -39,6 +42,24 @@ export default function HeatwaveSpecific({
             translateValue(tg, d.id, { fallbackStyle: 'raw', silent: true }),
           );
           const series = stat.data.map((d: any) => d.count);
+          const pieData = stat.data.map((d: any) => ({
+            label: translateValue(tg, d.id, {
+              fallbackStyle: 'raw',
+              silent: true,
+            }),
+            value: d.count,
+          }));
+          const total = pieData.reduce(
+            (sum: number, item: { value: number }) =>
+              sum + Number(item.value || 0),
+            0,
+          );
+          const pieChartOptions = buildDashboardPieChartOptions(
+            chartOptions,
+            formatNum,
+            tg('TOTAL') || 'TOTAL',
+            total,
+          );
           return (
             <div
               key={section.name}
@@ -49,13 +70,9 @@ export default function HeatwaveSpecific({
                 {categories.length <= 2 ? (
                   <div className="w-full h-full flex items-center justify-center p-2">
                     <DynamicPieChart
-                      pieData={stat.data.map((d: any) => ({
-                        label: translateValue(tg, d.id, {
-                          fallbackStyle: 'raw',
-                          silent: true,
-                        }),
-                        value: d.count,
-                      }))}
+                      pieData={pieData}
+                      colors={['#00796B', '#CFD8DC', '#4A90E2', '#FFB300']}
+                      options={pieChartOptions}
                     />
                   </div>
                 ) : (

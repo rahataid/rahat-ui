@@ -1,6 +1,7 @@
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import React from 'react';
-import { RxCrossCircled } from 'react-icons/rx';
+import { XCircle } from 'lucide-react';
+
 import { format } from 'date-fns';
 import {
   ScrollArea,
@@ -37,7 +38,7 @@ const FiltersTags = ({ filters, setFilters, total }: any) => {
                   ) : (
                     <>{filter.value}</>
                   )}
-                  <RxCrossCircled />
+                  <XCircle />
                 </span>
               </div>
             ))}

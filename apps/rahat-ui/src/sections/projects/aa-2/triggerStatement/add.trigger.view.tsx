@@ -6,7 +6,11 @@ import {
   EditButton,
   Heading,
   SpinnerLoader,
+  UnsavedChangesDialog,
 } from 'apps/rahat-ui/src/common';
+import { useUnsavedChanges } from 'apps/rahat-ui/src/hooks/useUnsavedChanges';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
+import { useSessionFormStorage } from 'apps/rahat-ui/src/hooks/useSessionFormStorage';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Tabs,
@@ -53,20 +57,22 @@ import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
 
 export function buildAutomatedFormSchema(t?: any) {
-  const _t = t || ((s: string) => {
-    const fallback: Record<string, string> = {
-      PLEASE_ENTER_TRIGGER_TITLE: 'Please enter trigger title',
-      PLEASE_SELECT_DATA_SOURCE: 'Please select data source',
-    };
-    return fallback[s] || s;
-  });
+  const _t =
+    t ||
+    ((s: string) => {
+      const fallback: Record<string, string> = {
+        PLEASE_ENTER_TRIGGER_TITLE: 'Please enter trigger title',
+        PLEASE_SELECT_DATA_SOURCE: 'Please select data source',
+      };
+      return fallback[s] || s;
+    });
   return z.object({
     title: z.string().min(2, { message: _t('PLEASE_ENTER_TRIGGER_TITLE') }),
     description: z.string().optional(),
     source: z.string().min(1, { message: _t('PLEASE_SELECT_DATA_SOURCE') }),
     isMandatory: z.boolean().optional(),
     leadTime: z.string().optional(),
-  triggerStatement: buildTriggerStatementSchema(_t),
+    triggerStatement: buildTriggerStatementSchema(_t),
   });
 }
 
@@ -79,20 +85,43 @@ const componentMap = {
 
 type TriggerTabKey = keyof typeof componentMap;
 
+type TriggerDraft = {
+  activeTab: string;
+  manualValues: Record<string, unknown>;
+  automatedValues: Record<string, unknown>;
+  allTriggers: any[];
+};
+
+const EMPTY_TRIGGER_DRAFT: TriggerDraft = {
+  activeTab: '',
+  manualValues: {},
+  automatedValues: {},
+  allTriggers: [],
+};
+
 export default function AddTriggerView() {
   const formatDate = useDateFormat();
   const t = useTranslations('AA_PROJECT');
+  const tg = useTranslations('GLOBAL');
   const [activeTab, setActiveTab] = React.useState<string>('');
   const [allTriggers, setAllTriggers] = React.useState<any[]>([]);
   const [open, setOpen] = React.useState<boolean>(false);
-  const [isManualDataValid, setIsManualDataValid] =
-    React.useState<boolean>(false);
-  const [isAutomatedDataValid, setIsAutomatedDataValid] =
-    React.useState<boolean>(false);
+  const [showClearDialog, setShowClearDialog] = React.useState(false);
 
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
+
+  const hasInteracted = React.useRef(false);
+  const isRestored = React.useRef(false);
+  const isSubmittingRef = React.useRef(false);
+
+  const { loadSaved, saveData, clearSaved } =
+    useSessionFormStorage<TriggerDraft>({
+      key: 'trigger_draft',
+      projectId: projectId as string,
+      defaultValue: EMPTY_TRIGGER_DRAFT,
+    });
 
   const selectedPhase = JSON.parse(
     localStorage.getItem('selectedPhase') as string,
@@ -128,7 +157,10 @@ export default function AddTriggerView() {
   }, [data]);
 
   React.useEffect(() => {
-    if (!activeTab && availableTabs.length > 0) {
+    const isKnownTab = availableTabs.some(
+      (tab: any) => tab.value === activeTab,
+    );
+    if (!isKnownTab && availableTabs.length > 0) {
       setActiveTab(availableTabs[0].value);
     }
   }, [activeTab, availableTabs]);
@@ -176,52 +208,103 @@ export default function AddTriggerView() {
     },
   });
 
+  React.useEffect(() => {
+    if (isRestored.current || !projectId) return;
+    const saved = loadSaved();
+    if (saved.activeTab) setActiveTab(saved.activeTab);
+    if (saved.allTriggers?.length > 0) setAllTriggers(saved.allTriggers);
+    if (Object.keys(saved.manualValues ?? {}).length > 0) {
+      manualForm.reset(saved.manualValues);
+    }
+    if (Object.keys(saved.automatedValues ?? {}).length > 0) {
+      automatedForm.reset(saved.automatedValues);
+    }
+    isRestored.current = true;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectId]);
+
+  const saveCurrentForm = () => {
+    saveData({
+      activeTab,
+      manualValues: manualForm.getValues(),
+      automatedValues: automatedForm.getValues(),
+      allTriggers,
+    });
+  };
+
+  // Destructured so both forms' isDirty are subscribed on every render.
+  const { isDirty: isManualDirty } = manualForm.formState;
+  const { isDirty: isAutomatedDirty } = automatedForm.formState;
+  const hasUnsavedChanges =
+    !isSubmittingRef.current &&
+    (allTriggers.length > 0 ||
+      (hasInteracted.current && (isManualDirty || isAutomatedDirty)));
+
+  const {
+    showDialog,
+    handleConfirmLeave,
+    handleCancelLeave,
+    handleDiscardLeave,
+  } = useUnsavedChanges({
+    hasUnsavedChanges,
+    onConfirm: saveCurrentForm,
+    onDiscard: clearSaved,
+  });
+
+  const saveCurrentFormRef = React.useRef(saveCurrentForm);
+  saveCurrentFormRef.current = saveCurrentForm;
+  const hasUnsavedChangesRef = React.useRef(hasUnsavedChanges);
+  hasUnsavedChangesRef.current = hasUnsavedChanges;
+
+  React.useEffect(() => {
+    const handlePageHide = () => {
+      if (hasUnsavedChangesRef.current) saveCurrentFormRef.current();
+    };
+    window.addEventListener('pagehide', handlePageHide);
+    return () => window.removeEventListener('pagehide', handlePageHide);
+  }, []);
+
   const handleSubmitManualTrigger = async (
     data: z.infer<typeof ManualFormSchema>,
   ) => {
-    isManualDataValid &&
-      setAllTriggers([
-        ...allTriggers,
-        {
-          ...data,
-          isMandatory: !data?.isMandatory,
-          type: activeTab,
-          source: 'MANUAL',
-          time: new Date(),
-          phaseId: selectedPhase?.id,
-          riverBasin: selectedPhase?.riverBasin,
-        },
-      ]);
+    setAllTriggers((prev) => [
+      ...prev,
+      {
+        ...data,
+        isMandatory: !data?.isMandatory,
+        type: activeTab,
+        source: 'MANUAL',
+        time: new Date(),
+        phaseId: selectedPhase?.id,
+        riverBasin: selectedPhase?.riverBasin,
+      },
+    ]);
+    setOpen(true);
   };
 
   const handleSubmitAutomatedTrigger = async (
     data: z.infer<typeof AutomatedFormSchema>,
   ) => {
-    isAutomatedDataValid &&
-      setAllTriggers([
-        ...allTriggers,
-        {
-          ...data,
-          source: data?.source.split(':')[0].toUpperCase(),
-          isMandatory: !data?.isMandatory,
-          type: activeTab,
-          time: new Date(),
-          phaseId: selectedPhase?.id,
-          riverBasin: selectedPhase?.riverBasin,
-        },
-      ]);
+    setAllTriggers((prev) => [
+      ...prev,
+      {
+        ...data,
+        source: data?.source.split(':')[0].toUpperCase(),
+        isMandatory: !data?.isMandatory,
+        type: activeTab,
+        time: new Date(),
+        phaseId: selectedPhase?.id,
+        riverBasin: selectedPhase?.riverBasin,
+      },
+    ]);
+    setOpen(true);
   };
 
   const handleStoreTriggers = () => {
     const formHandlers = {
-      manual: () => {
-        manualForm.handleSubmit(handleSubmitManualTrigger)();
-        isManualDataValid ? setOpen(true) : setOpen(false);
-      },
-      automated: () => {
-        automatedForm.handleSubmit(handleSubmitAutomatedTrigger)();
-        isAutomatedDataValid ? setOpen(true) : setOpen(false);
-      },
+      manual: () => manualForm.handleSubmit(handleSubmitManualTrigger)(),
+      automated: () =>
+        automatedForm.handleSubmit(handleSubmitAutomatedTrigger)(),
     };
 
     formHandlers[activeTab as keyof typeof formHandlers]?.();
@@ -267,34 +350,22 @@ export default function AddTriggerView() {
     const payload = allTriggers?.map(({ riverBasin, type, time, ...rest }) => {
       return rest;
     });
+    isSubmittingRef.current = true;
     try {
       await addTriggers.mutateAsync({
         projectUUID: projectId,
         triggerStatementPayload: { triggers: payload },
       });
-      router.back();
+      clearSaved();
+      router.push(`/projects/aa/${projectId}/trigger-statements`);
     } catch (e) {
+      isSubmittingRef.current = false;
       console.error(e);
     } finally {
       setOpen(false);
       setAllTriggers([]);
     }
   };
-  React.useEffect(() => {
-    const isValid =
-      activeTab === 'automated'
-        ? automatedForm.formState.isValid
-        : manualForm.formState.isValid;
-
-    activeTab === 'automated'
-      ? setIsAutomatedDataValid(isValid)
-      : setIsManualDataValid(isValid);
-  }, [
-    automatedForm.formState.isValid,
-    manualForm.formState.isValid,
-    activeTab,
-  ]);
-
   const sourceLabelMapper: Record<string, string> = {
     water_level_m: 'DHM Water Level',
     rainfall_mm: 'DHM Rainfall',
@@ -303,6 +374,16 @@ export default function AddTriggerView() {
     // for heatwave
     prob_humidity: 'DHM Humidity',
     temperature_c: 'DHM Temperature',
+  };
+
+  const handleClearForm = () => {
+    clearSaved();
+    if (activeTab === 'automated') {
+      automatedForm.reset();
+    } else {
+      manualForm.reset();
+    }
+    setShowClearDialog(false);
   };
 
   return (
@@ -338,7 +419,12 @@ export default function AddTriggerView() {
         </Alert>
       ) : (
         <ScrollArea className="h-[calc(100vh-210px)] pr-3">
-          <div className="border p-4 mb-4 rounded shadow">
+          <div
+            className="border p-4 mb-4 rounded shadow"
+            onFocus={() => {
+              hasInteracted.current = true;
+            }}
+          >
             <Heading
               title={t('SELECT_TRIGGER_TYPE')}
               titleStyle="text-xl/6 font-semibold"
@@ -396,13 +482,7 @@ export default function AddTriggerView() {
                 type="button"
                 variant="outline"
                 className="w-40 mr-2"
-                onClick={() => {
-                  if (activeTab === 'automated') {
-                    automatedForm.reset();
-                  } else {
-                    manualForm.reset();
-                  }
-                }}
+                onClick={() => setShowClearDialog(true)}
               >
                 {t('CLEAR')}
               </Button>
@@ -429,13 +509,17 @@ export default function AddTriggerView() {
                         {trigger.isMandatory ? t('MANDATORY') : t('OPTIONAL')}
                       </Badge>
                       <Badge className="font-medium">
-                        {translateValue(t, trigger.type, { fallbackStyle: 'raw' })}
+                        {translateValue(t, trigger.type, {
+                          fallbackStyle: 'raw',
+                        })}
                       </Badge>
                     </div>
                     <div className="flex items-center space-x-2">
                       <EditButton
                         className="border-none bg-blue-50"
-                        description={t('THIS_ACTION_WILL_REFILL_FORM_WITH_TRIGGER_DATA')}
+                        description={t(
+                          'THIS_ACTION_WILL_REFILL_FORM_WITH_TRIGGER_DATA',
+                        )}
                         onFallback={() => handleEdit(trigger)}
                       />
                       <DeleteButton
@@ -459,8 +543,9 @@ export default function AddTriggerView() {
                     {trigger?.triggerStatement?.source && (
                       <>
                         {SEP}
-                        {sourceLabelMapper[trigger.triggerStatement.source] || ''} (
-                        {trigger.triggerStatement.expression})
+                        {sourceLabelMapper[trigger.triggerStatement.source] ||
+                          ''}{' '}
+                        ({trigger.triggerStatement.expression})
                       </>
                     )}
 
@@ -481,6 +566,27 @@ export default function AddTriggerView() {
           </div>
         </ScrollArea>
       )}
+
+      <UnsavedChangesDialog
+        open={showDialog}
+        onConfirm={handleConfirmLeave}
+        onCancel={handleCancelLeave}
+        onDiscard={handleDiscardLeave}
+        title={tg('UNSAVED_TITLE')}
+        description={tg('UNSAVED_ALERT_DESCRIPTION')}
+        cancelText={tg('CANCEL_TEXT')}
+        discardText={tg('DISCARD_TEXT')}
+        confirmText={tg('CONFIRM_TEXT')}
+      />
+
+      <ConfirmationDialog
+        isConfirmationDialogOpen={showClearDialog}
+        onCancel={() => setShowClearDialog(false)}
+        onConfirm={handleClearForm}
+        dialogTitle={tg('CLEAR_FORM')}
+        dialogMessage={tg('FORM_CLEAR_ALERT')}
+        confirmLabel={tg('CLEAR_ALL')}
+      />
     </div>
   );
 }

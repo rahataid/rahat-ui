@@ -45,7 +45,9 @@ export function DetailRow({
   return (
     <div className="flex flex-col gap-0.5 py-2.5 border-b last:border-b-0">
       <span className="text-xs text-muted-foreground">{label}</span>
-      <span className={`text-sm font-medium ${mono ? 'font-mono break-all' : ''}`}>
+      <span
+        className={`min-w-0 break-words text-sm font-medium [overflow-wrap:anywhere] ${mono ? 'font-mono break-all' : ''}`}
+      >
         {value || '—'}
       </span>
     </div>

@@ -50,6 +50,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/form';
 
 import DropdownSearch from 'apps/rahat-ui/src/common/search.dropdown';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import { ClientSidePagination, SearchInput } from 'apps/rahat-ui/src/common';
 import BeneficiariesGroupTable from 'apps/rahat-ui/src/sections/projects/aa-2/payout/initiatePayout/beneficiariesGroupTable';
 import { PayoutSkeleton } from 'apps/rahat-ui/src/sections/projects/aa-2/payout/initiatePayout/pauoutSkeleton';
@@ -134,6 +135,12 @@ export default function PayoutFundManagementForm({
     resolver: zodResolver(payoutFundSchema),
   });
   const { setValue, reset, watch, control } = form;
+  const [showClearDialog, setShowClearDialog] = useState(false);
+
+  const handleClearForm = () => {
+    reset(initialFormState);
+    setShowClearDialog(false);
+  };
   const formState = watch();
 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -492,7 +499,7 @@ export default function PayoutFundManagementForm({
                 type="button"
                 variant="outline"
                 className="rounded-sm w-32"
-                onClick={() => reset(initialFormState)}
+                onClick={() => setShowClearDialog(true)}
               >
                 {t('CLEAR')}
               </Button>
@@ -546,6 +553,14 @@ export default function PayoutFundManagementForm({
           )}
         </div>
       </form>
+      <ConfirmationDialog
+        isConfirmationDialogOpen={showClearDialog}
+        onCancel={() => setShowClearDialog(false)}
+        onConfirm={handleClearForm}
+        dialogTitle={t('CLEAR_FORM')}
+        dialogMessage={t('FORM_CLEAR_ALERT')}
+        confirmLabel={t('CLEAR_ALL')}
+      />
     </Form>
   );
 }

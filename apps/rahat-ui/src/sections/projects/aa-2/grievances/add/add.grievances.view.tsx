@@ -46,6 +46,7 @@ import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 import { Back, FormInput, Heading } from 'apps/rahat-ui/src/common';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import { validateFile } from 'apps/rahat-ui/src/utils/file.validation';
 import { isFileNameDuplicate } from 'apps/rahat-ui/src/utils/file.utils';
 import { CloudUpload, FileCheck, LoaderCircle, X } from 'lucide-react';
@@ -68,6 +69,7 @@ export default function AddGrievances() {
   const { id: projectID } = useParams();
   const router = useRouter();
   const [formKey, setFormKey] = React.useState(0);
+  const [showClearDialog, setShowClearDialog] = React.useState(false);
   const forceRerender = () => setFormKey((prev) => prev + 1);
   const grievancesListPath = `/projects/aa/${projectID}/grievances`;
   const addGrievance = useGrievanceAdd();
@@ -221,6 +223,7 @@ export default function AddGrievances() {
     setUnsavedTag('');
     setActiveTagIndex(null);
     forceRerender();
+    setShowClearDialog(false);
   };
 
   const handleFileChange = async (
@@ -695,7 +698,7 @@ export default function AddGrievances() {
                 type="button"
                 variant="outline"
                 className="w-36"
-                onClick={handleResetForm}
+                onClick={() => setShowClearDialog(true)}
               >
                 {t('CLEAR')}
               </Button>
@@ -706,6 +709,14 @@ export default function AddGrievances() {
           </ScrollArea>
         </div>
       </form>
+      <ConfirmationDialog
+        isConfirmationDialogOpen={showClearDialog}
+        onCancel={() => setShowClearDialog(false)}
+        onConfirm={handleResetForm}
+        dialogTitle={t('CLEAR_FORM')}
+        dialogMessage={t('FORM_CLEAR_ALERT')}
+        confirmLabel={t('CLEAR_ALL')}
+      />
     </Form>
   );
 }

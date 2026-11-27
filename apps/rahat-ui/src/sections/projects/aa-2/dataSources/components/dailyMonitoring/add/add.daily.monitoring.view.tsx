@@ -11,6 +11,7 @@ import {
 } from '@rahat-ui/query';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { HeaderWithBack } from 'apps/rahat-ui/src/common';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import { UUID } from 'crypto';
 import { Plus } from 'lucide-react';
 import { useFieldArray, useForm } from 'react-hook-form';
@@ -32,6 +33,7 @@ export default function AddDailyMonitoring() {
   const params = useParams();
   const projectId = params.id as UUID;
   const router = useRouter();
+  const [showClearDialog, setShowClearDialog] = React.useState(false);
 
   const { data: sources } = useSources(projectId, {});
   const { data: projectInfo } = useProjectInfo(projectId);
@@ -389,6 +391,12 @@ export default function AddDailyMonitoring() {
     }
   };
 
+  const handleClearForm = () => {
+    form.reset();
+    // router.push(dailyMonitoringListPath);
+    setShowClearDialog(false);
+  };
+
   React.useEffect(() => {
     if (createDailyMonitoring.isSuccess) {
       form.reset();
@@ -454,10 +462,7 @@ export default function AddDailyMonitoring() {
               type="button"
               variant="secondary"
               className="bg-red-100 text-red-600 w-36"
-              onClick={() => {
-                form.reset();
-                // router.push(dailyMonitoringListPath);
-              }}
+              onClick={() => setShowClearDialog(true)}
             >
               {t('CLEAR')}
             </Button>
@@ -467,6 +472,14 @@ export default function AddDailyMonitoring() {
           </div>
         </form>
       </Form>
+      <ConfirmationDialog
+        isConfirmationDialogOpen={showClearDialog}
+        onCancel={() => setShowClearDialog(false)}
+        onConfirm={handleClearForm}
+        dialogTitle={g('CLEAR_FORM')}
+        dialogMessage={g('FORM_CLEAR_ALERT')}
+        confirmLabel={g('CLEAR_ALL')}
+      />
     </div>
   );
 }

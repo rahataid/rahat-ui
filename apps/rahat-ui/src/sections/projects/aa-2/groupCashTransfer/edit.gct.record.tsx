@@ -29,6 +29,7 @@ import {
   AlertDialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
 import { HeaderWithBack } from 'apps/rahat-ui/src/common';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import { useGetOneGctRecord, useUpdateGctRecord } from '@rahat-ui/query';
 import SpinnerLoader from 'apps/rahat-ui/src/sections/projects/components/spinner.loader';
 import { normalizeNumeralsPreprocessor } from 'apps/rahat-ui/src/utils/i18n/numeral';
@@ -71,6 +72,15 @@ export default function EditGctRecord() {
     resolver: zodResolver(EditGctRecordSchema),
     defaultValues: { title: '', amount: '' },
   });
+  const [showClearDialog, setShowClearDialog] = useState(false);
+
+  const handleClearForm = () => {
+    form.reset({
+      title: record?.title ?? '',
+      amount: String(record?.amount ?? ''),
+    });
+    setShowClearDialog(false);
+  };
 
   useEffect(() => {
     if (!record) return;
@@ -153,7 +163,7 @@ export default function EditGctRecord() {
                 type="button"
                 variant="secondary"
                 className="px-8"
-                onClick={() => form.reset({ title: record?.title ?? '', amount: String(record?.amount ?? '') })}
+                onClick={() => setShowClearDialog(true)}
                 disabled={updateRecord.isPending}
               >
                 {t('CLEAR')}
@@ -203,6 +213,14 @@ export default function EditGctRecord() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <ConfirmationDialog
+        isConfirmationDialogOpen={showClearDialog}
+        onCancel={() => setShowClearDialog(false)}
+        onConfirm={handleClearForm}
+        dialogTitle={tGlobal('CLEAR_FORM')}
+        dialogMessage={tGlobal('FORM_CLEAR_ALERT')}
+        confirmLabel={tGlobal('CLEAR_ALL')}
+      />
     </div>
   );
 }

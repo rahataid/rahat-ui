@@ -21,6 +21,7 @@ import {
   AlertDialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
 import { HeaderWithBack } from 'apps/rahat-ui/src/common';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import { useGetOneGroupCashTransfer, useUpdateGroupCashTransfer } from '@rahat-ui/query';
 import SpinnerLoader from 'apps/rahat-ui/src/sections/projects/components/spinner.loader';
 import { buildGctGroupSchema, GctGroupValues, applyDuplicateErrors } from './types/gct.schemas';
@@ -61,6 +62,12 @@ export default function EditGct() {
       supportArea: [],
     },
   });
+  const [showClearDialog, setShowClearDialog] = useState(false);
+
+  const handleClearForm = () => {
+    form.reset();
+    setShowClearDialog(false);
+  };
 
   useEffect(() => {
     if (!item) return;
@@ -162,7 +169,7 @@ export default function EditGct() {
               type="button"
               variant="secondary"
               className="px-8"
-              onClick={() => form.reset()}
+              onClick={() => setShowClearDialog(true)}
               disabled={updateGct.isPending}
             >
               {t('CLEAR')}
@@ -211,6 +218,14 @@ export default function EditGct() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <ConfirmationDialog
+        isConfirmationDialogOpen={showClearDialog}
+        onCancel={() => setShowClearDialog(false)}
+        onConfirm={handleClearForm}
+        dialogTitle={tGlobal('CLEAR_FORM')}
+        dialogMessage={tGlobal('FORM_CLEAR_ALERT')}
+        confirmLabel={tGlobal('CLEAR_ALL')}
+      />
     </div>
   );
 }

@@ -33,6 +33,7 @@ import { TooltipContent } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 
 export default function InitiateFundTransfer({}: {}) {
   const tv = useTranslations('AA_PROJECT_WITH_CASH_TRACKER');
@@ -45,6 +46,7 @@ export default function InitiateFundTransfer({}: {}) {
     comments: '',
   });
   const [error, setError] = useState('');
+  const [showClearDialog, setShowClearDialog] = useState(false);
 
   const id = useParams().id as UUID;
   const router = useRouter();
@@ -187,6 +189,7 @@ export default function InitiateFundTransfer({}: {}) {
       comments: '',
     });
     setError('');
+    setShowClearDialog(false);
   };
   return (
     <div className="p-6 space-y-6">
@@ -357,7 +360,7 @@ export default function InitiateFundTransfer({}: {}) {
 
         {/* Buttons */}
         <div className="flex justify-end gap-2">
-          <Button type="button" variant="outline" onClick={handleClear}>
+          <Button type="button" variant="outline" onClick={() => setShowClearDialog(true)}>
             {tv('CLEAR_BTN')}
           </Button>
           <Button
@@ -377,6 +380,14 @@ export default function InitiateFundTransfer({}: {}) {
           </Button>
         </div>
       </form>
+      <ConfirmationDialog
+        isConfirmationDialogOpen={showClearDialog}
+        onCancel={() => setShowClearDialog(false)}
+        onConfirm={handleClear}
+        dialogTitle={t('CLEAR_FORM')}
+        dialogMessage={t('FORM_CLEAR_ALERT')}
+        confirmLabel={t('CLEAR_ALL')}
+      />
     </div>
   );
 }

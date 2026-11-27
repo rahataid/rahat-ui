@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Button } from 'libs/shadcn/src/components/ui/button';
@@ -34,6 +34,7 @@ import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 
 const DEFAULT_VALUES: InkindDetailsValues = {
   name: '',
@@ -73,6 +74,12 @@ export default function InkindDetailsForm({
   });
 
   const { control, handleSubmit, reset, watch, setError } = form;
+  const [showClearDialog, setShowClearDialog] = useState(false);
+
+  const handleClearForm = () => {
+    reset(DEFAULT_VALUES);
+    setShowClearDialog(false);
+  };
 
   const nameValue = watch('name');
   const descriptionValue = watch('description');
@@ -213,7 +220,7 @@ export default function InkindDetailsForm({
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => reset(DEFAULT_VALUES)}
+                onClick={() => setShowClearDialog(true)}
                  className="px-10 rounded-sm w-40"
               >
                 {tg('CLEAR')}
@@ -225,6 +232,14 @@ export default function InkindDetailsForm({
           </div>
         </div>
       </form>
+      <ConfirmationDialog
+        isConfirmationDialogOpen={showClearDialog}
+        onCancel={() => setShowClearDialog(false)}
+        onConfirm={handleClearForm}
+        dialogTitle={tglob('CLEAR_FORM')}
+        dialogMessage={tglob('FORM_CLEAR_ALERT')}
+        confirmLabel={tglob('CLEAR_ALL')}
+      />
     </Form>
   );
 }

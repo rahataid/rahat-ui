@@ -36,6 +36,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { Back, FormInput, Heading } from 'apps/rahat-ui/src/common';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import {
   grievancePriority,
   grievanceStatus,
@@ -57,6 +58,7 @@ import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
 
 export default function EditGrievance() {
   const t = useTranslations('AA_PROJECT');
+  const [showResetDialog, setShowResetDialog] = React.useState(false);
 
   // Normalizes Devanagari numerals (०-९) to ASCII before the email/phone
   // check runs, so a phone number typed in Nepali digits validates and
@@ -779,7 +781,7 @@ export default function EditGrievance() {
                   type="button"
                   variant="outline"
                   className="w-36"
-                  onClick={handleResetForm}
+                  onClick={() => setShowResetDialog(true)}
                 >
                   {t('RESET')}
                 </Button>
@@ -797,6 +799,17 @@ export default function EditGrievance() {
           </div>
         </form>
       </Form>
+      <ConfirmationDialog
+        isConfirmationDialogOpen={showResetDialog}
+        onCancel={() => setShowResetDialog(false)}
+        onConfirm={() => {
+          handleResetForm();
+          setShowResetDialog(false);
+        }}
+        dialogTitle={t('RESET_FORM')}
+        dialogMessage={t('RESET_FORM_ALERT')}
+        confirmLabel={t('RESET')}
+      />
     </div>
   );
 }

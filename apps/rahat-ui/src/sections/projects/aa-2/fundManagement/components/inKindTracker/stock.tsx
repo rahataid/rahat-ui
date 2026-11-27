@@ -30,6 +30,7 @@ import { useTranslations } from 'next-intl';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 import { toAsciiDigits } from 'apps/rahat-ui/src/utils/i18n/numeral';
 import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 
 export default function Stock({}: {}) {
   const t = useTranslations('AA_PROJECT');
@@ -39,6 +40,12 @@ export default function Stock({}: {}) {
     currency: 'Hygiene Kits',
   });
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [showClearDialog, setShowClearDialog] = useState(false);
+
+  const handleClearForm = () => {
+    setFormData({ amount: '', currency: 'Hygiene Kits' });
+    setShowClearDialog(false);
+  };
 
   const id = useParams().id as UUID;
   const router = useRouter();
@@ -120,7 +127,11 @@ export default function Stock({}: {}) {
 
         {/* Buttons */}
         <div className="flex justify-end gap-2">
-          <Button type="button" variant="outline">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setShowClearDialog(true)}
+          >
             {t('CLEAR')}
           </Button>
           <Button
@@ -175,6 +186,14 @@ export default function Stock({}: {}) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <ConfirmationDialog
+        isConfirmationDialogOpen={showClearDialog}
+        onCancel={() => setShowClearDialog(false)}
+        onConfirm={handleClearForm}
+        dialogTitle={t('CLEAR_FORM')}
+        dialogMessage={t('FORM_CLEAR_ALERT')}
+        confirmLabel={t('CLEAR_ALL')}
+      />
     </div>
   );
 }

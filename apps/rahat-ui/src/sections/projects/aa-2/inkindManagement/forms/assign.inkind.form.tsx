@@ -44,6 +44,7 @@ import {
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { useLabelDigits } from 'apps/rahat-ui/src/utils/i18n/number';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 
 interface Props {
   onNext: (
@@ -72,6 +73,7 @@ export default function AssignInkindForm({ onNext }: Props) {
   const [vendorOpen, setVendorOpen] = useState(false);
   const [isOffline, setIsOffline] = useState(false);
   const [selectedVendor, setSelectedVendor] = useState<any>(null);
+  const [showClearDialog, setShowClearDialog] = useState(false);
 
   const isOfflineRef = useRef(false);
 
@@ -86,6 +88,13 @@ export default function AssignInkindForm({ onNext }: Props) {
   });
 
   const { control, handleSubmit, watch, setValue } = form;
+
+  const handleClearForm = () => {
+    form.reset();
+    setIsOffline(false);
+    setSelectedVendor(null);
+    setShowClearDialog(false);
+  };
 
   const selectedInkindId = watch('inkindId');
   const selectedGroupId = watch('groupId');
@@ -412,11 +421,7 @@ export default function AssignInkindForm({ onNext }: Props) {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => {
-                  form.reset();
-                  setIsOffline(false);
-                  setSelectedVendor(null);
-                }}
+                onClick={() => setShowClearDialog(true)}
                 className="px-10 rounded-sm w-40"
               >
                 {tg('CLEAR')}
@@ -428,6 +433,14 @@ export default function AssignInkindForm({ onNext }: Props) {
           </div>
         </div>
       </form>
+      <ConfirmationDialog
+        isConfirmationDialogOpen={showClearDialog}
+        onCancel={() => setShowClearDialog(false)}
+        onConfirm={handleClearForm}
+        dialogTitle={tg('CLEAR_FORM')}
+        dialogMessage={tg('FORM_CLEAR_ALERT')}
+        confirmLabel={tg('CLEAR_ALL')}
+      />
     </Form>
   );
 }

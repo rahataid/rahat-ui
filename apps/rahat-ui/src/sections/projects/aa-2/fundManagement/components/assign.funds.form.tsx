@@ -20,6 +20,7 @@ import {
 } from 'libs/shadcn/src/components/ui/form';
 import { Input } from 'libs/shadcn/src/components/ui/input';
 import DropdownSearch from 'apps/rahat-ui/src/common/search.dropdown';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -55,6 +56,7 @@ export default function AssignFundsForm({
 
   const errorModule = useBoolean();
   const [errorData, setErrorData] = useState<any>(null);
+  const [showClearDialog, setShowClearDialog] = useState(false);
 
   const validateTokenAction = useValidateTokenAssignment();
 
@@ -67,6 +69,11 @@ export default function AssignFundsForm({
   });
 
   const { control, handleSubmit, watch, reset, trigger, setValue } = form;
+
+  const handleClearForm = () => {
+    reset(DEFAULT_VALUES);
+    setShowClearDialog(false);
+  };
 
   const benGroups = useBeneficiaryGroups(
     projectId,
@@ -288,7 +295,7 @@ export default function AssignFundsForm({
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => reset(DEFAULT_VALUES)}
+                onClick={() => setShowClearDialog(true)}
                 className="px-10 rounded-sm w-40"
               >
                 {t('CLEAR')}
@@ -315,6 +322,14 @@ export default function AssignFundsForm({
             errorData?.isAssignable === false,
           );
         }}
+      />
+      <ConfirmationDialog
+        isConfirmationDialogOpen={showClearDialog}
+        onCancel={() => setShowClearDialog(false)}
+        onConfirm={handleClearForm}
+        dialogTitle={t('CLEAR_FORM')}
+        dialogMessage={t('FORM_CLEAR_ALERT')}
+        confirmLabel={t('CLEAR_ALL')}
       />
     </Form>
   );

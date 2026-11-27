@@ -651,15 +651,6 @@
     "COMMUNICATION_CREATED_SUCCESS": "Communication created successfully",
     "COMMUNICATION_SCHEDULED_SUCCESS": "Communication scheduled successfully",
     "SEND_NOW": "Send Now",
-    "UNSAVED_TITLE": "Unsaved Changes",
-    "UNSAVED_ALERT_DESCRIPTION": "Are you sure you want to leave? Your entered data will be lost.",
-    "CANCEL_TEXT": "No, stay",
-    "DISCARD_TEXT": "Don't save",
-    "CONFIRM_TEXT": "Yes, leave",
-    "CLEAR_FORM": "Clear Form",
-    "FORM_CLEAR_ALERT": "Are you sure you want to clear the form? All entered data will be reset.",
-    "KEEP_IT": "Keep it",
-    "CLEAR_ALL": "Clear all",
     "PICK_SCHEDULE_TIME": "Pick schedule time"
   },
   "LOGIN": {

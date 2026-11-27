@@ -4,8 +4,12 @@ import { useMemo } from 'react';
 import { TruncatedCell } from '../stakeholders/component/TruncatedCell';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { SystemUserAuth } from '@rahat-ui/auth';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
+import { GlobalCan } from 'apps/rahat-ui/src/components/global-can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 import { Edit } from 'lucide-react';
 
 export const useSiteInfoColumns = () => {
@@ -65,7 +69,7 @@ export const useSiteInfoColumns = () => {
         header: g('ACTIONS'),
         cell: () => (
           <div className="flex items-center space-x-3">
-            <SystemUserAuth hasContent={false}>
+            <GlobalCan action={ACTIONS.UPDATE} subject={SUBJECTS.SETTINGS}>
               <TooltipWrapper tip={t('EDIT_SITE_INFO')}>
                 <button
                   onClick={() => router.push('/site-info/edit')}
@@ -74,7 +78,7 @@ export const useSiteInfoColumns = () => {
                   <Edit size={18} />
                 </button>
               </TooltipWrapper>
-            </SystemUserAuth>
+            </GlobalCan>
           </div>
         ),
       },

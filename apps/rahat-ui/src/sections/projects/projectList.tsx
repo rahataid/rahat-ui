@@ -12,7 +12,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
-import { SystemUserAuth } from '@rahat-ui/auth';
+import { GlobalCan } from 'apps/rahat-ui/src/components/global-can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
 import { Project } from '@rahataid/sdk/project/project.types';
 import { UUID } from 'crypto';
 import {
@@ -139,7 +143,7 @@ export default function ListProject() {
         const project = row.original;
         return (
           <div className="flex items-center space-x-3">
-            <SystemUserAuth hasContent={false}>
+            <GlobalCan action={ACTIONS.UPDATE} subject={SUBJECTS.SETTINGS}>
               <TooltipWrapper tip="Edit Project">
                 <button
                   onClick={() => router.push(`/project-info/${project.uuid}`)}
@@ -148,27 +152,29 @@ export default function ListProject() {
                   <Pencil size={18} />
                 </button>
               </TooltipWrapper>
-            </SystemUserAuth>
+            </GlobalCan>
 
-            <TooltipWrapper
-              tip={
-                project.status === 'CLOSED'
-                  ? 'Project is Closed'
-                  : 'Close Project'
-              }
-            >
-              <button
-                onClick={() => setSelectedProject(project)}
-                className=" cursor-pointer disabled:cursor-not-allowed disabled:text-gray-400"
-                disabled={project.status === 'CLOSED'}
+            <GlobalCan action={ACTIONS.UPDATE} subject={SUBJECTS.SETTINGS}>
+              <TooltipWrapper
+                tip={
+                  project.status === 'CLOSED'
+                    ? 'Project is Closed'
+                    : 'Close Project'
+                }
               >
-                {project.status === 'CLOSED' ? (
-                  <LockKeyhole />
-                ) : (
-                  <LockKeyholeOpen />
-                )}
-              </button>
-            </TooltipWrapper>
+                <button
+                  onClick={() => setSelectedProject(project)}
+                  className=" cursor-pointer disabled:cursor-not-allowed disabled:text-gray-400"
+                  disabled={project.status === 'CLOSED'}
+                >
+                  {project.status === 'CLOSED' ? (
+                    <LockKeyhole />
+                  ) : (
+                    <LockKeyholeOpen />
+                  )}
+                </button>
+              </TooltipWrapper>
+            </GlobalCan>
           </div>
         );
       },

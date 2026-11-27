@@ -8,6 +8,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/resizable';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Tabs } from '@rahat-ui/shadcn/src/components/ui/tabs';
+import { useUserGlobalAbilities } from 'apps/rahat-ui/src/hooks/useUserGlobalAbilities';
 import { FC } from 'react';
 import { NavItem } from './nav-items.types';
 import SettingFieldDefinitionNavView from './settingfieldDefinition.nav.view';
@@ -21,6 +22,17 @@ const SettingFieldDefinitionLayout: FC<SettingFieldDefinitionLayoutProps> = ({
   children,
   menuItems,
 }) => {
+  const { ability, isLoading } = useUserGlobalAbilities();
+
+  const canSeeItem = (item: NavItem) =>
+    !item.action || !item.subject || ability.can(item.action, item.subject);
+
+  const hasVisibleItems = menuItems.some((group) =>
+    group.children?.some(
+      (child) => canSeeItem(child) || child.children?.some(canSeeItem),
+    ),
+  );
+
   const renderResizablePanel = (children: React.ReactNode, index?: number) => {
     return (
       <ResizablePanel key={index}>
@@ -46,6 +58,21 @@ const SettingFieldDefinitionLayout: FC<SettingFieldDefinitionLayoutProps> = ({
       </>
     );
   };
+
+  if (!isLoading && !hasVisibleItems) {
+    return (
+      <div>
+        <Tabs defaultValue="grid">
+          <ResizablePanelGroup
+            direction="horizontal"
+            className="h-[calc(100vh-66px)] border"
+          >
+            {renderResizablePanel(children)}
+          </ResizablePanelGroup>
+        </Tabs>
+      </div>
+    );
+  }
 
   return (
     <div>

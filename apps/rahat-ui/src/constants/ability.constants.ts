@@ -27,4 +27,5 @@ export const SUBJECTS = {
   COMMUNICATION_LOG: 'Communication Log',
   GRIEVANCE: 'Grievance',
   GROUP_CASH_TRANSFER: 'Group Cash Transfer',
+  SETTINGS: 'settings',
 };

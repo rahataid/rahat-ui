@@ -13,7 +13,8 @@ import {
   FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { FormInput } from 'apps/rahat-ui/src/common/form-fields';
+import { cn } from '@rahat-ui/shadcn/src';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { isValidPhoneNumber } from 'react-phone-number-input';
@@ -98,9 +99,13 @@ export default function EditUserProfile() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>{g('NAME')}</FormLabel>
+                      <FormLabel required>{g('NAME')}</FormLabel>
                       <FormControl>
-                        <Input type="text" placeholder={g('NAME')} {...field} />
+                        <FormInput
+                          type="text"
+                          placeholder={g('NAME')}
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -111,13 +116,17 @@ export default function EditUserProfile() {
               <FormField
                 control={form.control}
                 name="phone"
-                render={({ field }) => {
+                render={({ field, fieldState }) => {
                   return (
                     <FormItem>
                       <FormLabel>{g('PHONE')}</FormLabel>
                       <FormControl>
                         <PhoneInput
                           placeholder={g('PHONE')}
+                          className={cn(
+                            fieldState.error &&
+                              '[&_input]:bg-red-50 [&_input]:shadow-[inset_4px_0_0_0_hsl(var(--destructive))]',
+                          )}
                           {...field}
                           {...phoneCountrySelectProps}
                         />
@@ -133,9 +142,13 @@ export default function EditUserProfile() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>{g('EMAIL')}</FormLabel>
+                      <FormLabel required>{g('EMAIL')}</FormLabel>
                       <FormControl>
-                        <Input disabled placeholder={g('EMAIL')} {...field} />
+                        <FormInput
+                          disabled
+                          placeholder={g('EMAIL')}
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -152,7 +165,7 @@ export default function EditUserProfile() {
                       <FormControl>
                         <div className="relative w-full">
                           <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                          <Input
+                          <FormInput
                             disabled={userInfo?.wallet ? true : false}
                             type="text"
                             placeholder={g('WALLET_ADDRESS')}

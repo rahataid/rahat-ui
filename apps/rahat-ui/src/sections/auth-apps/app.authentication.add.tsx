@@ -2,8 +2,13 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCreateAuthApp } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { FormField } from '@rahat-ui/shadcn/src/components/ui/form';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+} from '@rahat-ui/shadcn/src/components/ui/form';
+import { FormInput } from 'apps/rahat-ui/src/common/form-fields';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { useForm } from 'react-hook-form';
 import { isAddress } from 'viem';
@@ -28,12 +33,7 @@ export default function AddAppAuthentication() {
     description: z.string().optional(),
   });
 
-  const {
-    handleSubmit,
-    control,
-    formState: { errors },
-    reset,
-  } = useForm<z.infer<typeof FormSchema>>({
+  const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: '',
@@ -41,6 +41,12 @@ export default function AddAppAuthentication() {
       description: '',
     },
   });
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+    reset,
+  } = form;
 
   const handleAddAppAuthentication = async (
     data: z.infer<typeof FormSchema>,
@@ -50,83 +56,85 @@ export default function AddAppAuthentication() {
   };
 
   return (
-    <form onSubmit={handleSubmit(handleAddAppAuthentication)}>
-      <div className="p-4 h-add rounded border bg-white">
-        <h1 className="text-lg font-semibold mb-6">{t('ADD_NEW')}</h1>
-        <div className="shadow-md p-4 rounded-sm">
-          <div className="grid grid-cols-2 gap-5 mb-4">
-            <FormField
-              control={control}
-              name="name"
-              render={({ field }) => (
-                <div className="col-span-1">
-                  <Label>{tg('NAME')}</Label>
-                  <Input
-                    type="text"
-                    placeholder={t('ENTER_APP_NAME')}
-                    className=" mt-4 "
-                    {...field}
-                  />
+    <Form {...form}>
+      <form onSubmit={handleSubmit(handleAddAppAuthentication)}>
+        <div className="p-4 h-add rounded border bg-white">
+          <h1 className="text-lg font-semibold mb-6">{t('ADD_NEW')}</h1>
+          <div className="shadow-md p-4 rounded-sm">
+            <div className="grid grid-cols-2 gap-5 mb-4">
+              <FormField
+                control={control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem className="col-span-1 space-y-0">
+                    <FormLabel required>{tg('NAME')}</FormLabel>
+                    <FormInput
+                      type="text"
+                      placeholder={t('ENTER_APP_NAME')}
+                      className=" mt-4 "
+                      {...field}
+                    />
 
-                  {errors.name && (
-                    <Label className="text-red-500">
-                      {errors.name.message}
-                    </Label>
-                  )}
-                </div>
-              )}
-            />
+                    {errors.name && (
+                      <Label className="text-red-500">
+                        {errors.name.message}
+                      </Label>
+                    )}
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={control}
-              name="address"
-              render={({ field }) => (
-                <div className="col-span-1">
-                  <Label>{tg('ADDRESS')}</Label>
-                  <Input
-                    type="text"
-                    placeholder={t('ENTER_APP_ADDRESS')}
-                    className=" mt-4 "
-                    {...field}
-                  />
+              <FormField
+                control={control}
+                name="address"
+                render={({ field }) => (
+                  <FormItem className="col-span-1 space-y-0">
+                    <FormLabel required>{tg('ADDRESS')}</FormLabel>
+                    <FormInput
+                      type="text"
+                      placeholder={t('ENTER_APP_ADDRESS')}
+                      className=" mt-4 "
+                      {...field}
+                    />
 
-                  {errors.address && (
-                    <Label className="text-red-500">
-                      {errors.address.message}
-                    </Label>
-                  )}
-                </div>
-              )}
-            />
+                    {errors.address && (
+                      <Label className="text-red-500">
+                        {errors.address.message}
+                      </Label>
+                    )}
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={control}
-              name="description"
-              render={({ field }) => (
-                <div className="col-span-1">
-                  <Label>{tg('DESCRIPTION')}</Label>
-                  <Input
-                    type="text"
-                    placeholder={t('SHORT_DESCRIPTION_ABOUT_APP')}
-                    className=" mt-4 "
-                    {...field}
-                  />
+              <FormField
+                control={control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem className="col-span-1 space-y-0">
+                    <FormLabel>{tg('DESCRIPTION')}</FormLabel>
+                    <FormInput
+                      type="text"
+                      placeholder={t('SHORT_DESCRIPTION_ABOUT_APP')}
+                      className=" mt-4 "
+                      {...field}
+                    />
 
-                  {errors.description && (
-                    <Label className="text-red-500">
-                      {errors.description.message}
-                    </Label>
-                  )}
-                </div>
-              )}
-            />
-          </div>
+                    {errors.description && (
+                      <Label className="text-red-500">
+                        {errors.description.message}
+                      </Label>
+                    )}
+                  </FormItem>
+                )}
+              />
+            </div>
 
-          <div className="flex justify-end">
-            <Button type="submit">{tg('SAVE')}</Button>
+            <div className="flex justify-end">
+              <Button type="submit">{tg('SAVE')}</Button>
+            </div>
           </div>
         </div>
-      </div>
-    </form>
+      </form>
+    </Form>
   );
 }

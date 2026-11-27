@@ -12,7 +12,8 @@ import {
   Trash2,
   XCircle,
 } from 'lucide-react';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { Can } from 'apps/rahat-ui/src/components/can';
+import { ACTIONS, SUBJECTS } from 'apps/rahat-ui/src/constants/ability.constants';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import {
@@ -231,11 +232,8 @@ export default function GctDetail() {
           )}
         </div>
 
-        <RoleAuth
-          roles={[AARoles.ADMIN, AARoles.Municipality]}
-          hasContent={false}
-        >
-          <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2">
+          <Can action={ACTIONS.UPDATE} subject={SUBJECTS.GROUP_CASH_TRANSFER}>
             <Button
               variant="outline"
               size="sm"
@@ -249,6 +247,8 @@ export default function GctDetail() {
               <Pencil size={14} />
               {tGlobal('EDIT')}
             </Button>
+          </Can>
+          <Can action={ACTIONS.DELETE} subject={SUBJECTS.GROUP_CASH_TRANSFER}>
             <Button
               variant="outline"
               size="sm"
@@ -259,8 +259,8 @@ export default function GctDetail() {
               <Trash2 size={14} />
               {tGlobal('DELETE')}
             </Button>
-          </div>
-        </RoleAuth>
+          </Can>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

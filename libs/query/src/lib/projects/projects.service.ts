@@ -23,6 +23,7 @@ import { resolveBackendErrorMessage } from '../../utils/i18n/backend-error';
 import { useProjectSettingsStore, useProjectStore } from './project.store';
 import { toast } from 'react-toastify';
 import { showToast } from '../../utils/custom-toast';
+import { resolveWalletAddress } from '../../utils/resolve-wallet-address';
 
 const createProject = async (payload: CreateProjectPayload) => {
   const res = await api.post('/projects', payload);
@@ -613,6 +614,9 @@ type GetProjectBeneficiaries = Pagination & {
 export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
   const q = useProjectAction<Beneficiary[]>();
   const { projectUUID, ...restPayload } = payload;
+  const chainType = useProjectSettingsStore(
+    (s) => s.settings?.[projectUUID]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS]?.type,
+  );
 
   const restPayloadString = JSON.stringify(restPayload);
 
@@ -645,7 +649,10 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
           ? query.data.data.map((row: any) => ({
               ...row,
               uuid: row?.uuid?.toString(),
-              walletAddress: row?.walletAddress?.toString(),
+              walletAddress: resolveWalletAddress(
+                row,
+                chainType as string | undefined,
+              )?.toString(),
               voucherClaimStatus: row?.claimStatus,
               name: row?.piiData?.name || '',
               email: row?.piiData?.email || '',
@@ -659,7 +666,7 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
             }))
           : [],
       };
-    }, [query.data]),
+    }, [query.data, chainType]),
   };
 };
 

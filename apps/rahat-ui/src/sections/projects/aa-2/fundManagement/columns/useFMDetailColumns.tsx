@@ -4,6 +4,11 @@ import { Eye } from 'lucide-react';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { useParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import {
+  PROJECT_SETTINGS_KEYS,
+  resolveWalletAddress,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
 import { useNumberFormat } from 'apps/rahat-ui/src/utils/i18n/number';
 
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
@@ -15,6 +20,11 @@ export const useFMDetailTableColumns = (tokensPerBeneficiary?: number) => {
   const tg = useTranslations('GLOBAL');
   const t = useTranslations('AA_PROJECT');
   const formatNum = useNumberFormat();
+  const { settings } = useProjectSettingsStore((s) => ({
+    settings: s.settings,
+  }));
+  const projectChainType =
+    settings?.[id as string]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS]?.type;
   const handleViewClick = (fmId: string) => {
     console.log('benefwallet', fmId);
     router.push(`/projects/aa/${id}/beneficiary/${fmId}?fundId=${fundId}`);
@@ -23,19 +33,23 @@ export const useFMDetailTableColumns = (tokensPerBeneficiary?: number) => {
     {
       accessorKey: 'walletAddress',
       header: tg('WALLET_ADDRESS'),
-      accessorFn: (row) => row.Beneficiary?.walletAddress ?? 'N/A',
-      cell: ({ row }) => (
-        <div className="flex items-center gap-2">
-          <TruncatedCell
-            text={row.original?.Beneficiary?.walletAddress}
-            maxLength={15}
-          />
-          <CopyTooltip
-            value={row.original?.Beneficiary?.walletAddress}
-            uniqueKey={row.original?.uuid}
-          />
-        </div>
-      ),
+      accessorFn: (row) =>
+        resolveWalletAddress(row.Beneficiary, projectChainType) ?? 'N/A',
+      cell: ({ row }) => {
+        const walletAddress = resolveWalletAddress(
+          row.original?.Beneficiary,
+          projectChainType,
+        );
+        return (
+          <div className="flex items-center gap-2">
+            <TruncatedCell text={walletAddress} maxLength={15} />
+            <CopyTooltip
+              value={walletAddress}
+              uniqueKey={row.original?.uuid}
+            />
+          </div>
+        );
+      },
     },
     {
       accessorKey: 'tokensAssigned',

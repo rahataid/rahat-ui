@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { UseFormReturn } from 'react-hook-form';
 import { Tag, TagInput } from 'emblor';
+import { cn } from '@rahat-ui/shadcn/src';
 import {
   FormControl,
   FormField,
@@ -33,8 +34,10 @@ export default function ManualSourcesInput({ form, className }: IProps) {
     <FormField
       control={form.control}
       name="manualSources"
-      render={({ field }) => {
+      render={({ field, fieldState }) => {
         const values: string[] = field.value || [];
+        const isFilled = values.length > 0;
+        const hasError = !!fieldState?.error;
 
         const addDraft = () => {
           const text = draft.trim();
@@ -44,6 +47,13 @@ export default function ManualSourcesInput({ form, className }: IProps) {
           if (text && !isDuplicate) field.onChange([...values, text]);
           setDraft('');
         };
+
+        const inlineContainerClasses = cn(
+          TAG_STYLE.inlineTagsContainer,
+          isFilled && !hasError && 'shadow-[inset_4px_0_0_0_hsl(var(--primary))] bg-blue-50',
+          hasError &&
+            'shadow-[inset_4px_0_0_0_hsl(var(--destructive))] bg-red-50 border-destructive focus-within:ring-destructive',
+        );
 
         return (
           <FormItem className={className}>
@@ -58,7 +68,10 @@ export default function ManualSourcesInput({ form, className }: IProps) {
                 }}
                 placeholder={t('MANUAL_SOURCES_PLACEHOLDER')}
                 className="min-h-[23px]"
-                styleClasses={TAG_STYLE}
+                styleClasses={{
+                  ...TAG_STYLE,
+                  inlineTagsContainer: inlineContainerClasses,
+                }}
                 activeTagIndex={activeTagIndex}
                 setActiveTagIndex={setActiveTagIndex}
                 inputProps={{

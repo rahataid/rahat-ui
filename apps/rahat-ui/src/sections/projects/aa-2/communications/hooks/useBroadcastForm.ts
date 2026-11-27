@@ -13,6 +13,9 @@ const defaultBroadcastValues: BroadcastFormValues = {
   beneficiaries: [],
   stakeholders: [],
   audioFile: undefined,
+  isScheduled: false,
+  scheduleDate: undefined,
+  scheduleTime: '',
 };
 
 export const useBroadcastForm = (

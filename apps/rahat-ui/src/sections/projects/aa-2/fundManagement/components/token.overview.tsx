@@ -31,7 +31,12 @@ import { useTranslations } from 'next-intl';
 import { useChartNumberOptions } from 'apps/rahat-ui/src/utils/i18n/number';
 import { translateValue } from 'apps/rahat-ui/src/utils/i18n/translateValue';
 import { Can } from 'apps/rahat-ui/src/components/can';
-import { ACTIONS, SUBJECTS } from 'apps/rahat-ui/src/constants/ability.constants';
+import type { ApexOptions } from 'apexcharts';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
+import { buildDashboardPieChartOptions } from '../../../../dashboard/component/pieChartOptions';
 
 export default function TokensOverview() {
   const t = useTranslations('AA_PROJECT');
@@ -66,10 +71,13 @@ export default function TokensOverview() {
   const { formatNum, chartOptions } = useChartNumberOptions();
 
   const getNameKey = (name: string) =>
-    name === 'Token Price' ? 'TOKEN_PRICE' :
-    name === 'Average Disbursement time' ? 'AVERAGE_DISBURSEMENT_TIME' :
-    name === 'Average Duration' ? 'AVERAGE_DURATION' :
-    name.toUpperCase().replace(/[\s-]+/g, '_');
+    name === 'Token Price'
+      ? 'TOKEN_PRICE'
+      : name === 'Average Disbursement time'
+      ? 'AVERAGE_DISBURSEMENT_TIME'
+      : name === 'Average Duration'
+      ? 'AVERAGE_DURATION'
+      : name.toUpperCase().replace(/[\s-]+/g, '_');
 
   // Stat names come from the backend, so a newly added stat may not have a
   // translation key yet. t() throws on a missing key and would crash the page,
@@ -111,6 +119,31 @@ export default function TokensOverview() {
       { label: t('NOT_DISBURSED'), value: notDisbursedValue },
     ];
   };
+  const tokenStatusData = tokenStatus();
+  const tokenStatusTotal = tokenStatusData.reduce(
+    (total, item) => total + Number(item.value || 0),
+    0,
+  );
+  console.log('tokenStatusData', tokenStatusData);
+  console.log('tokenStatusTotal', tokenStatusTotal);
+  const baseTokenStatusOptions = buildDashboardPieChartOptions(
+    chartOptions,
+    formatNum,
+    tg('TOTAL') || 'TOTAL',
+    tokenStatusTotal,
+  );
+  const tokenStatusOptions: ApexOptions = {
+    ...baseTokenStatusOptions,
+    legend: {
+      ...baseTokenStatusOptions.legend,
+      position: 'bottom',
+      horizontalAlign: 'center',
+      formatter: (seriesName, options) =>
+        `${seriesName}: ${formatNum(
+          tokenStatusData[options.seriesIndex]?.value ?? 0,
+        )}`,
+    },
+  };
   const handleDateChange = (range: any) => {
     if (range?.from && range?.to) {
       setStartDate(range.from.toISOString());
@@ -132,9 +165,7 @@ export default function TokensOverview() {
           description={t('OVERVIEW_OF_YOUR_TOKENS')}
         />
         <div className="flex gap-2 items-center">
-          <TooltipWrapper
-            tip={hasData ? '' : tg('NO_TOKEN_DATA_TO_EXPORT')}
-          >
+          <TooltipWrapper tip={hasData ? '' : tg('NO_TOKEN_DATA_TO_EXPORT')}>
             <Can action={ACTIONS.READ} subject={SUBJECTS.FUND_MANAGEMENT}>
               <IconLabelBtn
                 Icon={CloudDownloadIcon}
@@ -241,11 +272,11 @@ export default function TokensOverview() {
                   smallNumber={formatStatValue(item.value)}
                   infoIcon={!!infoTooltip}
                   infoTooltip={infoTooltip}
-                    subtitle={
-                      item.name === 'Average Duration'
-                        ? t('ACTIVATION_TRIGGER_TO_SUCCESSFUL_DISBURSEMENT')
-                        : ' '
-                    }
+                  subtitle={
+                    item.name === 'Average Duration'
+                      ? t('ACTIVATION_TRIGGER_TO_SUCCESSFUL_DISBURSEMENT')
+                      : ' '
+                  }
                 />
               );
             })}
@@ -264,11 +295,11 @@ export default function TokensOverview() {
                   smallNumber={formatStatValue(item.value)}
                   infoIcon={!!infoTooltip}
                   infoTooltip={infoTooltip}
-                    subtitle={
-                      item.name === 'Average Duration'
-                        ? t('ACTIVATION_TRIGGER_TO_SUCCESSFUL_DISBURSEMENT')
-                        : ' '
-                    }
+                  subtitle={
+                    item.name === 'Average Duration'
+                      ? t('ACTIVATION_TRIGGER_TO_SUCCESSFUL_DISBURSEMENT')
+                      : ' '
+                  }
                 />
               );
             })}
@@ -282,32 +313,9 @@ export default function TokensOverview() {
           <h1 className="text-lg font-medium mb-4">{t('TOKEN_STATUS')}</h1>
           <div className="w-full aspect-video">
             <DynamicPieChart
-              pieData={tokenStatus()}
+              pieData={tokenStatusData}
               colors={['#2A9D90', '#E53935', '#BDBDBD']}
-              options={{
-                tooltip: chartOptions.tooltip,
-                plotOptions: {
-                  pie: {
-                    donut: {
-                      labels: {
-                        value: {
-                          formatter: (val: number | string) => formatNum(val),
-                        },
-                        total: {
-                          label: t('TOTAL'),
-                          formatter: (w: any) =>
-                            formatNum(
-                              w.globals.seriesTotals.reduce(
-                                (a: number, b: number) => a + b,
-                                0,
-                              ),
-                            ),
-                        },
-                      },
-                    },
-                  },
-                },
-              }}
+              options={tokenStatusOptions}
             />
           </div>
         </div>

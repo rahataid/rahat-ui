@@ -1,13 +1,31 @@
 import React, { memo } from 'react';
 import { useTranslations } from 'next-intl';
+import dynamic from 'next/dynamic';
 
-import Map, { MapRef, Marker, NavigationControl, Popup } from 'react-map-gl';
+import type { MapRef } from 'react-map-gl';
 import { mapboxBasicConfig } from 'apps/rahat-ui/src/constants/config';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { StyledMapWrapper } from '@rahat-ui/shadcn/src/components/maps';
 import styled from '@emotion/styled';
 import { Link2, MapPin } from 'lucide-react';
 import { Heading } from 'apps/rahat-ui/src/common';
+
+const Map = dynamic(() => import('react-map-gl'), {
+  ssr: false,
+  loading: () => <p>Loading map...</p>,
+});
+const Marker = dynamic(
+  () => import('react-map-gl').then((module) => module.Marker),
+  { ssr: false },
+);
+const NavigationControl = dynamic(
+  () => import('react-map-gl').then((module) => module.NavigationControl),
+  { ssr: false },
+);
+const Popup = dynamic(
+  () => import('react-map-gl').then((module) => module.Popup),
+  { ssr: false },
+);
 
 const DEFAULT_LAT = 28.3949;
 const DEFAULT_LNG = 84.124;

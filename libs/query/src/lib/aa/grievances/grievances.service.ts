@@ -7,7 +7,8 @@ import {
 import { useProjectAction } from '../../projects';
 import { useEffect } from 'react';
 import { useAAGrievancesStore } from './store';
-import { toast } from 'sonner';
+import { toast } from 'react-toastify';
+
 import { UUID } from 'crypto';
 import { useTranslations } from 'next-intl';
 import { resolveBackendErrorMessage } from '../../../utils/i18n/backend-error';

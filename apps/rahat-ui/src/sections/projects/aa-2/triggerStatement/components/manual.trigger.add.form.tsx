@@ -10,13 +10,16 @@ import {
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
+import {
+  FormInput,
+  FormTextarea,
+  FormSelectTrigger,
+} from 'apps/rahat-ui/src/common';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 import {
   Select,
   SelectContent,
   SelectItem,
-  SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { DurationData } from '../../activities/add/add.activity.view';
@@ -94,7 +97,7 @@ export default function AddManualTriggerForm({
                   <FormItem className="w-full">
                     <FormLabel>{t('TRIGGER_TITLE')}</FormLabel>
                     <FormControl>
-                      <Input
+                      <FormInput
                         type="text"
                         placeholder={t('ENTER_TRIGGER_TITLE')}
                         {...field}
@@ -119,7 +122,7 @@ export default function AddManualTriggerForm({
                     <FormItem className="w-full">
                       <FormLabel>{tg('LEAD_TIME')}</FormLabel>
                       <div className="grid grid-cols-4">
-                        <Input
+                        <FormInput
                           type="text"
                           placeholder={tg('ENTER_LEAD_TIME')}
                           className="col-span-3 rounded-r-none"
@@ -137,9 +140,9 @@ export default function AddManualTriggerForm({
                           }}
                         >
                           <FormControl>
-                            <SelectTrigger className="rounded-l-none">
+                            <FormSelectTrigger className="rounded-l-none" value={unit}>
                               <SelectValue />
-                            </SelectTrigger>
+                            </FormSelectTrigger>
                           </FormControl>
                           <SelectContent>
                             {DurationData.map((item) => (
@@ -166,7 +169,7 @@ export default function AddManualTriggerForm({
                   <FormItem className="col-span-2">
                     <FormLabel>{t('TRIGGER_DESCRIPTION')}</FormLabel>
                     <FormControl>
-                      <Textarea
+                      <FormTextarea
                         placeholder={t('WRITE_TRIGGER_DESCRIPTION_HERE')}
                         {...field}
                       />

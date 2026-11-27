@@ -26,7 +26,7 @@ export default function TooltipWrapper({
         <TooltipTrigger asChild>
           <div>{children}</div>
         </TooltipTrigger>
-        <TooltipContent className="bg-secondary" side="top">
+        <TooltipContent className="bg-secondary max-w-[min(24rem,calc(100vw-2rem))] [overflow-wrap:anywhere]" side="top">
           <p className="text-xs font-medium">{tip}</p>
         </TooltipContent>
       </Tooltip>

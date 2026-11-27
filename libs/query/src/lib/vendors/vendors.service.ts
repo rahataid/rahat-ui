@@ -9,13 +9,15 @@ import {
 import { useRSQuery } from '@rumsan/react-query';
 import { getVendorClient } from '@rahataid/sdk/clients';
 import { useVendorStore } from './vendors.store';
-import { TAGS } from '../../config';
+import { PROJECT_SETTINGS_KEYS, TAGS } from '../../config';
 import { useEffect } from 'react';
 import { api } from '../../utils/api';
 import { UUID } from 'crypto';
 import { useSwal } from '../../swal';
 import { useTranslations } from 'next-intl';
 import { resolveBackendErrorMessage } from '../../utils/i18n/backend-error';
+import { resolveWalletAddress } from '../../utils/resolve-wallet-address';
+import { useProjectSettingsStore } from '../projects/project.store';
 
 export const useVendorList = (
   payload: any,
@@ -86,30 +88,52 @@ const getVendor = async (uuid: UUID) => {
   return response?.data;
 };
 
-export const useGetVendor = (uuid: UUID): UseQueryResult<any, Error> => {
+export const useGetVendor = (
+  uuid: UUID,
+  projectUUID?: UUID,
+): UseQueryResult<any, Error> => {
   const { queryClient } = useRSQuery();
+  const projectChainType = useProjectSettingsStore((s) =>
+    projectUUID
+      ? s.settings?.[projectUUID]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS]?.type
+      : undefined,
+  );
   return useQuery(
     {
-      queryKey: [TAGS.GET_VENDOR_DETAILS, uuid],
+      queryKey: [TAGS.GET_VENDOR_DETAILS, uuid, projectUUID],
       // @ts-ignore
       queryFn: () => getVendor(uuid),
       // Backend returns either the user object (unassigned vendor) or an
       // array of project-link rows (assigned vendor). Normalize to one shape
-      // so all readers see consistent fields.
+      // so all readers see consistent fields. When a project is supplied,
+      // select that project's row so chain-specific data is not taken from
+      // an unrelated project.
       select: (res: any) => {
         const payload = res?.data ?? res;
-        if (Array.isArray(payload)) {
-          const first = payload[0] as any;
-          return {
-            ...(res ?? {}),
-            data: {
-              ...(first?.User ?? {}),
-              projects: payload.map((row: any) => row?.Project).filter(Boolean),
-              vendorIdentifier: first?.extras,
-            },
-          };
-        }
-        return res;
+        if (!Array.isArray(payload)) return res;
+        const row = (projectUUID
+          ? payload.find((item: any) => item?.projectId === projectUUID)
+          : undefined) ?? payload[0];
+        const user = row?.User ?? {};
+        return {
+          ...res,
+          data: {
+            ...user,
+            projects: payload.map((item: any) => item?.Project).filter(Boolean),
+            vendorIdentifier: row?.extras,
+            // The API attaches walletAddressDetails to only one project row.
+            // Collect them all and let the shared resolver pick this chain.
+            walletAddress: resolveWalletAddress(
+              {
+                ...user,
+                walletAddressDetails: payload.flatMap(
+                  (item: any) => item?.walletAddressDetails ?? [],
+                ),
+              },
+              projectChainType ?? row?.Project?.chainType,
+            ),
+          },
+        };
       },
     },
     queryClient,

@@ -10,6 +10,7 @@ import { IVendor } from './vendors.list.table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import TooltipComponent from '../../components/tooltip';
 import { useState } from 'react';
+import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import { GlobalCan } from 'apps/rahat-ui/src/components/global-can';
 import {
   ACTIONS,
@@ -73,6 +74,29 @@ export const useTableColumns = (handleAssignClick: any) => {
   };
 
   const columns: ColumnDef<IVendor>[] = [
+    {
+      id: 'select',
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && 'indeterminate')
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all vendors"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          disabled={!row.getCanSelect()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select vendor"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
     {
       accessorKey: 'name',
       header: g('NAME'),

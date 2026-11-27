@@ -15,6 +15,7 @@ import {
   useVendorList,
   usePagination,
   useAssignVendorToProject,
+  useBulkAssignVendorToProjects,
 } from '@rahat-ui/query';
 import { GenderStats } from 'apps/rahat-ui/src/common';
 import { useBoolean } from '../../hooks/use-boolean';
@@ -27,6 +28,7 @@ import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import { useTranslations } from 'next-intl';
 import { ReusableTabs } from '../../components/reusable-tabs';
 import { BarChart3, List, UsersRound } from 'lucide-react';
+import { RowSelectionState } from '@tanstack/react-table';
 
 function VendorsView() {
   const t = useTranslations('VENDORS_LIST');
@@ -37,6 +39,7 @@ function VendorsView() {
     usePagination();
 
   const projectModal = useBoolean();
+  const bulkAssignModal = useBoolean();
   const [refetch, setRefetch] = React.useState(false);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -70,6 +73,7 @@ function VendorsView() {
   );
 
   const addVendor = useAssignVendorToProject();
+  const bulkAssignVendors = useBulkAssignVendorToProjects();
   const { data: vendorData } = useVendorList(vendorPayload, refetch);
   const { data: vendorStats, isLoading: isVendorStatsLoading } =
     useGetVendorStats();
@@ -100,11 +104,34 @@ function VendorsView() {
 
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
+  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
+  const selectedVendorIds = Object.entries(rowSelection)
+    .filter(([, selected]) => selected)
+    .map(([vendorId]) => vendorId as UUID);
+
+  const handleBulkAssignProject = (projectUUIDs: UUID[]) => {
+    if (selectedVendorIds.length === 0) return;
+
+    bulkAssignVendors.mutate(
+      {
+        projectUUIDs,
+        vendorUUIDs: selectedVendorIds,
+      },
+      {
+        onSuccess: () => {
+          setRowSelection({});
+          bulkAssignModal.onFalse();
+          setRefetch((current) => !current);
+        },
+      },
+    );
+  };
+
   const table = useReactTable({
     data: vendorData?.data || [],
     manualPagination: true,
     columns,
+    getRowId: (row) => row.id,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -135,6 +162,10 @@ function VendorsView() {
             projectModal={projectModal}
             selectedRow={selectedRow}
             total={vendorData?.response?.meta?.total ?? 0}
+            bulkAssignModal={bulkAssignModal}
+            selectedVendorCount={selectedVendorIds.length}
+            handleBulkAssignProject={handleBulkAssignProject}
+            isBulkAssigning={bulkAssignVendors.isPending}
           />
           <CustomPagination
             currentPage={pagination.page}

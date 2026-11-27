@@ -120,6 +120,7 @@ export const useAssignBenToProject = () => {
 
 export const useAssignBenGroupToProject = () => {
   const q = useProjectAction();
+
   const queryClient = useQueryClient();
   const tg = useTranslations('GLOBAL');
 
@@ -261,7 +262,50 @@ export const useAssignVendorToProject = () => {
     },
   });
 };
+export const useBulkAssignVendorToProjects = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const tg = useTranslations('GLOBAL');
+  const tb = useTranslations();
 
+  return useMutation({
+    mutationFn: async ({
+      vendorUUIDs,
+      projectUUIDs,
+    }: {
+      projectUUIDs: UUID[];
+      vendorUUIDs: UUID[];
+      successMessage?: string;
+      errorMessage?: string;
+    }) => {
+      const response = await rumsanService.client.post(`vendors/bulk-assign`, {
+        vendorIds: vendorUUIDs,
+        projectIds: projectUUIDs,
+      });
+      return response.data;
+    },
+    onSuccess: (_data, variables: any) => {
+      toast.success(
+        variables?.successMessage || tg('VENDORS_ASSIGNED_SUCCESSFULLY'),
+      );
+      queryClient.invalidateQueries({ queryKey: [TAGS.GET_VENDORS] });
+    },
+    onError: (error: any, variables: any) => {
+      const rawMessage = error?.response?.data?.message || tg('ERROR');
+      const errorMessage = resolveBackendErrorMessage(
+        tb,
+        error?.response?.data?.code,
+        error?.response?.data?.params,
+        ['VENDORS'],
+        rawMessage,
+      );
+      showToast({
+        type: 'error',
+        title: variables?.errorMessage || tg('ERROR_WHILE_UPDATING_VENDOR'),
+        description: errorMessage,
+      });
+    },
+  });
+};
 export const useProjectSettingsGet = (uuid: UUID, name: string) => {
   const q = useProjectAction(['settings.get', name]);
   return useQuery({

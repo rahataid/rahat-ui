@@ -51,6 +51,12 @@ import {
   VendorStatusFilter,
 } from './vendors.table.filters';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { GlobalCan } from 'apps/rahat-ui/src/components/global-can';
+import {
+  ACTIONS,
+  SUBJECTS,
+} from 'apps/rahat-ui/src/constants/ability.constants';
+import BulkAssignToProjectModal from './bulkAssignToProjectModal';
 
 export type IVendor = {
   id: string;
@@ -81,6 +87,10 @@ type IProps = {
   projectModal: ProjectModalType;
   selectedRow: IVendor | null;
   total: number;
+  bulkAssignModal: { value: boolean; setValue: (value: boolean) => void };
+  selectedVendorCount: number;
+  handleBulkAssignProject: (projectUUIDs: UUID[]) => void;
+  isBulkAssigning: boolean;
 };
 
 export default function VendorsTable({
@@ -91,6 +101,10 @@ export default function VendorsTable({
   projectModal,
   selectedRow,
   total,
+  bulkAssignModal,
+  selectedVendorCount,
+  handleBulkAssignProject,
+  isBulkAssigning,
 }: IProps) {
   const t = useTranslations('VENDORS_LIST');
   const g = useTranslations('GLOBAL');
@@ -156,6 +170,17 @@ export default function VendorsTable({
             table.getColumn('projectName')?.setFilterValue(value)
           }
         />
+        {selectedVendorCount > 0 && (
+          <GlobalCan action={ACTIONS.UPDATE} subject={SUBJECTS.VENDOR}>
+            <Button
+              type="button"
+              onClick={() => bulkAssignModal.setValue(true)}
+              disabled={isBulkAssigning}
+            >
+              {g('ASSIGN_TO_PROJECT')} ({selectedVendorCount})
+            </Button>
+          </GlobalCan>
+        )}
 
         {/* Column Hide and Reveal */}
         <DropdownMenu>
@@ -184,6 +209,13 @@ export default function VendorsTable({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+      <BulkAssignToProjectModal
+        open={bulkAssignModal.value}
+        onOpenChange={bulkAssignModal.setValue}
+        selectedVendorCount={selectedVendorCount}
+        isAssigning={isBulkAssigning}
+        onSubmit={handleBulkAssignProject}
+      />
 
       <VendorFilterTags
         filters={activeFilters}

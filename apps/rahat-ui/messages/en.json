@@ -7,6 +7,8 @@
     "VENDOR_REMOVED_SUCCESSFULLY": "Vendor removed successfully.",
     "ERROR_WHILE_REMOVING_VENDOR": "Error while removing vendor.",
     "VENDOR_ASSIGNED_SUCCESSFULLY": "Vendor Assigned Successfully",
+    "VENDORS_ASSIGNED_SUCCESSFULLY": "Vendors Assigned Successfully",
+
     "BENEFICIARY_GROUP_UPDATED_SUCCESSFULLY": "Beneficiary Group updated successfully.",
     "ERROR_WHILE_UPDATING_BENEFICIARY_GROUP": "Error while updating beneficiary group.",
     "BENEFICIARY_UPDATED_SUCCESSFULLY": "Beneficiary Updated Successfully",
@@ -1376,6 +1378,8 @@
     "SELECT_STATUS": "Select Status",
     "THERE_ARE_NO_VENDORS_TO_DISPLAY": "There are no vendors to display at the moment",
     "SELECT_A_PROJECT_TO_ASSIGN_THE": "Select a project to assign the selected vendor",
+    "SELECT_A_PROJECT_TO_ASSIGN_SELECTED_VENDORS": "Select one or more projects to assign to the {count} selected vendor(s)",
+    "ALREADY_ASSIGNED_VENDORS_WILL_BE_SKIPPED": "Already-assigned vendors will be skipped.",
     "PROJECT": "Project",
     "SELECT_PROJECT_NAME": "Select Project Name",
     "NO_PROJECT_FOUND": "No project found",
@@ -4531,7 +4535,8 @@
       "PROJECT_VENDOR_NOT_FOUND": "Project vendor not found",
       "VENDOR_NOT_FOUND_WITH_ID": "Vendor not found with id: {id}",
       "SETTINGS_ALREADY_SEEDED_API_LOCKED": "Settings already seeded. API is locked.",
-      "PROJECT_CLOSED_ONLY_READ_ACTIONS_ALLOWED": "Project is closed. Only read actions are allowed."
+      "PROJECT_CLOSED_ONLY_READ_ACTIONS_ALLOWED": "Project is closed. Only read actions are allowed.",
+      "NO_NEW_VENDOR_ASSIGNMENTS": "Vendor(s) already assigned to the project. No new vendor assignments."
     },
     "NOTIFICATIONS": {
       "NOTIFICATION_CREATE_FAILED": "Failed to create notification",

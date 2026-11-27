@@ -1,46 +1,199 @@
 [
   {
-    "name": "Interviewer Name",
+    "name": "Consent",
+    "fieldType": "DROPDOWN",
+    "dropdownPopulates": "Yes|No"
+  },
+  {
+    "name": "House Number",
     "fieldType": "TEXT"
+  },
+  {
+    "name": "Province",
+    "fieldType": "DROPDOWN",
+    "dropdownPopulates": "Lumbini|Koshi|Karnali|Sudurpachim"
+  },
+  {
+    "name": "Municipality",
+    "fieldType": "DROPDOWN",
+    "dropdownPopulates": "Barbardiya|Madhuwan|Thakurbaba|Gulariya|Raptisonari|Duduwa|Narainapur"
+  },
+  {
+    "name": "Ward",
+    "fieldType": "DROPDOWN",
+    "dropdownPopulates": "1|2|3|4|5|6|7|8|9|10|11|12|13"
+  },
+  {
+    "name": "Leadership of Household",
+    "fieldType": "DROPDOWN",
+    "dropdownPopulates": "Elderly-led household|Child-led household|Single-woman-led household|Person with disability-led household|Other"
+  },
+  {
+    "name": "Ethnicity of the Household Head",
+    "fieldType": "DROPDOWN",
+    "dropdownPopulates": "Brahmin / Chhetri / Thakuri|Hill Indigenous (Janajati)|Terai Indigenous (Janajati)|Madhesi|Muslim|Hill Dalit|Madhesi Dalit|Yogi (Giri / Puri / Sanyasi / Bharti)|Newar|Tharu|Other"
   },
 
   {
-    "name": "Tole Name",
-    "fieldType": "TEXT"
-  },
-  {
-    "name": "Ward No.",
+    "name": "Government ID Type",
     "fieldType": "DROPDOWN",
-    "dropdownPopulates": "1,2,3,4,5"
+    "dropdownPopulates": "Citizenship|Passport|Driving License|National ID|Voter ID|Other|SSA|Lalpurja"
   },
+
   {
-    "name": "Landmark",
-    "fieldType": "TEXT"
-  },
-  {
-    "name": "Interviewee Name",
-    "fieldType": "TEXT"
-  },
-  {
-    "name": "Interviewee Phone Number",
+    "name": "GPS Location",
     "fieldType": "NUMBER"
   },
+
   {
-    "name": "Household Head Nickname",
+    "name": "How many Members with Disabilities?",
+    "fieldType": "DROPDOWN",
+    "dropdownPopulates": "One|Two|Three or more than three"
+  },
+  {
+    "name": "Disability Type/ (First)",
+    "fieldType": "DROPDOWN",
+    "dropdownPopulates": "Complete disability|Severe disability|Moderate disability|Mild disability"
+  },
+  {
+    "name": "How many Pregnant Women?",
+    "fieldType": "DROPDOWN",
+    "dropdownPopulates": "One|Two|Three or more than three"
+  },
+  {
+    "name": "How many Maternal Mother in Family?",
+    "fieldType": "DROPDOWN",
+    "dropdownPopulates": "One|Two|Three or more than three"
+  },
+  {
+    "name": "Access to Mobile Phone Services?",
+    "fieldType": "DROPDOWN",
+    "dropdownPopulates": "Yes|No"
+  },
+  {
+    "name": "Insurance Type",
+    "fieldType": "DROPDOWN",
+    "dropdownPopulates": "Health insurance|Life insurance|Crop insurance|Livestock insurance|Accident insurance"
+  },
+  {
+    "name": "Other Social Protection Program/ Government pension",
+    "fieldType": "DROPDOWN",
+    "dropdownPopulates": "Yes|No"
+  },
+  {
+    "name": "Other Social Protection Program/ Social Security Fund-related program",
+    "fieldType": "DROPDOWN",
+    "dropdownPopulates": "Yes|No"
+  },
+  {
+    "name": "Other Social Protection Program/ Prime Minister Employment Program",
+    "fieldType": "DROPDOWN",
+    "dropdownPopulates": "Yes|No"
+  },
+  {
+    "name": "Other Social Protection Program/ School Scholarship",
+    "fieldType": "DROPDOWN",
+    "dropdownPopulates": "Yes|No"
+  },
+
+  {
+    "name": "Other Social Protection Program/ None",
+    "fieldType": "DROPDOWN",
+    "dropdownPopulates": "Yes|No"
+  },
+  {
+    "name": "Any Other Social Protection Program?",
     "fieldType": "TEXT"
   },
   {
-    "name": "Type of Phone set",
+    "name": "Primary Source of Family Income",
     "fieldType": "DROPDOWN",
-    "dropdownPopulates": "Simple Mobile Set,Smart Phone Set"
+    "dropdownPopulates": "Agriculture / livestock|Daily Wage Labor|Business|Foreign Employment|Service/ Job|Other"
   },
   {
-    "name": "Household Head Age",
+    "name": "Primary Source of Income?/ Agriculture / livestock",
+    "fieldType": "DROPDOWN",
+    "dropdownPopulates": "Yes|No"
+  },
+  {
+    "name": "Primary Source of Income?/ Daily Wage Labor",
+    "fieldType": "DROPDOWN",
+    "dropdownPopulates": "Yes|No"
+  },
+
+  {
+    "name": "Primary Source of Income?/ Other",
+    "fieldType": "DROPDOWN",
+    "dropdownPopulates": "Yes|No"
+  },
+  {
+    "name": "Other Source of Income?",
     "fieldType": "TEXT"
   },
   {
-    "name": "Caste",
+    "name": "Annual Income",
     "fieldType": "DROPDOWN",
-    "dropdownPopulates": "Tharu,Tribal(Janjati),Dalit,Brahmin/Chettri"
+    "dropdownPopulates": "Less than 100,000|100,000 to 300,000|300,000 to 500,000|More than 500,000"
+  },
+
+  {
+    "name": "Lease / sharecropping / contract (rent/tenancy) Agricultural Land",
+    "fieldType": "DROPDOWN",
+    "dropdownPopulates": "Less than 5 kattha|5 to 10 kattha|11 kattha to 1 bigha|1 to 2 bigha|2 to 5 bigha|More than 5 bigha|None"
+  },
+  {
+    "name": "Early Warning Source",
+    "fieldType": "DROPDOWN",
+    "dropdownPopulates": "Community Siren|FM Radio|Badghar/Chiraki|Newspaper|Mobile Phone/SMS|People's Representative|Social Media|Red Cross Volunteers|Other"
+  },
+  {
+    "name": "Other Early Warning Source?",
+    "fieldType": "TEXT"
+  },
+  {
+    "name": "Internet Access",
+    "fieldType": "DROPDOWN",
+    "dropdownPopulates": "Yes|No"
+  },
+  {
+    "name": "Annual Disaster Exposure",
+    "fieldType": "DROPDOWN",
+    "dropdownPopulates": "Flood|Fire|Cold Wave|Earthquake|Animal Attack|Epidemic|Storm|Other"
+  },
+  {
+    "name": "Other Annual Disaster",
+    "fieldType": "TEXT"
+  },
+  {
+    "name": "Flood-Affected in Last 20 Years?",
+    "fieldType": "DROPDOWN",
+    "dropdownPopulates": "Yes|No"
+  },
+  {
+    "name": "Flood Damage Type",
+    "fieldType": "DROPDOWN",
+    "dropdownPopulates": "Human Loss|Property Damage|Crop Damage|Livestock Damage|Other"
+  },
+
+  {
+    "name": "Flood Evacuation Threshold for family?",
+    "fieldType": "DROPDOWN",
+    "dropdownPopulates": "After river water level crosses danger level|In the field|In the courtyard|In the veranda|Inside the house|Do not leave the house"
+  },
+  {
+    "name": "Number of House Storeys",
+    "fieldType": "DROPDOWN",
+    "dropdownPopulates": "1|2|3|4|5"
+  },
+  {
+    "name": "Roof Type",
+    "fieldType": "DROPDOWN",
+    "dropdownPopulates": "Thatch / straw|Zinc sheet|Concrete slab|Tile / slate|Other"
+  },
+
+  {
+    "name": "Wall Type",
+    "fieldType": "DROPDOWN",
+    "dropdownPopulates": "Stone or brick with mud|Stone or brick with cement|Bamboo / wood|Bamboo and wood with mud|Thatch / straw|Zinc sheet|Other|Block|Brick"
   }
 ]
